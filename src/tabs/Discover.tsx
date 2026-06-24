@@ -1,16 +1,21 @@
 import { useState, useMemo } from 'react';
-import { Search, SlidersHorizontal, X, TrendingUp } from 'lucide-react';
+import { Search, SlidersHorizontal, X, TrendingUp, Navigation, ShieldCheck } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { ExamCard } from '../components/ExamCard';
 import { FilterSheet } from '../components/FilterSheet';
+import { PRICE_RANGE } from '../data/exams';
+import { haversineDistanceKm } from '../lib/distance';
 
 const FEATURED_SUBJECTS = ['Matematik', 'Engelska', 'Svenska', 'Biologi', 'Kemi', 'Fysik'];
 
 export function Discover() {
-  const { exams, searchQuery, setSearchQuery, filterSubject, filterRegion, filterMaxPrice, filterSortBy } = useStore();
+  const {
+    exams, searchQuery, setSearchQuery, filterSubject, filterRegion, filterMaxPrice, filterSortBy,
+    userLocation, locationStatus, requestLocation,
+  } = useStore();
   const [showFilter, setShowFilter] = useState(false);
 
-  const hasActiveFilters = !!(filterSubject || filterRegion || filterMaxPrice < 2000);
+  const hasActiveFilters = !!(filterSubject || filterRegion || filterMaxPrice < PRICE_RANGE.max);
 
   const filtered = useMemo(() => {
     let result = exams.filter(e => {
@@ -20,19 +25,44 @@ export function Discover() {
         e.subject.toLowerCase().includes(q) ||
         e.course.toLowerCase().includes(q) ||
         e.city.toLowerCase().includes(q) ||
-        e.courseCode.toLowerCase().includes(q);
+        e.courseCode.toLowerCase().includes(q) ||
+        e.provider.toLowerCase().includes(q);
       const matchesSubject = !filterSubject || e.subject === filterSubject;
       const matchesRegion = !filterRegion || e.region === filterRegion;
       const matchesPrice = e.price <= filterMaxPrice;
       return matchesSearch && matchesSubject && matchesRegion && matchesPrice;
     });
 
-    if (filterSortBy === 'date') result.sort((a, b) => a.examDate.localeCompare(b.examDate));
-    else if (filterSortBy === 'price') result.sort((a, b) => a.price - b.price);
-    else result.sort((a, b) => a.schoolName.localeCompare(b.schoolName));
+    const periodDate = (e: typeof result[0]) =>
+      e.nextPeriod.confirmed ? (e.nextPeriod.applicationEnd || e.nextPeriod.examWindowStart) : undefined;
+
+    if (filterSortBy === 'date') {
+      result.sort((a, b) => {
+        const da = periodDate(a);
+        const db = periodDate(b);
+        if (da && db) return da.localeCompare(db);
+        if (da) return -1;
+        if (db) return 1;
+        return a.schoolName.localeCompare(b.schoolName);
+      });
+    } else if (filterSortBy === 'distance' && userLocation) {
+      result.sort((a, b) =>
+        haversineDistanceKm(userLocation.lat, userLocation.lng, a.lat, a.lng) -
+        haversineDistanceKm(userLocation.lat, userLocation.lng, b.lat, b.lng)
+      );
+    } else if (filterSortBy === 'price') {
+      result.sort((a, b) => a.price - b.price);
+    } else {
+      result.sort((a, b) => a.schoolName.localeCompare(b.schoolName));
+    }
 
     return result;
-  }, [exams, searchQuery, filterSubject, filterRegion, filterMaxPrice, filterSortBy]);
+  }, [exams, searchQuery, filterSubject, filterRegion, filterMaxPrice, filterSortBy, userLocation]);
+
+  const stats = useMemo(() => ({
+    providers: new Set(exams.map(e => e.provider)).size,
+    cities: new Set(exams.map(e => e.city)).size,
+  }), [exams]);
 
   return (
     <div className="flex flex-col h-full">
@@ -41,6 +71,10 @@ export function Discover() {
         <div className="mb-3">
           <h1 className="text-2xl font-bold text-gray-900">Upptäck</h1>
           <p className="text-gray-500 text-sm">Hitta din nästa prövning</p>
+          <div className="flex items-center gap-1.5 mt-1.5 text-xs text-green-700">
+            <ShieldCheck size={13} />
+            <span>Verifierade uppgifter från {stats.providers} anordnare i {stats.cities} städer</span>
+          </div>
         </div>
 
         {/* Search + filter */}
@@ -98,11 +132,29 @@ export function Discover() {
           </div>
         ) : (
           <div className="px-4 py-4 space-y-4">
+            {/* GPS prompt */}
+            {!userLocation && locationStatus !== 'denied' && (
+              <button
+                onClick={requestLocation}
+                disabled={locationStatus === 'pending'}
+                className="w-full flex items-center gap-3 bg-blue-50 border border-blue-100 rounded-2xl p-3.5 text-left"
+              >
+                <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Navigation size={16} className="text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-blue-900 text-sm font-semibold">Hitta prövningar nära dig</p>
+                  <p className="text-blue-600 text-xs">Aktivera plats för att se avstånd och sortera närmast först</p>
+                </div>
+              </button>
+            )}
+
             {/* Results count */}
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <TrendingUp size={15} className="text-blue-500" />
               <span>{filtered.length} prövningar</span>
               {hasActiveFilters && <span className="text-blue-600 font-medium">· Filter aktiva</span>}
+              {filterSortBy === 'distance' && userLocation && <span className="text-blue-600 font-medium">· Närmast först</span>}
             </div>
 
             {filtered.map(exam => (

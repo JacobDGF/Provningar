@@ -1,7 +1,7 @@
-import { X, SlidersHorizontal } from 'lucide-react';
+import { X, SlidersHorizontal, Navigation, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useStore } from '../store/useStore';
-import { SUBJECTS, REGIONS } from '../data/exams';
+import { SUBJECTS, REGIONS, PRICE_RANGE } from '../data/exams';
 
 interface FilterSheetProps {
   onClose: () => void;
@@ -13,6 +13,7 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
     filterRegion, setFilterRegion,
     filterMaxPrice, setFilterMaxPrice,
     filterSortBy, setFilterSortBy,
+    userLocation, locationStatus, requestLocation,
   } = useStore();
 
   const [localSubject, setLocalSubject] = useState(filterSubject);
@@ -31,7 +32,7 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
   const reset = () => {
     setLocalSubject('');
     setLocalRegion('');
-    setLocalMaxPrice(2000);
+    setLocalMaxPrice(PRICE_RANGE.max);
     setLocalSortBy('date');
   };
 
@@ -55,18 +56,34 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
         <div className="mb-6">
           <label className="text-sm font-semibold text-gray-700 block mb-2">Sortera efter</label>
           <div className="flex gap-2">
-            {(['date', 'price', 'name'] as const).map(s => (
+            {(['date', 'distance', 'price', 'name'] as const).map(s => (
               <button
                 key={s}
+                disabled={s === 'distance' && !userLocation}
                 onClick={() => setLocalSortBy(s)}
                 className={`flex-1 py-2 rounded-xl text-sm font-medium transition-colors ${
                   localSortBy === s ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'
-                }`}
+                } ${s === 'distance' && !userLocation ? 'opacity-40' : ''}`}
               >
-                {s === 'date' ? 'Datum' : s === 'price' ? 'Pris' : 'Namn'}
+                {s === 'date' ? 'Datum' : s === 'distance' ? 'Avstånd' : s === 'price' ? 'Pris' : 'Namn'}
               </button>
             ))}
           </div>
+          {!userLocation && (
+            <button
+              onClick={requestLocation}
+              disabled={locationStatus === 'pending'}
+              className="mt-2 w-full flex items-center justify-center gap-2 bg-blue-50 text-blue-700 text-xs font-semibold py-2.5 rounded-xl"
+            >
+              {locationStatus === 'pending'
+                ? <Loader2 size={14} className="animate-spin" />
+                : <Navigation size={14} />
+              }
+              {locationStatus === 'denied'
+                ? 'Plats nekad — aktivera i webbläsarinställningar'
+                : 'Aktivera plats för att sortera på avstånd'}
+            </button>
+          )}
         </div>
 
         {/* Subject */}
@@ -129,16 +146,16 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
           </div>
           <input
             type="range"
-            min={500}
-            max={2000}
-            step={100}
+            min={PRICE_RANGE.min}
+            max={PRICE_RANGE.max}
+            step={50}
             value={localMaxPrice}
             onChange={e => setLocalMaxPrice(Number(e.target.value))}
             className="w-full accent-blue-600"
           />
           <div className="flex justify-between text-xs text-gray-400 mt-1">
-            <span>500 kr</span>
-            <span>2 000 kr</span>
+            <span>{PRICE_RANGE.min} kr</span>
+            <span>{PRICE_RANGE.max} kr</span>
           </div>
         </div>
 

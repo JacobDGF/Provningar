@@ -200,7 +200,11 @@ export function Profile() {
                     <img src={exam.schoolImage} alt="" className="w-10 h-10 rounded-xl object-cover flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-gray-800 truncate">{exam.course}</p>
-                      <p className="text-xs text-gray-500">{exam.city} · {new Date(exam.examDate).toLocaleDateString('sv-SE', { day: 'numeric', month: 'short' })}</p>
+                      <p className="text-xs text-gray-500">
+                        {exam.city} · {exam.nextPeriod.confirmed && exam.nextPeriod.examWindowStart
+                          ? new Date(exam.nextPeriod.examWindowStart).toLocaleDateString('sv-SE', { day: 'numeric', month: 'short' })
+                          : 'Datum ej fastställt'}
+                      </p>
                     </div>
                   </div>
                 );

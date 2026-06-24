@@ -14,14 +14,14 @@ export function CalendarTab() {
   const [currentDate, setCurrentDate] = useState(new Date(2026, 3)); // April 2026
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
 
-  // Build event map: date string -> exam ids
+  // Build event map: date string -> exam ids (only confirmed, real dates — never fabricated)
   const eventMap = useMemo(() => {
     const map: Record<string, string[]> = {};
     savedExams.forEach(se => {
       const exam = exams.find(e => e.id === se.examId);
-      if (!exam) return;
-      // Both application deadline and exam date
-      [exam.applicationDeadline, exam.examDate].forEach(d => {
+      if (!exam || !exam.nextPeriod.confirmed) return;
+      [exam.nextPeriod.applicationEnd, exam.nextPeriod.examWindowStart].forEach(d => {
+        if (!d) return;
         if (!map[d]) map[d] = [];
         if (!map[d].includes(se.examId)) map[d].push(se.examId);
       });
@@ -54,7 +54,7 @@ export function CalendarTab() {
     const ids = eventMap[key] || [];
     return ids.map(id => {
       const exam = exams.find(e => e.id === id)!;
-      const isDeadline = exam.applicationDeadline === key;
+      const isDeadline = exam.nextPeriod.applicationEnd === key;
       return { exam, isDeadline };
     });
   }, [selectedDay, eventMap, exams]);
@@ -128,11 +128,11 @@ export function CalendarTab() {
               // Find dot colors
               const hasDeadline = events.some(id => {
                 const exam = exams.find(e => e.id === id);
-                return exam?.applicationDeadline === key;
+                return exam?.nextPeriod.applicationEnd === key;
               });
               const hasExam = events.some(id => {
                 const exam = exams.find(e => e.id === id);
-                return exam?.examDate === key;
+                return exam?.nextPeriod.examWindowStart === key;
               });
 
               return (
@@ -195,51 +195,87 @@ export function CalendarTab() {
 
         {/* Upcoming events list */}
         {!selectedDay && (
-          <div className="px-4 mt-4">
-            <h3 className="font-bold text-gray-800 mb-3">Kommande händelser</h3>
-            {savedExams.length === 0 ? (
-              <div className="bg-gray-50 rounded-2xl p-6 text-center">
-                <Calendar size={28} className="text-gray-300 mx-auto mb-2" />
-                <p className="text-gray-500 text-sm">Spara prövningar för att se dem i kalendern.</p>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {savedExams
-                  .flatMap(se => {
-                    const exam = exams.find(e => e.id === se.examId);
-                    if (!exam) return [];
-                    return [
-                      { exam, date: exam.applicationDeadline, type: 'deadline' as const },
-                      { exam, date: exam.examDate, type: 'exam' as const },
-                    ];
-                  })
-                  .filter(e => new Date(e.date) >= today)
-                  .sort((a, b) => a.date.localeCompare(b.date))
-                  .slice(0, 10)
-                  .map(({ exam, date, type }) => (
-                    <button
-                      key={`${exam.id}-${type}`}
-                      onClick={() => { setShowingExamDetail(exam.id); setActiveTab('discover'); }}
-                      className="w-full bg-white border border-gray-100 rounded-xl p-3 text-left flex items-center gap-3"
-                    >
-                      <div className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center flex-shrink-0 ${
-                        type === 'deadline' ? 'bg-red-50' : 'bg-blue-50'
-                      }`}>
-                        <span className={`text-xs font-bold ${type === 'deadline' ? 'text-red-600' : 'text-blue-600'}`}>
-                          {new Date(date).toLocaleDateString('sv-SE', { day: 'numeric' })}
-                        </span>
-                        <span className={`text-[9px] ${type === 'deadline' ? 'text-red-400' : 'text-blue-400'}`}>
-                          {new Date(date).toLocaleDateString('sv-SE', { month: 'short' })}
-                        </span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-gray-900 text-sm truncate">{exam.course}</p>
-                        <p className={`text-xs ${type === 'deadline' ? 'text-red-500' : 'text-blue-500'}`}>
-                          {type === 'deadline' ? 'Anmälningsstopp' : 'Provdag'} · {exam.city}
-                        </p>
-                      </div>
-                    </button>
-                  ))}
+          <div className="px-4 mt-4 space-y-6">
+            <div>
+              <h3 className="font-bold text-gray-800 mb-3">Kommande händelser</h3>
+              {savedExams.length === 0 ? (
+                <div className="bg-gray-50 rounded-2xl p-6 text-center">
+                  <Calendar size={28} className="text-gray-300 mx-auto mb-2" />
+                  <p className="text-gray-500 text-sm">Spara prövningar för att se dem i kalendern.</p>
+                </div>
+              ) : (
+                <>
+                  <div className="space-y-2">
+                    {savedExams
+                      .flatMap(se => {
+                        const exam = exams.find(e => e.id === se.examId);
+                        if (!exam || !exam.nextPeriod.confirmed) return [];
+                        const events: { exam: typeof exam; date: string; type: 'deadline' | 'exam' }[] = [];
+                        if (exam.nextPeriod.applicationEnd) events.push({ exam, date: exam.nextPeriod.applicationEnd, type: 'deadline' });
+                        if (exam.nextPeriod.examWindowStart) events.push({ exam, date: exam.nextPeriod.examWindowStart, type: 'exam' });
+                        return events;
+                      })
+                      .filter(e => new Date(e.date) >= today)
+                      .sort((a, b) => a.date.localeCompare(b.date))
+                      .slice(0, 10)
+                      .map(({ exam, date, type }) => (
+                        <button
+                          key={`${exam.id}-${type}`}
+                          onClick={() => { setShowingExamDetail(exam.id); setActiveTab('discover'); }}
+                          className="w-full bg-white border border-gray-100 rounded-xl p-3 text-left flex items-center gap-3"
+                        >
+                          <div className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center flex-shrink-0 ${
+                            type === 'deadline' ? 'bg-red-50' : 'bg-blue-50'
+                          }`}>
+                            <span className={`text-xs font-bold ${type === 'deadline' ? 'text-red-600' : 'text-blue-600'}`}>
+                              {new Date(date).toLocaleDateString('sv-SE', { day: 'numeric' })}
+                            </span>
+                            <span className={`text-[9px] ${type === 'deadline' ? 'text-red-400' : 'text-blue-400'}`}>
+                              {new Date(date).toLocaleDateString('sv-SE', { month: 'short' })}
+                            </span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-gray-900 text-sm truncate">{exam.course}</p>
+                            <p className={`text-xs ${type === 'deadline' ? 'text-red-500' : 'text-blue-500'}`}>
+                              {type === 'deadline' ? 'Anmälningsstopp' : 'Provdag'} · {exam.city}
+                            </p>
+                          </div>
+                        </button>
+                      ))}
+                  </div>
+                  {savedExams.every(se => !exams.find(e => e.id === se.examId)?.nextPeriod.confirmed) && (
+                    <p className="text-gray-400 text-xs mt-2">
+                      Inga av dina sparade prövningar har bekräftade datum ännu — se listan nedan.
+                    </p>
+                  )}
+                </>
+              )}
+            </div>
+
+            {/* Saved exams without confirmed dates */}
+            {savedExams.some(se => !exams.find(e => e.id === se.examId)?.nextPeriod.confirmed) && (
+              <div>
+                <h3 className="font-bold text-gray-800 mb-3">Väntar på datum från skolan</h3>
+                <div className="space-y-2">
+                  {savedExams
+                    .map(se => exams.find(e => e.id === se.examId))
+                    .filter((e): e is NonNullable<typeof e> => !!e && !e.nextPeriod.confirmed)
+                    .map(exam => (
+                      <button
+                        key={exam.id}
+                        onClick={() => { setShowingExamDetail(exam.id); setActiveTab('discover'); }}
+                        className="w-full bg-white border border-gray-100 rounded-xl p-3 text-left flex items-center gap-3"
+                      >
+                        <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center flex-shrink-0">
+                          <Clock size={16} className="text-gray-400" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-gray-900 text-sm truncate">{exam.course}</p>
+                          <p className="text-xs text-gray-500">{exam.nextPeriod.label} · {exam.city}</p>
+                        </div>
+                      </button>
+                    ))}
+                </div>
               </div>
             )}
           </div>

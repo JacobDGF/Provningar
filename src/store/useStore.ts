@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Exam, SavedExam, Post, User, TabId } from '../types';
-import { EXAMS } from '../data/exams';
+import { EXAMS, PRICE_RANGE } from '../data/exams';
 import { INITIAL_POSTS } from '../data/community';
 
 interface AppState {
@@ -26,8 +26,13 @@ interface AppState {
   setFilterRegion: (r: string) => void;
   filterMaxPrice: number;
   setFilterMaxPrice: (p: number) => void;
-  filterSortBy: 'date' | 'price' | 'name';
-  setFilterSortBy: (s: 'date' | 'price' | 'name') => void;
+  filterSortBy: 'date' | 'price' | 'name' | 'distance';
+  setFilterSortBy: (s: 'date' | 'price' | 'name' | 'distance') => void;
+
+  // Location / GPS
+  userLocation: { lat: number; lng: number } | null;
+  locationStatus: 'idle' | 'pending' | 'granted' | 'denied' | 'error';
+  requestLocation: () => void;
 
   // Community
   posts: Post[];
@@ -97,10 +102,31 @@ export const useStore = create<AppState>()(
       setFilterSubject: (s) => set({ filterSubject: s }),
       filterRegion: '',
       setFilterRegion: (r) => set({ filterRegion: r }),
-      filterMaxPrice: 2000,
+      filterMaxPrice: PRICE_RANGE.max,
       setFilterMaxPrice: (p) => set({ filterMaxPrice: p }),
       filterSortBy: 'date',
       setFilterSortBy: (s) => set({ filterSortBy: s }),
+
+      userLocation: null,
+      locationStatus: 'idle',
+      requestLocation: () => {
+        if (!('geolocation' in navigator)) {
+          set({ locationStatus: 'error' });
+          return;
+        }
+        set({ locationStatus: 'pending' });
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            set({
+              userLocation: { lat: pos.coords.latitude, lng: pos.coords.longitude },
+              locationStatus: 'granted',
+              filterSortBy: 'distance',
+            });
+          },
+          () => set({ locationStatus: 'denied' }),
+          { enableHighAccuracy: false, timeout: 10000, maximumAge: 5 * 60 * 1000 }
+        );
+      },
 
       posts: INITIAL_POSTS,
 

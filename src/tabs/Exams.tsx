@@ -1,5 +1,5 @@
-import { Bookmark, ChevronDown } from 'lucide-react';
-import { useState } from 'react';
+import { Bookmark, ChevronDown, Compass } from 'lucide-react';
+import { useState, useMemo } from 'react';
 import { useStore } from '../store/useStore';
 import { ExamCard } from '../components/ExamCard';
 import { SavedExam } from '../types';
@@ -45,13 +45,23 @@ function StatusPicker({ examId }: { examId: string }) {
 }
 
 export function Exams() {
-  const { savedExams, exams, unsaveExam } = useStore();
+  const { savedExams, exams, unsaveExam, setActiveTab } = useStore();
   const [activeStatus, setActiveStatus] = useState<string>('all');
 
-  const savedWithData = savedExams
-    .map(se => ({ saved: se, exam: exams.find(e => e.id === se.examId) }))
-    .filter((x): x is { saved: SavedExam; exam: typeof exams[0] } => !!x.exam)
-    .filter(x => activeStatus === 'all' || x.saved.status === activeStatus);
+  const savedWithData = useMemo(() => {
+    return savedExams
+      .map(se => ({ saved: se, exam: exams.find(e => e.id === se.examId) }))
+      .filter((x): x is { saved: SavedExam; exam: typeof exams[0] } => !!x.exam)
+      .filter(x => activeStatus === 'all' || x.saved.status === activeStatus)
+      .sort((a, b) => {
+        const da = a.exam.nextPeriod.confirmed ? a.exam.nextPeriod.applicationEnd : undefined;
+        const db = b.exam.nextPeriod.confirmed ? b.exam.nextPeriod.applicationEnd : undefined;
+        if (da && db) return da.localeCompare(db);
+        if (da) return -1;
+        if (db) return 1;
+        return a.saved.savedAt.localeCompare(b.saved.savedAt);
+      });
+  }, [savedExams, exams, activeStatus]);
 
   const counts: Record<string, number> = { all: savedExams.length };
   savedExams.forEach(se => { counts[se.status] = (counts[se.status] || 0) + 1; });
@@ -98,28 +108,35 @@ export function Exams() {
               <Bookmark size={28} className="text-blue-400" />
             </div>
             <h3 className="text-gray-800 font-semibold mb-2">Inga sparade prövningar</h3>
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-500 text-sm mb-5">
               {activeStatus === 'all'
                 ? 'Tryck på bokmärkesikonen på en prövning för att spara den här.'
                 : `Inga prövningar med status "${STATUS_OPTIONS.find(o => o.value === activeStatus)?.label}".`}
             </p>
+            {activeStatus === 'all' && (
+              <button
+                onClick={() => setActiveTab('discover')}
+                className="flex items-center gap-2 bg-blue-600 text-white text-sm font-semibold px-5 py-3 rounded-2xl"
+              >
+                <Compass size={16} />
+                Upptäck prövningar
+              </button>
+            )}
           </div>
         ) : (
-          <div className="px-4 py-4 space-y-4">
+          <div className="px-4 py-4 space-y-3">
             {savedWithData.map(({ saved, exam }) => (
-              <div key={saved.examId} className="relative">
-                {/* Status picker overlay */}
-                <div className="absolute top-[196px] left-4 z-10">
-                  <StatusPicker examId={saved.examId} />
-                </div>
+              <div key={saved.examId}>
                 <ExamCard exam={exam} />
-                {/* Remove button */}
-                <button
-                  onClick={() => unsaveExam(exam.id)}
-                  className="mt-2 w-full py-2 text-red-500 text-sm font-medium text-center"
-                >
-                  Ta bort från sparade
-                </button>
+                <div className="mt-2 flex items-center justify-between bg-white border border-gray-100 rounded-xl px-3 py-2">
+                  <StatusPicker examId={saved.examId} />
+                  <button
+                    onClick={() => unsaveExam(exam.id)}
+                    className="text-red-500 text-xs font-medium"
+                  >
+                    Ta bort
+                  </button>
+                </div>
               </div>
             ))}
           </div>

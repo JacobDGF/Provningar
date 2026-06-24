@@ -1,8 +1,13 @@
-import { X, MapPin, Calendar, CreditCard, Clock, BookOpen, Lightbulb, ExternalLink, Bookmark, BookmarkCheck, ChevronRight, Users } from 'lucide-react';
+import { X, MapPin, Calendar, CreditCard, Clock, BookOpen, Lightbulb, ExternalLink, Bookmark, BookmarkCheck, ChevronRight, ShieldCheck, Navigation, Info } from 'lucide-react';
 import { useStore } from '../store/useStore';
+import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function formatDateShort(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString('sv-SE', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
 function daysUntil(dateStr: string) {
@@ -11,14 +16,20 @@ function daysUntil(dateStr: string) {
 }
 
 export function ExamDetail() {
-  const { showingExamDetail, setShowingExamDetail, exams, isExamSaved, saveExam, unsaveExam } = useStore();
+  const { showingExamDetail, setShowingExamDetail, exams, isExamSaved, saveExam, unsaveExam, userLocation } = useStore();
   const exam = exams.find(e => e.id === showingExamDetail);
 
   if (!exam) return null;
 
   const saved = isExamSaved(exam.id);
-  const deadlineDays = daysUntil(exam.applicationDeadline);
-  const urgent = deadlineDays <= 7 && deadlineDays >= 0;
+  const { nextPeriod } = exam;
+  const deadlineDate = nextPeriod.confirmed ? nextPeriod.applicationEnd : undefined;
+  const deadlineDays = deadlineDate ? daysUntil(deadlineDate) : null;
+  const urgent = deadlineDays !== null && deadlineDays <= 7 && deadlineDays >= 0;
+
+  const distanceKm = userLocation
+    ? haversineDistanceKm(userLocation.lat, userLocation.lng, exam.lat, exam.lng)
+    : null;
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-end" onClick={() => setShowingExamDetail(null)}>
@@ -46,7 +57,7 @@ export function ExamDetail() {
             }
           </button>
           <div className="absolute bottom-4 left-4 right-4">
-            <p className="text-white/75 text-sm">{exam.schoolName}</p>
+            <p className="text-white/75 text-sm">{exam.schoolName} · {exam.provider}</p>
             <h2 className="text-white text-2xl font-bold">{exam.course}</h2>
             <p className="text-blue-200 text-sm">{exam.courseCode}</p>
           </div>
@@ -55,6 +66,14 @@ export function ExamDetail() {
         {/* Scroll content */}
         <div className="overflow-y-auto flex-1 pb-28">
           <div className="p-4 space-y-4">
+
+            {/* Trust banner */}
+            <div className="bg-green-50 border border-green-200 rounded-xl p-3 flex items-center gap-2">
+              <ShieldCheck size={18} className="text-green-600 flex-shrink-0" />
+              <p className="text-green-800 text-xs">
+                Uppgifterna kontrollerade mot {exam.provider}s webbplats {formatDateShort(exam.verifiedAt)}.
+              </p>
+            </div>
 
             {/* Urgent warning */}
             {urgent && (
@@ -77,11 +96,44 @@ export function ExamDetail() {
                 <Calendar size={16} className="text-blue-600" />
                 Viktiga datum
               </h3>
-              <div className="space-y-2.5">
-                <InfoRow label="Anmälningsstopp" value={formatDate(exam.applicationDeadline)} urgent={urgent} />
-                <InfoRow label="Provdag" value={formatDate(exam.examDate)} />
-                <InfoRow label="Resultat" value={formatDate(exam.resultDate)} />
-              </div>
+              {nextPeriod.confirmed ? (
+                <div className="space-y-2.5">
+                  {nextPeriod.applicationStart && nextPeriod.applicationEnd && (
+                    <InfoRow
+                      label="Ansökningsperiod"
+                      value={`${formatDate(nextPeriod.applicationStart)} – ${formatDate(nextPeriod.applicationEnd)}`}
+                      urgent={urgent}
+                    />
+                  )}
+                  {nextPeriod.examWindowStart && nextPeriod.examWindowEnd && (
+                    <InfoRow
+                      label="Provperiod"
+                      value={`${formatDate(nextPeriod.examWindowStart)} – ${formatDate(nextPeriod.examWindowEnd)}`}
+                    />
+                  )}
+                  {!nextPeriod.applicationStart && !nextPeriod.examWindowStart && (
+                    <InfoRow label="Anmälan" value={nextPeriod.label} />
+                  )}
+                </div>
+              ) : (
+                <div className="bg-blue-50 rounded-xl p-3 flex items-start gap-2">
+                  <Info size={16} className="text-blue-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-blue-900 text-sm font-medium">{nextPeriod.label}</p>
+                    <p className="text-blue-700 text-xs mt-1">
+                      Vi visar aldrig gissade datum. Se aktuella anmälningstider hos {exam.provider} innan du planerar din prövning.
+                    </p>
+                    <a
+                      href={exam.infoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-blue-600 text-xs font-semibold mt-2"
+                    >
+                      Se datum hos {exam.provider} <ExternalLink size={11} />
+                    </a>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Practical info */}
@@ -91,19 +143,15 @@ export function ExamDetail() {
                 Praktisk info
               </h3>
               <div className="space-y-2.5">
-                <InfoRow label="Pris" value={`${exam.price} kr`} />
+                <InfoRow label="Pris" value={exam.priceNote ? `${exam.price} kr · ${exam.priceNote}` : `${exam.price} kr`} />
+                <InfoRow label="Anordnare" value={exam.provider} icon={<ShieldCheck size={14} className="text-gray-400" />} />
                 <InfoRow label="Ort" value={exam.city} icon={<MapPin size={14} className="text-gray-400" />} />
                 <InfoRow label="Adress" value={exam.address} />
+                {distanceKm !== null && (
+                  <InfoRow label="Avstånd från dig" value={formatDistanceKm(distanceKm)} icon={<Navigation size={14} className="text-gray-400" />} />
+                )}
                 <InfoRow label="Region" value={exam.region} />
                 <InfoRow label="Nivå" value={exam.level} />
-                {exam.availableSpots && (
-                  <InfoRow
-                    label="Platser kvar"
-                    value={`${exam.availableSpots} st`}
-                    urgent={exam.availableSpots < 10}
-                    icon={<Users size={14} className="text-gray-400" />}
-                  />
-                )}
               </div>
             </div>
 
@@ -159,7 +207,7 @@ export function ExamDetail() {
         </div>
 
         {/* CTA */}
-        <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4">
+        <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 space-y-2">
           <a
             href={exam.registrationUrl}
             target="_blank"
@@ -167,9 +215,19 @@ export function ExamDetail() {
             className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-bold py-4 rounded-2xl text-base shadow-lg shadow-blue-200"
           >
             <ExternalLink size={18} />
-            Gå till {exam.schoolName}
+            Gå till anmälan hos {exam.provider}
             <ChevronRight size={18} />
           </a>
+          {exam.infoUrl !== exam.registrationUrl && (
+            <a
+              href={exam.infoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center justify-center gap-1.5 text-gray-500 text-xs font-medium py-1"
+            >
+              Mer information på skolans webbplats <ExternalLink size={11} />
+            </a>
+          )}
         </div>
       </div>
     </div>
@@ -183,7 +241,7 @@ function InfoRow({ label, value, urgent, icon }: { label: string; value: string;
         {icon}
         {label}
       </span>
-      <span className={`text-sm font-semibold ${urgent ? 'text-red-600' : 'text-gray-800'}`}>{value}</span>
+      <span className={`text-sm font-semibold text-right ${urgent ? 'text-red-600' : 'text-gray-800'}`}>{value}</span>
     </div>
   );
 }

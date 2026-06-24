@@ -1,6 +1,17 @@
+export interface NextPeriod {
+  label: string;
+  applicationStart?: string;
+  applicationEnd?: string;
+  examWindowStart?: string;
+  examWindowEnd?: string;
+  /** True when we have a real confirmed date for this period. When false, the UI must not present a fabricated date — link out instead. */
+  confirmed: boolean;
+}
+
 export interface Exam {
   id: string;
   schoolName: string;
+  provider: string;
   schoolImage: string;
   subject: string;
   course: string;
@@ -12,15 +23,16 @@ export interface Exam {
   lat: number;
   lng: number;
   price: number;
-  applicationDeadline: string;
-  examDate: string;
-  resultDate: string;
+  priceNote?: string;
+  nextPeriod: NextPeriod;
   components: ExamComponent[];
   studyTips: string[];
   registrationUrl: string;
-  availableSpots?: number;
+  infoUrl: string;
   description: string;
   tags: string[];
+  /** ISO date this listing's facts (price, URL, periods) were last checked against the school's own site. */
+  verifiedAt: string;
 }
 
 export interface ExamComponent {
