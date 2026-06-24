@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import Header from '@/components/Header'
 import BottomNav from '@/components/BottomNav'
@@ -23,6 +23,7 @@ export const metadata: Metadata = {
     'boka prövning',
   ],
   authors: [{ name: 'Prövningsguiden' }],
+  alternates: { canonical: '/' },
   openGraph: {
     type: 'website',
     locale: 'sv_SE',
@@ -40,10 +41,43 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 }
 
+export const viewport: Viewport = {
+  themeColor: '#2563eb',
+  width: 'device-width',
+  initialScale: 1,
+}
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      name: 'Prövningsguiden',
+      url: 'https://www.provningsguiden.se',
+      logo: 'https://www.provningsguiden.se/icon',
+      description: 'Sveriges samlingsplats för att hitta, jämföra och boka prövningar.',
+    },
+    {
+      '@type': 'WebSite',
+      name: 'Prövningsguiden',
+      url: 'https://www.provningsguiden.se',
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: 'https://www.provningsguiden.se/upptack?q={search_term_string}',
+        'query-input': 'required name=search_term_string',
+      },
+    },
+  ],
+}
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="sv">
       <body className="min-h-screen bg-slate-50 font-sans text-slate-900">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <LocationProvider>
           <SavedExamsProvider>
             <BookingsProvider>
