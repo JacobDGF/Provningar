@@ -4,5 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: '/Pr-vingar/',
+  // Relative base so the same build works at both the GitHub Pages project URL
+  // (github.io/Pr-vingar/) and the provningsguiden.se custom domain root.
+  base: './',
 })

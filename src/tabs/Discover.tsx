@@ -3,19 +3,18 @@ import { Search, SlidersHorizontal, X, TrendingUp, Navigation, ShieldCheck } fro
 import { useStore } from '../store/useStore';
 import { ExamCard } from '../components/ExamCard';
 import { FilterSheet } from '../components/FilterSheet';
-import { PRICE_RANGE } from '../data/exams';
 import { haversineDistanceKm } from '../lib/distance';
 
 const FEATURED_SUBJECTS = ['Matematik', 'Engelska', 'Svenska', 'Biologi', 'Kemi', 'Fysik'];
 
 export function Discover() {
   const {
-    exams, searchQuery, setSearchQuery, filterSubject, filterRegion, filterMaxPrice, filterSortBy,
+    exams, searchQuery, setSearchQuery, filterSubject, filterRegion, filterSortBy,
     userLocation, locationStatus, requestLocation,
   } = useStore();
   const [showFilter, setShowFilter] = useState(false);
 
-  const hasActiveFilters = !!(filterSubject || filterRegion || filterMaxPrice < PRICE_RANGE.max);
+  const hasActiveFilters = !!(filterSubject || filterRegion);
 
   const filtered = useMemo(() => {
     let result = exams.filter(e => {
@@ -29,8 +28,7 @@ export function Discover() {
         e.provider.toLowerCase().includes(q);
       const matchesSubject = !filterSubject || e.subject === filterSubject;
       const matchesRegion = !filterRegion || e.region === filterRegion;
-      const matchesPrice = e.price <= filterMaxPrice;
-      return matchesSearch && matchesSubject && matchesRegion && matchesPrice;
+      return matchesSearch && matchesSubject && matchesRegion;
     });
 
     const periodDate = (e: typeof result[0]) =>
@@ -50,14 +48,12 @@ export function Discover() {
         haversineDistanceKm(userLocation.lat, userLocation.lng, a.lat, a.lng) -
         haversineDistanceKm(userLocation.lat, userLocation.lng, b.lat, b.lng)
       );
-    } else if (filterSortBy === 'price') {
-      result.sort((a, b) => a.price - b.price);
     } else {
       result.sort((a, b) => a.schoolName.localeCompare(b.schoolName));
     }
 
     return result;
-  }, [exams, searchQuery, filterSubject, filterRegion, filterMaxPrice, filterSortBy, userLocation]);
+  }, [exams, searchQuery, filterSubject, filterRegion, filterSortBy, userLocation]);
 
   const stats = useMemo(() => ({
     providers: new Set(exams.map(e => e.provider)).size,

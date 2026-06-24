@@ -1,7 +1,7 @@
-import { X, SlidersHorizontal, Navigation, Loader2 } from 'lucide-react';
+import { X, SlidersHorizontal, Navigation, Loader2, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import { useStore } from '../store/useStore';
-import { SUBJECTS, REGIONS, PRICE_RANGE } from '../data/exams';
+import { SUBJECTS, REGIONS } from '../data/exams';
 
 interface FilterSheetProps {
   onClose: () => void;
@@ -11,20 +11,17 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
   const {
     filterSubject, setFilterSubject,
     filterRegion, setFilterRegion,
-    filterMaxPrice, setFilterMaxPrice,
     filterSortBy, setFilterSortBy,
     userLocation, locationStatus, requestLocation,
   } = useStore();
 
   const [localSubject, setLocalSubject] = useState(filterSubject);
   const [localRegion, setLocalRegion] = useState(filterRegion);
-  const [localMaxPrice, setLocalMaxPrice] = useState(filterMaxPrice);
   const [localSortBy, setLocalSortBy] = useState(filterSortBy);
 
   const apply = () => {
     setFilterSubject(localSubject);
     setFilterRegion(localRegion);
-    setFilterMaxPrice(localMaxPrice);
     setFilterSortBy(localSortBy);
     onClose();
   };
@@ -32,7 +29,6 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
   const reset = () => {
     setLocalSubject('');
     setLocalRegion('');
-    setLocalMaxPrice(PRICE_RANGE.max);
     setLocalSortBy('date');
   };
 
@@ -56,7 +52,7 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
         <div className="mb-6">
           <label className="text-sm font-semibold text-gray-700 block mb-2">Sortera efter</label>
           <div className="flex gap-2">
-            {(['date', 'distance', 'price', 'name'] as const).map(s => (
+            {(['date', 'distance', 'name'] as const).map(s => (
               <button
                 key={s}
                 disabled={s === 'distance' && !userLocation}
@@ -65,7 +61,7 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
                   localSortBy === s ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'
                 } ${s === 'distance' && !userLocation ? 'opacity-40' : ''}`}
               >
-                {s === 'date' ? 'Datum' : s === 'distance' ? 'Avstånd' : s === 'price' ? 'Pris' : 'Namn'}
+                {s === 'date' ? 'Datum' : s === 'distance' ? 'Avstånd' : 'Namn'}
               </button>
             ))}
           </div>
@@ -138,25 +134,13 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
           </div>
         </div>
 
-        {/* Max price */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-2">
-            <label className="text-sm font-semibold text-gray-700">Max pris</label>
-            <span className="text-blue-600 font-bold">{localMaxPrice} kr</span>
-          </div>
-          <input
-            type="range"
-            min={PRICE_RANGE.min}
-            max={PRICE_RANGE.max}
-            step={50}
-            value={localMaxPrice}
-            onChange={e => setLocalMaxPrice(Number(e.target.value))}
-            className="w-full accent-blue-600"
-          />
-          <div className="flex justify-between text-xs text-gray-400 mt-1">
-            <span>{PRICE_RANGE.min} kr</span>
-            <span>{PRICE_RANGE.max} kr</span>
-          </div>
+        {/* Price info */}
+        <div className="mb-8 flex items-start gap-2.5 bg-green-50 border border-green-100 rounded-2xl p-3.5">
+          <ShieldCheck size={18} className="text-green-600 flex-shrink-0 mt-0.5" />
+          <p className="text-xs text-green-800 leading-relaxed">
+            Avgiften för betygsprövning är lagstadgad och kostar <span className="font-semibold">500 kr</span> per
+            prövning hos alla anordnare (gratis om du redan har betyget F). Inget pris att filtrera på.
+          </p>
         </div>
 
         <button

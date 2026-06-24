@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Exam, SavedExam, Post, User, TabId } from '../types';
-import { EXAMS, PRICE_RANGE } from '../data/exams';
+import { EXAMS } from '../data/exams';
 import { INITIAL_POSTS } from '../data/community';
 
 interface AppState {
@@ -24,10 +24,8 @@ interface AppState {
   setFilterSubject: (s: string) => void;
   filterRegion: string;
   setFilterRegion: (r: string) => void;
-  filterMaxPrice: number;
-  setFilterMaxPrice: (p: number) => void;
-  filterSortBy: 'date' | 'price' | 'name' | 'distance';
-  setFilterSortBy: (s: 'date' | 'price' | 'name' | 'distance') => void;
+  filterSortBy: 'date' | 'name' | 'distance';
+  setFilterSortBy: (s: 'date' | 'name' | 'distance') => void;
 
   // Location / GPS
   userLocation: { lat: number; lng: number } | null;
@@ -102,8 +100,6 @@ export const useStore = create<AppState>()(
       setFilterSubject: (s) => set({ filterSubject: s }),
       filterRegion: '',
       setFilterRegion: (r) => set({ filterRegion: r }),
-      filterMaxPrice: PRICE_RANGE.max,
-      setFilterMaxPrice: (p) => set({ filterMaxPrice: p }),
       filterSortBy: 'date',
       setFilterSortBy: (s) => set({ filterSortBy: s }),
 
