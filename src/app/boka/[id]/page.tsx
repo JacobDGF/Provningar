@@ -36,7 +36,7 @@ export default function BookingPage({ params }: { params: { id: string } }) {
 
   function handleConfirm() {
     setSubmitting(true)
-    const booking = createBooking(exam.id, school.id, {
+    const booking = createBooking(exam!.id, school!.id, {
       firstName: form.firstName,
       lastName: form.lastName,
       email: form.email,

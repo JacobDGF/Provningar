@@ -40,12 +40,12 @@ export default function ConfirmationPage({ params }: { params: { id: string } })
       'BEGIN:VCALENDAR',
       'VERSION:2.0',
       'BEGIN:VEVENT',
-      `UID:${booking.referenceNumber}@provningsguiden.se`,
+      `UID:${booking!.referenceNumber}@provningsguiden.se`,
       `DTSTART:${fmt(start)}`,
       `DTEND:${fmt(end)}`,
       `SUMMARY:Prövning i ${exam!.course}`,
       `LOCATION:${school!.name}, ${school!.address}, ${school!.city}`,
-      `DESCRIPTION:Prövning i ${exam!.course} hos ${school!.name}. Referensnummer: ${booking.referenceNumber}`,
+      `DESCRIPTION:Prövning i ${exam!.course} hos ${school!.name}. Referensnummer: ${booking!.referenceNumber}`,
       'END:VEVENT',
       'END:VCALENDAR',
     ].join('\r\n')
@@ -53,7 +53,7 @@ export default function ConfirmationPage({ params }: { params: { id: string } })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `provning-${booking.referenceNumber}.ics`
+    a.download = `provning-${booking!.referenceNumber}.ics`
     a.click()
     URL.revokeObjectURL(url)
   }
