@@ -35,9 +35,9 @@ export function ExamDetail() {
   const gmapsDir = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-end" onClick={() => setShowingExamDetail(null)}>
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-end lg:items-center lg:justify-center" onClick={() => setShowingExamDetail(null)}>
       <div
-        className="bg-cream w-full max-h-[92vh] rounded-t-3xl overflow-hidden flex flex-col animate-sheet-up"
+        className="bg-cream w-full lg:max-w-2xl max-h-[92vh] lg:max-h-[88vh] rounded-t-3xl lg:rounded-3xl overflow-hidden flex flex-col animate-sheet-up"
         onClick={e => e.stopPropagation()}
       >
         {/* Image header */}
@@ -166,11 +166,13 @@ export function ExamDetail() {
 
             {/* Map — "Hitta hit" */}
             <div className="bg-surface rounded-2xl overflow-hidden border border-line">
-              <h3 className="font-bold text-ink px-4 pt-4 pb-3 flex items-center gap-2">
-                <Map size={16} className="text-brand-600" />
+              <h3 className="font-bold text-ink text-base px-4 pt-4 pb-3 flex items-center gap-2.5">
+                <span className="w-8 h-8 bg-brand-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Map size={18} className="text-brand-600" />
+                </span>
                 Hitta hit
               </h3>
-              <div className="relative h-52 bg-sand">
+              <div className="relative h-52 lg:h-80 bg-sand">
                 <iframe
                   title={`Karta – ${exam.schoolName}`}
                   src={osmSrc}
@@ -184,7 +186,7 @@ export function ExamDetail() {
                   href={gmapsDir}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-1.5 bg-brand-500 text-white text-sm font-bold py-3 rounded-xl active:scale-98 transition-transform"
+                  className="flex items-center justify-center gap-1.5 bg-brand-500 text-white text-sm font-bold py-3 rounded-xl active:scale-98 transition-transform hover:bg-brand-600"
                 >
                   <Navigation size={15} /> Vägbeskrivning
                 </a>
@@ -192,7 +194,7 @@ export function ExamDetail() {
                   href={gmapsView}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-1.5 bg-sand text-ink text-sm font-bold py-3 rounded-xl active:scale-98 transition-transform"
+                  className="flex items-center justify-center gap-1.5 bg-sand text-ink text-sm font-bold py-3 rounded-xl active:scale-98 transition-transform hover:bg-line"
                 >
                   <Map size={15} /> Google Maps
                 </a>

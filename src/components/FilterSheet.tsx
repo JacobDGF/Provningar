@@ -38,8 +38,8 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
     }`;
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-end" onClick={onClose}>
-      <div className="bg-cream w-full rounded-t-3xl p-6 max-h-[82vh] overflow-y-auto animate-sheet-up" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-end lg:items-center lg:justify-center" onClick={onClose}>
+      <div className="bg-cream w-full lg:max-w-lg rounded-t-3xl lg:rounded-3xl p-6 max-h-[82vh] overflow-y-auto animate-sheet-up" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
             <SlidersHorizontal size={20} className="text-brand-600" />

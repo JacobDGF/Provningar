@@ -1,7 +1,6 @@
 import { Camera, MapPin, Mail, Edit3, Check, X, GraduationCap, Users, BookMarked, Star, LogOut, HelpCircle, ChevronRight, History as HistoryIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useStore } from '../store/useStore';
-import { FaqSheet } from '../components/FaqSheet';
 
 const GRADE_OPTIONS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -17,7 +16,7 @@ const AVATARS = [
 ];
 
 export function Profile() {
-  const { currentUser, updateUser, savedExams, exams, posts, setActiveTab, setShowingExamDetail } = useStore();
+  const { currentUser, updateUser, savedExams, exams, posts, setActiveTab, setShowingExamDetail, setShowingFaq } = useStore();
   const [editingName, setEditingName] = useState(false);
   const [editingBio, setEditingBio] = useState(false);
   const [editingEmail, setEditingEmail] = useState(false);
@@ -26,7 +25,6 @@ export function Profile() {
   const [emailVal, setEmailVal] = useState(currentUser.email);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [showAddExam, setShowAddExam] = useState(false);
-  const [showFaq, setShowFaq] = useState(false);
   const [newExamSubject, setNewExamSubject] = useState('');
   const [newExamCourse, setNewExamCourse] = useState('');
   const [newExamGrade, setNewExamGrade] = useState('A');
@@ -64,8 +62,8 @@ export function Profile() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="bg-gradient-to-b from-brand-600 to-brand-500 px-4 pt-14 pb-6">
-        <div className="flex flex-col items-center">
+      <div className="bg-gradient-to-b from-brand-600 to-brand-500 px-4 lg:px-8 pt-14 lg:pt-8 pb-6">
+        <div className="flex flex-col items-center max-w-2xl mx-auto">
           {/* Avatar */}
           <div className="relative mb-3">
             <img
@@ -147,24 +145,25 @@ export function Profile() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto pb-28 bg-cream">
+      <div className="flex-1 overflow-y-auto pb-28 lg:pb-8 bg-cream">
+        <div className="max-w-2xl mx-auto w-full">
         {/* Big FAQ button */}
         <button
-          onClick={() => setShowFaq(true)}
-          className="w-[calc(100%-2rem)] mx-4 mt-4 flex items-center gap-3 bg-surface border border-line rounded-2xl p-4 active:scale-98 transition-transform"
+          onClick={() => setShowingFaq(true)}
+          className="w-[calc(100%-2rem)] lg:w-full mx-4 lg:mx-0 mt-4 flex items-center gap-3 bg-surface border border-line rounded-2xl p-4 lg:p-5 active:scale-98 transition-transform hover:border-brand-200"
         >
-          <div className="w-12 h-12 bg-brand-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm shadow-brand-200">
-            <HelpCircle size={24} className="text-white" strokeWidth={2.2} />
+          <div className="w-14 h-14 bg-brand-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm shadow-brand-200">
+            <HelpCircle size={28} className="text-white" strokeWidth={2.2} />
           </div>
           <div className="flex-1 text-left">
-            <p className="font-bold text-ink text-base">Vanliga frågor</p>
-            <p className="text-ink-soft text-xs">Allt om prövningar, kostnad och anmälan</p>
+            <p className="font-bold text-ink text-lg">Vanliga frågor</p>
+            <p className="text-ink-soft text-sm">Allt om prövningar, kostnad och anmälan</p>
           </div>
-          <ChevronRight size={20} className="text-ink-faint" />
+          <ChevronRight size={22} className="text-ink-faint" />
         </button>
 
         {/* Bio */}
-        <div className="bg-surface mx-4 mt-3 rounded-2xl p-4 border border-line">
+        <div className="bg-surface mx-4 lg:mx-0 mt-3 rounded-2xl p-4 border border-line">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-bold text-ink flex items-center gap-2"><Star size={16} className="text-amber-accent" />Om mig</h3>
             <button onClick={() => setEditingBio(v => !v)}>
@@ -200,11 +199,11 @@ export function Profile() {
         </div>
 
         {/* Saved exams summary */}
-        <div className="bg-surface mx-4 mt-3 rounded-2xl p-4 border border-line">
+        <div className="bg-surface mx-4 lg:mx-0 mt-3 rounded-2xl p-4 border border-line">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-bold text-ink flex items-center gap-2">
-              <span className="w-8 h-8 bg-brand-100 rounded-xl flex items-center justify-center">
-                <BookMarked size={17} className="text-brand-600" />
+            <h3 className="font-bold text-ink text-lg flex items-center gap-2.5">
+              <span className="w-11 h-11 bg-brand-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <BookMarked size={22} className="text-brand-600" />
               </span>
               Sparade prövningar
             </h3>
@@ -239,7 +238,7 @@ export function Profile() {
         </div>
 
         {/* Completed exams */}
-        <div className="bg-surface mx-4 mt-3 rounded-2xl p-4 border border-line">
+        <div className="bg-surface mx-4 lg:mx-0 mt-3 rounded-2xl p-4 border border-line">
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-bold text-ink flex items-center gap-2">
               <span className="w-8 h-8 bg-trust-50 rounded-xl flex items-center justify-center">
@@ -285,7 +284,7 @@ export function Profile() {
 
         {/* Following */}
         {currentUser.following.length > 0 && (
-          <div className="bg-surface mx-4 mt-3 rounded-2xl p-4 border border-line">
+          <div className="bg-surface mx-4 lg:mx-0 mt-3 rounded-2xl p-4 border border-line">
             <h3 className="font-bold text-ink mb-1 flex items-center gap-2">
               <Users size={16} className="text-brand-600" />
               Följer {currentUser.following.length} st
@@ -295,21 +294,22 @@ export function Profile() {
         )}
 
         {/* Reset */}
-        <div className="mx-4 mt-3 mb-4">
+        <div className="mx-4 lg:mx-0 mt-3 mb-4">
           <button
             onClick={resetApp}
-            className="w-full flex items-center justify-center gap-2 text-red-500 text-sm font-semibold py-3 rounded-2xl border border-red-100 bg-red-50"
+            className="w-full flex items-center justify-center gap-2 text-red-500 text-sm font-semibold py-3 rounded-2xl border border-red-100 bg-red-50 hover:bg-red-100 transition-colors"
           >
             <LogOut size={16} />
             Återställ appen
           </button>
         </div>
+        </div>
       </div>
 
       {/* Avatar picker modal */}
       {showAvatarPicker && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end" onClick={() => setShowAvatarPicker(false)}>
-          <div className="bg-cream w-full rounded-t-3xl p-6 animate-sheet-up" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end lg:items-center lg:justify-center" onClick={() => setShowAvatarPicker(false)}>
+          <div className="bg-cream w-full lg:max-w-md rounded-t-3xl lg:rounded-3xl p-6 animate-sheet-up" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold text-ink font-display">Välj profilbild</h2>
               <button onClick={() => setShowAvatarPicker(false)} className="w-8 h-8 bg-sand rounded-full flex items-center justify-center">
@@ -338,8 +338,8 @@ export function Profile() {
 
       {/* Add exam modal */}
       {showAddExam && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end" onClick={() => setShowAddExam(false)}>
-          <div className="bg-cream w-full rounded-t-3xl p-6 animate-sheet-up" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end lg:items-center lg:justify-center" onClick={() => setShowAddExam(false)}>
+          <div className="bg-cream w-full lg:max-w-md rounded-t-3xl lg:rounded-3xl p-6 animate-sheet-up" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold text-ink font-display">Lägg till prövning</h2>
               <button onClick={() => setShowAddExam(false)} className="w-8 h-8 bg-sand rounded-full flex items-center justify-center">
@@ -393,7 +393,6 @@ export function Profile() {
         </div>
       )}
 
-      {showFaq && <FaqSheet onClose={() => setShowFaq(false)} />}
     </div>
   );
 }

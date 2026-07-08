@@ -73,9 +73,9 @@ export function FaqSheet({ onClose }: { onClose: () => void }) {
   const [openIdx, setOpenIdx] = useState<number | null>(0);
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-end" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-end lg:items-center lg:justify-center" onClick={onClose}>
       <div
-        className="bg-cream w-full max-h-[90vh] rounded-t-3xl overflow-hidden flex flex-col animate-sheet-up"
+        className="bg-cream w-full lg:max-w-xl max-h-[90vh] lg:max-h-[80vh] rounded-t-3xl lg:rounded-3xl overflow-hidden flex flex-col animate-sheet-up"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -86,7 +86,7 @@ export function FaqSheet({ onClose }: { onClose: () => void }) {
             </div>
             <h2 className="text-xl font-bold text-ink font-display">Vanliga frågor</h2>
           </div>
-          <button onClick={onClose} className="w-9 h-9 bg-sand rounded-full flex items-center justify-center active:scale-90">
+          <button onClick={onClose} className="w-9 h-9 bg-sand rounded-full flex items-center justify-center active:scale-90 hover:bg-line transition-colors">
             <X size={18} className="text-ink-soft" />
           </button>
         </div>

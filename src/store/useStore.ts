@@ -51,6 +51,8 @@ interface AppState {
   // UI
   showingExamDetail: string | null;
   setShowingExamDetail: (id: string | null) => void;
+  showingFaq: boolean;
+  setShowingFaq: (v: boolean) => void;
 }
 
 const DEFAULT_USER: User = {
@@ -230,6 +232,8 @@ export const useStore = create<AppState>()(
           set({ showingExamDetail: null });
         }
       },
+      showingFaq: false,
+      setShowingFaq: (v) => set({ showingFaq: v }),
     }),
     {
       name: 'provningar-storage',

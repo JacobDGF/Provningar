@@ -62,7 +62,7 @@ export function CalendarView() {
   const nextMonth = () => setCurrentDate(new Date(year, month + 1));
 
   return (
-    <div className="px-4 py-4">
+    <div className="px-4 lg:px-8 py-4 lg:py-6 max-w-2xl mx-auto w-full">
       {/* Month switcher + legend */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex gap-4 text-xs text-ink-soft">

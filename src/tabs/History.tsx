@@ -27,21 +27,21 @@ export function History() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="bg-surface px-4 pt-14 pb-4 sticky top-0 z-30 border-b border-line">
-        <div className="flex items-center justify-between">
+      <div className="bg-surface px-4 lg:px-8 pt-14 lg:pt-8 pb-4 sticky top-0 z-30 border-b border-line">
+        <div className="max-w-screen-2xl mx-auto w-full flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 bg-brand-500 rounded-2xl flex items-center justify-center shadow-sm shadow-brand-200 flex-shrink-0">
-              <HistoryIcon size={22} className="text-white" strokeWidth={2.2} />
+            <div className="w-11 h-11 lg:w-14 lg:h-14 bg-brand-500 rounded-2xl flex items-center justify-center shadow-sm shadow-brand-200 flex-shrink-0">
+              <HistoryIcon size={22} className="text-white lg:w-7 lg:h-7" strokeWidth={2.2} />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-ink font-display">Historik</h1>
-              <p className="text-ink-soft text-sm">Prövningar du tittat på & genomfört</p>
+              <h1 className="text-2xl lg:text-4xl font-bold text-ink font-display">Historik</h1>
+              <p className="text-ink-soft text-sm lg:text-base">Prövningar du tittat på & genomfört</p>
             </div>
           </div>
           {viewed.length > 0 && (
             <button
               onClick={() => { if (window.confirm('Rensa historiken över visade prövningar?')) clearHistory(); }}
-              className="flex items-center gap-1 text-ink-soft text-xs font-semibold bg-sand px-3 py-2 rounded-full active:scale-95"
+              className="flex items-center gap-1 text-ink-soft text-xs font-semibold bg-sand px-3 py-2 rounded-full active:scale-95 hover:bg-line transition-colors"
             >
               <Trash2 size={13} /> Rensa
             </button>
@@ -49,7 +49,8 @@ export function History() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto pb-28">
+      <div className="flex-1 overflow-y-auto pb-28 lg:pb-8">
+        <div className="max-w-screen-2xl mx-auto w-full">
         {isEmpty ? (
           <div className="flex flex-col items-center justify-center py-20 px-8 text-center">
             <div className="w-20 h-20 bg-brand-50 rounded-3xl flex items-center justify-center mb-5">
@@ -68,7 +69,7 @@ export function History() {
             </button>
           </div>
         ) : (
-          <div className="px-4 py-4 space-y-6">
+          <div className="px-4 lg:px-8 py-4 lg:py-6 space-y-6">
             {/* Recently viewed */}
             {viewed.length > 0 && (
               <div>
@@ -76,7 +77,7 @@ export function History() {
                   <Clock size={15} className="text-brand-500" />
                   Nyligen visade
                 </h2>
-                <div className="space-y-2">
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2">
                   {viewed.map(({ v, exam }) => (
                     <button
                       key={v.examId}
@@ -111,7 +112,7 @@ export function History() {
                   </p>
                 </div>
               ) : (
-                <div className="space-y-2">
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2">
                   {completed.map((ce, i) => (
                     <div key={i} className="bg-surface border border-line rounded-2xl p-3 flex items-center gap-3">
                       <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-xl flex-shrink-0 ${
@@ -135,6 +136,7 @@ export function History() {
             </div>
           </div>
         )}
+        </div>
       </div>
     </div>
   );

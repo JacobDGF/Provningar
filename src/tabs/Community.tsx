@@ -2,7 +2,6 @@ import { Heart, MessageCircle, Send, Plus, X, ChevronDown, ChevronUp, Users, Hel
 import { useState } from 'react';
 import { useStore } from '../store/useStore';
 import { Post, PostKind } from '../types';
-import { FaqSheet } from '../components/FaqSheet';
 
 const KINDS: { value: PostKind; label: string; emoji: string; color: string }[] = [
   { value: 'fråga', label: 'Fråga', emoji: '❓', color: 'bg-brand-100 text-brand-700' },
@@ -169,9 +168,8 @@ function PostCard({ post }: { post: Post }) {
 }
 
 export function Community() {
-  const { posts, addPost, currentUser } = useStore();
+  const { posts, addPost, currentUser, setShowingFaq } = useStore();
   const [showCompose, setShowCompose] = useState(false);
-  const [showFaq, setShowFaq] = useState(false);
   const [newPost, setNewPost] = useState('');
   const [newSubject, setNewSubject] = useState('');
   const [newKind, setNewKind] = useState<PostKind>('fråga');
@@ -193,52 +191,54 @@ export function Community() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="bg-surface px-4 pt-14 pb-4 sticky top-0 z-30 border-b border-line">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 bg-brand-500 rounded-2xl flex items-center justify-center shadow-sm shadow-brand-200 flex-shrink-0">
-              <Users size={22} className="text-white" strokeWidth={2.2} />
+      <div className="bg-surface px-4 lg:px-8 pt-14 lg:pt-8 pb-4 sticky top-0 z-30 border-b border-line">
+        <div className="max-w-2xl mx-auto w-full">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 lg:w-14 lg:h-14 bg-brand-500 rounded-2xl flex items-center justify-center shadow-sm shadow-brand-200 flex-shrink-0">
+                <Users size={22} className="text-white lg:w-7 lg:h-7" strokeWidth={2.2} />
+              </div>
+              <div>
+                <h1 className="text-2xl lg:text-3xl font-bold text-ink font-display">Community</h1>
+                <p className="text-ink-soft text-sm lg:text-base">Fråga, dela tips & inspireras</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-ink font-display">Community</h1>
-              <p className="text-ink-soft text-sm">Fråga, dela tips & inspireras</p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowingFaq(true)}
+                aria-label="Vanliga frågor"
+                className="w-10 h-10 bg-sand rounded-2xl flex items-center justify-center active:scale-90 hover:bg-line transition-colors lg:hidden"
+              >
+                <HelpCircle size={20} className="text-ink-soft" />
+              </button>
+              <button
+                onClick={() => setShowCompose(true)}
+                className="w-10 h-10 lg:w-12 lg:h-12 bg-brand-500 rounded-2xl flex items-center justify-center shadow-md shadow-brand-200 active:scale-90 hover:bg-brand-600 transition-colors"
+              >
+                <Plus size={20} className="text-white" />
+              </button>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowFaq(true)}
-              aria-label="Vanliga frågor"
-              className="w-10 h-10 bg-sand rounded-2xl flex items-center justify-center active:scale-90"
-            >
-              <HelpCircle size={20} className="text-ink-soft" />
-            </button>
-            <button
-              onClick={() => setShowCompose(true)}
-              className="w-10 h-10 bg-brand-500 rounded-2xl flex items-center justify-center shadow-md shadow-brand-200 active:scale-90"
-            >
-              <Plus size={20} className="text-white" />
-            </button>
-          </div>
-        </div>
 
-        {/* Kind filter */}
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {FILTERS.map(f => (
-            <button
-              key={f}
-              onClick={() => setActiveFilter(f)}
-              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
-                activeFilter === f ? 'bg-ink text-white' : 'bg-sand text-ink-soft'
-              }`}
-            >
-              {f === 'all' ? 'Allt' : `${kindMeta(f as PostKind)?.emoji} ${kindMeta(f as PostKind)?.label}`}
-            </button>
-          ))}
+          {/* Kind filter */}
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+            {FILTERS.map(f => (
+              <button
+                key={f}
+                onClick={() => setActiveFilter(f)}
+                className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs lg:text-sm font-semibold transition-colors ${
+                  activeFilter === f ? 'bg-ink text-white' : 'bg-sand text-ink-soft hover:bg-line'
+                }`}
+              >
+                {f === 'all' ? 'Allt' : `${kindMeta(f as PostKind)?.emoji} ${kindMeta(f as PostKind)?.label}`}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto pb-28">
-        <div className="px-4 py-4 space-y-4">
+      <div className="flex-1 overflow-y-auto pb-28 lg:pb-8">
+        <div className="max-w-2xl mx-auto w-full px-4 py-4 space-y-4">
           {filteredPosts.map(post => (
             <PostCard key={post.id} post={post} />
           ))}
@@ -250,8 +250,8 @@ export function Community() {
 
       {/* Compose modal */}
       {showCompose && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end" onClick={() => setShowCompose(false)}>
-          <div className="bg-cream w-full rounded-t-3xl p-6 animate-sheet-up" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end lg:items-center lg:justify-center" onClick={() => setShowCompose(false)}>
+          <div className="bg-cream w-full lg:max-w-lg rounded-t-3xl lg:rounded-3xl p-6 animate-sheet-up lg:max-h-[85vh] lg:overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold text-ink font-display">Nytt inlägg</h2>
               <button onClick={() => setShowCompose(false)} className="w-8 h-8 bg-sand rounded-full flex items-center justify-center">
@@ -313,8 +313,6 @@ export function Community() {
           </div>
         </div>
       )}
-
-      {showFaq && <FaqSheet onClose={() => setShowFaq(false)} />}
     </div>
   );
 }

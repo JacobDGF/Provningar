@@ -1,22 +1,13 @@
-import { Compass, BookMarked, Users, History, User } from 'lucide-react';
 import { useStore } from '../store/useStore';
-import { TabId } from '../types';
-
-const TABS: { id: TabId; label: string; icon: React.ComponentType<{ size?: number; strokeWidth?: number; className?: string }> }[] = [
-  { id: 'discover', label: 'Upptäck', icon: Compass },
-  { id: 'exams', label: 'Prövningar', icon: BookMarked },
-  { id: 'community', label: 'Community', icon: Users },
-  { id: 'history', label: 'Historik', icon: History },
-  { id: 'profile', label: 'Profil', icon: User },
-];
+import { NAV_ITEMS } from '../lib/navItems';
 
 export function BottomNav() {
   const { activeTab, setActiveTab, savedExams } = useStore();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-surface/95 backdrop-blur-md border-t border-line z-40 safe-bottom">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-surface/95 backdrop-blur-md border-t border-line z-40 safe-bottom">
       <div className="max-w-lg mx-auto flex px-1 pt-1.5">
-        {TABS.map(({ id, label, icon: Icon }) => {
+        {NAV_ITEMS.map(({ id, label, icon: Icon }) => {
           const isActive = activeTab === id;
           const badge = id === 'exams' && savedExams.length > 0 ? savedExams.length : null;
           return (
