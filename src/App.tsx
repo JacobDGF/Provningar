@@ -3,6 +3,8 @@ import { useStore } from './store/useStore';
 import { LoadingScreen } from './components/LoadingScreen';
 import { BottomNav } from './components/BottomNav';
 import { ExamDetail } from './components/ExamDetail';
+import { UpdateBanner } from './components/UpdateBanner';
+import { useVersionCheck } from './hooks/useVersionCheck';
 import { Discover } from './tabs/Discover';
 import { Exams } from './tabs/Exams';
 import { Community } from './tabs/Community';
@@ -12,6 +14,7 @@ import { Profile } from './tabs/Profile';
 export default function App() {
   const { activeTab, showingExamDetail } = useStore();
   const [loading, setLoading] = useState(true);
+  const updateAvailable = useVersionCheck();
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -47,6 +50,7 @@ export default function App() {
 
       <BottomNav />
       {showingExamDetail && <ExamDetail />}
+      {updateAvailable && <UpdateBanner />}
     </div>
   );
 }
