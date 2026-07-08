@@ -232,7 +232,7 @@ export const useStore = create<AppState>()(
       },
     }),
     {
-      name: 'provningsguiden-storage',
+      name: 'provningar-storage',
       partialize: (s) => ({
         savedExams: s.savedExams,
         viewedExams: s.viewedExams,

@@ -34,7 +34,7 @@ export function LoadingScreen({ onDone }: LoadingScreenProps) {
             <circle cx="20" cy="20" r="4" fill="#FBE7C6"/>
           </svg>
         </div>
-        <h1 className="text-white text-3xl font-bold tracking-tight font-display">Prövningsguiden</h1>
+        <h1 className="text-white text-3xl font-bold tracking-tight font-display">Prövningar</h1>
         <p className="text-white/80 text-sm mt-1">Din väg till högre betyg</p>
       </div>
 

@@ -20,7 +20,7 @@ fs.writeFileSync(
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   // Relative base so the same build works at both the GitHub Pages project URL
-  // (github.io/Pr-vingar/) and the provningsguiden.se custom domain root.
+  // (github.io/Pr-vingar/) and any future custom domain root.
   base: './',
   define: {
     __BUILD_ID__: JSON.stringify(buildId),

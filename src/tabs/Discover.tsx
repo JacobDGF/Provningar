@@ -5,6 +5,7 @@ import { ExamCard } from '../components/ExamCard';
 import { FilterSheet } from '../components/FilterSheet';
 import { FaqSheet } from '../components/FaqSheet';
 import { haversineDistanceKm } from '../lib/distance';
+import { isOpenForRegistration } from '../lib/examStatus';
 
 const FEATURED_SUBJECTS = ['Matematik', 'Engelska', 'Svenska', 'Biologi', 'Kemi', 'Fysik'];
 
@@ -60,6 +61,7 @@ export function Discover() {
   const stats = useMemo(() => ({
     providers: new Set(exams.map(e => e.provider)).size,
     cities: new Set(exams.map(e => e.city)).size,
+    openNow: exams.filter(isOpenForRegistration).length,
   }), [exams]);
 
   return (
@@ -70,9 +72,20 @@ export function Discover() {
           <div>
             <h1 className="text-3xl font-bold text-ink font-display">Upptäck</h1>
             <p className="text-ink-soft text-sm">Hitta och anmäl dig till din nästa prövning</p>
-            <div className="flex items-center gap-1.5 mt-1.5 text-xs text-trust-700 font-medium">
-              <ShieldCheck size={13} />
-              <span>Verifierade uppgifter · {stats.providers} anordnare i {stats.cities} städer</span>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5 text-xs">
+              <div className="flex items-center gap-1.5 text-trust-700 font-medium">
+                <ShieldCheck size={13} />
+                <span>Verifierade uppgifter · {stats.providers} anordnare i {stats.cities} städer</span>
+              </div>
+              {stats.openNow > 0 && (
+                <div className="flex items-center gap-1.5 text-trust-700 font-semibold">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-trust-500 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-trust-600" />
+                  </span>
+                  <span>{stats.openNow} öppna för anmälan just nu</span>
+                </div>
+              )}
             </div>
           </div>
           <button

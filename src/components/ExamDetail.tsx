@@ -1,16 +1,13 @@
 import { X, MapPin, Calendar, CreditCard, Clock, BookOpen, Lightbulb, ExternalLink, Bookmark, BookmarkCheck, ChevronRight, ShieldCheck, Navigation, Info, Map } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
+import { isOpenForRegistration, daysUntil } from '../lib/examStatus';
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 }
 function formatDateShort(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('sv-SE', { day: 'numeric', month: 'long', year: 'numeric' });
-}
-function daysUntil(dateStr: string) {
-  const diff = new Date(dateStr).getTime() - Date.now();
-  return Math.ceil(diff / (1000 * 60 * 60 * 24));
 }
 
 export function ExamDetail() {
@@ -24,6 +21,7 @@ export function ExamDetail() {
   const deadlineDate = nextPeriod.confirmed ? nextPeriod.applicationEnd : undefined;
   const deadlineDays = deadlineDate ? daysUntil(deadlineDate) : null;
   const urgent = deadlineDays !== null && deadlineDays <= 7 && deadlineDays >= 0;
+  const openNow = isOpenForRegistration(exam);
 
   const distanceKm = userLocation
     ? haversineDistanceKm(userLocation.lat, userLocation.lng, exam.lat, exam.lng)
@@ -81,6 +79,17 @@ export function ExamDetail() {
                 Uppgifterna kontrollerade mot {exam.provider}s webbplats {formatDateShort(exam.verifiedAt)}.
               </p>
             </div>
+
+            {/* Open for registration now */}
+            {openNow && (
+              <div className="bg-trust-50 border border-trust-100 rounded-xl p-3 flex items-center gap-2">
+                <span className="relative flex h-2 w-2 flex-shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-trust-500 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-trust-600" />
+                </span>
+                <p className="text-trust-700 text-sm font-semibold">Öppen för anmälan just nu</p>
+              </div>
+            )}
 
             {/* Urgent warning */}
             {urgent && (

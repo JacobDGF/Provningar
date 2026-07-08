@@ -2,6 +2,7 @@ import { MapPin, Calendar, Tag, Bookmark, BookmarkCheck, ExternalLink, Clock, Na
 import { Exam } from '../types';
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
+import { isOpenForRegistration, daysUntil } from '../lib/examStatus';
 
 interface ExamCardProps {
   exam: Exam;
@@ -29,11 +30,6 @@ function formatDate(dateStr: string) {
   return d.toLocaleDateString('sv-SE', { day: 'numeric', month: 'short' });
 }
 
-function daysUntil(dateStr: string) {
-  const diff = new Date(dateStr).getTime() - Date.now();
-  return Math.ceil(diff / (1000 * 60 * 60 * 24));
-}
-
 export function ExamCard({ exam, compact }: ExamCardProps) {
   const { isExamSaved, saveExam, unsaveExam, savedExams, setShowingExamDetail, userLocation } = useStore();
   const saved = isExamSaved(exam.id);
@@ -43,6 +39,7 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
   const deadlineDate = nextPeriod.confirmed ? nextPeriod.applicationEnd : undefined;
   const deadlineDays = deadlineDate ? daysUntil(deadlineDate) : null;
   const urgent = deadlineDays !== null && deadlineDays <= 7 && deadlineDays >= 0;
+  const openNow = isOpenForRegistration(exam);
 
   const distanceKm = userLocation
     ? haversineDistanceKm(userLocation.lat, userLocation.lng, exam.lat, exam.lng)
@@ -114,6 +111,15 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
 
       {/* Body */}
       <div className="p-4">
+        {openNow && (
+          <div className="inline-flex items-center gap-1.5 bg-trust-50 text-trust-700 text-xs font-bold px-2.5 py-1 rounded-full mb-2.5">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-trust-500 opacity-75" />
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-trust-600" />
+            </span>
+            Öppen för anmälan just nu
+          </div>
+        )}
         <div className="flex flex-wrap gap-1.5 mb-3">
           <span className="bg-brand-50 text-brand-700 text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1">
             <Tag size={11} />
