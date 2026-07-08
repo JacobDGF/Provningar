@@ -1,7 +1,7 @@
 {
-  "name": "pr-vingar",
+  "name": "provningar",
   "version": "1.0.0",
-  "description": "En app som hjälper folk att läsa upp betyg till universitetet",
+  "description": "En app som hjälper folk hitta och anmäla sig till betygsprövningar i hela Sverige.",
   "main": "index.js",
   "scripts": {
     "dev": "vite",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://local_proxy@127.0.0.1:43493/git/JacobDGF/Pr-vingar"
+    "url": "https://github.com/JacobDGF/Provningar"
   },
   "keywords": [],
   "author": "",
