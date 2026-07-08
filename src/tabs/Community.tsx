@@ -1,7 +1,19 @@
-import { Heart, MessageCircle, Send, Plus, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { Heart, MessageCircle, Send, Plus, X, ChevronDown, ChevronUp, Users, HelpCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useStore } from '../store/useStore';
-import { Post } from '../types';
+import { Post, PostKind } from '../types';
+import { FaqSheet } from '../components/FaqSheet';
+
+const KINDS: { value: PostKind; label: string; emoji: string; color: string }[] = [
+  { value: 'fråga', label: 'Fråga', emoji: '❓', color: 'bg-brand-100 text-brand-700' },
+  { value: 'tips', label: 'Tips', emoji: '💡', color: 'bg-amber-accent-50 text-amber-accent' },
+  { value: 'diskussion', label: 'Diskussion', emoji: '💬', color: 'bg-sand text-ink-soft' },
+  { value: 'seger', label: 'Seger', emoji: '🎉', color: 'bg-trust-50 text-trust-700' },
+];
+
+function kindMeta(kind?: PostKind) {
+  return KINDS.find(k => k.value === kind);
+}
 
 function timeAgo(dateStr: string) {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -22,6 +34,7 @@ function PostCard({ post }: { post: Post }) {
 
   const isLiked = post.likedBy.includes('me');
   const isFollowing = currentUser.following.includes(post.userId);
+  const meta = kindMeta(post.kind);
 
   const submitReply = () => {
     if (!replyText.trim()) return;
@@ -32,68 +45,63 @@ function PostCard({ post }: { post: Post }) {
   };
 
   return (
-    <div className="bg-white rounded-2xl overflow-hidden border border-gray-100">
+    <div className="bg-surface rounded-2xl overflow-hidden border border-line">
       {/* Author */}
       <div className="p-4 pb-3">
         <div className="flex items-start gap-3">
           <img src={post.userAvatar} alt={post.userName} className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between">
-              <div>
-                <span className="font-semibold text-gray-900 text-sm">{post.userName}</span>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-ink text-sm">{post.userName}</span>
                 {post.userId !== 'me' && (
                   <button
                     onClick={() => toggleFollow(post.userId)}
-                    className={`ml-2 text-xs font-medium px-2 py-0.5 rounded-full ${
-                      isFollowing ? 'bg-gray-100 text-gray-600' : 'bg-blue-50 text-blue-600'
+                    className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                      isFollowing ? 'bg-sand text-ink-soft' : 'bg-brand-500 text-white'
                     }`}
                   >
-                    {isFollowing ? 'Följer' : 'Följ'}
+                    {isFollowing ? 'Följer' : '+ Följ'}
                   </button>
                 )}
               </div>
-              <span className="text-gray-400 text-xs flex-shrink-0">{timeAgo(post.createdAt)}</span>
+              <span className="text-ink-faint text-xs flex-shrink-0">{timeAgo(post.createdAt)}</span>
             </div>
-            {post.subject && (
-              <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-medium">{post.subject}</span>
-            )}
+            <div className="flex items-center gap-1.5 mt-1">
+              {meta && (
+                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${meta.color}`}>
+                  {meta.emoji} {meta.label}
+                </span>
+              )}
+              {post.subject && (
+                <span className="text-xs bg-brand-50 text-brand-700 px-2 py-0.5 rounded-full font-medium">{post.subject}</span>
+              )}
+            </div>
           </div>
         </div>
 
-        <p className="text-gray-800 text-sm leading-relaxed mt-3">{post.content}</p>
+        <p className="text-ink text-[15px] leading-relaxed mt-3">{post.content}</p>
 
         {post.tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-2">
             {post.tags.map(t => (
-              <span key={t} className="text-blue-500 text-xs">#{t}</span>
+              <span key={t} className="text-brand-500 text-xs">#{t}</span>
             ))}
           </div>
         )}
       </div>
 
       {/* Actions */}
-      <div className="px-4 pb-3 flex items-center gap-4 border-t border-gray-50 pt-3">
-        <button
-          onClick={() => toggleLikePost(post.id)}
-          className="flex items-center gap-1.5 text-sm font-medium"
-        >
-          <Heart
-            size={18}
-            className={isLiked ? 'text-red-500 fill-red-500' : 'text-gray-400'}
-          />
-          <span className={isLiked ? 'text-red-500' : 'text-gray-500'}>{post.likes}</span>
+      <div className="px-4 pb-3 flex items-center gap-4 border-t border-line pt-3">
+        <button onClick={() => toggleLikePost(post.id)} className="flex items-center gap-1.5 text-sm font-semibold active:scale-95 transition-transform">
+          <Heart size={19} className={isLiked ? 'text-red-500 fill-red-500' : 'text-ink-faint'} />
+          <span className={isLiked ? 'text-red-500' : 'text-ink-soft'}>{post.likes}</span>
         </button>
-        <button
-          onClick={() => { setShowReplies(v => !v); }}
-          className="flex items-center gap-1.5 text-sm font-medium text-gray-500"
-        >
-          <MessageCircle size={18} className="text-gray-400" />
+        <button onClick={() => setShowReplies(v => !v)} className="flex items-center gap-1.5 text-sm font-semibold text-ink-soft">
+          <MessageCircle size={19} className="text-ink-faint" />
           {post.replies.length > 0 ? post.replies.length : 'Svara'}
         </button>
-        <button
-          onClick={() => setShowReplyInput(v => !v)}
-          className="ml-auto text-blue-600 text-xs font-semibold"
-        >
+        <button onClick={() => setShowReplyInput(v => !v)} className="ml-auto text-brand-600 text-xs font-bold">
           {showReplyInput ? 'Avbryt' : 'Skriv svar'}
         </button>
       </div>
@@ -102,7 +110,7 @@ function PostCard({ post }: { post: Post }) {
       {showReplyInput && (
         <div className="px-4 pb-3 flex gap-2">
           <img src={currentUser.avatar} alt="Du" className="w-7 h-7 rounded-full object-cover flex-shrink-0" />
-          <div className="flex-1 flex gap-2 bg-gray-100 rounded-xl px-3 py-2">
+          <div className="flex-1 flex gap-2 bg-sand rounded-xl px-3 py-2">
             <input
               type="text"
               value={replyText}
@@ -113,7 +121,7 @@ function PostCard({ post }: { post: Post }) {
               autoFocus
             />
             <button onClick={submitReply} disabled={!replyText.trim()}>
-              <Send size={16} className={replyText.trim() ? 'text-blue-600' : 'text-gray-300'} />
+              <Send size={16} className={replyText.trim() ? 'text-brand-600' : 'text-ink-faint'} />
             </button>
           </div>
         </div>
@@ -123,7 +131,7 @@ function PostCard({ post }: { post: Post }) {
       {post.replies.length > 0 && (
         <button
           onClick={() => setShowReplies(v => !v)}
-          className="w-full text-xs text-gray-500 font-medium py-2 border-t border-gray-50 flex items-center justify-center gap-1"
+          className="w-full text-xs text-ink-soft font-semibold py-2 border-t border-line flex items-center justify-center gap-1"
         >
           {showReplies ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           {showReplies ? 'Dölj svar' : `Visa ${post.replies.length} svar`}
@@ -132,29 +140,23 @@ function PostCard({ post }: { post: Post }) {
 
       {/* Replies */}
       {showReplies && post.replies.length > 0 && (
-        <div className="border-t border-gray-50 bg-gray-50">
+        <div className="border-t border-line bg-sand/60">
           {post.replies.map(reply => {
             const replyLiked = reply.likedBy.includes('me');
             return (
               <div key={reply.id} className="px-4 py-3 flex gap-2.5">
                 <img src={reply.userAvatar} alt={reply.userName} className="w-7 h-7 rounded-full object-cover flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <div className="bg-white rounded-xl px-3 py-2 border border-gray-100">
+                  <div className="bg-surface rounded-xl px-3 py-2 border border-line">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs font-semibold text-gray-800">{reply.userName}</span>
-                      <span className="text-gray-400 text-xs">{timeAgo(reply.createdAt)}</span>
+                      <span className="text-xs font-bold text-ink">{reply.userName}</span>
+                      <span className="text-ink-faint text-xs">{timeAgo(reply.createdAt)}</span>
                     </div>
-                    <p className="text-sm text-gray-700 leading-relaxed">{reply.content}</p>
+                    <p className="text-sm text-ink-soft leading-relaxed">{reply.content}</p>
                   </div>
-                  <button
-                    onClick={() => toggleLikeReply(post.id, reply.id)}
-                    className="flex items-center gap-1 mt-1 ml-2 text-xs"
-                  >
-                    <Heart
-                      size={13}
-                      className={replyLiked ? 'text-red-500 fill-red-500' : 'text-gray-400'}
-                    />
-                    <span className={replyLiked ? 'text-red-500' : 'text-gray-400'}>{reply.likes}</span>
+                  <button onClick={() => toggleLikeReply(post.id, reply.id)} className="flex items-center gap-1 mt-1 ml-2 text-xs">
+                    <Heart size={13} className={replyLiked ? 'text-red-500 fill-red-500' : 'text-ink-faint'} />
+                    <span className={replyLiked ? 'text-red-500' : 'text-ink-faint'}>{reply.likes}</span>
                   </button>
                 </div>
               </div>
@@ -169,66 +171,79 @@ function PostCard({ post }: { post: Post }) {
 export function Community() {
   const { posts, addPost, currentUser } = useStore();
   const [showCompose, setShowCompose] = useState(false);
+  const [showFaq, setShowFaq] = useState(false);
   const [newPost, setNewPost] = useState('');
   const [newSubject, setNewSubject] = useState('');
+  const [newKind, setNewKind] = useState<PostKind>('fråga');
   const [activeFilter, setActiveFilter] = useState('all');
 
-  const SUBJECTS_FILTER = ['all', 'Matematik', 'Engelska', 'Svenska', 'Biologi', 'Kemi', 'Fysik'];
+  const FILTERS = ['all', 'fråga', 'tips', 'diskussion', 'seger'];
 
-  const filteredPosts = posts.filter(p =>
-    activeFilter === 'all' || p.subject === activeFilter
-  );
+  const filteredPosts = posts.filter(p => activeFilter === 'all' || p.kind === activeFilter);
 
   const handlePost = () => {
     if (!newPost.trim()) return;
-    addPost(newPost.trim(), newSubject || undefined);
+    addPost(newPost.trim(), newSubject || undefined, newKind);
     setNewPost('');
     setNewSubject('');
+    setNewKind('fråga');
     setShowCompose(false);
   };
 
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="bg-white px-4 pt-14 pb-4 sticky top-0 z-30 border-b border-gray-100">
+      <div className="bg-surface px-4 pt-14 pb-4 sticky top-0 z-30 border-b border-line">
         <div className="flex items-center justify-between mb-3">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Community</h1>
-            <p className="text-gray-500 text-sm">Tips, frågor & erfarenheter</p>
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 bg-brand-500 rounded-2xl flex items-center justify-center shadow-sm shadow-brand-200 flex-shrink-0">
+              <Users size={22} className="text-white" strokeWidth={2.2} />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-ink font-display">Community</h1>
+              <p className="text-ink-soft text-sm">Fråga, dela tips & inspireras</p>
+            </div>
           </div>
-          <button
-            onClick={() => setShowCompose(true)}
-            className="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center shadow-md shadow-blue-200"
-          >
-            <Plus size={20} className="text-white" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowFaq(true)}
+              aria-label="Vanliga frågor"
+              className="w-10 h-10 bg-sand rounded-2xl flex items-center justify-center active:scale-90"
+            >
+              <HelpCircle size={20} className="text-ink-soft" />
+            </button>
+            <button
+              onClick={() => setShowCompose(true)}
+              className="w-10 h-10 bg-brand-500 rounded-2xl flex items-center justify-center shadow-md shadow-brand-200 active:scale-90"
+            >
+              <Plus size={20} className="text-white" />
+            </button>
+          </div>
         </div>
 
-        {/* Subject filter */}
+        {/* Kind filter */}
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {SUBJECTS_FILTER.map(s => (
+          {FILTERS.map(f => (
             <button
-              key={s}
-              onClick={() => setActiveFilter(s)}
+              key={f}
+              onClick={() => setActiveFilter(f)}
               className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
-                activeFilter === s ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'
+                activeFilter === f ? 'bg-ink text-white' : 'bg-sand text-ink-soft'
               }`}
             >
-              {s === 'all' ? 'Alla ämnen' : s}
+              {f === 'all' ? 'Allt' : `${kindMeta(f as PostKind)?.emoji} ${kindMeta(f as PostKind)?.label}`}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto pb-24">
+      <div className="flex-1 overflow-y-auto pb-28">
         <div className="px-4 py-4 space-y-4">
           {filteredPosts.map(post => (
             <PostCard key={post.id} post={post} />
           ))}
           {filteredPosts.length === 0 && (
-            <div className="text-center py-12 text-gray-400">
-              Inga inlägg för det här ämnet än.
-            </div>
+            <div className="text-center py-12 text-ink-faint">Inga inlägg i den här kategorin än.</div>
           )}
         </div>
       </div>
@@ -236,12 +251,27 @@ export function Community() {
       {/* Compose modal */}
       {showCompose && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-end" onClick={() => setShowCompose(false)}>
-          <div className="bg-white w-full rounded-t-3xl p-6" onClick={e => e.stopPropagation()}>
+          <div className="bg-cream w-full rounded-t-3xl p-6 animate-sheet-up" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-gray-900">Nytt inlägg</h2>
-              <button onClick={() => setShowCompose(false)} className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                <X size={16} />
+              <h2 className="text-lg font-bold text-ink font-display">Nytt inlägg</h2>
+              <button onClick={() => setShowCompose(false)} className="w-8 h-8 bg-sand rounded-full flex items-center justify-center">
+                <X size={16} className="text-ink-soft" />
               </button>
+            </div>
+
+            {/* Kind picker */}
+            <div className="flex gap-2 mb-4">
+              {KINDS.map(k => (
+                <button
+                  key={k.value}
+                  onClick={() => setNewKind(k.value)}
+                  className={`flex-1 py-2 rounded-xl text-xs font-bold transition-colors ${
+                    newKind === k.value ? 'bg-brand-500 text-white' : 'bg-surface text-ink-soft border border-line'
+                  }`}
+                >
+                  {k.emoji} {k.label}
+                </button>
+              ))}
             </div>
 
             <div className="flex gap-3 mb-4">
@@ -250,21 +280,21 @@ export function Community() {
                 value={newPost}
                 onChange={e => setNewPost(e.target.value)}
                 placeholder="Dela tips, ställ frågor eller berätta om dina erfarenheter..."
-                className="flex-1 bg-gray-100 rounded-2xl px-4 py-3 text-sm text-gray-800 placeholder-gray-400 outline-none resize-none min-h-[100px]"
+                className="flex-1 bg-surface border border-line rounded-2xl px-4 py-3 text-sm text-ink placeholder-ink-faint outline-none resize-none min-h-[100px]"
                 autoFocus
               />
             </div>
 
             {/* Subject select */}
             <div className="mb-4">
-              <p className="text-xs text-gray-500 font-medium mb-2">Ämne (valfritt)</p>
+              <p className="text-xs text-ink-soft font-semibold mb-2">Ämne (valfritt)</p>
               <div className="flex flex-wrap gap-2">
                 {['Matematik', 'Engelska', 'Svenska', 'Biologi', 'Kemi', 'Fysik', 'Historia', 'Samhällskunskap', 'Psykologi'].map(s => (
                   <button
                     key={s}
                     onClick={() => setNewSubject(newSubject === s ? '' : s)}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                      newSubject === s ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'
+                      newSubject === s ? 'bg-brand-500 text-white' : 'bg-surface text-ink-soft border border-line'
                     }`}
                   >
                     {s}
@@ -276,13 +306,15 @@ export function Community() {
             <button
               onClick={handlePost}
               disabled={!newPost.trim()}
-              className="w-full bg-blue-600 disabled:bg-gray-200 disabled:text-gray-400 text-white font-bold py-4 rounded-2xl text-base transition-colors"
+              className="w-full bg-brand-500 disabled:bg-sand disabled:text-ink-faint text-white font-bold py-4 rounded-2xl text-base transition-colors active:scale-98"
             >
               Publicera
             </button>
           </div>
         </div>
       )}
+
+      {showFaq && <FaqSheet onClose={() => setShowFaq(false)} />}
     </div>
   );
 }

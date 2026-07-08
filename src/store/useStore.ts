@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Exam, SavedExam, Post, User, TabId } from '../types';
+import { Exam, SavedExam, ViewedExam, Post, User, TabId } from '../types';
 import { EXAMS } from '../data/exams';
 import { INITIAL_POSTS } from '../data/community';
 
@@ -16,6 +16,10 @@ interface AppState {
   unsaveExam: (examId: string) => void;
   updateExamStatus: (examId: string, status: SavedExam['status']) => void;
   isExamSaved: (examId: string) => boolean;
+
+  // View history
+  viewedExams: ViewedExam[];
+  clearHistory: () => void;
 
   // Filters
   searchQuery: string;
@@ -34,7 +38,7 @@ interface AppState {
 
   // Community
   posts: Post[];
-  addPost: (content: string, subject?: string, tags?: string[]) => void;
+  addPost: (content: string, subject?: string, kind?: Post['kind'], tags?: string[]) => void;
   addReply: (postId: string, content: string) => void;
   toggleLikePost: (postId: string) => void;
   toggleLikeReply: (postId: string, replyId: string) => void;
@@ -94,6 +98,9 @@ export const useStore = create<AppState>()(
 
       isExamSaved: (examId) => get().savedExams.some(e => e.examId === examId),
 
+      viewedExams: [],
+      clearHistory: () => set({ viewedExams: [] }),
+
       searchQuery: '',
       setSearchQuery: (q) => set({ searchQuery: q }),
       filterSubject: '',
@@ -126,7 +133,7 @@ export const useStore = create<AppState>()(
 
       posts: INITIAL_POSTS,
 
-      addPost: (content, subject, tags) =>
+      addPost: (content, subject, kind, tags) =>
         set(s => ({
           posts: [{
             id: `p${Date.now()}`,
@@ -135,6 +142,7 @@ export const useStore = create<AppState>()(
             userAvatar: s.currentUser.avatar,
             content,
             subject,
+            kind,
             createdAt: new Date().toISOString(),
             likes: 0,
             likedBy: [],
@@ -209,12 +217,25 @@ export const useStore = create<AppState>()(
         }),
 
       showingExamDetail: null,
-      setShowingExamDetail: (id) => set({ showingExamDetail: id }),
+      setShowingExamDetail: (id) => {
+        if (id) {
+          set(s => ({
+            showingExamDetail: id,
+            viewedExams: [
+              { examId: id, viewedAt: new Date().toISOString() },
+              ...s.viewedExams.filter(v => v.examId !== id),
+            ].slice(0, 40),
+          }));
+        } else {
+          set({ showingExamDetail: null });
+        }
+      },
     }),
     {
       name: 'provningsguiden-storage',
       partialize: (s) => ({
         savedExams: s.savedExams,
+        viewedExams: s.viewedExams,
         currentUser: s.currentUser,
         posts: s.posts,
       }),

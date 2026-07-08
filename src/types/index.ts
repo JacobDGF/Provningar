@@ -48,6 +48,13 @@ export interface SavedExam {
   status: 'interested' | 'registered' | 'completed' | 'passed' | 'failed';
 }
 
+export interface ViewedExam {
+  examId: string;
+  viewedAt: string;
+}
+
+export type PostKind = 'fråga' | 'tips' | 'diskussion' | 'seger';
+
 export interface Post {
   id: string;
   userId: string;
@@ -55,6 +62,7 @@ export interface Post {
   userAvatar: string;
   content: string;
   subject?: string;
+  kind?: PostKind;
   createdAt: string;
   likes: number;
   likedBy: string[];
@@ -95,4 +103,4 @@ export interface CompletedExam {
   grade?: string;
 }
 
-export type TabId = 'discover' | 'exams' | 'calendar' | 'community' | 'profile';
+export type TabId = 'discover' | 'exams' | 'community' | 'history' | 'profile';

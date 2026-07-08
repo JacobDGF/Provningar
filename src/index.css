@@ -1,5 +1,48 @@
 @import "tailwindcss";
 
+/* ------------------------------------------------------------------
+   Prövningsguiden design system — "Claude" inspired.
+   Warm ivory surfaces, warm near-black ink, a confident coral/terracotta
+   brand for primary actions, green reserved for verification/trust.
+   ------------------------------------------------------------------ */
+@theme {
+  /* Brand — coral / terracotta (primary CTAs, active states) */
+  --color-brand-50:  #FBF1EC;
+  --color-brand-100: #F6DDD0;
+  --color-brand-200: #EDBEA9;
+  --color-brand-300: #E29E80;
+  --color-brand-400: #D9835F;
+  --color-brand-500: #CC785C;
+  --color-brand-600: #BB5F42;
+  --color-brand-700: #9C4B33;
+  --color-brand-800: #7D3D2B;
+  --color-brand-900: #5F3023;
+
+  /* Ink — warm near-black text */
+  --color-ink:        #262521;
+  --color-ink-soft:   #57544C;
+  --color-ink-faint:  #8A8578;
+
+  /* Warm surfaces */
+  --color-cream:      #FAF9F5;
+  --color-sand:       #F3F1E9;
+  --color-surface:    #FFFFFF;
+  --color-line:       #E9E5DA;
+
+  /* Trust green — verification only */
+  --color-trust-50:  #E9F4EC;
+  --color-trust-100: #CFE8D6;
+  --color-trust-500: #2F8457;
+  --color-trust-600: #256B46;
+  --color-trust-700: #1D5537;
+
+  /* Warm amber — tips / highlights */
+  --color-amber-accent:   #E0A458;
+  --color-amber-accent-50: #FBF2E1;
+
+  --font-display: "Georgia", "Iowan Old Style", "Times New Roman", ui-serif, serif;
+}
+
 * {
   -webkit-tap-highlight-color: transparent;
   box-sizing: border-box;
@@ -9,8 +52,17 @@ body {
   margin: 0;
   padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background: #f1f5f9;
+  background: #FAF9F5;
+  color: #262521;
   overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Serif display headings — the editorial "Claude" feel */
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
 }
 
 /* Hide scrollbars but keep functionality */
@@ -27,9 +79,12 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* Active scale effect */
+/* Active scale effects */
 .active\:scale-98:active {
   transform: scale(0.98);
+}
+.active\:scale-95:active {
+  transform: scale(0.95);
 }
 
 /* Smooth scrolling */
@@ -37,21 +92,37 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Range input styling */
+/* Subtle entrance animation for cards / sheets */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-rise {
+  animation: rise 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+.animate-sheet-up {
+  animation: sheet-up 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Range input styling — brand coral */
 input[type="range"] {
   -webkit-appearance: none;
   height: 4px;
   border-radius: 4px;
-  background: #e5e7eb;
+  background: #E9E5DA;
   outline: none;
 }
-
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #2563eb;
+  background: #CC785C;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 2px 6px rgba(204, 120, 92, 0.4);
 }

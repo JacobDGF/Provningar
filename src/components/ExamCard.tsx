@@ -9,10 +9,10 @@ interface ExamCardProps {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  interested: 'bg-yellow-100 text-yellow-700',
-  registered: 'bg-blue-100 text-blue-700',
-  completed: 'bg-gray-100 text-gray-700',
-  passed: 'bg-green-100 text-green-700',
+  interested: 'bg-amber-accent-50 text-amber-accent',
+  registered: 'bg-brand-100 text-brand-700',
+  completed: 'bg-sand text-ink-soft',
+  passed: 'bg-trust-50 text-trust-700',
   failed: 'bg-red-100 text-red-700',
 };
 
@@ -35,7 +35,7 @@ function daysUntil(dateStr: string) {
 }
 
 export function ExamCard({ exam, compact }: ExamCardProps) {
-  const { isExamSaved, saveExam, unsaveExam, savedExams, setShowingExamDetail, setActiveTab, userLocation } = useStore();
+  const { isExamSaved, saveExam, unsaveExam, savedExams, setShowingExamDetail, userLocation } = useStore();
   const saved = isExamSaved(exam.id);
   const savedExam = savedExams.find(e => e.examId === exam.id);
 
@@ -53,15 +53,12 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
     saved ? unsaveExam(exam.id) : saveExam(exam.id);
   };
 
-  const handleOpen = () => {
-    setShowingExamDetail(exam.id);
-    setActiveTab('discover');
-  };
+  const handleOpen = () => setShowingExamDetail(exam.id);
 
   return (
     <div
       onClick={handleOpen}
-      className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 active:scale-98 transition-transform cursor-pointer"
+      className="bg-surface rounded-2xl overflow-hidden shadow-sm border border-line active:scale-98 transition-transform cursor-pointer"
     >
       {/* Image */}
       <div className="relative">
@@ -71,22 +68,23 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
           className={`w-full object-cover ${compact ? 'h-36' : 'h-48'}`}
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
 
         {/* Save button */}
         <button
           onClick={handleToggleSave}
-          className="absolute top-3 right-3 w-9 h-9 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md"
+          aria-label={saved ? 'Ta bort från sparade' : 'Spara prövning'}
+          className="absolute top-3 right-3 w-10 h-10 bg-surface/95 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md active:scale-90 transition-transform"
         >
           {saved
-            ? <BookmarkCheck size={18} className="text-blue-600" />
-            : <Bookmark size={18} className="text-gray-600" />
+            ? <BookmarkCheck size={19} className="text-brand-600" />
+            : <Bookmark size={19} className="text-ink-soft" />
           }
         </button>
 
         {/* Urgent badge */}
         {urgent && (
-          <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1">
+          <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
             <Clock size={11} />
             {deadlineDays === 0 ? 'Sista dag!' : `${deadlineDays}d kvar`}
           </div>
@@ -94,8 +92,8 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
 
         {/* Distance badge */}
         {distanceKm !== null && (
-          <div className={`absolute top-3 ${urgent ? 'left-24' : 'left-3'} bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1`}>
-            <Navigation size={11} className="text-blue-600" />
+          <div className={`absolute top-3 ${urgent ? 'left-24' : 'left-3'} bg-surface/95 backdrop-blur-sm text-ink text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1 shadow-sm`}>
+            <Navigation size={11} className="text-brand-600" />
             {formatDistanceKm(distanceKm)}
           </div>
         )}
@@ -109,23 +107,23 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
 
         {/* Bottom info */}
         <div className="absolute bottom-0 left-0 right-0 p-3">
-          <p className="text-white/80 text-xs font-medium">{exam.schoolName}</p>
-          <h3 className="text-white font-bold text-base leading-tight">{exam.course}</h3>
+          <p className="text-white/85 text-xs font-medium">{exam.schoolName}</p>
+          <h3 className="text-white font-bold text-lg leading-tight font-display">{exam.course}</h3>
         </div>
       </div>
 
       {/* Body */}
       <div className="p-4">
         <div className="flex flex-wrap gap-1.5 mb-3">
-          <span className="bg-blue-50 text-blue-700 text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
+          <span className="bg-brand-50 text-brand-700 text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1">
             <Tag size={11} />
             {exam.subject}
           </span>
-          <span className="bg-gray-50 text-gray-600 text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
+          <span className="bg-sand text-ink-soft text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
             <MapPin size={11} />
             {exam.city}
           </span>
-          <span className="bg-green-50 text-green-700 text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
+          <span className="bg-trust-50 text-trust-700 text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
             <ShieldCheck size={11} />
             {exam.provider}
           </span>
@@ -133,29 +131,29 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <p className="text-gray-400 text-xs">Anmälan</p>
+            <p className="text-ink-faint text-xs">Anmälan</p>
             {nextPeriod.confirmed ? (
-              <p className={`text-sm font-semibold ${urgent ? 'text-red-600' : 'text-gray-800'}`}>
+              <p className={`text-sm font-bold ${urgent ? 'text-red-600' : 'text-ink'}`}>
                 {nextPeriod.applicationEnd ? formatDate(nextPeriod.applicationEnd) : nextPeriod.label}
               </p>
             ) : (
-              <p className="text-sm font-semibold text-gray-400">Se hos skolan</p>
+              <p className="text-sm font-semibold text-ink-faint">Se hos skolan</p>
             )}
           </div>
           <div>
-            <p className="text-gray-400 text-xs">Provperiod</p>
-            <p className="text-sm font-semibold text-gray-800 flex items-center gap-1">
-              <Calendar size={13} className="text-blue-500" />
-              {nextPeriod.confirmed && nextPeriod.examWindowStart ? formatDate(nextPeriod.examWindowStart) : nextPeriod.label}
+            <p className="text-ink-faint text-xs">Provperiod</p>
+            <p className="text-sm font-bold text-ink flex items-center gap-1">
+              <Calendar size={13} className="text-brand-500" />
+              {nextPeriod.confirmed && nextPeriod.examWindowStart ? formatDate(nextPeriod.examWindowStart) : '—'}
             </p>
           </div>
           <div>
-            <p className="text-gray-400 text-xs">Pris</p>
-            <p className="text-sm font-semibold text-gray-800">{exam.price} kr</p>
+            <p className="text-ink-faint text-xs">Pris</p>
+            <p className="text-sm font-bold text-ink">{exam.price} kr</p>
           </div>
           <div>
-            <p className="text-gray-400 text-xs">Nivå</p>
-            <p className="text-sm font-semibold text-gray-800">{exam.level}</p>
+            <p className="text-ink-faint text-xs">Nivå</p>
+            <p className="text-sm font-bold text-ink">{exam.level}</p>
           </div>
         </div>
 
@@ -164,7 +162,7 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
           target="_blank"
           rel="noopener noreferrer"
           onClick={e => e.stopPropagation()}
-          className="mt-3 w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors"
+          className="mt-4 w-full flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold py-3 rounded-xl transition-colors active:scale-98 shadow-sm shadow-brand-200"
         >
           <ExternalLink size={15} />
           Anmäl dig hos {exam.provider}

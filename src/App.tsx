@@ -5,8 +5,8 @@ import { BottomNav } from './components/BottomNav';
 import { ExamDetail } from './components/ExamDetail';
 import { Discover } from './tabs/Discover';
 import { Exams } from './tabs/Exams';
-import { CalendarTab } from './tabs/CalendarTab';
 import { Community } from './tabs/Community';
+import { History } from './tabs/History';
 import { Profile } from './tabs/Profile';
 
 export default function App() {
@@ -14,7 +14,6 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Preload images
     document.body.style.overflow = 'hidden';
   }, []);
 
@@ -24,7 +23,7 @@ export default function App() {
   };
 
   return (
-    <div className="max-w-lg mx-auto h-screen bg-gray-50 overflow-hidden relative">
+    <div className="max-w-lg mx-auto h-screen bg-cream overflow-hidden relative">
       {loading && <LoadingScreen onDone={handleLoadingDone} />}
 
       {/* Tab content */}
@@ -35,11 +34,11 @@ export default function App() {
         <div className={`h-full ${activeTab === 'exams' ? 'block' : 'hidden'}`}>
           <Exams />
         </div>
-        <div className={`h-full ${activeTab === 'calendar' ? 'block' : 'hidden'}`}>
-          <CalendarTab />
-        </div>
         <div className={`h-full ${activeTab === 'community' ? 'block' : 'hidden'}`}>
           <Community />
+        </div>
+        <div className={`h-full ${activeTab === 'history' ? 'block' : 'hidden'}`}>
+          <History />
         </div>
         <div className={`h-full ${activeTab === 'profile' ? 'block' : 'hidden'}`}>
           <Profile />
