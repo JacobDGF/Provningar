@@ -6,6 +6,7 @@ import { FilterSheet } from '../components/FilterSheet';
 import { MapView } from '../components/MapView';
 import { haversineDistanceKm } from '../lib/distance';
 import { isOpenForRegistration } from '../lib/examStatus';
+import { useMinuteTick } from '../hooks/useMinuteTick';
 
 const FEATURED_SUBJECTS = ['Matematik', 'Engelska', 'Svenska', 'Biologi', 'Kemi', 'Fysik'];
 
@@ -16,6 +17,7 @@ export function Discover() {
   } = useStore();
   const [showFilter, setShowFilter] = useState(false);
   const [view, setView] = useState<'list' | 'map'>('list');
+  const tick = useMinuteTick();
 
   const hasActiveFilters = !!(filterSubject || filterRegion);
 
@@ -58,11 +60,12 @@ export function Discover() {
     return result;
   }, [exams, searchQuery, filterSubject, filterRegion, filterSortBy, userLocation]);
 
+  // tick is a dependency so the live "öppna just nu" count recomputes each minute
   const stats = useMemo(() => ({
     providers: new Set(exams.map(e => e.provider)).size,
     cities: new Set(exams.map(e => e.city)).size,
     openNow: exams.filter(isOpenForRegistration).length,
-  }), [exams]);
+  }), [exams, tick]);
 
   return (
     <div className="flex flex-col h-full">
@@ -78,15 +81,16 @@ export function Discover() {
                   <ShieldCheck size={13} />
                   <span>Verifierade uppgifter · {stats.providers} anordnare i {stats.cities} städer</span>
                 </div>
-                {stats.openNow > 0 && (
-                  <div className="flex items-center gap-1.5 text-trust-700 font-semibold">
-                    <span className="relative flex h-1.5 w-1.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-trust-500 opacity-75" />
-                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-trust-600" />
-                    </span>
-                    <span>{stats.openNow} öppna för anmälan just nu</span>
-                  </div>
-                )}
+                <div className="flex items-center gap-1.5 bg-trust-50 border border-trust-100 text-trust-700 font-semibold px-2 py-0.5 rounded-full">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-trust-500 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-trust-600" />
+                  </span>
+                  <span>
+                    Live · uppdaterad {new Date(tick).toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' })}
+                    {stats.openNow > 0 && ` · ${stats.openNow} öppna för anmälan nu`}
+                  </span>
+                </div>
               </div>
             </div>
             <button
