@@ -55,7 +55,7 @@ const FAQ: FaqItem[] = [
 
 function FaqRow({ item, open, onToggle }: { item: FaqItem; open: boolean; onToggle: () => void }) {
   return (
-    <div className="bg-surface border border-line rounded-2xl overflow-hidden">
+    <div className="bg-surface border border-line rounded-md overflow-hidden">
       <button onClick={onToggle} className="w-full flex items-center justify-between gap-3 p-4 text-left">
         <span className="font-bold text-ink text-sm">{item.q}</span>
         <ChevronDown size={18} className={`text-ink-faint flex-shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
@@ -75,13 +75,13 @@ export function FaqSheet({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-end lg:items-center lg:justify-center" onClick={onClose}>
       <div
-        className="bg-cream w-full lg:max-w-xl max-h-[90vh] lg:max-h-[80vh] rounded-t-3xl lg:rounded-3xl overflow-hidden flex flex-col animate-sheet-up"
+        className="bg-cream w-full lg:max-w-xl max-h-[90vh] lg:max-h-[80vh] rounded-t-lg lg:rounded-lg overflow-hidden flex flex-col animate-sheet-up"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
         <div className="bg-surface px-5 pt-5 pb-4 border-b border-line flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 bg-brand-500 rounded-2xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-brand-500 rounded-md flex items-center justify-center">
               <HelpCircle size={20} className="text-white" />
             </div>
             <h2 className="text-xl font-bold text-ink font-display">Vanliga frågor</h2>
@@ -98,7 +98,7 @@ export function FaqSheet({ onClose }: { onClose: () => void }) {
           ))}
 
           {/* Trust footer */}
-          <div className="bg-trust-50 border border-trust-100 rounded-2xl p-4 flex items-start gap-2.5 mt-4">
+          <div className="bg-trust-50 border border-trust-100 rounded-md p-4 flex items-start gap-2.5 mt-4">
             <ShieldCheck size={18} className="text-trust-600 flex-shrink-0 mt-0.5" />
             <p className="text-trust-700 text-xs leading-relaxed">
               Uppgifterna bygger på gällande regler från Skolverket och varje anordnares egen webbplats.

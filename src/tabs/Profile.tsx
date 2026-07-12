@@ -85,7 +85,7 @@ export function Profile() {
               <input
                 value={nameVal}
                 onChange={e => setNameVal(e.target.value)}
-                className="text-white bg-white/20 rounded-xl px-3 py-1 text-lg font-bold text-center outline-none border border-white/30"
+                className="text-white bg-white/20 rounded px-3 py-1 text-lg font-bold text-center outline-none border border-white/30"
                 autoFocus
               />
               <button onClick={() => { updateUser({ name: nameVal }); setEditingName(false); }}><Check size={18} className="text-white" /></button>
@@ -150,9 +150,9 @@ export function Profile() {
         {/* Big FAQ button */}
         <button
           onClick={() => setShowingFaq(true)}
-          className="w-[calc(100%-2rem)] lg:w-full mx-4 lg:mx-0 mt-4 flex items-center gap-3 bg-surface border border-line rounded-2xl p-4 lg:p-5 active:scale-98 transition-transform hover:border-brand-200"
+          className="w-[calc(100%-2rem)] lg:w-full mx-4 lg:mx-0 mt-4 flex items-center gap-3 bg-surface border border-line rounded-md p-4 lg:p-5 active:scale-98 transition-transform hover:border-brand-200"
         >
-          <div className="w-14 h-14 bg-brand-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm shadow-brand-200">
+          <div className="w-14 h-14 bg-brand-500 rounded-md flex items-center justify-center flex-shrink-0 shadow-sm shadow-brand-200">
             <HelpCircle size={28} className="text-white" strokeWidth={2.2} />
           </div>
           <div className="flex-1 text-left">
@@ -163,7 +163,7 @@ export function Profile() {
         </button>
 
         {/* Bio */}
-        <div className="bg-surface mx-4 lg:mx-0 mt-3 rounded-2xl p-4 border border-line">
+        <div className="bg-surface mx-4 lg:mx-0 mt-3 rounded-md p-4 border border-line">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-bold text-ink flex items-center gap-2"><Star size={16} className="text-amber-accent" />Om mig</h3>
             <button onClick={() => setEditingBio(v => !v)}>
@@ -175,19 +175,19 @@ export function Profile() {
               <textarea
                 value={bioVal}
                 onChange={e => setBioVal(e.target.value)}
-                className="w-full bg-sand rounded-xl px-3 py-2 text-sm text-ink outline-none resize-none min-h-[80px]"
+                className="w-full bg-sand rounded px-3 py-2 text-sm text-ink outline-none resize-none min-h-[80px]"
                 autoFocus
               />
               <div className="flex gap-2 mt-2">
                 <button
                   onClick={() => { updateUser({ bio: bioVal }); setEditingBio(false); }}
-                  className="flex-1 bg-brand-500 text-white text-sm font-semibold py-2 rounded-xl"
+                  className="flex-1 bg-brand-500 text-white text-sm font-semibold py-2 rounded"
                 >
                   Spara
                 </button>
                 <button
                   onClick={() => setEditingBio(false)}
-                  className="flex-1 bg-sand text-ink-soft text-sm font-semibold py-2 rounded-xl"
+                  className="flex-1 bg-sand text-ink-soft text-sm font-semibold py-2 rounded"
                 >
                   Avbryt
                 </button>
@@ -199,10 +199,10 @@ export function Profile() {
         </div>
 
         {/* Saved exams summary */}
-        <div className="bg-surface mx-4 lg:mx-0 mt-3 rounded-2xl p-4 border border-line">
+        <div className="bg-surface mx-4 lg:mx-0 mt-3 rounded-md p-4 border border-line">
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-bold text-ink text-lg flex items-center gap-2.5">
-              <span className="w-11 h-11 bg-brand-100 rounded-xl flex items-center justify-center flex-shrink-0">
+              <span className="w-11 h-11 bg-brand-100 rounded flex items-center justify-center flex-shrink-0">
                 <BookMarked size={22} className="text-brand-600" />
               </span>
               Sparade prövningar
@@ -220,7 +220,7 @@ export function Profile() {
                 if (!exam) return null;
                 return (
                   <button key={se.examId} onClick={() => setShowingExamDetail(exam.id)} className="flex items-center gap-3 w-full text-left">
-                    <img src={exam.schoolImage} alt="" className="w-10 h-10 rounded-xl object-cover flex-shrink-0" />
+                    <img src={exam.schoolImage} alt="" className="w-10 h-10 rounded object-cover flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-ink truncate">{exam.course}</p>
                       <p className="text-xs text-ink-soft">
@@ -238,10 +238,10 @@ export function Profile() {
         </div>
 
         {/* Completed exams */}
-        <div className="bg-surface mx-4 lg:mx-0 mt-3 rounded-2xl p-4 border border-line">
+        <div className="bg-surface mx-4 lg:mx-0 mt-3 rounded-md p-4 border border-line">
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-bold text-ink flex items-center gap-2">
-              <span className="w-8 h-8 bg-trust-50 rounded-xl flex items-center justify-center">
+              <span className="w-8 h-8 bg-trust-50 rounded flex items-center justify-center">
                 <GraduationCap size={17} className="text-trust-600" />
               </span>
               Genomförda prövningar
@@ -260,7 +260,7 @@ export function Profile() {
               <div className="space-y-2">
                 {currentUser.completedExams.slice(-4).reverse().map((ce, i) => (
                   <div key={i} className="flex items-center gap-3 py-2 border-b border-line last:border-0">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 ${
+                    <div className={`w-10 h-10 rounded flex items-center justify-center font-bold text-lg flex-shrink-0 ${
                       ce.grade === 'A' ? 'bg-trust-50 text-trust-700' :
                       ce.grade === 'B' || ce.grade === 'C' ? 'bg-brand-100 text-brand-700' :
                       ce.grade === 'D' || ce.grade === 'E' ? 'bg-amber-accent-50 text-amber-accent' :
@@ -284,7 +284,7 @@ export function Profile() {
 
         {/* Following */}
         {currentUser.following.length > 0 && (
-          <div className="bg-surface mx-4 lg:mx-0 mt-3 rounded-2xl p-4 border border-line">
+          <div className="bg-surface mx-4 lg:mx-0 mt-3 rounded-md p-4 border border-line">
             <h3 className="font-bold text-ink mb-1 flex items-center gap-2">
               <Users size={16} className="text-brand-600" />
               Följer {currentUser.following.length} st
@@ -297,7 +297,7 @@ export function Profile() {
         <div className="mx-4 lg:mx-0 mt-3 mb-4">
           <button
             onClick={resetApp}
-            className="w-full flex items-center justify-center gap-2 text-red-500 text-sm font-semibold py-3 rounded-2xl border border-red-100 bg-red-50 hover:bg-red-100 transition-colors"
+            className="w-full flex items-center justify-center gap-2 text-red-500 text-sm font-semibold py-3 rounded-md border border-red-100 bg-red-50 hover:bg-red-100 transition-colors"
           >
             <LogOut size={16} />
             Återställ appen
@@ -309,7 +309,7 @@ export function Profile() {
       {/* Avatar picker modal */}
       {showAvatarPicker && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-end lg:items-center lg:justify-center" onClick={() => setShowAvatarPicker(false)}>
-          <div className="bg-cream w-full lg:max-w-md rounded-t-3xl lg:rounded-3xl p-6 animate-sheet-up" onClick={e => e.stopPropagation()}>
+          <div className="bg-cream w-full lg:max-w-md rounded-t-lg lg:rounded-lg p-6 animate-sheet-up" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold text-ink font-display">Välj profilbild</h2>
               <button onClick={() => setShowAvatarPicker(false)} className="w-8 h-8 bg-sand rounded-full flex items-center justify-center">
@@ -321,7 +321,7 @@ export function Profile() {
                 <button
                   key={url}
                   onClick={() => { updateUser({ avatar: url }); setShowAvatarPicker(false); }}
-                  className={`relative rounded-2xl overflow-hidden aspect-square ${currentUser.avatar === url ? 'ring-3 ring-brand-500' : ''}`}
+                  className={`relative rounded-md overflow-hidden aspect-square ${currentUser.avatar === url ? 'ring-3 ring-brand-500' : ''}`}
                 >
                   <img src={url} alt="" className="w-full h-full object-cover" />
                   {currentUser.avatar === url && (
@@ -339,7 +339,7 @@ export function Profile() {
       {/* Add exam modal */}
       {showAddExam && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-end lg:items-center lg:justify-center" onClick={() => setShowAddExam(false)}>
-          <div className="bg-cream w-full lg:max-w-md rounded-t-3xl lg:rounded-3xl p-6 animate-sheet-up" onClick={e => e.stopPropagation()}>
+          <div className="bg-cream w-full lg:max-w-md rounded-t-lg lg:rounded-lg p-6 animate-sheet-up" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold text-ink font-display">Lägg till prövning</h2>
               <button onClick={() => setShowAddExam(false)} className="w-8 h-8 bg-sand rounded-full flex items-center justify-center">
@@ -351,19 +351,19 @@ export function Profile() {
                 value={newExamSubject}
                 onChange={e => setNewExamSubject(e.target.value)}
                 placeholder="Ämne (t.ex. Matematik)"
-                className="w-full bg-surface border border-line rounded-xl px-4 py-3 text-sm outline-none"
+                className="w-full bg-surface border border-line rounded px-4 py-3 text-sm outline-none"
               />
               <input
                 value={newExamCourse}
                 onChange={e => setNewExamCourse(e.target.value)}
                 placeholder="Kurs (t.ex. Matematik 3b)"
-                className="w-full bg-surface border border-line rounded-xl px-4 py-3 text-sm outline-none"
+                className="w-full bg-surface border border-line rounded px-4 py-3 text-sm outline-none"
               />
               <input
                 type="date"
                 value={newExamDate}
                 onChange={e => setNewExamDate(e.target.value)}
-                className="w-full bg-surface border border-line rounded-xl px-4 py-3 text-sm outline-none"
+                className="w-full bg-surface border border-line rounded px-4 py-3 text-sm outline-none"
               />
               <div>
                 <p className="text-xs text-ink-soft font-semibold mb-2">Betyg</p>
@@ -372,7 +372,7 @@ export function Profile() {
                     <button
                       key={g}
                       onClick={() => setNewExamGrade(g)}
-                      className={`flex-1 py-2 rounded-xl text-sm font-bold transition-colors ${
+                      className={`flex-1 py-2 rounded text-sm font-bold transition-colors ${
                         newExamGrade === g ? 'bg-brand-500 text-white' : 'bg-surface border border-line text-ink-soft'
                       }`}
                     >
@@ -384,7 +384,7 @@ export function Profile() {
               <button
                 onClick={addCompletedExam}
                 disabled={!newExamSubject || !newExamCourse || !newExamDate}
-                className="w-full bg-brand-500 disabled:bg-sand disabled:text-ink-faint text-white font-bold py-4 rounded-2xl"
+                className="w-full bg-brand-500 disabled:bg-sand disabled:text-ink-faint text-white font-bold py-4 rounded-md"
               >
                 Spara
               </button>

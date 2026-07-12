@@ -33,13 +33,13 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
   };
 
   const chip = (active: boolean) =>
-    `py-2.5 rounded-xl text-sm font-medium transition-colors ${
+    `py-2.5 rounded text-sm font-medium transition-colors ${
       active ? 'bg-brand-500 text-white' : 'bg-sand text-ink-soft'
     }`;
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-end lg:items-center lg:justify-center" onClick={onClose}>
-      <div className="bg-cream w-full lg:max-w-lg rounded-t-3xl lg:rounded-3xl p-6 max-h-[82vh] overflow-y-auto animate-sheet-up" onClick={e => e.stopPropagation()}>
+      <div className="bg-cream w-full lg:max-w-lg rounded-t-lg lg:rounded-lg p-6 max-h-[82vh] overflow-y-auto animate-sheet-up" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
             <SlidersHorizontal size={20} className="text-brand-600" />
@@ -62,7 +62,7 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
                 key={s}
                 disabled={s === 'distance' && !userLocation}
                 onClick={() => setLocalSortBy(s)}
-                className={`flex-1 py-2 rounded-xl text-sm font-semibold transition-colors ${
+                className={`flex-1 py-2 rounded text-sm font-semibold transition-colors ${
                   localSortBy === s ? 'bg-brand-500 text-white' : 'bg-sand text-ink-soft'
                 } ${s === 'distance' && !userLocation ? 'opacity-40' : ''}`}
               >
@@ -74,7 +74,7 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
             <button
               onClick={requestLocation}
               disabled={locationStatus === 'pending'}
-              className="mt-2 w-full flex items-center justify-center gap-2 bg-brand-50 text-brand-700 text-xs font-bold py-2.5 rounded-xl"
+              className="mt-2 w-full flex items-center justify-center gap-2 bg-brand-50 text-brand-700 text-xs font-bold py-2.5 rounded"
             >
               {locationStatus === 'pending'
                 ? <Loader2 size={14} className="animate-spin" />
@@ -114,7 +114,7 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
         </div>
 
         {/* Price info */}
-        <div className="mb-8 flex items-start gap-2.5 bg-trust-50 border border-trust-100 rounded-2xl p-3.5">
+        <div className="mb-8 flex items-start gap-2.5 bg-trust-50 border border-trust-100 rounded-md p-3.5">
           <ShieldCheck size={18} className="text-trust-600 flex-shrink-0 mt-0.5" />
           <p className="text-xs text-trust-700 leading-relaxed">
             Avgiften för betygsprövning är lagstadgad och kostar <span className="font-semibold">500 kr</span> per
@@ -124,7 +124,7 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
 
         <button
           onClick={apply}
-          className="w-full bg-brand-500 text-white font-bold py-4 rounded-2xl text-base active:scale-98 transition-transform shadow-md shadow-brand-200"
+          className="w-full bg-brand-500 text-white font-bold py-4 rounded-md text-base active:scale-98 transition-transform shadow-md shadow-brand-200"
         >
           Visa prövningar
         </button>

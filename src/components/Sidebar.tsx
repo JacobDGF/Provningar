@@ -9,7 +9,7 @@ export function Sidebar() {
     <aside className="hidden lg:flex flex-col w-64 flex-shrink-0 h-screen bg-surface border-r border-line px-4 py-6">
       {/* Brand */}
       <div className="flex items-center gap-2.5 px-2 mb-8">
-        <div className="w-10 h-10 bg-brand-500 rounded-2xl flex items-center justify-center flex-shrink-0">
+        <div className="w-10 h-10 bg-brand-500 rounded-md flex items-center justify-center flex-shrink-0">
           <svg viewBox="0 0 40 40" className="w-6 h-6" fill="none">
             <path d="M8 32L20 8L32 32" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
             <path d="M12 24H28" stroke="#FBE7C6" strokeWidth="3.5" strokeLinecap="round" />
@@ -27,7 +27,7 @@ export function Sidebar() {
             <button
               key={id}
               onClick={() => setActiveTab(id)}
-              className={`w-full flex items-center gap-3 px-3 py-3 rounded-2xl text-left transition-colors ${
+              className={`w-full flex items-center gap-3 px-3 py-3 rounded-md text-left transition-colors ${
                 isActive ? 'bg-brand-500 text-white shadow-sm shadow-brand-200' : 'text-ink-soft hover:bg-sand'
               }`}
             >
@@ -48,9 +48,9 @@ export function Sidebar() {
       {/* FAQ — big, prominent entry point */}
       <button
         onClick={() => setShowingFaq(true)}
-        className="w-full flex items-center gap-3 px-3 py-3.5 rounded-2xl bg-sand hover:bg-line transition-colors text-left"
+        className="w-full flex items-center gap-3 px-3 py-3.5 rounded-md bg-sand hover:bg-line transition-colors text-left"
       >
-        <div className="w-9 h-9 bg-brand-100 rounded-xl flex items-center justify-center flex-shrink-0">
+        <div className="w-9 h-9 bg-brand-100 rounded flex items-center justify-center flex-shrink-0">
           <HelpCircle size={20} className="text-brand-700" />
         </div>
         <span className="font-bold text-ink text-sm">Vanliga frågor</span>

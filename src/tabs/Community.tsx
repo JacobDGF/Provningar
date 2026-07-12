@@ -44,7 +44,7 @@ function PostCard({ post }: { post: Post }) {
   };
 
   return (
-    <div className="bg-surface rounded-2xl overflow-hidden border border-line">
+    <div className="bg-surface rounded-md overflow-hidden border border-line">
       {/* Author */}
       <div className="p-4 pb-3">
         <div className="flex items-start gap-3">
@@ -109,7 +109,7 @@ function PostCard({ post }: { post: Post }) {
       {showReplyInput && (
         <div className="px-4 pb-3 flex gap-2">
           <img src={currentUser.avatar} alt="Du" className="w-7 h-7 rounded-full object-cover flex-shrink-0" />
-          <div className="flex-1 flex gap-2 bg-sand rounded-xl px-3 py-2">
+          <div className="flex-1 flex gap-2 bg-sand rounded px-3 py-2">
             <input
               type="text"
               value={replyText}
@@ -146,7 +146,7 @@ function PostCard({ post }: { post: Post }) {
               <div key={reply.id} className="px-4 py-3 flex gap-2.5">
                 <img src={reply.userAvatar} alt={reply.userName} className="w-7 h-7 rounded-full object-cover flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <div className="bg-surface rounded-xl px-3 py-2 border border-line">
+                  <div className="bg-surface rounded px-3 py-2 border border-line">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-xs font-bold text-ink">{reply.userName}</span>
                       <span className="text-ink-faint text-xs">{timeAgo(reply.createdAt)}</span>
@@ -195,7 +195,7 @@ export function Community() {
         <div className="max-w-2xl mx-auto w-full">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 lg:w-14 lg:h-14 bg-brand-500 rounded-2xl flex items-center justify-center shadow-sm shadow-brand-200 flex-shrink-0">
+              <div className="w-11 h-11 lg:w-14 lg:h-14 bg-brand-500 rounded-md flex items-center justify-center shadow-sm shadow-brand-200 flex-shrink-0">
                 <Users size={22} className="text-white lg:w-7 lg:h-7" strokeWidth={2.2} />
               </div>
               <div>
@@ -207,13 +207,13 @@ export function Community() {
               <button
                 onClick={() => setShowingFaq(true)}
                 aria-label="Vanliga frågor"
-                className="w-10 h-10 bg-sand rounded-2xl flex items-center justify-center active:scale-90 hover:bg-line transition-colors lg:hidden"
+                className="w-10 h-10 bg-sand rounded-md flex items-center justify-center active:scale-90 hover:bg-line transition-colors lg:hidden"
               >
                 <HelpCircle size={20} className="text-ink-soft" />
               </button>
               <button
                 onClick={() => setShowCompose(true)}
-                className="w-10 h-10 lg:w-12 lg:h-12 bg-brand-500 rounded-2xl flex items-center justify-center shadow-md shadow-brand-200 active:scale-90 hover:bg-brand-600 transition-colors"
+                className="w-10 h-10 lg:w-12 lg:h-12 bg-brand-500 rounded-md flex items-center justify-center shadow-md shadow-brand-200 active:scale-90 hover:bg-brand-600 transition-colors"
               >
                 <Plus size={20} className="text-white" />
               </button>
@@ -251,7 +251,7 @@ export function Community() {
       {/* Compose modal */}
       {showCompose && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-end lg:items-center lg:justify-center" onClick={() => setShowCompose(false)}>
-          <div className="bg-cream w-full lg:max-w-lg rounded-t-3xl lg:rounded-3xl p-6 animate-sheet-up lg:max-h-[85vh] lg:overflow-y-auto" onClick={e => e.stopPropagation()}>
+          <div className="bg-cream w-full lg:max-w-lg rounded-t-lg lg:rounded-lg p-6 animate-sheet-up lg:max-h-[85vh] lg:overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold text-ink font-display">Nytt inlägg</h2>
               <button onClick={() => setShowCompose(false)} className="w-8 h-8 bg-sand rounded-full flex items-center justify-center">
@@ -265,7 +265,7 @@ export function Community() {
                 <button
                   key={k.value}
                   onClick={() => setNewKind(k.value)}
-                  className={`flex-1 py-2 rounded-xl text-xs font-bold transition-colors ${
+                  className={`flex-1 py-2 rounded text-xs font-bold transition-colors ${
                     newKind === k.value ? 'bg-brand-500 text-white' : 'bg-surface text-ink-soft border border-line'
                   }`}
                 >
@@ -280,7 +280,7 @@ export function Community() {
                 value={newPost}
                 onChange={e => setNewPost(e.target.value)}
                 placeholder="Dela tips, ställ frågor eller berätta om dina erfarenheter..."
-                className="flex-1 bg-surface border border-line rounded-2xl px-4 py-3 text-sm text-ink placeholder-ink-faint outline-none resize-none min-h-[100px]"
+                className="flex-1 bg-surface border border-line rounded-md px-4 py-3 text-sm text-ink placeholder-ink-faint outline-none resize-none min-h-[100px]"
                 autoFocus
               />
             </div>
@@ -306,7 +306,7 @@ export function Community() {
             <button
               onClick={handlePost}
               disabled={!newPost.trim()}
-              className="w-full bg-brand-500 disabled:bg-sand disabled:text-ink-faint text-white font-bold py-4 rounded-2xl text-base transition-colors active:scale-98"
+              className="w-full bg-brand-500 disabled:bg-sand disabled:text-ink-faint text-white font-bold py-4 rounded-md text-base transition-colors active:scale-98"
             >
               Publicera
             </button>

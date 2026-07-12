@@ -37,7 +37,7 @@ export function ExamDetail() {
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-end lg:items-center lg:justify-center" onClick={() => setShowingExamDetail(null)}>
       <div
-        className="bg-cream w-full lg:max-w-2xl max-h-[92vh] lg:max-h-[88vh] rounded-t-3xl lg:rounded-3xl overflow-hidden flex flex-col animate-sheet-up"
+        className="bg-cream w-full lg:max-w-2xl max-h-[92vh] lg:max-h-[88vh] rounded-t-lg lg:rounded-lg overflow-hidden flex flex-col animate-sheet-up"
         onClick={e => e.stopPropagation()}
       >
         {/* Image header */}
@@ -73,7 +73,7 @@ export function ExamDetail() {
           <div className="p-4 space-y-4">
 
             {/* Trust banner */}
-            <div className="bg-trust-50 border border-trust-100 rounded-xl p-3 flex items-center gap-2">
+            <div className="bg-trust-50 border border-trust-100 rounded p-3 flex items-center gap-2">
               <ShieldCheck size={18} className="text-trust-600 flex-shrink-0" />
               <p className="text-trust-700 text-xs">
                 Uppgifterna kontrollerade mot {exam.provider}s webbplats {formatDateShort(exam.verifiedAt)}.
@@ -82,7 +82,7 @@ export function ExamDetail() {
 
             {/* Open for registration now */}
             {openNow && (
-              <div className="bg-trust-50 border border-trust-100 rounded-xl p-3 flex items-center gap-2">
+              <div className="bg-trust-50 border border-trust-100 rounded p-3 flex items-center gap-2">
                 <span className="relative flex h-2 w-2 flex-shrink-0">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-trust-500 opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-trust-600" />
@@ -93,7 +93,7 @@ export function ExamDetail() {
 
             {/* Urgent warning */}
             {urgent && (
-              <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center gap-2">
+              <div className="bg-red-50 border border-red-200 rounded p-3 flex items-center gap-2">
                 <Clock size={18} className="text-red-500 flex-shrink-0" />
                 <p className="text-red-700 text-sm font-semibold">
                   {deadlineDays === 0 ? 'Sista anmälningsdagen idag!' : `Bara ${deadlineDays} dagar kvar att anmäla sig!`}
@@ -102,12 +102,12 @@ export function ExamDetail() {
             )}
 
             {/* Description */}
-            <div className="bg-surface rounded-2xl p-4 border border-line">
+            <div className="bg-surface rounded-md p-4 border border-line">
               <p className="text-ink-soft text-sm leading-relaxed">{exam.description}</p>
             </div>
 
             {/* Dates */}
-            <div className="bg-surface rounded-2xl p-4 border border-line">
+            <div className="bg-surface rounded-md p-4 border border-line">
               <h3 className="font-bold text-ink mb-3 flex items-center gap-2">
                 <Calendar size={16} className="text-brand-600" />
                 Viktiga datum
@@ -125,7 +125,7 @@ export function ExamDetail() {
                   )}
                 </div>
               ) : (
-                <div className="bg-brand-50 rounded-xl p-3 flex items-start gap-2">
+                <div className="bg-brand-50 rounded p-3 flex items-start gap-2">
                   <Info size={16} className="text-brand-600 flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="text-ink text-sm font-semibold">{nextPeriod.label}</p>
@@ -146,7 +146,7 @@ export function ExamDetail() {
             </div>
 
             {/* Practical info */}
-            <div className="bg-surface rounded-2xl p-4 border border-line">
+            <div className="bg-surface rounded-md p-4 border border-line">
               <h3 className="font-bold text-ink mb-3 flex items-center gap-2">
                 <CreditCard size={16} className="text-brand-600" />
                 Praktisk info
@@ -165,9 +165,9 @@ export function ExamDetail() {
             </div>
 
             {/* Map — "Hitta hit" */}
-            <div className="bg-surface rounded-2xl overflow-hidden border border-line">
+            <div className="bg-surface rounded-md overflow-hidden border border-line">
               <h3 className="font-bold text-ink text-base px-4 pt-4 pb-3 flex items-center gap-2.5">
-                <span className="w-8 h-8 bg-brand-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <span className="w-8 h-8 bg-brand-100 rounded flex items-center justify-center flex-shrink-0">
                   <Map size={18} className="text-brand-600" />
                 </span>
                 Hitta hit
@@ -186,7 +186,7 @@ export function ExamDetail() {
                   href={gmapsDir}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-1.5 bg-brand-500 text-white text-sm font-bold py-3 rounded-xl active:scale-98 transition-transform hover:bg-brand-600"
+                  className="flex items-center justify-center gap-1.5 bg-brand-500 text-white text-sm font-bold py-3 rounded active:scale-98 transition-transform hover:bg-brand-600"
                 >
                   <Navigation size={15} /> Vägbeskrivning
                 </a>
@@ -194,7 +194,7 @@ export function ExamDetail() {
                   href={gmapsView}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-1.5 bg-sand text-ink text-sm font-bold py-3 rounded-xl active:scale-98 transition-transform hover:bg-line"
+                  className="flex items-center justify-center gap-1.5 bg-sand text-ink text-sm font-bold py-3 rounded active:scale-98 transition-transform hover:bg-line"
                 >
                   <Map size={15} /> Google Maps
                 </a>
@@ -202,7 +202,7 @@ export function ExamDetail() {
             </div>
 
             {/* Exam components */}
-            <div className="bg-surface rounded-2xl p-4 border border-line">
+            <div className="bg-surface rounded-md p-4 border border-line">
               <h3 className="font-bold text-ink mb-3 flex items-center gap-2">
                 <BookOpen size={16} className="text-brand-600" />
                 Provmoment
@@ -224,7 +224,7 @@ export function ExamDetail() {
             </div>
 
             {/* Study tips */}
-            <div className="bg-surface rounded-2xl p-4 border border-line">
+            <div className="bg-surface rounded-md p-4 border border-line">
               <h3 className="font-bold text-ink mb-3 flex items-center gap-2">
                 <Lightbulb size={16} className="text-amber-accent" />
                 Studietips
@@ -256,7 +256,7 @@ export function ExamDetail() {
             href={exam.registrationUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-bold py-4 rounded-2xl text-base shadow-lg shadow-brand-200 active:scale-98 transition-transform"
+            className="w-full flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-bold py-4 rounded-md text-base shadow-lg shadow-brand-200 active:scale-98 transition-transform"
           >
             <ExternalLink size={18} />
             Gå till anmälan hos {exam.provider}

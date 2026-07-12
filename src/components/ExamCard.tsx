@@ -55,7 +55,7 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
   return (
     <div
       onClick={handleOpen}
-      className="bg-surface rounded-2xl overflow-hidden shadow-sm border border-line active:scale-98 transition-transform cursor-pointer"
+      className="bg-surface rounded-md overflow-hidden shadow-sm border border-line active:scale-98 transition-transform cursor-pointer"
     >
       {/* Image */}
       <div className="relative">
@@ -168,7 +168,7 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
           target="_blank"
           rel="noopener noreferrer"
           onClick={e => e.stopPropagation()}
-          className="mt-4 w-full flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold py-3 rounded-xl transition-colors active:scale-98 shadow-sm shadow-brand-200"
+          className="mt-4 w-full flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold py-3 rounded transition-colors active:scale-98 shadow-sm shadow-brand-200"
         >
           <ExternalLink size={15} />
           Anmäl dig hos {exam.provider}

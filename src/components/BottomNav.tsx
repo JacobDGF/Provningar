@@ -16,7 +16,7 @@ export function BottomNav() {
               onClick={() => setActiveTab(id)}
               className="flex-1 flex flex-col items-center py-1 px-0.5 active:scale-95 transition-transform"
             >
-              <div className={`relative px-4 py-1.5 rounded-2xl transition-all duration-200 ${isActive ? 'bg-brand-500' : ''}`}>
+              <div className={`relative px-4 py-1.5 rounded-md transition-all duration-200 ${isActive ? 'bg-brand-500' : ''}`}>
                 <Icon
                   size={24}
                   strokeWidth={isActive ? 2.4 : 1.9}

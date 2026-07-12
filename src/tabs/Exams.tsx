@@ -29,7 +29,7 @@ function StatusPicker({ examId }: { examId: string }) {
         <ChevronDown size={12} />
       </button>
       {open && (
-        <div className="absolute left-0 bottom-full mb-1 bg-surface border border-line rounded-xl shadow-lg z-10 overflow-hidden min-w-max">
+        <div className="absolute left-0 bottom-full mb-1 bg-surface border border-line rounded shadow-lg z-10 overflow-hidden min-w-max">
           {STATUS_OPTIONS.map(opt => (
             <button
               key={opt.value}
@@ -74,7 +74,7 @@ export function Exams() {
       <div className="bg-surface px-4 lg:px-8 pt-14 lg:pt-8 pb-4 sticky top-0 z-30 border-b border-line">
         <div className="max-w-screen-2xl mx-auto w-full">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-11 h-11 lg:w-14 lg:h-14 bg-brand-500 rounded-2xl flex items-center justify-center shadow-sm shadow-brand-200 flex-shrink-0">
+            <div className="w-11 h-11 lg:w-14 lg:h-14 bg-brand-500 rounded-md flex items-center justify-center shadow-sm shadow-brand-200 flex-shrink-0">
               <BookMarked size={22} className="text-white lg:w-7 lg:h-7" strokeWidth={2.2} />
             </div>
             <div>
@@ -84,10 +84,10 @@ export function Exams() {
           </div>
 
           {/* View toggle */}
-          <div className="flex bg-sand rounded-2xl p-1 mb-3 lg:max-w-sm">
+          <div className="flex bg-sand rounded-md p-1 mb-3 lg:max-w-sm">
             <button
               onClick={() => setView('list')}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm font-semibold transition-all ${
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded text-sm font-semibold transition-all ${
                 view === 'list' ? 'bg-surface text-ink shadow-sm' : 'text-ink-soft'
               }`}
             >
@@ -95,7 +95,7 @@ export function Exams() {
             </button>
             <button
               onClick={() => setView('calendar')}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm font-semibold transition-all ${
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded text-sm font-semibold transition-all ${
                 view === 'calendar' ? 'bg-surface text-ink shadow-sm' : 'text-ink-soft'
               }`}
             >
@@ -138,7 +138,7 @@ export function Exams() {
           <CalendarView />
         ) : savedWithData.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 px-8 text-center">
-            <div className="w-20 h-20 bg-brand-50 rounded-3xl flex items-center justify-center mb-5">
+            <div className="w-20 h-20 bg-brand-50 rounded-lg flex items-center justify-center mb-5">
               <BookMarked size={34} className="text-brand-400" />
             </div>
             <h3 className="text-ink font-bold text-lg mb-2">Inga sparade prövningar</h3>
@@ -150,7 +150,7 @@ export function Exams() {
             {activeStatus === 'all' && (
               <button
                 onClick={() => setActiveTab('discover')}
-                className="flex items-center gap-2 bg-brand-500 text-white text-base font-bold px-6 py-3.5 rounded-2xl shadow-md shadow-brand-200 active:scale-95 transition-transform"
+                className="flex items-center gap-2 bg-brand-500 text-white text-base font-bold px-6 py-3.5 rounded-md shadow-md shadow-brand-200 active:scale-95 transition-transform"
               >
                 <Compass size={18} />
                 Upptäck prövningar
@@ -162,7 +162,7 @@ export function Exams() {
             {savedWithData.map(({ saved, exam }) => (
               <div key={saved.examId}>
                 <ExamCard exam={exam} />
-                <div className="mt-2 flex items-center justify-between bg-surface border border-line rounded-xl px-3 py-2">
+                <div className="mt-2 flex items-center justify-between bg-surface border border-line rounded px-3 py-2">
                   <StatusPicker examId={saved.examId} />
                   <button
                     onClick={() => unsaveExam(exam.id)}

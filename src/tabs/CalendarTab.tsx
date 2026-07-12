@@ -87,7 +87,7 @@ export function CalendarView() {
       </div>
 
       {/* Calendar grid */}
-      <div className="bg-surface rounded-2xl overflow-hidden border border-line">
+      <div className="bg-surface rounded-md overflow-hidden border border-line">
         <div className="grid grid-cols-7 border-b border-line">
           {WEEKDAYS.map(d => (
             <div key={d} className="text-center text-xs font-semibold text-ink-faint py-2">{d}</div>
@@ -141,7 +141,7 @@ export function CalendarView() {
               <button
                 key={`${exam.id}-${isDeadline}`}
                 onClick={() => setShowingExamDetail(exam.id)}
-                className="w-full bg-surface border border-line rounded-2xl p-4 text-left active:scale-98 transition-transform"
+                className="w-full bg-surface border border-line rounded-md p-4 text-left active:scale-98 transition-transform"
               >
                 <div className={`text-xs font-semibold px-2 py-0.5 rounded-full inline-flex items-center gap-1 mb-2 ${
                   isDeadline ? 'bg-red-100 text-red-600' : 'bg-brand-100 text-brand-700'
@@ -166,7 +166,7 @@ export function CalendarView() {
           <div>
             <h3 className="font-bold text-ink mb-3">Kommande händelser</h3>
             {savedExams.length === 0 ? (
-              <div className="bg-sand rounded-2xl p-6 text-center">
+              <div className="bg-sand rounded-md p-6 text-center">
                 <Calendar size={28} className="text-ink-faint mx-auto mb-2" />
                 <p className="text-ink-soft text-sm">Spara prövningar för att se dem i kalendern.</p>
               </div>
@@ -189,9 +189,9 @@ export function CalendarView() {
                       <button
                         key={`${exam.id}-${type}`}
                         onClick={() => setShowingExamDetail(exam.id)}
-                        className="w-full bg-surface border border-line rounded-xl p-3 text-left flex items-center gap-3 active:scale-98 transition-transform"
+                        className="w-full bg-surface border border-line rounded p-3 text-left flex items-center gap-3 active:scale-98 transition-transform"
                       >
-                        <div className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center flex-shrink-0 ${
+                        <div className={`w-10 h-10 rounded flex flex-col items-center justify-center flex-shrink-0 ${
                           type === 'deadline' ? 'bg-red-50' : 'bg-brand-50'
                         }`}>
                           <span className={`text-xs font-bold ${type === 'deadline' ? 'text-red-600' : 'text-brand-600'}`}>
@@ -226,9 +226,9 @@ export function CalendarView() {
                     <button
                       key={exam.id}
                       onClick={() => setShowingExamDetail(exam.id)}
-                      className="w-full bg-surface border border-line rounded-xl p-3 text-left flex items-center gap-3 active:scale-98 transition-transform"
+                      className="w-full bg-surface border border-line rounded p-3 text-left flex items-center gap-3 active:scale-98 transition-transform"
                     >
-                      <div className="w-10 h-10 rounded-xl bg-sand flex items-center justify-center flex-shrink-0">
+                      <div className="w-10 h-10 rounded bg-sand flex items-center justify-center flex-shrink-0">
                         <Clock size={16} className="text-ink-faint" />
                       </div>
                       <div className="flex-1 min-w-0">
