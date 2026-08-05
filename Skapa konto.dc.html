@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="sv">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skapa konto — Prövningar</title>
+<meta name="description" content="Skapa ett gratis konto för att spara prövningar och få påminnelser inför sista anmälningsdag.">
 <script src="./support.js"></script>
 </head>
 <body>
@@ -43,15 +45,15 @@
       <form onSubmit="{{ submit }}" style="display:flex;flex-direction:column;gap:var(--space-3);">
         <div class="field">
           <label for="namn">Namn</label>
-          <input id="namn" type="text" class="input" placeholder="För- och efternamn"/>
+          <input id="namn" type="text" class="input" placeholder="För- och efternamn" autocomplete="name"/>
         </div>
         <div class="field">
           <label for="epost">E-post</label>
-          <input id="epost" type="email" class="input" placeholder="du@exempel.se" required=""/>
+          <input id="epost" type="email" class="input" placeholder="du@exempel.se" autocomplete="email" required=""/>
         </div>
         <div class="field">
           <label for="losen">Lösenord</label>
-          <input id="losen" type="password" class="input" placeholder="Minst 8 tecken" required=""/>
+          <input id="losen" type="password" class="input" placeholder="Minst 8 tecken" minlength="8" autocomplete="new-password" required=""/>
         </div>
         <div class="field">
           <label for="stad">Din stad</label>
