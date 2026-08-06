@@ -1,16 +1,18 @@
-import { Exam } from '../types';
+/**
+ * Compatibility surface for the original status helpers. The real logic now
+ * lives in ./deadline, which compares calendar days instead of millisecond
+ * instants — the previous `now <= new Date(applicationEnd)` closed a window at
+ * 00:00 UTC on its final day, so a listing you could still apply to today was
+ * shown as closed. Re-exported here so every existing call site picks the fix
+ * up unchanged.
+ */
+import { calendarDaysUntil } from './deadline';
 
-/** Whether an exam's application window is open right now, computed live
-    against today's date. Only ever true for exams with confirmed, real
-    dates — never guessed. */
-export function isOpenForRegistration(exam: Exam): boolean {
-  const { nextPeriod } = exam;
-  if (!nextPeriod.confirmed || !nextPeriod.applicationStart || !nextPeriod.applicationEnd) return false;
-  const now = Date.now();
-  return now >= new Date(nextPeriod.applicationStart).getTime() && now <= new Date(nextPeriod.applicationEnd).getTime();
-}
+export { isOpenForRegistration, getDeadlineInfo, closingSoon } from './deadline';
+export type { DeadlineInfo, Urgency } from './deadline';
 
+/** Whole calendar days until `dateStr`; 0 means today. NaN for unparseable input. */
 export function daysUntil(dateStr: string): number {
-  const diff = new Date(dateStr).getTime() - Date.now();
-  return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  const days = calendarDaysUntil(dateStr);
+  return days === null ? NaN : days;
 }

@@ -6,8 +6,9 @@ import { FilterSheet } from '../components/FilterSheet';
 import { MapView } from '../components/MapView';
 import { HeroMap } from '../components/HeroMap';
 import { haversineDistanceKm } from '../lib/distance';
-import { isOpenForRegistration } from '../lib/examStatus';
+import { isOpenForRegistration } from '../lib/deadline';
 import { useMinuteTick } from '../hooks/useMinuteTick';
+import { DeadlineRail } from '../components/DeadlineRail';
 
 const FEATURED_SUBJECTS = ['Matematik', 'Engelska', 'Svenska', 'Biologi', 'Kemi', 'Fysik'];
 
@@ -222,6 +223,9 @@ export function Discover() {
             </div>
           </section>
 
+          {/* CLOSING SOON — the deadline is the thing users actually miss */}
+          <DeadlineRail exams={exams} />
+
           {/* HOW IT WORKS */}
           <section className="max-w-screen-xl mx-auto w-full px-4 lg:px-8 py-8 border-t border-line">
             <h6 className="text-brand-700 text-xs font-semibold uppercase tracking-wider mb-2">Från karta till anmälan</h6>
@@ -258,7 +262,7 @@ export function Discover() {
           )}
 
           {/* RESULTS */}
-          <section className="max-w-screen-xl mx-auto w-full px-4 lg:px-8 py-8 border-t border-line pb-28 lg:pb-16">
+          <section id="alla-provningar" className="max-w-screen-xl mx-auto w-full px-4 lg:px-8 py-8 border-t border-line pb-28 lg:pb-16">
             {filtered.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 px-8 text-center">
                 <div className="w-16 h-16 bg-sand rounded flex items-center justify-center mb-4">

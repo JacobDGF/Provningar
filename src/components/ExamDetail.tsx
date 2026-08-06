@@ -2,6 +2,7 @@ import { X, MapPin, Calendar, CreditCard, Clock, BookOpen, Lightbulb, ExternalLi
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
 import { isOpenForRegistration, daysUntil } from '../lib/examStatus';
+import { ReminderButton } from './ReminderButton';
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
@@ -262,6 +263,7 @@ export function ExamDetail() {
             Gå till anmälan hos {exam.provider}
             <ChevronRight size={18} />
           </a>
+          <ReminderButton exam={exam} className="w-full" />
           {exam.infoUrl !== exam.registrationUrl && (
             <a
               href={exam.infoUrl}

@@ -2,7 +2,9 @@ import { MapPin, Calendar, Tag, Bookmark, BookmarkCheck, ExternalLink, Clock, Na
 import { Exam } from '../types';
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
-import { isOpenForRegistration, daysUntil } from '../lib/examStatus';
+import { getDeadlineInfo } from '../lib/deadline';
+import { useMinuteTick } from '../hooks/useMinuteTick';
+import { ReminderButton } from './ReminderButton';
 
 interface ExamCardProps {
   exam: Exam;
@@ -35,11 +37,13 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
   const saved = isExamSaved(exam.id);
   const savedExam = savedExams.find(e => e.examId === exam.id);
 
+  const tick = useMinuteTick();
   const { nextPeriod } = exam;
-  const deadlineDate = nextPeriod.confirmed ? nextPeriod.applicationEnd : undefined;
-  const deadlineDays = deadlineDate ? daysUntil(deadlineDate) : null;
-  const urgent = deadlineDays !== null && deadlineDays <= 7 && deadlineDays >= 0;
-  const openNow = isOpenForRegistration(exam);
+  // tick keeps the countdown correct across midnight without a reload
+  const deadline = getDeadlineInfo(exam, tick);
+  const deadlineDays = deadline.daysLeft;
+  const urgent = deadline.urgency === 'critical' || deadline.urgency === 'soon';
+  const openNow = deadline.open;
 
   const distanceKm = userLocation
     ? haversineDistanceKm(userLocation.lat, userLocation.lng, exam.lat, exam.lng)
@@ -79,11 +83,15 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
           }
         </button>
 
-        {/* Urgent badge */}
+        {/* Urgent badge — the spot magenta is reserved for "closes today/tomorrow" */}
         {urgent && (
-          <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+          <div
+            className={`absolute top-3 left-3 text-white text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm ${
+              deadline.urgency === 'critical' ? 'bg-accent2-500' : 'bg-amber-accent'
+            }`}
+          >
             <Clock size={11} />
-            {deadlineDays === 0 ? 'Sista dag!' : `${deadlineDays}d kvar`}
+            {deadlineDays === 0 ? 'Sista dagen!' : `${deadlineDays}d kvar`}
           </div>
         )}
 
@@ -139,7 +147,7 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
           <div>
             <p className="text-ink-faint text-xs">Anmälan</p>
             {nextPeriod.confirmed ? (
-              <p className={`text-sm font-bold ${urgent ? 'text-red-600' : 'text-ink'}`}>
+              <p className={`text-sm font-bold ${urgent ? 'text-accent2-700' : 'text-ink'}`}>
                 {nextPeriod.applicationEnd ? formatDate(nextPeriod.applicationEnd) : nextPeriod.label}
               </p>
             ) : (
@@ -163,16 +171,19 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
           </div>
         </div>
 
-        <a
-          href={exam.registrationUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={e => e.stopPropagation()}
-          className="mt-4 w-full flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold py-3 rounded transition-colors active:scale-98 shadow-sm shadow-brand-200"
-        >
-          <ExternalLink size={15} />
-          Anmäl dig hos {exam.provider}
-        </a>
+        <div className="mt-4 flex items-stretch gap-2">
+          <a
+            href={exam.registrationUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={e => e.stopPropagation()}
+            className="flex-1 min-w-0 flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold py-3 px-2 rounded transition-colors active:scale-98 shadow-sm shadow-brand-200"
+          >
+            <ExternalLink size={15} className="flex-shrink-0" />
+            <span className="truncate">Anmäl dig hos {exam.provider}</span>
+          </a>
+          <ReminderButton exam={exam} variant="icon" className="!h-auto" />
+        </div>
       </div>
     </div>
   );
