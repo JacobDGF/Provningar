@@ -220,6 +220,15 @@ class Component extends DCLogic {
     return this.state.subject ? list.filter((t) => t.subject === this.state.subject).length : list.length;
   }
 
+  // Leaflet's bindPopup() renders its argument as raw HTML with no
+  // sanitization (CVE-2025-69993 / GHSA-h5cx-hfj5-x8v3, no fixed release
+  // exists yet) — escape interpolated values even though they're static today.
+  escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+    }[c]));
+  }
+
   rebuildMarkers() {
     if (!this.map || !window.PROVNINGAR) return;
     const L = window.L;
@@ -236,10 +245,11 @@ class Component extends DCLogic {
         fillColor: "#0088b0",
         fillOpacity: 0.55,
       }).addTo(this.markerLayer);
+      const cityName = this.escapeHtml(c.name);
       marker.bindPopup(
-        '<strong style="font-size:15px;">' + c.name + "</strong><br>" +
-        n + ' prövningstillfällen' + (subj ? " i " + subj : "") + "<br>" +
-        '<a href="Stad.dc.html?stad=' + encodeURIComponent(c.name) + '" style="color:#006786;">Se alla i ' + c.name + " →</a>"
+        '<strong style="font-size:15px;">' + cityName + "</strong><br>" +
+        n + ' prövningstillfällen' + (subj ? " i " + this.escapeHtml(subj) : "") + "<br>" +
+        '<a href="Stad.dc.html?stad=' + encodeURIComponent(c.name) + '" style="color:#006786;">Se alla i ' + cityName + " →</a>"
       );
       this.markers[c.name] = marker;
     });
