@@ -86,8 +86,11 @@
 class Component extends DCLogic {
   componentDidMount() {
     if (!window.PROVNINGAR) {
+      let attempts = 0;
       this.t = setInterval(() => {
+        attempts++;
         if (window.PROVNINGAR) { clearInterval(this.t); this.forceUpdate(); }
+        else if (attempts > 100) { clearInterval(this.t); }
       }, 80);
     }
   }
