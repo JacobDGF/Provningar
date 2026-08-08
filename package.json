@@ -1,0 +1,15 @@
+{
+  "name": "provningar",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Hitta prövningar — en karta över Sveriges prövningstillfällen",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/smoke.mjs",
+    "test:vendor": "node tests/fetch-vendor.mjs",
+    "serve": "node -e \"const h=require('http'),f=require('fs'),p=require('path'),m={'.html':'text/html','.js':'text/javascript','.css':'text/css','.png':'image/png','.svg':'image/svg+xml'};h.createServer((q,s)=>{const r=decodeURIComponent(q.url.split('?')[0]).replace(/^\\/+/,'')||'index.html',x=p.join(process.cwd(),r);if(!f.existsSync(x)||f.statSync(x).isDirectory())return s.writeHead(404).end();s.writeHead(200,{'content-type':m[p.extname(x)]||'application/octet-stream'});f.createReadStream(x).pipe(s)}).listen(8080,()=>console.log('http://localhost:8080/'))\""
+  },
+  "devDependencies": {
+    "playwright": "^1.56.1"
+  }
+}
