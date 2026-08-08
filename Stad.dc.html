@@ -49,11 +49,11 @@
     <table class="table">
       <thead>
         <tr>
-          <th>Ämne</th>
-          <th>Datum</th>
-          <th>Anordnare</th>
-          <th>Sista anmälan</th>
-          <th></th>
+          <th scope="col">Ämne</th>
+          <th scope="col">Datum</th>
+          <th scope="col">Anordnare</th>
+          <th scope="col">Sista anmälan</th>
+          <th scope="col"><span style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Åtgärder</span></th>
         </tr>
       </thead>
       <tbody>
@@ -82,8 +82,11 @@
 class Component extends DCLogic {
   componentDidMount() {
     if (!window.PROVNINGAR) {
+      let attempts = 0;
       this.t = setInterval(() => {
+        attempts++;
         if (window.PROVNINGAR) { clearInterval(this.t); this.forceUpdate(); }
+        else if (attempts > 100) { clearInterval(this.t); }
       }, 80);
     }
   }

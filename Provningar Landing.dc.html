@@ -50,13 +50,13 @@
       <h6 style="color:var(--color-accent-700);margin-bottom:var(--space-3);">59.3293° N · 18.0686° Ö — börja där du står</h6>
       <h1 style="font-size:54px;max-width:14ch;margin-bottom:var(--space-3);">Varje prövning i Sverige. På en karta.</h1>
       <p style="font-size:18px;max-width:42ch;color:color-mix(in srgb, var(--color-text) 70%, transparent);margin-bottom:var(--space-6);">Sök, jämför och anmäl dig till prövningstillfällen i Stockholm och resten av landet. Samlat, uppdaterat — och helt gratis.</p>
-      <form style="display:flex;align-items:center;gap:var(--space-2);max-width:440px;margin-bottom:var(--space-3);">
+      <form onSubmit="{{ handleSearch }}" style="display:flex;align-items:center;gap:var(--space-2);max-width:440px;margin-bottom:var(--space-3);">
         <div class="field" style="flex:1;position:relative;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;">
             <circle cx="11" cy="11" r="7" stroke="var(--color-text)" stroke-width="1.6"/>
             <line x1="21" y1="21" x2="16.65" y2="16.65" stroke="var(--color-text)" stroke-width="1.6" stroke-linecap="round"/>
           </svg>
-          <input type="text" class="input" placeholder="Sök stad, t.ex. Stockholm" style="padding-left:34px;background:var(--color-bg);"/>
+          <input ref="{{ searchRef }}" type="text" class="input" placeholder="Sök stad, t.ex. Stockholm" aria-label="Sök stad" style="padding-left:34px;background:var(--color-bg);"/>
         </div>
         <button type="submit" class="btn btn-primary">Sök</button>
       </form>
@@ -70,7 +70,7 @@
         </sc-for>
       </div>
       <div style="position:relative;">
-      <div ref="{{ mapRef }}" style="height:560px;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lg);"></div>
+      <div ref="{{ mapRef }}" role="region" aria-label="Karta med prövningstillfällen per stad" style="height:560px;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lg);"></div>
       <svg width="44" height="44" viewBox="0 0 44 44" fill="none" aria-hidden="true" style="position:absolute;top:-22px;right:-14px;z-index:500;">
         <circle cx="22" cy="22" r="14" stroke="var(--color-text)" stroke-width="1"/>
         <line x1="22" y1="0" x2="22" y2="44" stroke="var(--color-text)" stroke-width="1"/>
@@ -105,17 +105,17 @@
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-8);">
       <div>
         <div style="font-size:64px;font-weight:600;font-family:var(--font-heading);line-height:0.9;color:var(--color-accent-700);margin-bottom:var(--space-3);">01</div>
-        <h4 style="margin-bottom:var(--space-1);">Hitta på kartan</h4>
+        <h3 style="margin-bottom:var(--space-1);">Hitta på kartan</h3>
         <p class="text-muted" style="font-size:14px;margin:0;">Zooma in på din stad och se alla tillfällen nära dig.</p>
       </div>
       <div>
         <div style="font-size:64px;font-weight:600;font-family:var(--font-heading);line-height:0.9;color:var(--color-accent-700);margin-bottom:var(--space-3);">02</div>
-        <h4 style="margin-bottom:var(--space-1);">Jämför tillfällen</h4>
+        <h3 style="margin-bottom:var(--space-1);">Jämför tillfällen</h3>
         <p class="text-muted" style="font-size:14px;margin:0;">Se datum, ämne och anordnare samlat på en plats.</p>
       </div>
       <div>
         <div style="font-size:64px;font-weight:600;font-family:var(--font-heading);line-height:0.9;color:var(--color-accent-700);margin-bottom:var(--space-3);">03</div>
-        <h4 style="margin-bottom:var(--space-1);">Anmäl dig</h4>
+        <h3 style="margin-bottom:var(--space-1);">Anmäl dig</h3>
         <p class="text-muted" style="font-size:14px;margin:0;">Gå vidare direkt till anordnarens anmälan.</p>
       </div>
     </div>
@@ -131,7 +131,7 @@
         <a class="card" href="{{ city.href }}" style="text-decoration:none;color:inherit;transition:box-shadow 0.25s ease, translate 0.25s ease;" style-hover="box-shadow: var(--shadow-md); translate: 0 -3px">
           <div class="card-kicker">{{ city.coords }}</div>
           <div class="card-title">{{ city.name }}</div>
-          <div class="card-meta">{{ city.count }} tillfällen · <span onClick="{{ city.focusOnMap }}" style="color:var(--color-accent-700);text-decoration:underline;text-underline-offset:3px;">visa på kartan</span></div>
+          <div class="card-meta">{{ city.count }} tillfällen · <button type="button" onClick="{{ city.focusOnMap }}" aria-label="Visa {{ city.name }} på kartan" style="all:unset;cursor:pointer;color:var(--color-accent-700);text-decoration:underline;text-underline-offset:3px;">visa på kartan</button></div>
         </a>
       </sc-for>
     </div>
@@ -172,6 +172,7 @@ class Component extends DCLogic {
   constructor(props) {
     super(props);
     this.mapRef = React.createRef();
+    this.searchRef = React.createRef();
     this.map = null;
     this.markers = {};
     this.cityData = [
@@ -189,11 +190,15 @@ class Component extends DCLogic {
   state = { subject: null };
 
   componentDidMount() {
+    let attempts = 0;
     this.initTimer = setInterval(() => {
+      attempts++;
       if (window.L && window.PROVNINGAR && this.mapRef.current && !this.map) {
         clearInterval(this.initTimer);
         this.initMap();
         this.forceUpdate();
+      } else if (attempts > 100) {
+        clearInterval(this.initTimer);
       }
     }, 100);
   }
@@ -261,6 +266,12 @@ class Component extends DCLogic {
     this.setState({ subject }, () => this.rebuildMarkers());
   }
 
+  handleSearch(e) {
+    e.preventDefault();
+    const val = (this.searchRef.current && this.searchRef.current.value || "").trim();
+    if (val) window.location.href = "Stad.dc.html?stad=" + encodeURIComponent(val);
+  }
+
   focusCity(name) {
     const c = this.cityData.find((x) => x.name === name);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -289,7 +300,7 @@ class Component extends DCLogic {
         select: () => this.setSubject(s),
       })));
     const badgeText = totalCount + " tillfällen" + (subj ? " i " + subj : "") + " live just nu";
-    return { cities, mapRef: this.mapRef, totalCount, badgeText, subjects };
+    return { cities, mapRef: this.mapRef, searchRef: this.searchRef, totalCount, badgeText, subjects, handleSearch: (e) => this.handleSearch(e) };
   }
 }
 </script>
