@@ -21,7 +21,7 @@
 <div style="width:100%;min-height:100vh;background:var(--color-bg);color:var(--color-text);">
 
   <header data-screen-label="nav" style="position:sticky;top:0;z-index:1000;background:var(--color-bg);">
-    <div class="nav" style="max-width:1160px;margin:0 auto;padding-top:var(--space-3);padding-bottom:var(--space-3);">
+    <div class="nav wrap" style="padding-top:var(--space-3);padding-bottom:var(--space-3);">
       <a href="Provningar%20Landing.dc.html" class="nav-brand" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;font-size:18px;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <circle cx="12" cy="12" r="9" stroke="var(--color-accent)" stroke-width="1.5"/>
@@ -38,41 +38,59 @@
     </div>
   </header>
 
-  <section data-screen-label="city-header" style="max-width:1160px;margin:0 auto;padding:var(--space-8) var(--space-4) var(--space-6);animation:bs-rise 0.7s ease both;">
+  <section data-screen-label="city-header" class="wrap" style="padding-top:var(--space-8);padding-bottom:var(--space-6);animation:bs-rise 0.7s ease both;">
     <a href="Provningar%20Landing.dc.html#stader" class="btn btn-ghost" style="padding-inline:0;margin-bottom:var(--space-3);">← Alla städer</a>
     <h6 style="color:var(--color-accent-700);margin-bottom:var(--space-2);">{{ coords }}</h6>
-    <h1 style="font-size:52px;margin-bottom:var(--space-2);">{{ cityName }}</h1>
-    <p class="text-muted" style="font-size:17px;max-width:46ch;">{{ intro }}</p>
+    <h1 class="page-title" style="margin-bottom:var(--space-2);">{{ cityName }}</h1>
+    <p class="text-muted" style="font-size:17px;max-width:52ch;">{{ intro }}</p>
   </section>
 
-  <section data-screen-label="city-table" style="max-width:1160px;margin:0 auto;padding:0 var(--space-4) calc(var(--space-8) * 2);">
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Ämne</th>
-          <th scope="col">Datum</th>
-          <th scope="col">Anordnare</th>
-          <th scope="col">Sista anmälan</th>
-          <th scope="col"><span style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Åtgärder</span></th>
-        </tr>
-      </thead>
-      <tbody>
-        <sc-for list="{{ rows }}" as="row" hint-placeholder-count="8">
+  <section data-screen-label="city-filter" class="wrap" style="padding-bottom:var(--space-4);">
+    <h2 class="sr-only">Filtrera på ämne</h2>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+      <sc-for list="{{ filters }}" as="f" hint-placeholder-count="6">
+        <button type="button" onClick="{{ f.select }}" class="chip" aria-pressed="{{ f.pressed }}"> {{ f.label }} </button>
+      </sc-for>
+    </div>
+  </section>
+
+  <section data-screen-label="city-table" class="wrap" style="padding-bottom:calc(var(--space-8) * 2);">
+    <div class="table-scroll">
+      <table class="table">
+        <caption class="sr-only">Prövningstillfällen i {{ cityName }}, sorterade med närmaste anmälan först</caption>
+        <thead>
           <tr>
-            <td style="font-family:var(--font-heading);font-weight:var(--font-heading-weight);">{{ row.subject }}</td>
-            <td>{{ row.date }}</td>
-            <td>{{ row.org }}</td>
-            <td>{{ row.deadline }}</td>
-            <td style="text-align:right;"><a href="{{ row.href }}" class="btn btn-ghost">Detaljer →</a></td>
+            <th scope="col">Ämne</th>
+            <th scope="col">Provdatum</th>
+            <th scope="col">Anordnare</th>
+            <th scope="col">Anmälan</th>
+            <th scope="col"><span class="sr-only">Åtgärder</span></th>
           </tr>
-        </sc-for>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <sc-for list="{{ rows }}" as="row" hint-placeholder-count="8">
+            <tr>
+              <td style="font-family:var(--font-heading);font-weight:var(--font-heading-weight);">{{ row.subject }}</td>
+              <td>{{ row.date }}</td>
+              <td>{{ row.org }}</td>
+              <td>
+                <span class="status {{ row.statusCls }}">{{ row.statusLabel }}</span>
+                <div class="text-muted" style="font-size:11px;margin-top:4px;">{{ row.windowLabel }}</div>
+              </td>
+              <td style="text-align:right;"><a href="{{ row.href }}" class="btn btn-ghost">Detaljer →</a></td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+    <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+      <p class="text-muted" style="padding-top:var(--space-4);">Inga tillfällen i {{ subjectLabel }} i {{ cityName }} just nu. Prova ett annat ämne — eller titta i en närliggande stad.</p>
+    </sc-if>
   </section>
 
-  <footer style="max-width:1160px;margin:0 auto;padding:var(--space-6) var(--space-4) var(--space-8);display:flex;align-items:center;justify-content:space-between;">
+  <footer class="wrap site-footer" style="padding-top:var(--space-6);padding-bottom:var(--space-8);">
     <div class="nav-brand" style="margin:0;font-size:15px;">Prövningar</div>
-    <p class="text-muted" style="font-size:13px;margin:0;">© 2026 Prövningar · Ett kostnadsfritt projekt</p>
+    <p class="text-muted" style="font-size:13px;margin:0;">© 2026 Prövningar · <a href="Om%20oss.dc.html" style="color:inherit;">Om oss &amp; FAQ</a></p>
   </footer>
 
 </div>
@@ -80,6 +98,8 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
+  state = { subject: null };
+
   componentDidMount() {
     if (!window.PROVNINGAR) {
       let attempts = 0;
@@ -95,20 +115,53 @@ class Component extends DCLogic {
   renderVals() {
     const name = new URLSearchParams(location.search).get("stad") || "Stockholm";
     const D = window.PROVNINGAR;
-    if (!D) return { cityName: name, coords: "", intro: "", rows: [] };
-    const city = D.cities.find((c) => c.name === name) || D.cities[0];
-    const rows = D.getTillfallen(city.name).map((t) => ({
+    if (!D) return { cityName: name, coords: "", intro: "", rows: [], filters: [], isEmpty: false, subjectLabel: "" };
+
+    // Okänd stad i URL:en ska inte ge en tom sida — fall tillbaka till den
+    // första staden så att besökaren alltid landar på något användbart.
+    const city = D.cities.find((c) => c.name.toLowerCase() === name.toLowerCase()) || D.cities[0];
+    const all = D.getTillfallen(city.name);
+    const subj = this.state.subject;
+
+    // Närmast i tiden först — den ordningen matchar varför man är här.
+    const visible = (subj ? all.filter((t) => t.subject === subj) : all)
+      .map((t) => ({ t, s: D.statusFor(t) }))
+      .sort((a, b) => a.s.sort - b.s.sort || a.s.days - b.s.days || a.t.subject.localeCompare(b.t.subject, "sv"));
+
+    const rows = visible.map(({ t, s }) => ({
       subject: t.subject,
       date: t.date,
       org: t.org,
-      deadline: t.deadline,
+      statusLabel: s.label,
+      statusCls: "status-" + s.tone,
+      windowLabel: s.key === "closing-soon" || s.key === "open" ? t.closesLabel : t.opensLabel,
       href: "Provning.dc.html?id=" + encodeURIComponent(t.id),
     }));
+
+    const subjectNames = [];
+    all.forEach((t) => { if (subjectNames.indexOf(t.subject) === -1) subjectNames.push(t.subject); });
+    subjectNames.sort((a, b) => a.localeCompare(b, "sv"));
+    const filters = [{ label: "Alla ämnen", pressed: subj === null ? "true" : "false", select: () => this.setState({ subject: null }) }]
+      .concat(subjectNames.map((s) => ({
+        label: s,
+        pressed: subj === s ? "true" : "false",
+        select: () => this.setState({ subject: s }),
+      })));
+
+    const opensSoon = visible.filter((x) => x.s.tone === "soon" || x.s.tone === "urgent").length;
+    const intro = rows.length
+      ? rows.length + " prövningstillfällen i " + city.name + (subj ? " i " + subj : "") + ". " +
+        (opensSoon ? opensSoon + " av dem öppnar eller stänger inom två veckor." : "Anmälan sker direkt hos anordnaren — helt kostnadsfritt att söka här.")
+      : "Inga tillfällen matchar filtret just nu.";
+
     return {
       cityName: city.name,
       coords: city.lat.toFixed(4) + "° N · " + city.lng.toFixed(4) + "° Ö",
-      intro: rows.length + " prövningstillfällen i " + city.name + " just nu. Anmälan sker direkt hos anordnaren — helt kostnadsfritt att söka här.",
+      intro,
       rows,
+      filters,
+      isEmpty: rows.length === 0,
+      subjectLabel: subj || "det ämnet",
     };
   }
 }

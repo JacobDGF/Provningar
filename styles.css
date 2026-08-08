@@ -189,9 +189,13 @@ figcaption {
 }
 .btn svg { display: block; }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
-.btn-primary { background: var(--color-accent); color: var(--color-bg); }
-.btn-primary:hover { background: var(--color-accent-600); }
-.btn-primary:active { background: var(--color-accent-700); }
+/* The fill is accent-700, not the raw accent: light text on #0088b0 measures
+   3.65:1 and dark text 4.07:1 — neither clears WCAG AA for normal text, so
+   the ramp step down is the only combination that reads. Hover/active step
+   deeper from there so the states stay ordered. */
+.btn-primary { background: var(--color-accent-700); color: var(--color-bg); }
+.btn-primary:hover { background: var(--color-accent-800); }
+.btn-primary:active { background: var(--color-accent-900); }
 .btn-secondary { border-color: var(--color-divider); }
 .btn-secondary:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
 .btn-secondary:active { background: color-mix(in srgb, var(--color-text) 14%, transparent); }
@@ -282,8 +286,11 @@ textarea.input { min-height: 90px; resize: vertical; }
   font-family: var(--font-heading); font-weight: var(--font-heading-weight);
   font-size: 18px; margin-right: auto;
 }
-.nav a { color: inherit; text-decoration: none; font-size: 14px; }
-.nav a:hover, .nav a[aria-current='page'] { color: var(--color-accent-700); }
+/* :not(.btn) matters — a bare `.nav a` rule outranks `.btn-primary`'s own
+   color, which repainted the nav's call-to-action in the nav's dark text on
+   its dark fill (2.6:1). Nav links take nav colors; buttons keep theirs. */
+.nav a:not(.btn) { color: inherit; text-decoration: none; font-size: 14px; }
+.nav a:not(.btn):hover, .nav a:not(.btn)[aria-current='page'] { color: var(--color-accent-700); }
 
 /* — tables — */
 .table { width: 100%; border-collapse: collapse; font-size: 14px; }
@@ -315,4 +322,107 @@ textarea.input { min-height: 90px; resize: vertical; }
 }
 .dialog-body { font-size: 14px; opacity: 0.85; }
 .dialog-actions { display: flex; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-2); }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Application layer — layout, status and utilities used by the Prövningar
+   pages. Kept here rather than in per-page inline styles so the pages can
+   respond to viewport size: an inline style attribute always beats a media
+   query, so a fixed grid written inline can never collapse on a phone.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* — page frame — */
+.wrap { width: 100%; max-width: 1160px; margin-inline: auto; padding-inline: var(--space-4); }
+.wrap-narrow { max-width: 760px; }
+.wrap-form { max-width: 460px; }
+
+/* — responsive layouts — */
+.hero-grid {
+  display: grid; grid-template-columns: minmax(360px, 5fr) 7fr;
+  gap: var(--space-8); align-items: center;
+}
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-8); }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-3); }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+.cta-grid { display: grid; grid-template-columns: auto 1fr; gap: var(--space-8); align-items: center; }
+.stat-row { display: flex; gap: var(--space-8); flex-wrap: wrap; }
+.row { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+
+.hero-title { font-size: clamp(32px, 6.5vw, 54px); max-width: 14ch; }
+.page-title { font-size: clamp(30px, 5.5vw, 48px); }
+.map-canvas {
+  height: 560px; border-radius: var(--radius-lg);
+  overflow: hidden; box-shadow: var(--shadow-lg);
+}
+
+/* Tables stay tabular and scroll sideways rather than collapsing — the city
+   list is genuinely five columns of comparable data, and a stacked-card
+   version loses the row-to-row comparison that makes it worth reading. */
+/* position:relative matters — the visually-hidden caption and column label
+   inside are position:absolute, and without a containing block here they
+   resolve against the page and widen the whole document on a phone instead
+   of being clipped along with the table. */
+.table-scroll { position: relative; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.table-scroll .table { min-width: 640px; }
+
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: 1fr; gap: var(--space-6); }
+  .grid-3 { grid-template-columns: 1fr 1fr; gap: var(--space-6); }
+  .grid-4 { grid-template-columns: 1fr 1fr; }
+  .map-canvas { height: 380px; }
+  .stat-row { gap: var(--space-6); }
+}
+@media (max-width: 560px) {
+  .grid-3, .grid-4, .grid-2 { grid-template-columns: 1fr; }
+  .cta-grid { grid-template-columns: 1fr; gap: var(--space-4); }
+  .nav { flex-wrap: wrap; gap: var(--space-2) var(--space-3); }
+  .nav-brand { margin-right: auto; }
+  .site-footer { flex-direction: column; align-items: flex-start; gap: var(--space-2); }
+}
+
+.site-footer { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+
+/* — registration status —
+   The one fact that makes someone act: whether they can register right now,
+   and how long that stays true. Tone is carried by the two accent inks:
+   magenta for "act now", cyan for "fine for the moment". */
+.status {
+  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 11px; letter-spacing: 0.02em; padding: 3px 9px;
+  border: 1px solid transparent; border-radius: calc(var(--radius-md) * 0.75);
+}
+.status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
+.status-urgent { background: var(--color-accent-2-100); color: var(--color-accent-2-800); border-color: var(--color-accent-2-200); }
+.status-soon { color: var(--color-accent-2-800); border-color: var(--color-accent-2-300); }
+.status-open { background: var(--color-accent-100); color: var(--color-accent-800); border-color: var(--color-accent-200); }
+.status-neutral { background: var(--color-neutral-100); color: var(--color-neutral-800); border-color: var(--color-neutral-200); }
+.status-closed { color: var(--color-neutral-700); border-color: var(--color-neutral-300); }
+.status-closed::before { background: var(--color-neutral-400); }
+
+/* — utilities — */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+.stack { display: flex; flex-direction: column; }
+
+/* Chips double as filters and as links; they must be legible as controls,
+   so they carry a real border and a pressed state rather than tinting only. */
+.chip {
+  display: inline-flex; align-items: center; font-family: inherit;
+  font-size: 12px; padding: 5px 12px; cursor: pointer;
+  border: 1px solid var(--color-divider); border-radius: calc(var(--radius-md) * 0.75);
+  background: transparent; color: var(--color-text);
+}
+.chip:hover { background: color-mix(in srgb, var(--color-text) 6%, transparent); }
+.chip[aria-pressed="true"] {
+  background: var(--color-accent-700); color: var(--color-bg); border-color: var(--color-accent-700);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important; animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important; scroll-behavior: auto !important;
+  }
+}
 

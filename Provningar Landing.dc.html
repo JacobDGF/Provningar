@@ -27,7 +27,7 @@
 
   <!-- NAV -->
   <header data-screen-label="nav" style="position:sticky;top:0;z-index:1000;background:var(--color-bg);">
-    <div class="nav" style="max-width:1160px;margin:0 auto;padding-top:var(--space-3);padding-bottom:var(--space-3);">
+    <div class="nav wrap" style="padding-top:var(--space-3);padding-bottom:var(--space-3);">
       <div class="nav-brand" style="display:flex;align-items:center;gap:10px;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <circle cx="12" cy="12" r="9" stroke="var(--color-accent)" stroke-width="1.5"/>
@@ -37,6 +37,7 @@
         </svg>
         Prövningar
       </div>
+      <a href="#oppnar-snart">Öppnar snart</a>
       <a href="#hur-det-fungerar">Hur det fungerar</a>
       <a href="#stader">Städer</a>
       <a href="Om%20oss.dc.html">Om oss</a>
@@ -45,11 +46,11 @@
   </header>
 
   <!-- HERO WITH MAP -->
-  <section data-screen-label="hero-map" style="max-width:1160px;margin:0 auto;padding:var(--space-8) var(--space-4) var(--space-6);display:grid;grid-template-columns:minmax(380px,5fr) 7fr;gap:var(--space-8);align-items:center;">
+  <section data-screen-label="hero-map" class="wrap hero-grid" style="padding-top:var(--space-8);padding-bottom:var(--space-6);">
     <div style="animation:bs-rise 0.9s ease both;">
       <h6 style="color:var(--color-accent-700);margin-bottom:var(--space-3);">59.3293° N · 18.0686° Ö — börja där du står</h6>
-      <h1 style="font-size:54px;max-width:14ch;margin-bottom:var(--space-3);">Varje prövning i Sverige. På en karta.</h1>
-      <p style="font-size:18px;max-width:42ch;color:color-mix(in srgb, var(--color-text) 70%, transparent);margin-bottom:var(--space-6);">Sök, jämför och anmäl dig till prövningstillfällen i Stockholm och resten av landet. Samlat, uppdaterat — och helt gratis.</p>
+      <h1 class="hero-title" style="margin-bottom:var(--space-3);">Varje prövning i Sverige. På en karta.</h1>
+      <p style="font-size:18px;max-width:42ch;color:color-mix(in srgb, var(--color-text) 70%, transparent);margin-bottom:var(--space-4);">Anmälan öppnar ett bestämt datum och gäller först till kvarn. Missar du fönstret får du vänta till nästa period — här ser du alla tillfällen och exakt när de öppnar.</p>
       <form onSubmit="{{ handleSearch }}" style="display:flex;align-items:center;gap:var(--space-2);max-width:440px;margin-bottom:var(--space-3);">
         <div class="field" style="flex:1;position:relative;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;">
@@ -60,17 +61,17 @@
         </div>
         <button type="submit" class="btn btn-primary">Sök</button>
       </form>
-      <p class="text-muted" style="font-size:13px;margin:0;">Helt kostnadsfritt · Inga dolda avgifter</p>
+      <p class="text-muted" style="font-size:13px;margin:0;">Helt kostnadsfritt · Inga dolda avgifter · Inget konto krävs för att söka</p>
     </div>
 
     <div style="animation:bs-rise 0.9s ease 0.15s both;">
       <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:var(--space-3);">
         <sc-for list="{{ subjects }}" as="s" hint-placeholder-count="6">
-          <button onClick="{{ s.select }}" class="tag {{ s.cls }}" style="cursor:pointer;font-family:inherit;border:1px solid var(--color-divider);padding:5px 12px;font-size:12px;"> {{ s.label }} </button>
+          <button type="button" onClick="{{ s.select }}" class="chip" aria-pressed="{{ s.pressed }}"> {{ s.label }} </button>
         </sc-for>
       </div>
       <div style="position:relative;">
-      <div ref="{{ mapRef }}" role="region" aria-label="Karta med prövningstillfällen per stad" style="height:560px;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lg);"></div>
+      <div ref="{{ mapRef }}" class="map-canvas" role="region" aria-label="Karta med prövningstillfällen per stad"></div>
       <svg width="44" height="44" viewBox="0 0 44 44" fill="none" aria-hidden="true" style="position:absolute;top:-22px;right:-14px;z-index:500;">
         <circle cx="22" cy="22" r="14" stroke="var(--color-text)" stroke-width="1"/>
         <line x1="22" y1="0" x2="22" y2="44" stroke="var(--color-text)" stroke-width="1"/>
@@ -82,27 +83,44 @@
   </section>
 
   <!-- STATS -->
-  <section style="max-width:1160px;margin:0 auto;padding:var(--space-6) var(--space-4);display:flex;gap:var(--space-8);flex-wrap:wrap;">
+  <section class="wrap stat-row" style="padding-top:var(--space-6);padding-bottom:var(--space-6);">
     <div>
-      <h2 style="font-size:34px;color:var(--color-accent-700);margin-bottom:2px;">12+</h2>
-      <p class="text-muted" style="font-size:13px;margin:0;">städer på kartan, från Malmö till Stockholm</p>
+      <h2 style="font-size:34px;color:var(--color-accent-700);margin-bottom:2px;">{{ cityCount }}</h2>
+      <p class="text-muted" style="font-size:13px;margin:0;">städer på kartan, från Malmö till Uppsala</p>
+    </div>
+    <div>
+      <h2 style="font-size:34px;color:var(--color-accent-700);margin-bottom:2px;">{{ totalCount }}</h2>
+      <p class="text-muted" style="font-size:13px;margin:0;">prövningstillfällen hösten 2026</p>
     </div>
     <div>
       <h2 style="font-size:34px;color:var(--color-accent-700);margin-bottom:2px;">100%</h2>
       <p class="text-muted" style="font-size:13px;margin:0;">kostnadsfritt att använda</p>
     </div>
-    <div>
-      <h2 style="font-size:34px;color:var(--color-accent-700);margin-bottom:2px;">Uppdaterat</h2>
-      <p class="text-muted" style="font-size:13px;margin:0;">löpande av vår community</p>
+  </section>
+
+  <!-- OPENS SOON — the deadline is what makes this worth checking -->
+  <section id="oppnar-snart" data-screen-label="opens-soon" class="wrap" style="padding-top:var(--space-8);padding-bottom:var(--space-8);">
+    <h6 style="color:var(--color-accent-700);margin-bottom:var(--space-2);">Närmast i tiden</h6>
+    <h2 style="margin-bottom:var(--space-2);">{{ urgentHeading }}</h2>
+    <p class="text-muted" style="max-width:52ch;margin-bottom:var(--space-6);">Anmälan är först till kvarn hos de flesta anordnare. Det här är tillfällena där fönstret öppnar eller stänger snart.</p>
+    <div class="grid-4">
+      <sc-for list="{{ urgent }}" as="u" hint-placeholder-count="4">
+        <a class="card" href="{{ u.href }}" style="text-decoration:none;color:inherit;transition:box-shadow 0.25s ease, translate 0.25s ease;" style-hover="box-shadow: var(--shadow-md); translate: 0 -3px">
+          <div><span class="status {{ u.statusCls }}">{{ u.statusLabel }}</span></div>
+          <div class="card-title">{{ u.subject }}</div>
+          <div class="card-meta">{{ u.city }} · {{ u.date }}</div>
+          <div class="card-meta">{{ u.opensLabel }}</div>
+        </a>
+      </sc-for>
     </div>
   </section>
 
   <!-- HOW IT WORKS -->
-  <section id="hur-det-fungerar" data-screen-label="how-it-works" style="max-width:1160px;margin:0 auto;padding:var(--space-8) var(--space-4);">
+  <section id="hur-det-fungerar" data-screen-label="how-it-works" class="wrap" style="padding-top:var(--space-8);padding-bottom:var(--space-8);">
     <h6 style="color:var(--color-accent-700);margin-bottom:var(--space-2);">Från karta till anmälan</h6>
     <h2 style="margin-bottom:var(--space-2);">Hur det fungerar</h2>
     <p class="text-muted" style="max-width:44ch;margin-bottom:var(--space-8);">Tre steg mellan dig och nästa prövningstillfälle.</p>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-8);">
+    <div class="grid-3">
       <div>
         <div style="font-size:64px;font-weight:600;font-family:var(--font-heading);line-height:0.9;color:var(--color-accent-700);margin-bottom:var(--space-3);">01</div>
         <h3 style="margin-bottom:var(--space-1);">Hitta på kartan</h3>
@@ -115,18 +133,18 @@
       </div>
       <div>
         <div style="font-size:64px;font-weight:600;font-family:var(--font-heading);line-height:0.9;color:var(--color-accent-700);margin-bottom:var(--space-3);">03</div>
-        <h3 style="margin-bottom:var(--space-1);">Anmäl dig</h3>
-        <p class="text-muted" style="font-size:14px;margin:0;">Gå vidare direkt till anordnarens anmälan.</p>
+        <h3 style="margin-bottom:var(--space-1);">Anmäl dig i tid</h3>
+        <p class="text-muted" style="font-size:14px;margin:0;">Se exakt när anmälan öppnar och gå vidare till anordnaren.</p>
       </div>
     </div>
   </section>
 
   <!-- CITIES -->
-  <section id="stader" data-screen-label="cities" style="max-width:1160px;margin:0 auto;padding:var(--space-8) var(--space-4);">
+  <section id="stader" data-screen-label="cities" class="wrap" style="padding-top:var(--space-8);padding-bottom:var(--space-8);">
     <h6 style="color:var(--color-accent-700);margin-bottom:var(--space-2);">55.6° N — 59.9° N</h6>
     <h2 style="margin-bottom:var(--space-2);">Täcker städer i hela Sverige</h2>
     <p class="text-muted" style="max-width:46ch;margin-bottom:var(--space-6);">Störst utbud just nu i Stockholm — fler städer läggs till löpande. Klicka på en stad för att se alla tillfällen — eller flyg dit på kartan.</p>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-3);">
+    <div class="grid-4">
       <sc-for list="{{ cities }}" as="city" hint-placeholder-count="8">
         <a class="card" href="{{ city.href }}" style="text-decoration:none;color:inherit;transition:box-shadow 0.25s ease, translate 0.25s ease;" style-hover="box-shadow: var(--shadow-md); translate: 0 -3px">
           <div class="card-kicker">{{ city.coords }}</div>
@@ -138,7 +156,7 @@
   </section>
 
   <!-- CTA -->
-  <section data-screen-label="cta" style="max-width:1160px;margin:0 auto;padding:var(--space-8) var(--space-4) calc(var(--space-8) * 2);display:grid;grid-template-columns:auto 1fr;gap:var(--space-8);align-items:center;">
+  <section data-screen-label="cta" class="wrap cta-grid" style="padding-top:var(--space-8);padding-bottom:calc(var(--space-8) * 2);">
     <svg width="92" height="92" viewBox="0 0 92 92" fill="none" aria-hidden="true">
       <circle cx="46" cy="46" r="34" stroke="var(--color-accent)" stroke-width="1.2"/>
       <circle cx="46" cy="46" r="18" stroke="var(--color-accent)" stroke-width="1.2"/>
@@ -151,7 +169,7 @@
     <div>
       <h2 style="max-width:20ch;margin-bottom:var(--space-2);">Din nästa prövning finns redan på kartan.</h2>
       <p class="text-muted" style="max-width:42ch;margin-bottom:var(--space-4);">Skapa ett gratis konto och börja söka idag.</p>
-      <div style="display:flex;align-items:center;gap:var(--space-3);">
+      <div class="row">
         <a href="Skapa%20konto.dc.html" class="btn btn-primary" style="font-size:15px;padding:var(--space-2) var(--space-4);">Skapa konto</a>
         <a href="#stader" class="btn btn-ghost">Se alla städer</a>
       </div>
@@ -159,7 +177,7 @@
   </section>
 
   <!-- FOOTER -->
-  <footer style="max-width:1160px;margin:0 auto;padding:var(--space-6) var(--space-4) var(--space-8);display:flex;align-items:center;justify-content:space-between;">
+  <footer class="wrap site-footer" style="padding-top:var(--space-6);padding-bottom:var(--space-8);">
     <div class="nav-brand" style="margin:0;font-size:15px;">Prövningar</div>
     <p class="text-muted" style="font-size:13px;margin:0;">© 2026 Prövningar · 59.3293° N, 18.0686° Ö · <a href="Om%20oss.dc.html" style="color:inherit;">Om oss &amp; FAQ</a></p>
   </footer>
@@ -175,7 +193,9 @@ class Component extends DCLogic {
     this.searchRef = React.createRef();
     this.map = null;
     this.markers = {};
-    this.cityData = [
+    // Reservlista med samma städer som data.js, så att kartan och korten kan
+    // ritas även innan data.js hunnit köra. PROVNINGAR vinner när den finns.
+    this.fallbackCities = [
       { name: "Stockholm", count: 24, lat: 59.3293, lng: 18.0686 },
       { name: "Göteborg", count: 11, lat: 57.7089, lng: 11.9746 },
       { name: "Malmö", count: 9, lat: 55.605, lng: 13.0038 },
@@ -188,6 +208,10 @@ class Component extends DCLogic {
   }
 
   state = { subject: null };
+
+  cityList() {
+    return window.PROVNINGAR ? window.PROVNINGAR.cities : this.fallbackCities;
+  }
 
   componentDidMount() {
     let attempts = 0;
@@ -242,7 +266,7 @@ class Component extends DCLogic {
     this.markerLayer.clearLayers();
     this.markers = {};
     const subj = this.state.subject;
-    this.cityData.forEach((c) => {
+    this.cityList().forEach((c) => {
       const n = this.countFor(c.name);
       if (n === 0) return;
       const marker = L.circleMarker([c.lat, c.lng], {
@@ -273,7 +297,7 @@ class Component extends DCLogic {
   }
 
   focusCity(name) {
-    const c = this.cityData.find((x) => x.name === name);
+    const c = this.cityList().find((x) => x.name === name);
     window.scrollTo({ top: 0, behavior: "smooth" });
     if (this.map && c) {
       this.map.flyTo([c.lat, c.lng], 9, { duration: 1.2 });
@@ -282,25 +306,53 @@ class Component extends DCLogic {
     }
   }
 
+  statusClass(status) {
+    return "status-" + status.tone;
+  }
+
   renderVals() {
+    const D = window.PROVNINGAR;
     const subj = this.state.subject;
-    const cities = this.cityData.map((c) => ({
+    const cities = this.cityList().map((c) => ({
       name: c.name,
-      count: window.PROVNINGAR ? this.countFor(c.name) : c.count,
+      count: D ? this.countFor(c.name) : c.count,
       coords: c.lat.toFixed(2) + "° N · " + c.lng.toFixed(2) + "° Ö",
       href: "Stad.dc.html?stad=" + encodeURIComponent(c.name),
       focusOnMap: (e) => { e.preventDefault(); e.stopPropagation(); this.focusCity(c.name); },
     }));
     const totalCount = cities.reduce((s, c) => s + c.count, 0);
+
     const subjectNames = ["Matematik 3c", "Svenska 3", "Engelska 6", "Kemi 1", "Fysik 2", "Historia 1b", "Biologi 2", "Samhällskunskap 1b"];
-    const subjects = [{ label: "Alla ämnen", cls: subj === null ? "tag-accent" : "tag-neutral", select: () => this.setSubject(null) }]
+    const subjects = [{ label: "Alla ämnen", pressed: subj === null ? "true" : "false", select: () => this.setSubject(null) }]
       .concat(subjectNames.map((s) => ({
         label: s,
-        cls: subj === s ? "tag-accent" : "tag-neutral",
+        pressed: subj === s ? "true" : "false",
         select: () => this.setSubject(s),
       })));
-    const badgeText = totalCount + " tillfällen" + (subj ? " i " + subj : "") + " live just nu";
-    return { cities, mapRef: this.mapRef, searchRef: this.searchRef, totalCount, badgeText, subjects, handleSearch: (e) => this.handleSearch(e) };
+
+    const urgent = (D ? D.getUrgent(4) : []).map((t) => {
+      const s = D.statusFor(t);
+      return {
+        href: "Provning.dc.html?id=" + encodeURIComponent(t.id),
+        city: t.city,
+        subject: t.subject,
+        date: t.date,
+        opensLabel: s.key === "closing-soon" ? t.closesLabel : t.opensLabel,
+        statusLabel: s.label,
+        statusCls: this.statusClass(s),
+      };
+    });
+    const urgentHeading = urgent.length && urgent[0].statusCls === "status-urgent"
+      ? "Anmälan stänger snart"
+      : "Anmälan öppnar snart";
+
+    const badgeText = totalCount + " tillfällen" + (subj ? " i " + subj : "") + " på kartan";
+    return {
+      cities, mapRef: this.mapRef, searchRef: this.searchRef,
+      totalCount, cityCount: cities.length, badgeText, subjects,
+      urgent, urgentHeading,
+      handleSearch: (e) => this.handleSearch(e),
+    };
   }
 }
 </script>
