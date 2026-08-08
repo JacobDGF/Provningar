@@ -1,0 +1,106 @@
+export interface NextPeriod {
+  label: string;
+  applicationStart?: string;
+  applicationEnd?: string;
+  examWindowStart?: string;
+  examWindowEnd?: string;
+  /** True when we have a real confirmed date for this period. When false, the UI must not present a fabricated date — link out instead. */
+  confirmed: boolean;
+}
+
+export interface Exam {
+  id: string;
+  schoolName: string;
+  provider: string;
+  schoolImage: string;
+  subject: string;
+  course: string;
+  courseCode: string;
+  level: 'Gymnasieskola' | 'Komvux';
+  city: string;
+  region: string;
+  address: string;
+  lat: number;
+  lng: number;
+  price: number;
+  priceNote?: string;
+  nextPeriod: NextPeriod;
+  components: ExamComponent[];
+  studyTips: string[];
+  registrationUrl: string;
+  infoUrl: string;
+  description: string;
+  tags: string[];
+  /** ISO date this listing's facts (price, URL, periods) were last checked against the school's own site. */
+  verifiedAt: string;
+}
+
+export interface ExamComponent {
+  name: string;
+  duration: string;
+  description: string;
+}
+
+export interface SavedExam {
+  examId: string;
+  savedAt: string;
+  notes?: string;
+  status: 'interested' | 'registered' | 'completed' | 'passed' | 'failed';
+}
+
+export interface ViewedExam {
+  examId: string;
+  viewedAt: string;
+}
+
+export type PostKind = 'fråga' | 'tips' | 'diskussion' | 'seger';
+
+export interface Post {
+  id: string;
+  userId: string;
+  userName: string;
+  userAvatar: string;
+  content: string;
+  subject?: string;
+  kind?: PostKind;
+  createdAt: string;
+  likes: number;
+  likedBy: string[];
+  replies: Reply[];
+  tags: string[];
+}
+
+export interface Reply {
+  id: string;
+  userId: string;
+  userName: string;
+  userAvatar: string;
+  content: string;
+  createdAt: string;
+  likes: number;
+  likedBy: string[];
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string;
+  bio: string;
+  following: string[];
+  followers: string[];
+  completedExams: CompletedExam[];
+  joinedAt: string;
+  location: string;
+}
+
+export interface CompletedExam {
+  examId: string;
+  schoolName: string;
+  subject: string;
+  course: string;
+  date: string;
+  grade?: string;
+}
+
+export type TabId = 'discover' | 'exams' | 'community' | 'history' | 'profile';

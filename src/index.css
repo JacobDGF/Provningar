@@ -1,0 +1,154 @@
+@import "tailwindcss";
+/* Source Serif 4 is loaded via a <link> in index.html, not @import here —
+   Tailwind's own @import expands at build time and pushes anything after
+   it out of leading position, which is invalid CSS and gets silently
+   dropped by the production build (confirmed: shipped without the font). */
+
+/* ------------------------------------------------------------------
+   Prövningar design system — "Broadsheet" (editorial/newsprint).
+   Ported from the Claude Design system built for the marketing landing
+   page: Source Serif 4 throughout, a teal/magenta process-ink accent
+   pair, near-black ink on a warm off-white ground, sharp (2–4px) radii,
+   whitespace-led hierarchy instead of boxes/rules where the content
+   allows it. Verification/trust keeps its own green — distinct from the
+   brand pair, since "this is true" needs to read as its own signal.
+   ------------------------------------------------------------------ */
+@theme {
+  /* Brand — teal (primary CTAs, active states, links) */
+  --color-brand-50:  #E9F8FF;
+  --color-brand-100: #CBEEFF;
+  --color-brand-200: #99E0FF;
+  --color-brand-300: #62C5EE;
+  --color-brand-400: #38A6CF;
+  --color-brand-500: #0088B0;
+  --color-brand-600: #1186AC;
+  --color-brand-700: #006786;
+  --color-brand-800: #004961;
+  --color-brand-900: #0A303E;
+
+  /* Accent 2 — magenta (secondary spot color, used small and deliberately) */
+  --color-accent2-50:  #FFF1F4;
+  --color-accent2-100: #FFDEE6;
+  --color-accent2-200: #FFC0D0;
+  --color-accent2-300: #FF90B1;
+  --color-accent2-500: #D6006C;
+  --color-accent2-700: #AA0B56;
+  --color-accent2-800: #790E3D;
+
+  /* Ink — near-black text on the newsprint ground */
+  --color-ink:        #201E1D;
+  --color-ink-soft:   #605D5D;
+  --color-ink-faint:  #9B9797;
+
+  /* Warm neutral surfaces */
+  --color-cream:      #F3F2F2;
+  --color-sand:       #EAE7E7;
+  --color-surface:    #F8F4F4;
+  --color-line:       #D7D3D3;
+
+  /* Trust green — verification only, kept distinct from the brand pair */
+  --color-trust-50:  #E9F4EC;
+  --color-trust-100: #CFE8D6;
+  --color-trust-500: #2F8457;
+  --color-trust-600: #256B46;
+  --color-trust-700: #1D5537;
+
+  /* Warm amber — tips / highlights */
+  --color-amber-accent:   #B8860B;
+  --color-amber-accent-50: #FBF2E1;
+
+  --font-display: "Source Serif 4", "Iowan Old Style", ui-serif, serif;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: #F3F2F2;
+  color: #201E1D;
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Serif display headings — the editorial voice */
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+/* Hide scrollbars but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Safe area for bottom nav on modern phones */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Active scale effects */
+.active\:scale-98:active {
+  transform: scale(0.98);
+}
+.active\:scale-95:active {
+  transform: scale(0.95);
+}
+
+/* Smooth scrolling */
+.overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Subtle entrance animation for cards / sheets */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-rise {
+  animation: rise 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+.animate-sheet-up {
+  animation: sheet-up 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Range input styling — brand teal */
+input[type="range"] {
+  -webkit-appearance: none;
+  height: 4px;
+  border-radius: 4px;
+  background: #D7D3D3;
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #0088B0;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 136, 176, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
