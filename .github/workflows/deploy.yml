@@ -33,10 +33,15 @@ jobs:
           cache: npm
 
       - run: npm ci
+      # vite.config.ts stamps public/version.json with the same build ID it
+      # bakes into the JS bundle via `define: { __BUILD_ID__ }`, so the two
+      # always agree — src/hooks/useVersionCheck.ts compares them to decide
+      # whether to show the "new version available" banner. Do NOT overwrite
+      # dist/version.json after this step: replacing its build ID with
+      # anything else (a commit SHA, a timestamp) desyncs it from the value
+      # already embedded in the JS, and every visitor sees a false "update
+      # available" banner permanently, even on the current build.
       - run: npm run build
-
-      - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: echo '{"buildId":"${{ github.sha }}"}' > dist/version.json
 
       - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v4
