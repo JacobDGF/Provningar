@@ -1,3 +1,16 @@
+<!-- Rescued from `senaste versionen design/_ds/broadsheet-…/readme.md`, which
+     was the only surviving copy when that duplicate folder was removed.
+     Filed as docs/design-system.md rather than a root readme.md so it can't
+     collide with README.md on a case-insensitive filesystem.
+
+     Note on scope: this is the Broadsheet design system's own documentation.
+     The component gallery it references (components/, foundations/,
+     templates/, theme.json) is part of the upstream design-system package and
+     is not checked into this repo — styles.css here is the system's stylesheet
+     plus an application layer for the Prövningar pages. The normative parts —
+     tokens, the ramp rules, type, interaction states, do/don't — govern this
+     codebase and are why styles.css looks the way it does. -->
+
 # Broadsheet design system
 
 Broadsheet is newsprint set for the web: near-black Source Serif 4 on paper white, with the process accents — cyan and magenta, completed by a print yellow in the press treatments — used small and deliberately, like spot color. Page structure uses no rules or boxes; hierarchy comes from the serif scale and from negative space alone, and images print as their own misregistered process plates (interface imagery can take the simpler halftone dot screen).
