@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, lazy, Suspense } from 'react';
 import {
   Search,
   SlidersHorizontal,
@@ -8,15 +8,29 @@ import {
   HelpCircle,
   List,
   Map as MapIcon,
+  Loader2,
 } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { ExamCard } from '../components/ExamCard';
 import { FilterSheet } from '../components/FilterSheet';
-import { MapView } from '../components/MapView';
-import { HeroMap } from '../components/HeroMap';
 import { haversineDistanceKm } from '../lib/distance';
 import { isOpenForRegistration } from '../lib/examStatus';
 import { useMinuteTick } from '../hooks/useMinuteTick';
+
+// Leaflet is the single largest dependency in the bundle; both maps are
+// code-split out of Discover's own chunk and fetched on first render
+// (in parallel with the app's ~2s loading screen, so this is normally
+// invisible) rather than shipped in the initial payload unconditionally.
+const MapView = lazy(() => import('../components/MapView').then((m) => ({ default: m.MapView })));
+const HeroMap = lazy(() => import('../components/HeroMap').then((m) => ({ default: m.HeroMap })));
+
+function MapFallback() {
+  return (
+    <div className="w-full h-full flex items-center justify-center bg-sand">
+      <Loader2 size={24} className="text-brand-400 animate-spin" />
+    </div>
+  );
+}
 
 const FEATURED_SUBJECTS = ['Matematik', 'Engelska', 'Svenska', 'Biologi', 'Kemi', 'Fysik'];
 
@@ -159,7 +173,9 @@ export function Discover() {
 
       {view === 'map' ? (
         <div className="flex-1 min-h-0" style={{ height: 'calc(100vh - 44px)' }}>
-          <MapView exams={filtered} className="w-full h-full" />
+          <Suspense fallback={<MapFallback />}>
+            <MapView exams={filtered} className="w-full h-full" />
+          </Suspense>
         </div>
       ) : (
         <>
@@ -237,11 +253,13 @@ export function Discover() {
               </div>
               <div className="relative">
                 <div className="h-[340px] lg:h-[420px] rounded shadow-lg overflow-hidden">
-                  <HeroMap
-                    exams={filtered}
-                    onCityClick={setSearchQuery}
-                    className="w-full h-full"
-                  />
+                  <Suspense fallback={<MapFallback />}>
+                    <HeroMap
+                      exams={filtered}
+                      onCityClick={setSearchQuery}
+                      className="w-full h-full"
+                    />
+                  </Suspense>
                 </div>
                 <div className="absolute bottom-3 left-3 z-[500] bg-cream border border-accent2-200 text-accent2-700 text-xs font-semibold px-2.5 py-1.5 rounded shadow-sm flex items-center gap-1.5">
                   <span className="relative flex h-1.5 w-1.5">
