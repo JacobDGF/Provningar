@@ -1,4 +1,14 @@
-import { Heart, MessageCircle, Send, Plus, X, ChevronDown, ChevronUp, Users, HelpCircle } from 'lucide-react';
+import {
+  Heart,
+  MessageCircle,
+  Send,
+  Plus,
+  X,
+  ChevronDown,
+  ChevronUp,
+  Users,
+  HelpCircle,
+} from 'lucide-react';
 import { useState } from 'react';
 import { useStore } from '../store/useStore';
 import { Post, PostKind } from '../types';
@@ -11,7 +21,7 @@ const KINDS: { value: PostKind; label: string; emoji: string; color: string }[] 
 ];
 
 function kindMeta(kind?: PostKind) {
-  return KINDS.find(k => k.value === kind);
+  return KINDS.find((k) => k.value === kind);
 }
 
 function timeAgo(dateStr: string) {
@@ -48,7 +58,11 @@ function PostCard({ post }: { post: Post }) {
       {/* Author */}
       <div className="p-4 pb-3">
         <div className="flex items-start gap-3">
-          <img src={post.userAvatar} alt={post.userName} className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+          <img
+            src={post.userAvatar}
+            alt={post.userName}
+            className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+          />
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -64,7 +78,9 @@ function PostCard({ post }: { post: Post }) {
                   </button>
                 )}
               </div>
-              <span className="text-ink-faint text-xs flex-shrink-0">{timeAgo(post.createdAt)}</span>
+              <span className="text-ink-faint text-xs flex-shrink-0">
+                {timeAgo(post.createdAt)}
+              </span>
             </div>
             <div className="flex items-center gap-1.5 mt-1">
               {meta && (
@@ -73,7 +89,9 @@ function PostCard({ post }: { post: Post }) {
                 </span>
               )}
               {post.subject && (
-                <span className="text-xs bg-brand-50 text-brand-700 px-2 py-0.5 rounded-full font-medium">{post.subject}</span>
+                <span className="text-xs bg-brand-50 text-brand-700 px-2 py-0.5 rounded-full font-medium">
+                  {post.subject}
+                </span>
               )}
             </div>
           </div>
@@ -83,8 +101,10 @@ function PostCard({ post }: { post: Post }) {
 
         {post.tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-2">
-            {post.tags.map(t => (
-              <span key={t} className="text-brand-500 text-xs">#{t}</span>
+            {post.tags.map((t) => (
+              <span key={t} className="text-brand-500 text-xs">
+                #{t}
+              </span>
             ))}
           </div>
         )}
@@ -92,15 +112,24 @@ function PostCard({ post }: { post: Post }) {
 
       {/* Actions */}
       <div className="px-4 pb-3 flex items-center gap-4 border-t border-line pt-3">
-        <button onClick={() => toggleLikePost(post.id)} className="flex items-center gap-1.5 text-sm font-semibold active:scale-95 transition-transform">
+        <button
+          onClick={() => toggleLikePost(post.id)}
+          className="flex items-center gap-1.5 text-sm font-semibold active:scale-95 transition-transform"
+        >
           <Heart size={19} className={isLiked ? 'text-red-500 fill-red-500' : 'text-ink-faint'} />
           <span className={isLiked ? 'text-red-500' : 'text-ink-soft'}>{post.likes}</span>
         </button>
-        <button onClick={() => setShowReplies(v => !v)} className="flex items-center gap-1.5 text-sm font-semibold text-ink-soft">
+        <button
+          onClick={() => setShowReplies((v) => !v)}
+          className="flex items-center gap-1.5 text-sm font-semibold text-ink-soft"
+        >
           <MessageCircle size={19} className="text-ink-faint" />
           {post.replies.length > 0 ? post.replies.length : 'Svara'}
         </button>
-        <button onClick={() => setShowReplyInput(v => !v)} className="ml-auto text-brand-600 text-xs font-bold">
+        <button
+          onClick={() => setShowReplyInput((v) => !v)}
+          className="ml-auto text-brand-600 text-xs font-bold"
+        >
           {showReplyInput ? 'Avbryt' : 'Skriv svar'}
         </button>
       </div>
@@ -108,15 +137,20 @@ function PostCard({ post }: { post: Post }) {
       {/* Reply input */}
       {showReplyInput && (
         <div className="px-4 pb-3 flex gap-2">
-          <img src={currentUser.avatar} alt="Du" className="w-7 h-7 rounded-full object-cover flex-shrink-0" />
+          <img
+            src={currentUser.avatar}
+            alt="Du"
+            className="w-7 h-7 rounded-full object-cover flex-shrink-0"
+          />
           <div className="flex-1 flex gap-2 bg-sand rounded px-3 py-2">
             <input
               type="text"
               value={replyText}
-              onChange={e => setReplyText(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && submitReply()}
+              onChange={(e) => setReplyText(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && submitReply()}
               placeholder="Skriv ett svar..."
               className="flex-1 bg-transparent text-sm outline-none"
+              // eslint-disable-next-line jsx-a11y/no-autofocus -- user just tapped "reply" to open this field
               autoFocus
             />
             <button onClick={submitReply} disabled={!replyText.trim()}>
@@ -129,7 +163,7 @@ function PostCard({ post }: { post: Post }) {
       {/* Replies toggle */}
       {post.replies.length > 0 && (
         <button
-          onClick={() => setShowReplies(v => !v)}
+          onClick={() => setShowReplies((v) => !v)}
           className="w-full text-xs text-ink-soft font-semibold py-2 border-t border-line flex items-center justify-center gap-1"
         >
           {showReplies ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
@@ -140,11 +174,15 @@ function PostCard({ post }: { post: Post }) {
       {/* Replies */}
       {showReplies && post.replies.length > 0 && (
         <div className="border-t border-line bg-sand/60">
-          {post.replies.map(reply => {
+          {post.replies.map((reply) => {
             const replyLiked = reply.likedBy.includes('me');
             return (
               <div key={reply.id} className="px-4 py-3 flex gap-2.5">
-                <img src={reply.userAvatar} alt={reply.userName} className="w-7 h-7 rounded-full object-cover flex-shrink-0 mt-0.5" />
+                <img
+                  src={reply.userAvatar}
+                  alt={reply.userName}
+                  className="w-7 h-7 rounded-full object-cover flex-shrink-0 mt-0.5"
+                />
                 <div className="flex-1">
                   <div className="bg-surface rounded px-3 py-2 border border-line">
                     <div className="flex items-center justify-between mb-1">
@@ -153,9 +191,17 @@ function PostCard({ post }: { post: Post }) {
                     </div>
                     <p className="text-sm text-ink-soft leading-relaxed">{reply.content}</p>
                   </div>
-                  <button onClick={() => toggleLikeReply(post.id, reply.id)} className="flex items-center gap-1 mt-1 ml-2 text-xs">
-                    <Heart size={13} className={replyLiked ? 'text-red-500 fill-red-500' : 'text-ink-faint'} />
-                    <span className={replyLiked ? 'text-red-500' : 'text-ink-faint'}>{reply.likes}</span>
+                  <button
+                    onClick={() => toggleLikeReply(post.id, reply.id)}
+                    className="flex items-center gap-1 mt-1 ml-2 text-xs"
+                  >
+                    <Heart
+                      size={13}
+                      className={replyLiked ? 'text-red-500 fill-red-500' : 'text-ink-faint'}
+                    />
+                    <span className={replyLiked ? 'text-red-500' : 'text-ink-faint'}>
+                      {reply.likes}
+                    </span>
                   </button>
                 </div>
               </div>
@@ -177,7 +223,7 @@ export function Community() {
 
   const FILTERS = ['all', 'fråga', 'tips', 'diskussion', 'seger'];
 
-  const filteredPosts = posts.filter(p => activeFilter === 'all' || p.kind === activeFilter);
+  const filteredPosts = posts.filter((p) => activeFilter === 'all' || p.kind === activeFilter);
 
   const handlePost = () => {
     if (!newPost.trim()) return;
@@ -222,7 +268,7 @@ export function Community() {
 
           {/* Kind filter */}
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-            {FILTERS.map(f => (
+            {FILTERS.map((f) => (
               <button
                 key={f}
                 onClick={() => setActiveFilter(f)}
@@ -230,7 +276,9 @@ export function Community() {
                   activeFilter === f ? 'bg-ink text-white' : 'bg-sand text-ink-soft hover:bg-line'
                 }`}
               >
-                {f === 'all' ? 'Allt' : `${kindMeta(f as PostKind)?.emoji} ${kindMeta(f as PostKind)?.label}`}
+                {f === 'all'
+                  ? 'Allt'
+                  : `${kindMeta(f as PostKind)?.emoji} ${kindMeta(f as PostKind)?.label}`}
               </button>
             ))}
           </div>
@@ -239,34 +287,51 @@ export function Community() {
 
       <div className="flex-1 overflow-y-auto pb-28 lg:pb-8">
         <div className="max-w-2xl mx-auto w-full px-4 py-4 space-y-4">
-          {filteredPosts.map(post => (
+          {filteredPosts.map((post) => (
             <PostCard key={post.id} post={post} />
           ))}
           {filteredPosts.length === 0 && (
-            <div className="text-center py-12 text-ink-faint">Inga inlägg i den här kategorin än.</div>
+            <div className="text-center py-12 text-ink-faint">
+              Inga inlägg i den här kategorin än.
+            </div>
           )}
         </div>
       </div>
 
       {/* Compose modal */}
       {showCompose && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end lg:items-center lg:justify-center" onClick={() => setShowCompose(false)}>
-          <div className="bg-cream w-full lg:max-w-lg rounded-t-lg lg:rounded-lg p-6 animate-sheet-up lg:max-h-[85vh] lg:overflow-y-auto" onClick={e => e.stopPropagation()}>
+        // Backdrop closes on click as a mouse convenience; the sheet has its own
+        // keyboard-reachable close button below, so this isn't the only way out.
+        // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-end lg:items-center lg:justify-center"
+          onClick={() => setShowCompose(false)}
+        >
+          {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events -- stops the backdrop's close-on-click from firing when interacting with the sheet itself */}
+          <div
+            className="bg-cream w-full lg:max-w-lg rounded-t-lg lg:rounded-lg p-6 animate-sheet-up lg:max-h-[85vh] lg:overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold text-ink font-display">Nytt inlägg</h2>
-              <button onClick={() => setShowCompose(false)} className="w-8 h-8 bg-sand rounded-full flex items-center justify-center">
+              <button
+                onClick={() => setShowCompose(false)}
+                className="w-8 h-8 bg-sand rounded-full flex items-center justify-center"
+              >
                 <X size={16} className="text-ink-soft" />
               </button>
             </div>
 
             {/* Kind picker */}
             <div className="flex gap-2 mb-4">
-              {KINDS.map(k => (
+              {KINDS.map((k) => (
                 <button
                   key={k.value}
                   onClick={() => setNewKind(k.value)}
                   className={`flex-1 py-2 rounded text-xs font-bold transition-colors ${
-                    newKind === k.value ? 'bg-brand-500 text-white' : 'bg-surface text-ink-soft border border-line'
+                    newKind === k.value
+                      ? 'bg-brand-500 text-white'
+                      : 'bg-surface text-ink-soft border border-line'
                   }`}
                 >
                   {k.emoji} {k.label}
@@ -275,12 +340,17 @@ export function Community() {
             </div>
 
             <div className="flex gap-3 mb-4">
-              <img src={currentUser.avatar} alt="Du" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+              <img
+                src={currentUser.avatar}
+                alt="Du"
+                className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+              />
               <textarea
                 value={newPost}
-                onChange={e => setNewPost(e.target.value)}
+                onChange={(e) => setNewPost(e.target.value)}
                 placeholder="Dela tips, ställ frågor eller berätta om dina erfarenheter..."
                 className="flex-1 bg-surface border border-line rounded-md px-4 py-3 text-sm text-ink placeholder-ink-faint outline-none resize-none min-h-[100px]"
+                // eslint-disable-next-line jsx-a11y/no-autofocus -- user just tapped "compose" to open this modal
                 autoFocus
               />
             </div>
@@ -289,12 +359,24 @@ export function Community() {
             <div className="mb-4">
               <p className="text-xs text-ink-soft font-semibold mb-2">Ämne (valfritt)</p>
               <div className="flex flex-wrap gap-2">
-                {['Matematik', 'Engelska', 'Svenska', 'Biologi', 'Kemi', 'Fysik', 'Historia', 'Samhällskunskap', 'Psykologi'].map(s => (
+                {[
+                  'Matematik',
+                  'Engelska',
+                  'Svenska',
+                  'Biologi',
+                  'Kemi',
+                  'Fysik',
+                  'Historia',
+                  'Samhällskunskap',
+                  'Psykologi',
+                ].map((s) => (
                   <button
                     key={s}
                     onClick={() => setNewSubject(newSubject === s ? '' : s)}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                      newSubject === s ? 'bg-brand-500 text-white' : 'bg-surface text-ink-soft border border-line'
+                      newSubject === s
+                        ? 'bg-brand-500 text-white'
+                        : 'bg-surface text-ink-soft border border-line'
                     }`}
                   >
                     {s}

@@ -61,36 +61,84 @@ const TIPS_SAMHALLSKUNSKAP = [
 ];
 
 const COMPONENTS_MATEMATIK: ExamComponent[] = [
-  { name: 'Del A – utan hjälpmedel', duration: '1–1,5 timmar', description: 'Räkneuppgifter utan miniräknare, fokus på begrepp och metod.' },
-  { name: 'Del B – med hjälpmedel', duration: '1,5–2 timmar', description: 'Mer omfattande problemlösning, digitala verktyg tillåtna.' },
+  {
+    name: 'Del A – utan hjälpmedel',
+    duration: '1–1,5 timmar',
+    description: 'Räkneuppgifter utan miniräknare, fokus på begrepp och metod.',
+  },
+  {
+    name: 'Del B – med hjälpmedel',
+    duration: '1,5–2 timmar',
+    description: 'Mer omfattande problemlösning, digitala verktyg tillåtna.',
+  },
 ];
 
 const COMPONENTS_ENGELSKA: ExamComponent[] = [
-  { name: 'Skriftlig produktion', duration: '2 timmar', description: 'Skriva en längre text utifrån givet ämne.' },
-  { name: 'Hörförståelse', duration: '45 min', description: 'Lyssna på autentiskt material och besvara frågor.' },
-  { name: 'Muntlig examination', duration: '15–20 min', description: 'Samtal eller presentation på engelska.' },
+  {
+    name: 'Skriftlig produktion',
+    duration: '2 timmar',
+    description: 'Skriva en längre text utifrån givet ämne.',
+  },
+  {
+    name: 'Hörförståelse',
+    duration: '45 min',
+    description: 'Lyssna på autentiskt material och besvara frågor.',
+  },
+  {
+    name: 'Muntlig examination',
+    duration: '15–20 min',
+    description: 'Samtal eller presentation på engelska.',
+  },
 ];
 
 const COMPONENTS_SVENSKA: ExamComponent[] = [
-  { name: 'Skriftlig uppgift', duration: '3 timmar', description: 'Argumenterande eller utredande text med källhänvisning.' },
-  { name: 'Muntlig redovisning', duration: '10–15 min', description: 'Presentera och diskutera ett valt ämne.' },
+  {
+    name: 'Skriftlig uppgift',
+    duration: '3 timmar',
+    description: 'Argumenterande eller utredande text med källhänvisning.',
+  },
+  {
+    name: 'Muntlig redovisning',
+    duration: '10–15 min',
+    description: 'Presentera och diskutera ett valt ämne.',
+  },
 ];
 
 const COMPONENTS_KEMI: ExamComponent[] = [
-  { name: 'Skriftligt prov', duration: '2–2,5 timmar', description: 'Teori och beräkningar inom kursens centrala innehåll.' },
-  { name: 'Laborativt moment', duration: 'Varierar', description: 'Praktisk laboration eller skriftlig labbrapport, enligt skolans upplägg.' },
+  {
+    name: 'Skriftligt prov',
+    duration: '2–2,5 timmar',
+    description: 'Teori och beräkningar inom kursens centrala innehåll.',
+  },
+  {
+    name: 'Laborativt moment',
+    duration: 'Varierar',
+    description: 'Praktisk laboration eller skriftlig labbrapport, enligt skolans upplägg.',
+  },
 ];
 
 const COMPONENTS_FYSIK: ExamComponent[] = [
-  { name: 'Skriftligt prov', duration: '2,5–3 timmar', description: 'Begrepp, beräkningar och problemlösning enligt kursplanen.' },
+  {
+    name: 'Skriftligt prov',
+    duration: '2,5–3 timmar',
+    description: 'Begrepp, beräkningar och problemlösning enligt kursplanen.',
+  },
 ];
 
 const COMPONENTS_PSYKOLOGI: ExamComponent[] = [
-  { name: 'Skriftligt prov', duration: '2 timmar', description: 'Psykologins perspektiv, historia och tillämpning.' },
+  {
+    name: 'Skriftligt prov',
+    duration: '2 timmar',
+    description: 'Psykologins perspektiv, historia och tillämpning.',
+  },
 ];
 
 const COMPONENTS_SAMHALLSKUNSKAP: ExamComponent[] = [
-  { name: 'Skriftligt prov', duration: '2,5 timmar', description: 'Demokrati, politik, ekonomi och samhällsstrukturer.' },
+  {
+    name: 'Skriftligt prov',
+    duration: '2,5 timmar',
+    description: 'Demokrati, politik, ekonomi och samhällsstrukturer.',
+  },
 ];
 
 const TIPS_NATURKUNSKAP = [
@@ -101,7 +149,11 @@ const TIPS_NATURKUNSKAP = [
 ];
 
 const COMPONENTS_NATURKUNSKAP: ExamComponent[] = [
-  { name: 'Skriftligt prov', duration: '2–2,5 timmar', description: 'Frågor om ekologi, evolution, hälsa och naturvetenskapliga metoder.' },
+  {
+    name: 'Skriftligt prov',
+    duration: '2–2,5 timmar',
+    description: 'Frågor om ekologi, evolution, hälsa och naturvetenskapliga metoder.',
+  },
 ];
 
 const TIPS_VARD = [
@@ -112,8 +164,16 @@ const TIPS_VARD = [
 ];
 
 const COMPONENTS_VARD: ExamComponent[] = [
-  { name: 'Skriftligt prov', duration: '2–3 timmar', description: 'Teorifrågor om vård, omsorg, bemötande och etik enligt kursplanen.' },
-  { name: 'Praktiskt/muntligt moment', duration: 'Varierar', description: 'Praktisk examination eller muntlig redovisning, enligt skolans upplägg.' },
+  {
+    name: 'Skriftligt prov',
+    duration: '2–3 timmar',
+    description: 'Teorifrågor om vård, omsorg, bemötande och etik enligt kursplanen.',
+  },
+  {
+    name: 'Praktiskt/muntligt moment',
+    duration: 'Varierar',
+    description: 'Praktisk examination eller muntlig redovisning, enligt skolans upplägg.',
+  },
 ];
 
 const TIPS_FLERA = [
@@ -124,7 +184,12 @@ const TIPS_FLERA = [
 ];
 
 const COMPONENTS_FLERA: ExamComponent[] = [
-  { name: 'Prövning enligt kursplan', duration: 'Varierar', description: 'Provets upplägg (skriftligt/muntligt/praktiskt) beror på vilken kurs som prövas — kontrollera med skolan.' },
+  {
+    name: 'Prövning enligt kursplan',
+    duration: 'Varierar',
+    description:
+      'Provets upplägg (skriftligt/muntligt/praktiskt) beror på vilken kurs som prövas — kontrollera med skolan.',
+  },
 ];
 
 // Second research pass covering providers outside the initial 23 (nationwide sweep).
@@ -148,14 +213,17 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: FREE_IF_PRIOR_F,
     nextPeriod: {
-      label: 'Nästa omgång preliminärt september 2026 — fullständigt schema publiceras av skolan i maj.',
+      label:
+        'Nästa omgång preliminärt september 2026 — fullständigt schema publiceras av skolan i maj.',
       confirmed: false,
     },
     components: COMPONENTS_KEMI,
     studyTips: TIPS_KEMI,
     registrationUrl: 'https://komvuxsodermalm.stockholm/provningar/anmalan-till-provning/',
-    infoUrl: 'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/kemi-laroplan-gy11gy25/provning-i-kemi-1/',
-    description: 'Prövning i Kemi 1 hos Komvux Södermalm, en av Stockholms stads vuxenutbildningar. Avgiften följer det nationella pristaket på 500 kr.',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/kemi-laroplan-gy11gy25/provning-i-kemi-1/',
+    description:
+      'Prövning i Kemi 1 hos Komvux Södermalm, en av Stockholms stads vuxenutbildningar. Avgiften följer det nationella pristaket på 500 kr.',
     tags: ['kemi', 'naturvetenskap', 'stockholm'],
     verifiedAt: VERIFIED,
   },
@@ -182,8 +250,10 @@ export const EXAMS: Exam[] = [
     components: COMPONENTS_FYSIK,
     studyTips: TIPS_FYSIK,
     registrationUrl: 'https://komvuxsodermalm.stockholm/provningar/anmalan-till-provning/',
-    infoUrl: 'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/fysik-laroplan-gy11gy25/provning-i-fysik-2/',
-    description: 'Prövning i Fysik 2 hos Komvux Södermalm. Krävs ofta för tekniska och naturvetenskapliga högskoleutbildningar.',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/fysik-laroplan-gy11gy25/provning-i-fysik-2/',
+    description:
+      'Prövning i Fysik 2 hos Komvux Södermalm. Krävs ofta för tekniska och naturvetenskapliga högskoleutbildningar.',
     tags: ['fysik', 'naturvetenskap', 'stockholm'],
     verifiedAt: VERIFIED,
   },
@@ -214,7 +284,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_MATEMATIK,
     registrationUrl: 'https://shop.medlearn.se/produkt/provning-for-betyg-i-taby/',
     infoUrl: 'https://medlearn.se/utbildning/provning/',
-    description: 'Medlearn genomför betygsprövning för KCNO (Täby, Danderyd, Vallentuna, Vaxholm, Österåker) minst två gånger per termin. Matematik och svenska är vanliga ämnen, men kontakta skolan för exakt kurskod inför din anmälan.',
+    description:
+      'Medlearn genomför betygsprövning för KCNO (Täby, Danderyd, Vallentuna, Vaxholm, Österåker) minst två gånger per termin. Matematik och svenska är vanliga ämnen, men kontakta skolan för exakt kurskod inför din anmälan.',
     tags: ['matematik', 'taby', 'kcno'],
     verifiedAt: VERIFIED,
   },
@@ -242,7 +313,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_MATEMATIK,
     registrationUrl: 'https://hermods.se/komvux/provning/',
     infoUrl: 'https://hermods.se/komvux/provning/',
-    description: 'Hermods erbjuder prövning i Matematik 2b på kontrakt åt anslutna kommuner, med skriftligt prov på plats i Liljeholmen.',
+    description:
+      'Hermods erbjuder prövning i Matematik 2b på kontrakt åt anslutna kommuner, med skriftligt prov på plats i Liljeholmen.',
     tags: ['matematik', 'stockholm', 'hermods'],
     verifiedAt: VERIFIED,
   },
@@ -261,7 +333,8 @@ export const EXAMS: Exam[] = [
     lat: 59.3045,
     lng: 18.1004,
     price: 500,
-    priceNote: NON_REFUNDABLE + ' Studerar du distans kan provet i vissa fall skrivas på annan godkänd ort.',
+    priceNote:
+      NON_REFUNDABLE + ' Studerar du distans kan provet i vissa fall skrivas på annan godkänd ort.',
     nextPeriod: {
       label: 'Ansökan öppnar 17 augusti 2026 kl. 09:00 — provdatum publiceras strax efter.',
       applicationStart: '2026-08-17',
@@ -271,7 +344,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_MATEMATIK,
     registrationUrl: 'https://ansokan-provning.nti.se/',
     infoUrl: 'https://nti.se/distansutbildning/provning/',
-    description: 'NTI-skolan erbjuder nationell prövning i Matematik 2b för elever i kommuner med avtal. Antas du inte denna omgång är nästa möjlighet våren 2027.',
+    description:
+      'NTI-skolan erbjuder nationell prövning i Matematik 2b för elever i kommuner med avtal. Antas du inte denna omgång är nästa möjlighet våren 2027.',
     tags: ['matematik', 'distans', 'nti'],
     verifiedAt: VERIFIED,
   },
@@ -300,7 +374,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_PSYKOLOGI,
     registrationUrl: 'https://ansokan-provning.nti.se/',
     infoUrl: 'https://nti.se/distansutbildning/provning/',
-    description: 'Nationell prövning i Psykologi 1 via NTI-skolan, för elever i kommuner med avtal.',
+    description:
+      'Nationell prövning i Psykologi 1 via NTI-skolan, för elever i kommuner med avtal.',
     tags: ['psykologi', 'distans', 'nti'],
     verifiedAt: VERIFIED,
   },
@@ -329,7 +404,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_SAMHALLSKUNSKAP,
     registrationUrl: 'https://ansokan-provning.nti.se/',
     infoUrl: 'https://nti.se/distansutbildning/provning/',
-    description: 'Nationell prövning i Samhällskunskap 1b via NTI-skolan, för elever i kommuner med avtal.',
+    description:
+      'Nationell prövning i Samhällskunskap 1b via NTI-skolan, för elever i kommuner med avtal.',
     tags: ['samhallskunskap', 'distans', 'nti'],
     verifiedAt: VERIFIED,
   },
@@ -360,7 +436,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_MATEMATIK,
     registrationUrl: 'https://www.jensenkomvux.se/provning/stockholm',
     infoUrl: 'https://www.jensenkomvux.se/utbud-kurser-provning',
-    description: 'JENSEN vuxenutbildning erbjuder prövning i Matematik 2b i Stockholm. Missar du höstens omgång är nästa tillfälle i början av 2027.',
+    description:
+      'JENSEN vuxenutbildning erbjuder prövning i Matematik 2b i Stockholm. Missar du höstens omgång är nästa tillfälle i början av 2027.',
     tags: ['matematik', 'stockholm', 'jensen'],
     verifiedAt: VERIFIED,
   },
@@ -391,7 +468,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_FYSIK,
     registrationUrl: 'https://www.jensenkomvux.se/provning/stockholm',
     infoUrl: 'https://www.jensenkomvux.se/utbud-kurser-provning',
-    description: 'JENSEN vuxenutbildning erbjuder prövning i Fysik 1a i Stockholm, med laborativa moment på plats.',
+    description:
+      'JENSEN vuxenutbildning erbjuder prövning i Fysik 1a i Stockholm, med laborativa moment på plats.',
     tags: ['fysik', 'stockholm', 'jensen'],
     verifiedAt: VERIFIED,
   },
@@ -453,7 +531,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_FYSIK,
     registrationUrl: 'https://shop.iris.se/produkt/provning-for-betyg-i-upplands-vasby/',
     infoUrl: 'https://www.iris.se/provningar/',
-    description: 'Iris Hadar genomför betygsprövning i naturvetenskapliga ämnen i Upplands Väsby ett par gånger per termin.',
+    description:
+      'Iris Hadar genomför betygsprövning i naturvetenskapliga ämnen i Upplands Väsby ett par gånger per termin.',
     tags: ['fysik', 'upplands-vasby', 'iris'],
     verifiedAt: VERIFIED,
   },
@@ -484,7 +563,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_MATEMATIK,
     registrationUrl: 'https://shop.iris.se/produkt/provning-for-betyg-i-flemingsberg/',
     infoUrl: 'https://www.iris.se/provningar/',
-    description: 'Iris Hadar genomför betygsprövning i Flemingsberg, bland annat i matematik. Ange exakt kurs och kurskod vid anmälan.',
+    description:
+      'Iris Hadar genomför betygsprövning i Flemingsberg, bland annat i matematik. Ange exakt kurs och kurskod vid anmälan.',
     tags: ['matematik', 'flemingsberg', 'iris'],
     verifiedAt: VERIFIED,
   },
@@ -503,9 +583,11 @@ export const EXAMS: Exam[] = [
     lat: 57.7089,
     lng: 11.9746,
     price: 500,
-    priceNote: 'Avgift betalas minst 4 veckor före provdatum och återbetalas ej, utöver vid läkarintyg.',
+    priceNote:
+      'Avgift betalas minst 4 veckor före provdatum och återbetalas ej, utöver vid läkarintyg.',
     nextPeriod: {
-      label: 'Anmälan till höstterminens prövningar öppnar 1 juli 2026 (schema publiceras 15 juni).',
+      label:
+        'Anmälan till höstterminens prövningar öppnar 1 juli 2026 (schema publiceras 15 juni).',
       applicationStart: '2026-07-01',
       confirmed: true,
     },
@@ -513,7 +595,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_MATEMATIK,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser',
     infoUrl: 'https://goteborg.se/wps/portal?uri=gbglnk%3A2015726104247222',
-    description: 'Göteborgs Stads Prövningsenhet samordnar betygsprövning i gymnasiekurser för hela kommunen, bokningsbart löpande via Alvis.',
+    description:
+      'Göteborgs Stads Prövningsenhet samordnar betygsprövning i gymnasiekurser för hela kommunen, bokningsbart löpande via Alvis.',
     tags: ['matematik', 'goteborg'],
     verifiedAt: VERIFIED,
   },
@@ -532,9 +615,11 @@ export const EXAMS: Exam[] = [
     lat: 57.7089,
     lng: 11.9746,
     price: 500,
-    priceNote: 'Avgift betalas minst 4 veckor före provdatum och återbetalas ej, utöver vid läkarintyg.',
+    priceNote:
+      'Avgift betalas minst 4 veckor före provdatum och återbetalas ej, utöver vid läkarintyg.',
     nextPeriod: {
-      label: 'Anmälan till höstterminens prövningar öppnar 1 juli 2026 (schema publiceras 15 juni).',
+      label:
+        'Anmälan till höstterminens prövningar öppnar 1 juli 2026 (schema publiceras 15 juni).',
       applicationStart: '2026-07-01',
       confirmed: true,
     },
@@ -542,7 +627,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_ENGELSKA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12372',
     infoUrl: 'https://goteborg.se/wps/portal?uri=gbglnk%3A2015726104247222',
-    description: 'Betygsprövning i Engelska 6 via Göteborgs Stads Prövningsenhet. Platsantal varierar och uppdateras löpande.',
+    description:
+      'Betygsprövning i Engelska 6 via Göteborgs Stads Prövningsenhet. Platsantal varierar och uppdateras löpande.',
     tags: ['engelska', 'goteborg'],
     verifiedAt: VERIFIED,
   },
@@ -561,9 +647,11 @@ export const EXAMS: Exam[] = [
     lat: 57.7089,
     lng: 11.9746,
     price: 500,
-    priceNote: 'Avgift betalas minst 4 veckor före provdatum och återbetalas ej, utöver vid läkarintyg.',
+    priceNote:
+      'Avgift betalas minst 4 veckor före provdatum och återbetalas ej, utöver vid läkarintyg.',
     nextPeriod: {
-      label: 'Anmälan till höstterminens prövningar öppnar 1 juli 2026 (schema publiceras 15 juni).',
+      label:
+        'Anmälan till höstterminens prövningar öppnar 1 juli 2026 (schema publiceras 15 juni).',
       applicationStart: '2026-07-01',
       confirmed: true,
     },
@@ -590,9 +678,11 @@ export const EXAMS: Exam[] = [
     lat: 57.7089,
     lng: 11.9746,
     price: 500,
-    priceNote: 'Avgift betalas minst 4 veckor före provdatum och återbetalas ej, utöver vid läkarintyg.',
+    priceNote:
+      'Avgift betalas minst 4 veckor före provdatum och återbetalas ej, utöver vid läkarintyg.',
     nextPeriod: {
-      label: 'Anmälan till höstterminens prövningar öppnar 1 juli 2026 (schema publiceras 15 juni).',
+      label:
+        'Anmälan till höstterminens prövningar öppnar 1 juli 2026 (schema publiceras 15 juni).',
       applicationStart: '2026-07-01',
       confirmed: true,
     },
@@ -616,7 +706,7 @@ export const EXAMS: Exam[] = [
     city: 'Malmö',
     region: 'Skåne',
     address: 'Kungsgatan 44, Malmö',
-    lat: 55.6050,
+    lat: 55.605,
     lng: 13.0038,
     price: 500,
     priceNote: FREE_IF_PRIOR_F + ' Svenska har två obligatoriska provdagar.',
@@ -629,8 +719,10 @@ export const EXAMS: Exam[] = [
     components: COMPONENTS_SVENSKA,
     studyTips: TIPS_SVENSKA,
     registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
-    infoUrl: 'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser.html',
-    description: 'Komvux Malmö genomför betygsprövning i Svenska 3 på plats, med två obligatoriska provdagar enligt skrivschemat.',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser.html',
+    description:
+      'Komvux Malmö genomför betygsprövning i Svenska 3 på plats, med två obligatoriska provdagar enligt skrivschemat.',
     tags: ['svenska', 'malmo'],
     verifiedAt: VERIFIED,
   },
@@ -646,7 +738,7 @@ export const EXAMS: Exam[] = [
     city: 'Malmö',
     region: 'Skåne',
     address: 'Kungsgatan 44, Malmö',
-    lat: 55.6050,
+    lat: 55.605,
     lng: 13.0038,
     price: 500,
     priceNote: FREE_IF_PRIOR_F,
@@ -659,8 +751,10 @@ export const EXAMS: Exam[] = [
     components: COMPONENTS_ENGELSKA,
     studyTips: TIPS_ENGELSKA,
     registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
-    infoUrl: 'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser.html',
-    description: 'Komvux Malmö genomför betygsprövning i Engelska 6 på plats, all examination sker på svenska anvisad lokal.',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser.html',
+    description:
+      'Komvux Malmö genomför betygsprövning i Engelska 6 på plats, all examination sker på svenska anvisad lokal.',
     tags: ['engelska', 'malmo'],
     verifiedAt: VERIFIED,
   },
@@ -681,14 +775,17 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: FREE_IF_PRIOR_F,
     nextPeriod: {
-      label: 'Se skolans sida för nästa anmälningsperiod — vi kunde inte bekräfta exakt år för senast kända datum.',
+      label:
+        'Se skolans sida för nästa anmälningsperiod — vi kunde inte bekräfta exakt år för senast kända datum.',
       confirmed: false,
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
-    registrationUrl: 'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
     infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
-    description: 'Komvux Helsingborg erbjuder betygsprövning i gymnasiekurser, bland annat matematik.',
+    description:
+      'Komvux Helsingborg erbjuder betygsprövning i gymnasiekurser, bland annat matematik.',
     tags: ['matematik', 'helsingborg'],
     verifiedAt: VERIFIED,
   },
@@ -705,18 +802,21 @@ export const EXAMS: Exam[] = [
     region: 'Skåne',
     address: 'Höstbruksvägen 10, Lund',
     lat: 55.7047,
-    lng: 13.1910,
+    lng: 13.191,
     price: 500,
-    priceNote: 'Avgift varierar beroende på din situation — skolan bekräftar vid ansökan. Anmälningstider är fasta och bindande.',
+    priceNote:
+      'Avgift varierar beroende på din situation — skolan bekräftar vid ansökan. Anmälningstider är fasta och bindande.',
     nextPeriod: {
       label: 'Anmälningstider fastställs av skolan — se Lunds kommuns sida.',
       confirmed: false,
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
-    registrationUrl: 'https://barnskolautbildning.lund.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registrationUrl:
+      'https://barnskolautbildning.lund.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
     infoUrl: 'https://lund.se/forskola-och-skola/kommunal-vuxenutbildning/provning',
-    description: 'Lunds kommun erbjuder betygsprövning i bland annat matematik, engelska och svenska, med skriftlig del på Höstbruksvägen 10.',
+    description:
+      'Lunds kommun erbjuder betygsprövning i bland annat matematik, engelska och svenska, med skriftlig del på Höstbruksvägen 10.',
     tags: ['matematik', 'lund'],
     verifiedAt: VERIFIED,
   },
@@ -733,9 +833,11 @@ export const EXAMS: Exam[] = [
     region: 'Västerbotten',
     address: 'Mossvägen 1, Umeå (Vuxenutbildningens hus)',
     lat: 63.8258,
-    lng: 20.2630,
+    lng: 20.263,
     price: 500,
-    priceNote: FREE_IF_PRIOR_F + ' Kräver folkbokföring i en Västerbottens-kommun. Endast ett ämne per prövningsperiod.',
+    priceNote:
+      FREE_IF_PRIOR_F +
+      ' Kräver folkbokföring i en Västerbottens-kommun. Endast ett ämne per prövningsperiod.',
     nextPeriod: {
       label: 'Minst fyra provperioder per år — nästa datum publiceras löpande av Umevux.',
       confirmed: false,
@@ -743,8 +845,10 @@ export const EXAMS: Exam[] = [
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
     registrationUrl: 'https://e.umea.se/studera-ansokan-provning-gymnasiekurs',
-    infoUrl: 'https://www.umea.se/forskolaskolaochutbildning/vuxenutbildning/komvux/studerahososs/provning.4.7d6aaaf718b5a33d8de614e.html',
-    description: 'Umevux erbjuder betygsprövning i gymnasiekurser för folkbokförda i Västerbottens kommuner, minst fyra gånger per år.',
+    infoUrl:
+      'https://www.umea.se/forskolaskolaochutbildning/vuxenutbildning/komvux/studerahososs/provning.4.7d6aaaf718b5a33d8de614e.html',
+    description:
+      'Umevux erbjuder betygsprövning i gymnasiekurser för folkbokförda i Västerbottens kommuner, minst fyra gånger per år.',
     tags: ['matematik', 'umea'],
     verifiedAt: VERIFIED,
   },
@@ -761,9 +865,11 @@ export const EXAMS: Exam[] = [
     region: 'Västerbotten',
     address: 'Mossvägen 1, Umeå (Vuxenutbildningens hus)',
     lat: 63.8258,
-    lng: 20.2630,
+    lng: 20.263,
     price: 500,
-    priceNote: FREE_IF_PRIOR_F + ' Kräver folkbokföring i en Västerbottens-kommun. Endast ett ämne per prövningsperiod.',
+    priceNote:
+      FREE_IF_PRIOR_F +
+      ' Kräver folkbokföring i en Västerbottens-kommun. Endast ett ämne per prövningsperiod.',
     nextPeriod: {
       label: 'Minst fyra provperioder per år — nästa datum publiceras löpande av Umevux.',
       confirmed: false,
@@ -771,8 +877,10 @@ export const EXAMS: Exam[] = [
     components: COMPONENTS_ENGELSKA,
     studyTips: TIPS_ENGELSKA,
     registrationUrl: 'https://e.umea.se/studera-ansokan-provning-gymnasiekurs',
-    infoUrl: 'https://www.umea.se/forskolaskolaochutbildning/vuxenutbildning/komvux/studerahososs/provning.4.7d6aaaf718b5a33d8de614e.html',
-    description: 'Umevux erbjuder betygsprövning i Engelska 6 för folkbokförda i Västerbottens kommuner.',
+    infoUrl:
+      'https://www.umea.se/forskolaskolaochutbildning/vuxenutbildning/komvux/studerahososs/provning.4.7d6aaaf718b5a33d8de614e.html',
+    description:
+      'Umevux erbjuder betygsprövning i Engelska 6 för folkbokförda i Västerbottens kommuner.',
     tags: ['engelska', 'umea'],
     verifiedAt: VERIFIED,
   },
@@ -791,7 +899,8 @@ export const EXAMS: Exam[] = [
     lat: 65.5848,
     lng: 22.1567,
     price: 500,
-    priceNote: FREE_IF_PRIOR_F + ' Kemi 2 erbjuds för närvarande inte här — hänvisas till annan kommun.',
+    priceNote:
+      FREE_IF_PRIOR_F + ' Kemi 2 erbjuds för närvarande inte här — hänvisas till annan kommun.',
     nextPeriod: {
       label: 'Löpande anmälan — se kommunens sida för nästa provtillfälle.',
       confirmed: false,
@@ -799,8 +908,10 @@ export const EXAMS: Exam[] = [
     components: COMPONENTS_KEMI,
     studyTips: TIPS_KEMI,
     registrationUrl: 'https://sjalvservice.lulea.se/Provningsanmalan',
-    infoUrl: 'https://www.lulea.se/utbildning--forskola/vuxenutbildning/provning-pa-vuxenutbildingen.html',
-    description: 'Vuxenutbildningen i Luleå erbjuder betygsprövning i bland annat Kemi 1, gymnasiekurser, grundläggande kurser och SFI (B–D).',
+    infoUrl:
+      'https://www.lulea.se/utbildning--forskola/vuxenutbildning/provning-pa-vuxenutbildingen.html',
+    description:
+      'Vuxenutbildningen i Luleå erbjuder betygsprövning i bland annat Kemi 1, gymnasiekurser, grundläggande kurser och SFI (B–D).',
     tags: ['kemi', 'lulea'],
     verifiedAt: VERIFIED,
   },
@@ -819,7 +930,8 @@ export const EXAMS: Exam[] = [
     lat: 62.3908,
     lng: 17.3069,
     price: 500,
-    priceNote: '500 kr per ämne, betalas vid anmälan och återbetalas ej. Kostnadsfritt om registrerat F/IG i ämnet satt senast 12 månader innan prövningsdatumet.',
+    priceNote:
+      '500 kr per ämne, betalas vid anmälan och återbetalas ej. Kostnadsfritt om registrerat F/IG i ämnet satt senast 12 månader innan prövningsdatumet.',
     nextPeriod: {
       label: 'Provperiod 2026-10-21 – 2026-10-24',
       applicationStart: '2026-08-17',
@@ -832,7 +944,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://e-tjanster.sundsvall.se/oversikt/overview/331',
     infoUrl: 'https://sundsvall.se/kommun/utbildning-och-forskola/vuxenutbildning/ansokan/provning',
-    description: 'Vuxenutbildningen Sundsvall erbjuder prövning fyra gånger per år i ämnen ur den ordinarie kurskatalogen (Alvis). E-tjänsten för oktoberperioden öppnar 17 augusti 2026 med sista anmälningsdag 20 september; prövningstillfällena är 21 och 24 oktober beroende på skolenhet (Arena/Jensen).',
+    description:
+      'Vuxenutbildningen Sundsvall erbjuder prövning fyra gånger per år i ämnen ur den ordinarie kurskatalogen (Alvis). E-tjänsten för oktoberperioden öppnar 17 augusti 2026 med sista anmälningsdag 20 september; prövningstillfällena är 21 och 24 oktober beroende på skolenhet (Arena/Jensen).',
     tags: ['kommun', 'gymnasial', 'flera-amnen'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -851,7 +964,8 @@ export const EXAMS: Exam[] = [
     lat: 63.2909,
     lng: 18.7161,
     price: 500,
-    priceNote: '500 kr per kurs, betalas via Swish (123 562 2162) vid anmälan. Kostnadsfritt om man läst samma/motsvarande kurs hos kommunal vuxenutbildning och fått betyg F eller IG.',
+    priceNote:
+      '500 kr per kurs, betalas via Swish (123 562 2162) vid anmälan. Kostnadsfritt om man läst samma/motsvarande kurs hos kommunal vuxenutbildning och fått betyg F eller IG.',
     nextPeriod: {
       label: 'Provperiod 2026-10-07 – 2026-10-08',
       applicationStart: '2026-08-17',
@@ -861,9 +975,12 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://www.ornskoldsvik.se/utbildning-och-barnomsorg/vuxenstuderande/vuxenutbildning---komvux/anmal-till-provning-for-betyg---vuxenstuderande',
-    infoUrl: 'https://www.ornskoldsvik.se/utbildning-och-barnomsorg/vuxenstuderande/vuxenutbildning---komvux/anmal-till-provning-for-betyg---vuxenstuderande',
-    description: 'Prövning erbjuds endast i nya GY25-ämnesnivåer, med fyra fasta datum per år; höstens tillfällen är 7 och 8 oktober 2026 kl. 11:30 i Studielänkens lokaler. Nästa anmälningsperiod öppnar 17 augusti 2026.',
+    registrationUrl:
+      'https://www.ornskoldsvik.se/utbildning-och-barnomsorg/vuxenstuderande/vuxenutbildning---komvux/anmal-till-provning-for-betyg---vuxenstuderande',
+    infoUrl:
+      'https://www.ornskoldsvik.se/utbildning-och-barnomsorg/vuxenstuderande/vuxenutbildning---komvux/anmal-till-provning-for-betyg---vuxenstuderande',
+    description:
+      'Prövning erbjuds endast i nya GY25-ämnesnivåer, med fyra fasta datum per år; höstens tillfällen är 7 och 8 oktober 2026 kl. 11:30 i Studielänkens lokaler. Nästa anmälningsperiod öppnar 17 augusti 2026.',
     tags: ['kommun', 'gymnasial', 'gy25'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -882,7 +999,8 @@ export const EXAMS: Exam[] = [
     lat: 62.63,
     lng: 17.9386,
     price: 500,
-    priceNote: '500 kr om kursen inte lästs tidigare eller redan har godkänt betyg; kostnadsfritt om F/IG satts i kursen tidigare (styrks med betygskopia).',
+    priceNote:
+      '500 kr om kursen inte lästs tidigare eller redan har godkänt betyg; kostnadsfritt om F/IG satts i kursen tidigare (styrks med betygskopia).',
     nextPeriod: {
       label: 'Provperiod 2026-09-21 – 2026-09-27',
       applicationEnd: '2026-08-05',
@@ -892,9 +1010,12 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://harnosand.se/e-tjanster-och-blanketter/utbildning-och-forskola/vuxenutbildning/ansokan-om-sarskild-provning-inom-kommunal-vuxenutbildning.html',
-    infoUrl: 'https://harnosand.se/barn--utbildning/vuxenutbildning/att-studera-pa-komvux/provning.html',
-    description: 'Nästa prövningstillfälle startar vecka 39 2026 (21-27 september), med sista ansökningsdag 5 augusti 2026. Legitimationskontroll måste göras på plats hos studerandeservice under vecka 34 efter antagningsbesked.',
+    registrationUrl:
+      'https://harnosand.se/e-tjanster-och-blanketter/utbildning-och-forskola/vuxenutbildning/ansokan-om-sarskild-provning-inom-kommunal-vuxenutbildning.html',
+    infoUrl:
+      'https://harnosand.se/barn--utbildning/vuxenutbildning/att-studera-pa-komvux/provning.html',
+    description:
+      'Nästa prövningstillfälle startar vecka 39 2026 (21-27 september), med sista ansökningsdag 5 augusti 2026. Legitimationskontroll måste göras på plats hos studerandeservice under vecka 34 efter antagningsbesked.',
     tags: ['kommun', 'gymnasial', 'flera-amnen'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -913,16 +1034,19 @@ export const EXAMS: Exam[] = [
     lat: 63.1792,
     lng: 14.6357,
     price: 500,
-    priceNote: '500 kr per kurs för dig som gått ut gymnasiet, betalas till Jämtlands Gymnasiums bankgiro innan prövningen. Kostnadsfritt för nuvarande gymnasieelever (100 kr deposition som återbetalas).',
+    priceNote:
+      '500 kr per kurs för dig som gått ut gymnasiet, betalas till Jämtlands Gymnasiums bankgiro innan prövningen. Kostnadsfritt för nuvarande gymnasieelever (100 kr deposition som återbetalas).',
     nextPeriod: {
-      label: 'Prövningstillfällen läsår 25/26 var 2025-11-07, 2026-02-27 och 2026-05-08 (anmälan senast 8 veckor innan). Datum för läsåret 26/27 är ännu inte publicerade.',
+      label:
+        'Prövningstillfällen läsår 25/26 var 2025-11-07, 2026-02-27 och 2026-05-08 (anmälan senast 8 veckor innan). Datum för läsåret 26/27 är ännu inte publicerade.',
       confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://jgy.se/gymnasieutbildning/elevinformation/betyg/provning/',
     infoUrl: 'https://www.larcentrum.se/ostersund/provning/',
-    description: 'I Östersund går det inte att läsa om en hel kurs för att höja ett godkänt betyg, utan enbart göra prövning. Den som gått ut gymnasiet för mer än ett läsår sedan hänvisas till Lärcentrum i hemkommunen; anmälan sker annars till respektive skolas expedition.',
+    description:
+      'I Östersund går det inte att läsa om en hel kurs för att höja ett godkänt betyg, utan enbart göra prövning. Den som gått ut gymnasiet för mer än ett läsår sedan hänvisas till Lärcentrum i hemkommunen; anmälan sker annars till respektive skolas expedition.',
     tags: ['gymnasium', 'gymnasial', 'flera-amnen'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -952,8 +1076,10 @@ export const EXAMS: Exam[] = [
     components: COMPONENTS_KEMI,
     studyTips: TIPS_KEMI,
     registrationUrl: 'https://sjalvservice.skelleftea.se/bokaprovningstillfalle',
-    infoUrl: 'https://skelleftea.se/invanare/startsida/forskola-skola-och-utbildning/vuxenutbildning-och-hogre-utbildning/vux/provning',
-    description: 'Prövningen består av ett skriftligt prov och ett laborativt moment på plats i Skellefteå. Prövningsperioden 19 oktober-13 november 2026 har sista ansökningsdag 20 september 2026.',
+    infoUrl:
+      'https://skelleftea.se/invanare/startsida/forskola-skola-och-utbildning/vuxenutbildning-och-hogre-utbildning/vux/provning',
+    description:
+      'Prövningen består av ett skriftligt prov och ett laborativt moment på plats i Skellefteå. Prövningsperioden 19 oktober-13 november 2026 har sista ansökningsdag 20 september 2026.',
     tags: ['kommun', 'naturvetenskap', 'gymnasial'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -983,8 +1109,10 @@ export const EXAMS: Exam[] = [
     components: COMPONENTS_SVENSKA,
     studyTips: TIPS_SVENSKA,
     registrationUrl: 'https://sjalvservice.skelleftea.se/bokaprovningstillfalle',
-    infoUrl: 'https://skelleftea.se/invanare/startsida/forskola-skola-och-utbildning/vuxenutbildning-och-hogre-utbildning/vux/provning',
-    description: 'Prövningen innehåller nationellt prov, litterär analys och muntliga examinationer (bl.a. romansamtal). Betyg sätts senast 14 dagar efter avslutad prövning; prövningsperioden är 19 oktober-13 november 2026 med sista ansökningsdag 20 september.',
+    infoUrl:
+      'https://skelleftea.se/invanare/startsida/forskola-skola-och-utbildning/vuxenutbildning-och-hogre-utbildning/vux/provning',
+    description:
+      'Prövningen innehåller nationellt prov, litterär analys och muntliga examinationer (bl.a. romansamtal). Betyg sätts senast 14 dagar efter avslutad prövning; prövningsperioden är 19 oktober-13 november 2026 med sista ansökningsdag 20 september.',
     tags: ['kommun', 'svenska', 'gymnasial'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1014,8 +1142,10 @@ export const EXAMS: Exam[] = [
     components: COMPONENTS_NATURKUNSKAP,
     studyTips: TIPS_NATURKUNSKAP,
     registrationUrl: 'https://sjalvservice.skelleftea.se/bokaprovningstillfalle',
-    infoUrl: 'https://skelleftea.se/invanare/startsida/forskola-skola-och-utbildning/vuxenutbildning-och-hogre-utbildning/vux/provning',
-    description: 'Prövningen kräver intyg om tidigare godkänd laborationskurs för att betyg ska kunna sättas. Prövningsperioden 19 oktober-13 november 2026 har sista ansökningsdag 20 september 2026.',
+    infoUrl:
+      'https://skelleftea.se/invanare/startsida/forskola-skola-och-utbildning/vuxenutbildning-och-hogre-utbildning/vux/provning',
+    description:
+      'Prövningen kräver intyg om tidigare godkänd laborationskurs för att betyg ska kunna sättas. Prövningsperioden 19 oktober-13 november 2026 har sista ansökningsdag 20 september 2026.',
     tags: ['kommun', 'naturvetenskap', 'gymnasial'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1034,7 +1164,8 @@ export const EXAMS: Exam[] = [
     lat: 65.3172,
     lng: 21.4794,
     price: 500,
-    priceNote: '500 kr per ämnesnivå eller kurs, betalas via e-tjänst (kort/Swish) och återbetalas ej. Avgiftsfritt vid tidigare F/IG i kommunens vuxenutbildning, eller vid prövning på grundläggande nivå för den som gått ut grundskolan.',
+    priceNote:
+      '500 kr per ämnesnivå eller kurs, betalas via e-tjänst (kort/Swish) och återbetalas ej. Avgiftsfritt vid tidigare F/IG i kommunens vuxenutbildning, eller vid prövning på grundläggande nivå för den som gått ut grundskolan.',
     nextPeriod: {
       label: 'Provperiod 2026-10-05 – 2026-11-01',
       applicationEnd: '2026-09-15',
@@ -1046,7 +1177,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://pitea.enamnd.se/oversikt/overview/1604',
     infoUrl: 'https://www.pitea.se/invanare/skola-forskola/vuxenutbildningen/komvux/provning/',
-    description: 'Prövning i grund- och gymnasieämnen genomförs på plats i Piteå under prövningsperioden vecka 41-44 2026 (5 oktober-1 november), sista anmälningsdag 15 september 2026. Prövning kan även göras i SFI-kurser vid separata datum under hösten.',
+    description:
+      'Prövning i grund- och gymnasieämnen genomförs på plats i Piteå under prövningsperioden vecka 41-44 2026 (5 oktober-1 november), sista anmälningsdag 15 september 2026. Prövning kan även göras i SFI-kurser vid separata datum under hösten.',
     tags: ['kommun', 'gymnasial', 'flera-amnen'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1065,16 +1197,19 @@ export const EXAMS: Exam[] = [
     lat: 65.8256,
     lng: 21.6886,
     price: 500,
-    priceNote: '500 kr enligt skollagens huvudregel; exakta avgiftsvillkor och eventuella undantag anges i informationsbladet som bifogas e-tjänsten.',
+    priceNote:
+      '500 kr enligt skollagens huvudregel; exakta avgiftsvillkor och eventuella undantag anges i informationsbladet som bifogas e-tjänsten.',
     nextPeriod: {
-      label: 'Tre prövningsperioder per år: vecka 3-6, vecka 16-19 och vecka 40-43. Nästa period är vecka 40-43 (slutet av september till början av november). Exakt sista ansökningsdag anges inte på sidan.',
+      label:
+        'Tre prövningsperioder per år: vecka 3-6, vecka 16-19 och vecka 40-43. Nästa period är vecka 40-43 (slutet av september till början av november). Exakt sista ansökningsdag anges inte på sidan.',
       confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://boden.enamnd.se/oversikt/overview/3858',
     infoUrl: 'https://boden.enamnd.se/oversikt/overview/3858',
-    description: 'Anmälan till prövning i grundläggande, gymnasiala och SFI-kurser sker via e-tjänst med BankID; max två kurser per prövningsperiod. Kopia av gymnasiebetyg måste bifogas om man inte tidigare studerat hos vuxenutbildningen i Boden.',
+    description:
+      'Anmälan till prövning i grundläggande, gymnasiala och SFI-kurser sker via e-tjänst med BankID; max två kurser per prövningsperiod. Kopia av gymnasiebetyg måste bifogas om man inte tidigare studerat hos vuxenutbildningen i Boden.',
     tags: ['kommun', 'gymnasial', 'flera-amnen'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1093,16 +1228,19 @@ export const EXAMS: Exam[] = [
     lat: 67.8558,
     lng: 20.2253,
     price: 500,
-    priceNote: '500 kr per kurs/ämne för den som vill höja ett godkänt betyg eller saknar betyg. Kostnadsfritt om F nyligen satts i kursen.',
+    priceNote:
+      '500 kr per kurs/ämne för den som vill höja ett godkänt betyg eller saknar betyg. Kostnadsfritt om F nyligen satts i kursen.',
     nextPeriod: {
-      label: 'Ingen fast, publicerad prövningsperiod - ansökan lämnas löpande till studie- och yrkesvägledare (SYV) som avgör prövningstillfälle.',
+      label:
+        'Ingen fast, publicerad prövningsperiod - ansökan lämnas löpande till studie- och yrkesvägledare (SYV) som avgör prövningstillfälle.',
       confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://lapplands.se/media/5onakr4r/anmalan-till-provning.pdf',
     infoUrl: 'https://lapplands.se/sv/larcentra/studera-hos-oss/proevning/',
-    description: 'Lapplands Lärcentra (Gällivare, Jokkmokk, Kiruna, Pajala) erbjuder prövning där ämnet läses in på egen hand utifrån gällande ämnesplan utan lärarstöd. Ansökan görs på pappersblankett till SYV med önskad kurskod och prövningsperiod.',
+    description:
+      'Lapplands Lärcentra (Gällivare, Jokkmokk, Kiruna, Pajala) erbjuder prövning där ämnet läses in på egen hand utifrån gällande ämnesplan utan lärarstöd. Ansökan görs på pappersblankett till SYV med önskad kurskod och prövningsperiod.',
     tags: ['kommunalförbund', 'gymnasial', 'flera-amnen'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1121,16 +1259,19 @@ export const EXAMS: Exam[] = [
     lat: 67.136,
     lng: 20.6531,
     price: 500,
-    priceNote: '500 kr per kurs/ämne för den som vill höja ett godkänt betyg eller saknar betyg. Kostnadsfritt om F nyligen satts i kursen.',
+    priceNote:
+      '500 kr per kurs/ämne för den som vill höja ett godkänt betyg eller saknar betyg. Kostnadsfritt om F nyligen satts i kursen.',
     nextPeriod: {
-      label: 'Ingen fast, publicerad prövningsperiod - ansökan lämnas löpande till studie- och yrkesvägledare (SYV) som avgör prövningstillfälle.',
+      label:
+        'Ingen fast, publicerad prövningsperiod - ansökan lämnas löpande till studie- och yrkesvägledare (SYV) som avgör prövningstillfälle.',
       confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://lapplands.se/media/5onakr4r/anmalan-till-provning.pdf',
     infoUrl: 'https://lapplands.se/sv/larcentra/studera-hos-oss/proevning/',
-    description: 'Lapplands Lärcentra (Gällivare, Jokkmokk, Kiruna, Pajala) erbjuder prövning där ämnet läses in på egen hand utifrån gällande ämnesplan utan lärarstöd. Ansökan görs på pappersblankett till SYV med önskad kurskod och prövningsperiod.',
+    description:
+      'Lapplands Lärcentra (Gällivare, Jokkmokk, Kiruna, Pajala) erbjuder prövning där ämnet läses in på egen hand utifrån gällande ämnesplan utan lärarstöd. Ansökan görs på pappersblankett till SYV med önskad kurskod och prövningsperiod.',
     tags: ['kommunalförbund', 'gymnasial', 'flera-amnen'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1149,16 +1290,19 @@ export const EXAMS: Exam[] = [
     lat: 57.721,
     lng: 12.9401,
     price: 500,
-    priceNote: '500 kr per prövning. Gratis om du har betyget F/IG i kursen sedan tidigare (betygskopia bifogas).',
+    priceNote:
+      '500 kr per prövning. Gratis om du har betyget F/IG i kursen sedan tidigare (betygskopia bifogas).',
     nextPeriod: {
-      label: 'Anmälan sker löpande via Alvis-portalen; se aktuella prövnings- och anmälningsdatum under "Viktiga datum" på boras.alvis.se',
+      label:
+        'Anmälan sker löpande via Alvis-portalen; se aktuella prövnings- och anmälningsdatum under "Viktiga datum" på boras.alvis.se',
       confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://boras.alvis.se/provning/amnesomrade',
     infoUrl: 'https://boras.alvis.se/provning/amnesomrade',
-    description: 'Vuxenutbildningen i Borås erbjuder prövning i ett stort urval kurser inom matematik, naturvetenskap, samhällsvetenskap, språk samt vård och omsorg. Anmälan görs i skolans e-tjänst Alvis och endast en kurs kan prövas per tillfälle.',
+    description:
+      'Vuxenutbildningen i Borås erbjuder prövning i ett stort urval kurser inom matematik, naturvetenskap, samhällsvetenskap, språk samt vård och omsorg. Anmälan görs i skolans e-tjänst Alvis och endast en kurs kan prövas per tillfälle.',
     tags: ['komvux', 'boras', 'flera-amnen'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1177,9 +1321,11 @@ export const EXAMS: Exam[] = [
     lat: 58.3806,
     lng: 12.3232,
     price: 500,
-    priceNote: '500 kr, lagstadgad avgift. Avgiftsfritt bl.a. för den som har betyget F i kursen och samtidigt studerar andra kurser på vuxenutbildningen.',
+    priceNote:
+      '500 kr, lagstadgad avgift. Avgiftsfritt bl.a. för den som har betyget F i kursen och samtidigt studerar andra kurser på vuxenutbildningen.',
     nextPeriod: {
-      label: 'Ansökan till höstens studieperiod 2026 ska vara inlämnad senast 1 september 2026 (vårens period senast 1 februari)',
+      label:
+        'Ansökan till höstens studieperiod 2026 ska vara inlämnad senast 1 september 2026 (vårens period senast 1 februari)',
       applicationEnd: '2026-09-01',
       confirmed: true,
     },
@@ -1187,7 +1333,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://kunskapsforbundet.se/vuxenutbildningen/program/provning-betyg/',
     infoUrl: 'https://kunskapsforbundet.se/vuxenutbildningen/program/provning-betyg/',
-    description: 'Kunskapsförbundet Väst (Trollhättan/Vänersborg) erbjuder prövning i SFI samt kurser på grundläggande och gymnasial nivå. Ansökan för höstens studieperiod ska lämnas senast 1 september via blankett eller e-tjänst.',
+    description:
+      'Kunskapsförbundet Väst (Trollhättan/Vänersborg) erbjuder prövning i SFI samt kurser på grundläggande och gymnasial nivå. Ansökan för höstens studieperiod ska lämnas senast 1 september via blankett eller e-tjänst.',
     tags: ['komvux', 'trollhattan', 'vanersborg'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1206,16 +1353,21 @@ export const EXAMS: Exam[] = [
     lat: 58.3907,
     lng: 13.8458,
     price: 500,
-    priceNote: '500 kr enligt förordning (1991:1124), gratis vid tidigare F/IG enligt kommunens ordinarie villkor.',
+    priceNote:
+      '500 kr enligt förordning (1991:1124), gratis vid tidigare F/IG enligt kommunens ordinarie villkor.',
     nextPeriod: {
-      label: 'Sidan listar kursutbud för prövning i Gy11-kurser (uppdaterad nov 2025); kontakta Komvux Skövde för aktuella anmälningsdatum',
+      label:
+        'Sidan listar kursutbud för prövning i Gy11-kurser (uppdaterad nov 2025); kontakta Komvux Skövde för aktuella anmälningsdatum',
       confirmed: false,
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
-    registrationUrl: 'https://www.skovde.se/barnomsorg-utbildning/vuxenutbildning-skovde/komvux/vara-utbildningar/gymnasial-niva-gy/provningar-i-teoretiska-gymnasiala-kurser-gy11/',
-    infoUrl: 'https://www.skovde.se/barnomsorg-utbildning/vuxenutbildning-skovde/komvux/vara-utbildningar/gymnasial-niva-gy/provningar-i-teoretiska-gymnasiala-kurser-gy11/',
-    description: 'Komvux Skövde beskriver detaljerat provupplägget för Matematik 3b: ett nationellt prov på plats (4 timmar) följt av en muntlig del på cirka 30 minuter, ofta inom en vecka.',
+    registrationUrl:
+      'https://www.skovde.se/barnomsorg-utbildning/vuxenutbildning-skovde/komvux/vara-utbildningar/gymnasial-niva-gy/provningar-i-teoretiska-gymnasiala-kurser-gy11/',
+    infoUrl:
+      'https://www.skovde.se/barnomsorg-utbildning/vuxenutbildning-skovde/komvux/vara-utbildningar/gymnasial-niva-gy/provningar-i-teoretiska-gymnasiala-kurser-gy11/',
+    description:
+      'Komvux Skövde beskriver detaljerat provupplägget för Matematik 3b: ett nationellt prov på plats (4 timmar) följt av en muntlig del på cirka 30 minuter, ofta inom en vecka.',
     tags: ['komvux', 'skovde', 'matematik'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1234,16 +1386,21 @@ export const EXAMS: Exam[] = [
     lat: 58.3907,
     lng: 13.8458,
     price: 500,
-    priceNote: '500 kr enligt förordning (1991:1124), gratis vid tidigare F/IG enligt kommunens ordinarie villkor.',
+    priceNote:
+      '500 kr enligt förordning (1991:1124), gratis vid tidigare F/IG enligt kommunens ordinarie villkor.',
     nextPeriod: {
-      label: 'Sidan listar kursutbud för prövning i Gy11-kurser (uppdaterad nov 2025); kontakta Komvux Skövde för aktuella anmälningsdatum',
+      label:
+        'Sidan listar kursutbud för prövning i Gy11-kurser (uppdaterad nov 2025); kontakta Komvux Skövde för aktuella anmälningsdatum',
       confirmed: false,
     },
     components: COMPONENTS_SVENSKA,
     studyTips: TIPS_SVENSKA,
-    registrationUrl: 'https://www.skovde.se/barnomsorg-utbildning/vuxenutbildning-skovde/komvux/vara-utbildningar/gymnasial-niva-gy/provningar-i-teoretiska-gymnasiala-kurser-gy11/',
-    infoUrl: 'https://www.skovde.se/barnomsorg-utbildning/vuxenutbildning-skovde/komvux/vara-utbildningar/gymnasial-niva-gy/provningar-i-teoretiska-gymnasiala-kurser-gy11/',
-    description: 'Prövningen i Svenska 3 hos Komvux Skövde består av tre skriftliga delprov (ca 3 timmar vardera) samt det nationella provet med skriftlig och muntlig del, allt genomfört i skolans lokaler.',
+    registrationUrl:
+      'https://www.skovde.se/barnomsorg-utbildning/vuxenutbildning-skovde/komvux/vara-utbildningar/gymnasial-niva-gy/provningar-i-teoretiska-gymnasiala-kurser-gy11/',
+    infoUrl:
+      'https://www.skovde.se/barnomsorg-utbildning/vuxenutbildning-skovde/komvux/vara-utbildningar/gymnasial-niva-gy/provningar-i-teoretiska-gymnasiala-kurser-gy11/',
+    description:
+      'Prövningen i Svenska 3 hos Komvux Skövde består av tre skriftliga delprov (ca 3 timmar vardera) samt det nationella provet med skriftlig och muntlig del, allt genomfört i skolans lokaler.',
     tags: ['komvux', 'skovde', 'svenska'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1262,18 +1419,22 @@ export const EXAMS: Exam[] = [
     lat: 58.3479,
     lng: 11.9423,
     price: 500,
-    priceNote: '500 kr, lagstadgad avgift, återbetalas ej. Gratis vid F på grundläggande/gymnasial nivå, eller vid SFI-prövning för folkbokförda i Uddevalla.',
+    priceNote:
+      '500 kr, lagstadgad avgift, återbetalas ej. Gratis vid F på grundläggande/gymnasial nivå, eller vid SFI-prövning för folkbokförda i Uddevalla.',
     nextPeriod: {
-      label: 'Ansökan öppen 10 juni–10 september (prövning genomförs i november) samt 10 december–28 februari (prövning i april-juni)',
+      label:
+        'Ansökan öppen 10 juni–10 september (prövning genomförs i november) samt 10 december–28 februari (prövning i april-juni)',
       applicationStart: '2026-06-10',
       applicationEnd: '2026-09-10',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://uddevallavuxenutbildning.se/utbildning/ovriga-verksamheter/provning/anmalan-provning-gr-gy',
+    registrationUrl:
+      'https://uddevallavuxenutbildning.se/utbildning/ovriga-verksamheter/provning/anmalan-provning-gr-gy',
     infoUrl: 'https://uddevallavuxenutbildning.se/utbildning/ovriga-verksamheter/provning',
-    description: 'Uddevalla Vuxenutbildning erbjuder prövning i grundläggande och gymnasiala kurser under två återkommande ansökningsperioder per år, med max två prövningar per period.',
+    description:
+      'Uddevalla Vuxenutbildning erbjuder prövning i grundläggande och gymnasiala kurser under två återkommande ansökningsperioder per år, med max två prövningar per period.',
     tags: ['komvux', 'uddevalla', 'flera-amnen'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1288,13 +1449,16 @@ export const EXAMS: Exam[] = [
     level: 'Komvux',
     city: 'Alingsås',
     region: 'Västra Götaland',
-    address: 'Prövningen genomförs hos Hermods, Fabriksgatan 25, Göteborg (administreras av Campus Alingsås)',
+    address:
+      'Prövningen genomförs hos Hermods, Fabriksgatan 25, Göteborg (administreras av Campus Alingsås)',
     lat: 57.9306,
     lng: 12.5335,
     price: 500,
-    priceNote: '500 kr enligt förordning (1991:1124); betalning senast 18 september 2026 för höstens tillfälle.',
+    priceNote:
+      '500 kr enligt förordning (1991:1124); betalning senast 18 september 2026 för höstens tillfälle.',
     nextPeriod: {
-      label: 'Betygsprövning 23 oktober 2026: ansökan öppen 10 augusti–11 september 2026, antagningsbesked senast 25 september 2026',
+      label:
+        'Betygsprövning 23 oktober 2026: ansökan öppen 10 augusti–11 september 2026, antagningsbesked senast 25 september 2026',
       applicationStart: '2026-08-10',
       applicationEnd: '2026-09-11',
       examWindowStart: '2026-10-23',
@@ -1305,7 +1469,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://minasidor.alingsas.se/betygsprovning',
     infoUrl: 'https://www.alingsas.se/campus/provning',
-    description: 'Alingsås kommun (Campus Alingsås) erbjuder ämnesbetygsprövning enligt Gy25; själva provtillfället genomförs hos Hermods i Göteborg (Fabriksgatan 25). Nästa tillfälle är fredag 23 oktober 2026.',
+    description:
+      'Alingsås kommun (Campus Alingsås) erbjuder ämnesbetygsprövning enligt Gy25; själva provtillfället genomförs hos Hermods i Göteborg (Fabriksgatan 25). Nästa tillfälle är fredag 23 oktober 2026.',
     tags: ['komvux', 'alingsas', 'gy25'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1320,13 +1485,16 @@ export const EXAMS: Exam[] = [
     level: 'Komvux',
     city: 'Mölndal',
     region: 'Västra Götaland',
-    address: 'Krokslätts fabriker 12A, 431 37 Mölndal (prövningen genomförs på Fabriksgatan 25, Göteborg)',
+    address:
+      'Krokslätts fabriker 12A, 431 37 Mölndal (prövningen genomförs på Fabriksgatan 25, Göteborg)',
     lat: 57.6555,
     lng: 12.0136,
     price: 500,
-    priceNote: '500 kr om godkänt betyg finns sedan tidigare eller om inget betyg finns; kostnadsfritt vid tidigare F/IG.',
+    priceNote:
+      '500 kr om godkänt betyg finns sedan tidigare eller om inget betyg finns; kostnadsfritt vid tidigare F/IG.',
     nextPeriod: {
-      label: 'Prövningstillfällen 2026 via Hermods: 7 oktober (ansökan 3–18 augusti) och 11 november (ansökan 7–20 september)',
+      label:
+        'Prövningstillfällen 2026 via Hermods: 7 oktober (ansökan 3–18 augusti) och 11 november (ansökan 7–20 september)',
       applicationStart: '2026-09-07',
       applicationEnd: '2026-09-20',
       examWindowStart: '2026-11-11',
@@ -1335,9 +1503,11 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://www.molndal.se/campus-molndal/dina-studier/provning/flikar/oversikt.html',
+    registrationUrl:
+      'https://www.molndal.se/campus-molndal/dina-studier/provning/flikar/oversikt.html',
     infoUrl: 'https://www.molndal.se/campus-molndal/dina-studier/provning/flikar/oversikt.html',
-    description: 'Campus Mölndal administrerar prövningar via Hermods med fasta provdatum per termin; provtillfällena genomförs på plats på Fabriksgatan 25 i Göteborg (IHM Business School).',
+    description:
+      'Campus Mölndal administrerar prövningar via Hermods med fasta provdatum per termin; provtillfällena genomförs på plats på Fabriksgatan 25 i Göteborg (IHM Business School).',
     tags: ['komvux', 'molndal', 'flera-amnen'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1356,16 +1526,21 @@ export const EXAMS: Exam[] = [
     lat: 57.4878,
     lng: 12.0765,
     price: 500,
-    priceNote: '500 kr per kurs/ämnesnivå och prövningstillfälle; avgiftsfritt vid tidigare F/IG samt pågående studier på vuxenutbildningen.',
+    priceNote:
+      '500 kr per kurs/ämnesnivå och prövningstillfälle; avgiftsfritt vid tidigare F/IG samt pågående studier på vuxenutbildningen.',
     nextPeriod: {
-      label: 'Fyra fasta prövningsperioder per år (t.ex. vecka 35–36 med sista ansökningsdag söndag vecka 29, och vecka 42–43 med sista ansökningsdag söndag vecka 36)',
+      label:
+        'Fyra fasta prövningsperioder per år (t.ex. vecka 35–36 med sista ansökningsdag söndag vecka 29, och vecka 42–43 med sista ansökningsdag söndag vecka 36)',
       confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://kungsbacka.se/utbildning-och-barnomsorg/vuxenutbildning/provning-och-validering',
-    infoUrl: 'https://kungsbacka.se/utbildning-och-barnomsorg/vuxenutbildning/provning-och-validering',
-    description: 'Kungsbacka kommun erbjuder fyra prövningsperioder per år (veckoangivna) med anmälan i kurskatalogen; max två prövningar per period och betalning senast fyra veckor före perioden.',
+    registrationUrl:
+      'https://kungsbacka.se/utbildning-och-barnomsorg/vuxenutbildning/provning-och-validering',
+    infoUrl:
+      'https://kungsbacka.se/utbildning-och-barnomsorg/vuxenutbildning/provning-och-validering',
+    description:
+      'Kungsbacka kommun erbjuder fyra prövningsperioder per år (veckoangivna) med anmälan i kurskatalogen; max två prövningar per period och betalning senast fyra veckor före perioden.',
     tags: ['komvux', 'kungsbacka', 'flera-amnen'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1384,16 +1559,21 @@ export const EXAMS: Exam[] = [
     lat: 56.6745,
     lng: 12.857,
     price: 500,
-    priceNote: '500 kr per ämne/kurs och prövningstillfälle, betalas senast en vecka efter anmälningsdagen; ej återbetalningsbar.',
+    priceNote:
+      '500 kr per ämne/kurs och prövningstillfälle, betalas senast en vecka efter anmälningsdagen; ej återbetalningsbar.',
     nextPeriod: {
-      label: 'Prövning i gymnasiekurser genomförs via NTI-skolan med periodvis anmälan; kommunens sida angav att "period 3" nyligen blev fullbokad och hänvisade till nästa periodöppning',
+      label:
+        'Prövning i gymnasiekurser genomförs via NTI-skolan med periodvis anmälan; kommunens sida angav att "period 3" nyligen blev fullbokad och hänvisade till nästa periodöppning',
       confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://www.halmstad.se/barnochutbildning/vuxenutbildning/provninginomvuxenutbildning.n1368.html',
-    infoUrl: 'https://www.halmstad.se/barnochutbildning/vuxenutbildning/provninginomvuxenutbildning.n1368.html',
-    description: 'Halmstads kommun erbjuder prövning i SFI, grundläggande, gymnasiala och yrkeskurser; gymnasieprövning sker via NTI-skolan med ett avslutande prov på plats i Halmstad.',
+    registrationUrl:
+      'https://www.halmstad.se/barnochutbildning/vuxenutbildning/provninginomvuxenutbildning.n1368.html',
+    infoUrl:
+      'https://www.halmstad.se/barnochutbildning/vuxenutbildning/provninginomvuxenutbildning.n1368.html',
+    description:
+      'Halmstads kommun erbjuder prövning i SFI, grundläggande, gymnasiala och yrkeskurser; gymnasieprövning sker via NTI-skolan med ett avslutande prov på plats i Halmstad.',
     tags: ['komvux', 'halmstad', 'flera-amnen'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1414,7 +1594,8 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per kurs; kostnadsfritt vid tidigare IG/F i kursen.',
     nextPeriod: {
-      label: 'Prövningsperioder hösten 2026: 24 augusti–11 september (ansökan senast 2 augusti), 28 september–16 oktober (ansökan senast 6 september), 2 november–20 november (ansökan senast 11 oktober)',
+      label:
+        'Prövningsperioder hösten 2026: 24 augusti–11 september (ansökan senast 2 augusti), 28 september–16 oktober (ansökan senast 6 september), 2 november–20 november (ansökan senast 11 oktober)',
       applicationEnd: '2026-10-11',
       examWindowStart: '2026-11-02',
       examWindowEnd: '2026-11-20',
@@ -1424,7 +1605,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://varberg.se/vuxenutbildningen/provning-och-validering',
     infoUrl: 'https://varberg.se/vuxenutbildningen/provning-och-validering',
-    description: 'Varbergs kommun (utbildningsanordnare Talenti) genomför prövning i tre återkommande perioder varje termin, cirka 3–5 veckor långa, med anmälan via kommunens webbansökan.',
+    description:
+      'Varbergs kommun (utbildningsanordnare Talenti) genomför prövning i tre återkommande perioder varje termin, cirka 3–5 veckor långa, med anmälan via kommunens webbansökan.',
     tags: ['komvux', 'varberg', 'flera-amnen'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1443,9 +1625,11 @@ export const EXAMS: Exam[] = [
     lat: 59.3793,
     lng: 13.5036,
     price: 500,
-    priceNote: '500 kr per kurs via Swish; kostnadsfritt om F i kursen och inskriven på vuxenutbildningen i Karlstad senast sista anmälningsdag.',
+    priceNote:
+      '500 kr per kurs via Swish; kostnadsfritt om F i kursen och inskriven på vuxenutbildningen i Karlstad senast sista anmälningsdag.',
     nextPeriod: {
-      label: 'Period 1 vecka 41–46 2026, sista ansökningsdag 1 september 2026. Period 2 vecka 7–12 2027, sista ansökningsdag 11 december 2026',
+      label:
+        'Period 1 vecka 41–46 2026, sista ansökningsdag 1 september 2026. Period 2 vecka 7–12 2027, sista ansökningsdag 11 december 2026',
       applicationEnd: '2026-09-01',
       examWindowStart: '2026-10-05',
       examWindowEnd: '2026-11-15',
@@ -1453,9 +1637,12 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://karlstad.se/forskola-skola-och-utbildning/vuxenutbildning/studera-som-vuxen/nivatest-provning-och-validering',
-    infoUrl: 'https://karlstad.se/forskola-skola-och-utbildning/vuxenutbildning/studera-som-vuxen/nivatest-provning-och-validering',
-    description: 'Karlstads kommun (Vuxenutbildningscenter) kör två prövningsperioder per läsår; hösten 2026 infaller provveckorna 41–46 med sista ansökningsdag 1 september 2026.',
+    registrationUrl:
+      'https://karlstad.se/forskola-skola-och-utbildning/vuxenutbildning/studera-som-vuxen/nivatest-provning-och-validering',
+    infoUrl:
+      'https://karlstad.se/forskola-skola-och-utbildning/vuxenutbildning/studera-som-vuxen/nivatest-provning-och-validering',
+    description:
+      'Karlstads kommun (Vuxenutbildningscenter) kör två prövningsperioder per läsår; hösten 2026 infaller provveckorna 41–46 med sista ansökningsdag 1 september 2026.',
     tags: ['komvux', 'karlstad', 'flera-amnen'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1474,7 +1661,8 @@ export const EXAMS: Exam[] = [
     lat: 59.3096,
     lng: 14.1075,
     price: 500,
-    priceNote: '500 kr per kurs (bankgiro 110-0213); kostnadsfritt för studerande på vuxenutbildningen med IG/F i kursen.',
+    priceNote:
+      '500 kr per kurs (bankgiro 110-0213); kostnadsfritt för studerande på vuxenutbildningen med IG/F i kursen.',
     nextPeriod: {
       label: 'Höstprövning 2026: ansökan öppen 1 augusti–1 september, betalning senast 1 september',
       applicationStart: '2026-08-01',
@@ -1483,9 +1671,12 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://www.kristinehamn.se/barnomsorg-och-utbildning/vuxenutbildning/sarskild-provning/',
-    infoUrl: 'https://www.kristinehamn.se/barnomsorg-och-utbildning/vuxenutbildning/sarskild-provning/',
-    description: 'Kristinehamns kommun erbjuder prövning i svenska, svenska som andraspråk, engelska och matematik samt SFI, med max två ansökningar per person och termin.',
+    registrationUrl:
+      'https://www.kristinehamn.se/barnomsorg-och-utbildning/vuxenutbildning/sarskild-provning/',
+    infoUrl:
+      'https://www.kristinehamn.se/barnomsorg-och-utbildning/vuxenutbildning/sarskild-provning/',
+    description:
+      'Kristinehamns kommun erbjuder prövning i svenska, svenska som andraspråk, engelska och matematik samt SFI, med max två ansökningar per person och termin.',
     tags: ['komvux', 'kristinehamn', 'flera-amnen'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1504,9 +1695,11 @@ export const EXAMS: Exam[] = [
     lat: 59.34,
     lng: 18.059,
     price: 500,
-    priceNote: '500 kr per prövning; kostnadsfritt om tidigare betyg F/IG i kursen på komvux, styrks med betygskopia.',
+    priceNote:
+      '500 kr per prövning; kostnadsfritt om tidigare betyg F/IG i kursen på komvux, styrks med betygskopia.',
     nextPeriod: {
-      label: 'Prövningsdatum hösten 2026: 7 sep (ev. del 2 den 11 sep) och 9 nov (ev. del 2 den 13 nov)',
+      label:
+        'Prövningsdatum hösten 2026: 7 sep (ev. del 2 den 11 sep) och 9 nov (ev. del 2 den 13 nov)',
       applicationStart: '2026-08-24',
       applicationEnd: '2026-08-28',
       examWindowStart: '2026-09-07',
@@ -1517,7 +1710,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_VARD,
     registrationUrl: 'https://abfstockholm.se/komvux/provning/',
     infoUrl: 'https://abfstockholm.se/komvux/provning/',
-    description: 'ABF Stockholm erbjuder prövning i ämnesnivåer inom undersköterskeutbildningen (t.ex. Hälso- och sjukvård, Psykiatri, Social omsorg) för folkbokförda i bl.a. Botkyrka, Huddinge, Nacka, Sollentuna, Solna, Sundbyberg och Södertälje. Anmälan sker via formulär på skolans webbplats när det öppnar.',
+    description:
+      'ABF Stockholm erbjuder prövning i ämnesnivåer inom undersköterskeutbildningen (t.ex. Hälso- och sjukvård, Psykiatri, Social omsorg) för folkbokförda i bl.a. Botkyrka, Huddinge, Nacka, Sollentuna, Solna, Sundbyberg och Södertälje. Anmälan sker via formulär på skolans webbplats när det öppnar.',
     tags: ['komvux', 'vård och omsorg', 'storstockholm'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1538,14 +1732,16 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per prövning; kostnadsfritt om tidigare betyg F/IG i kursen på komvux.',
     nextPeriod: {
-      label: 'Nästa prövningstillfälle är höst 2026 - exakta datum ej fastställda ännu enligt skolan',
+      label:
+        'Nästa prövningstillfälle är höst 2026 - exakta datum ej fastställda ännu enligt skolan',
       confirmed: false,
     },
     components: COMPONENTS_ENGELSKA,
     studyTips: TIPS_ENGELSKA,
     registrationUrl: 'https://abfstockholm.se/komvux/provning/',
     infoUrl: 'https://abfstockholm.se/komvux/provning/',
-    description: 'ABF Stockholm erbjuder prövning i engelska (nivå 1-3, två delar) endast för sökande folkbokförda utanför Stockholms kommun, bland annat Botkyrka, Huddinge, Nacka och Sollentuna.',
+    description:
+      'ABF Stockholm erbjuder prövning i engelska (nivå 1-3, två delar) endast för sökande folkbokförda utanför Stockholms kommun, bland annat Botkyrka, Huddinge, Nacka och Sollentuna.',
     tags: ['komvux', 'engelska', 'storstockholm'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1566,14 +1762,17 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr, återbetalas ej vid återbud eller utebliven närvaro.',
     nextPeriod: {
-      label: 'Anmälan för VT 2026 (8 samt 15-18 maj) är stängd; nästa prövningsperiod är ej publicerad på sidan ännu',
+      label:
+        'Anmälan för VT 2026 (8 samt 15-18 maj) är stängd; nästa prövningsperiod är ej publicerad på sidan ännu',
       confirmed: false,
     },
     components: COMPONENTS_ENGELSKA,
     studyTips: TIPS_ENGELSKA,
-    registrationUrl: 'https://www.folkuniversitetet.se/vara-skolor/komvux/komvux-sodertalje/provning/',
+    registrationUrl:
+      'https://www.folkuniversitetet.se/vara-skolor/komvux/komvux-sodertalje/provning/',
     infoUrl: 'https://www.folkuniversitetet.se/vara-skolor/komvux/komvux-sodertalje/provning/',
-    description: 'Folkuniversitetet Komvux Södertälje erbjuder prövning i bland annat Engelska, Matematik, Naturkunskap, Historia/Religion/Samhällskunskap och Svenska/Svenska som andraspråk. Endast sökande folkbokförda i Södertälje, Botkyrka, Huddinge, Salem eller Nykvarn tas emot; prövningsperioden är 4 veckor.',
+    description:
+      'Folkuniversitetet Komvux Södertälje erbjuder prövning i bland annat Engelska, Matematik, Naturkunskap, Historia/Religion/Samhällskunskap och Svenska/Svenska som andraspråk. Endast sökande folkbokförda i Södertälje, Botkyrka, Huddinge, Salem eller Nykvarn tas emot; prövningsperioden är 4 veckor.',
     tags: ['komvux', 'flera ämnen', 'södertälje'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1594,7 +1793,8 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per kurs; kostnadsfritt i vissa fall vid tidigare betyg IG/F.',
     nextPeriod: {
-      label: 'Ansökan öppnar 10/8 kl. 08.00, prövningen startar 31/8, slutprov på plats 18/9 (hösten 2026)',
+      label:
+        'Ansökan öppnar 10/8 kl. 08.00, prövningen startar 31/8, slutprov på plats 18/9 (hösten 2026)',
       applicationStart: '2026-08-10',
       examWindowStart: '2026-08-31',
       examWindowEnd: '2026-09-18',
@@ -1604,7 +1804,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://www.akadeva.se/elementor-689/',
     infoUrl: 'https://www.akadeva.se/elementor-689/',
-    description: 'Akadeva i Sollentuna erbjuder prövning i kurser enligt GY11 för folkbokförda i bland annat Sollentuna, Solna, Sigtuna, Lidingö, Danderyd, Täby, Vallentuna, Vaxholm, Österåker och Upplands Väsby. Anmälan görs via e-post till info@akadeva.se, platserna är begränsade.',
+    description:
+      'Akadeva i Sollentuna erbjuder prövning i kurser enligt GY11 för folkbokförda i bland annat Sollentuna, Solna, Sigtuna, Lidingö, Danderyd, Täby, Vallentuna, Vaxholm, Österåker och Upplands Väsby. Anmälan görs via e-post till info@akadeva.se, platserna är begränsade.',
     tags: ['komvux', 'flera ämnen', 'sollentuna'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1625,7 +1826,8 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per kurs; kostnadsfritt i vissa fall vid tidigare betyg IG/F.',
     nextPeriod: {
-      label: 'Ansökan öppnar 9/11 kl. 08.00, prövningen startar 30/11, prov på plats 18/12 (vinterperioden 2026)',
+      label:
+        'Ansökan öppnar 9/11 kl. 08.00, prövningen startar 30/11, prov på plats 18/12 (vinterperioden 2026)',
       applicationStart: '2026-11-09',
       examWindowStart: '2026-11-30',
       examWindowEnd: '2026-12-18',
@@ -1635,7 +1837,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://www.akadeva.se/elementor-689/',
     infoUrl: 'https://www.akadeva.se/elementor-689/',
-    description: 'Ytterligare prövningsomgång hos Akadeva i Sollentuna (vinterperioden). Samma villkor: 500 kr per kurs, anmälan via e-post, begränsat antal platser utan reservlista.',
+    description:
+      'Ytterligare prövningsomgång hos Akadeva i Sollentuna (vinterperioden). Samma villkor: 500 kr per kurs, anmälan via e-post, begränsat antal platser utan reservlista.',
     tags: ['komvux', 'flera ämnen', 'sollentuna'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1654,7 +1857,8 @@ export const EXAMS: Exam[] = [
     lat: 59.8586,
     lng: 17.6389,
     price: 500,
-    priceNote: '500 kr per prövning, faktureras vid antagning; anmälan bindande så snart bekräftelse mottagits.',
+    priceNote:
+      '500 kr per prövning, faktureras vid antagning; anmälan bindande så snart bekräftelse mottagits.',
     nextPeriod: {
       label: 'Hösten 2026: prövningsperiod 14 september - 30 oktober, ansökan öppen 10-14 augusti',
       applicationStart: '2026-08-10',
@@ -1665,9 +1869,11 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://www.uppsala.se/skola-forskola-och-komvux/komvux/studera-pa-komvux/provning/',
+    registrationUrl:
+      'https://www.uppsala.se/skola-forskola-och-komvux/komvux/studera-pa-komvux/provning/',
     infoUrl: 'https://www.uppsala.se/skola-forskola-och-komvux/komvux/studera-pa-komvux/provning/',
-    description: 'Uppsala kommun låter NTI-skolan ansvara för prövning i teoretiska kurser för kommunens invånare; man kan bara anmäla sig till en kurs/ämnesnivå per prövningsperiod. Prövning i yrkeskurser hanteras separat via ujc.provning@uppsala.se.',
+    description:
+      'Uppsala kommun låter NTI-skolan ansvara för prövning i teoretiska kurser för kommunens invånare; man kan bara anmäla sig till en kurs/ämnesnivå per prövningsperiod. Prövning i yrkeskurser hanteras separat via ujc.provning@uppsala.se.',
     tags: ['komvux', 'flera ämnen', 'uppsala'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1686,7 +1892,8 @@ export const EXAMS: Exam[] = [
     lat: 59.2378,
     lng: 17.9819,
     price: 500,
-    priceNote: '500 kr per kurs/ämnesnivå; kostnadsfritt vid tidigare betyg F eller IG i kursen på Komvux (styrks med betygskopia).',
+    priceNote:
+      '500 kr per kurs/ämnesnivå; kostnadsfritt vid tidigare betyg F eller IG i kursen på Komvux (styrks med betygskopia).',
     nextPeriod: {
       label: 'Nästa prövningstillfälle är 14 september 2026, anmälan öppen 27 juli - 23 augusti',
       applicationStart: '2026-07-27',
@@ -1698,8 +1905,10 @@ export const EXAMS: Exam[] = [
     components: COMPONENTS_SVENSKA,
     studyTips: TIPS_SVENSKA,
     registrationUrl: 'https://huddinge.alvis.se/provning/amnesomrade',
-    infoUrl: 'https://www.huddinge.se/forskola-skola/vuxenutbildning/vux-huddinge/provning-pa-vux-huddinge/',
-    description: 'Vux Huddinge erbjuder prövning två gånger per år i svenska som andraspråk. Prövningen tar två dagar: skriftlig examination första dagen och muntlig examination andra dagen. Betalning sker via Swish.',
+    infoUrl:
+      'https://www.huddinge.se/forskola-skola/vuxenutbildning/vux-huddinge/provning-pa-vux-huddinge/',
+    description:
+      'Vux Huddinge erbjuder prövning två gånger per år i svenska som andraspråk. Prövningen tar två dagar: skriftlig examination första dagen och muntlig examination andra dagen. Betalning sker via Swish.',
     tags: ['komvux', 'svenska som andraspråk', 'huddinge'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1718,7 +1927,8 @@ export const EXAMS: Exam[] = [
     lat: 59.2378,
     lng: 17.9819,
     price: 500,
-    priceNote: '500 kr per kurs/ämnesnivå; kostnadsfritt vid tidigare betyg F eller IG i kursen på Komvux (styrks med betygskopia).',
+    priceNote:
+      '500 kr per kurs/ämnesnivå; kostnadsfritt vid tidigare betyg F eller IG i kursen på Komvux (styrks med betygskopia).',
     nextPeriod: {
       label: 'Nästa prövningstillfälle är 14 september 2026, anmälan öppen 27 juli - 23 augusti',
       applicationStart: '2026-07-27',
@@ -1730,8 +1940,10 @@ export const EXAMS: Exam[] = [
     components: COMPONENTS_SVENSKA,
     studyTips: TIPS_SVENSKA,
     registrationUrl: 'https://huddinge.alvis.se/provning/amnesomrade',
-    infoUrl: 'https://www.huddinge.se/forskola-skola/vuxenutbildning/vux-huddinge/provning-pa-vux-huddinge/',
-    description: 'Vux Huddinge erbjuder också prövning i Svenska som andraspråk 1, samma anmälningsperiod och villkor som nivå 3. Begränsat antal platser, principen är först till kvarn.',
+    infoUrl:
+      'https://www.huddinge.se/forskola-skola/vuxenutbildning/vux-huddinge/provning-pa-vux-huddinge/',
+    description:
+      'Vux Huddinge erbjuder också prövning i Svenska som andraspråk 1, samma anmälningsperiod och villkor som nivå 3. Begränsat antal platser, principen är först till kvarn.',
     tags: ['komvux', 'svenska som andraspråk', 'huddinge'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1752,14 +1964,18 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr; kostnadsfritt vid icke godkänt betyg från komvux.',
     nextPeriod: {
-      label: 'Skolorna i ansökningswebben erbjuder prövning på hela sitt utbud minst två gånger per hösttermin och vårtermin - se respektive skolas hemsida för datum',
+      label:
+        'Skolorna i ansökningswebben erbjuder prövning på hela sitt utbud minst två gånger per hösttermin och vårtermin - se respektive skolas hemsida för datum',
       confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://www.sollentuna.se/uweb/kunskapsparken/studera-pa-komvux/inledande-kartlaggning-validering-och-provning/',
-    infoUrl: 'https://www.sollentuna.se/uweb/kunskapsparken/studera-pa-komvux/inledande-kartlaggning-validering-och-provning/',
-    description: 'Vuxenutbildningen Kunskapsparken i Sollentuna hänvisar till skolorna i kommunens ansökningswebb för prövning; avgiften betalas direkt till den skola där prövningen genomförs och betyget hämtas via studerandekontot.',
+    registrationUrl:
+      'https://www.sollentuna.se/uweb/kunskapsparken/studera-pa-komvux/inledande-kartlaggning-validering-och-provning/',
+    infoUrl:
+      'https://www.sollentuna.se/uweb/kunskapsparken/studera-pa-komvux/inledande-kartlaggning-validering-och-provning/',
+    description:
+      'Vuxenutbildningen Kunskapsparken i Sollentuna hänvisar till skolorna i kommunens ansökningswebb för prövning; avgiften betalas direkt till den skola där prövningen genomförs och betyget hämtas via studerandekontot.',
     tags: ['komvux', 'flera ämnen', 'sollentuna'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1780,14 +1996,16 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per prövning; kostnadsfritt om tidigare betyg F/IG i kursen på Centrum Vux.',
     nextPeriod: {
-      label: 'Prövningsanmälan för våren 2026 är stängd; information om prövning för hösten 2026 meddelas senare enligt skolan',
+      label:
+        'Prövningsanmälan för våren 2026 är stängd; information om prövning för hösten 2026 meddelas senare enligt skolan',
       confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://centrumvux.haninge.se/ansok/provning2/',
     infoUrl: 'https://centrumvux.haninge.se/ansok/provning2/',
-    description: 'Centrum Vux Haninge erbjuder prövning för den som saknar eller vill höja betyg; skriftlig och muntlig examination, betalning via Swish. Senaste omgången (våren 2026) hade ansökan 9-16 april och prövningsperiod veckorna 22-23.',
+    description:
+      'Centrum Vux Haninge erbjuder prövning för den som saknar eller vill höja betyg; skriftlig och muntlig examination, betalning via Swish. Senaste omgången (våren 2026) hade ansökan 9-16 april och prövningsperiod veckorna 22-23.',
     tags: ['komvux', 'flera ämnen', 'haninge'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1808,14 +2026,18 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per prövning enligt Skolverkets förordning.',
     nextPeriod: {
-      label: 'Prövningsperioden för våren 2026 (9 februari - 3 april, ansökan 5-9 januari) är avslutad; nästa period ej bekräftad på sidan',
+      label:
+        'Prövningsperioden för våren 2026 (9 februari - 3 april, ansökan 5-9 januari) är avslutad; nästa period ej bekräftad på sidan',
       confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://enkoping.se/forskola-och-skola/vuxenutbildning/sa-fungerar-det-att-studera-hos-oss/provning-pa-komvux.html',
-    infoUrl: 'https://enkoping.se/forskola-och-skola/vuxenutbildning/sa-fungerar-det-att-studera-hos-oss/provning-pa-komvux.html',
-    description: 'All prövning inom Enköpings komvux genomförs av NTI-skolan på uppdrag av kommunen. Den studerande läser in kursen på egen hand utan lärarstöd och examineras skriftligt och muntligt.',
+    registrationUrl:
+      'https://enkoping.se/forskola-och-skola/vuxenutbildning/sa-fungerar-det-att-studera-hos-oss/provning-pa-komvux.html',
+    infoUrl:
+      'https://enkoping.se/forskola-och-skola/vuxenutbildning/sa-fungerar-det-att-studera-hos-oss/provning-pa-komvux.html',
+    description:
+      'All prövning inom Enköpings komvux genomförs av NTI-skolan på uppdrag av kommunen. Den studerande läser in kursen på egen hand utan lärarstöd och examineras skriftligt och muntligt.',
     tags: ['komvux', 'flera ämnen', 'enköping'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1836,14 +2058,18 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per prövning enligt Skolverkets förordning.',
     nextPeriod: {
-      label: 'Tidigare period: hösten 2025 öppnade anmälan 16 juni med sista dag 3 augusti, våren 2026 öppnade 17 november med sista dag 4 januari - nästa period ej bekräftad på sidan',
+      label:
+        'Tidigare period: hösten 2025 öppnade anmälan 16 juni med sista dag 3 augusti, våren 2026 öppnade 17 november med sista dag 4 januari - nästa period ej bekräftad på sidan',
       confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://sundbyberg.se/forskola-utbildning/vuxenutbildning/borja-studera/provning.html',
-    infoUrl: 'https://sundbyberg.se/forskola-utbildning/vuxenutbildning/borja-studera/provning.html',
-    description: 'Sundbybergs stad låter dig göra prövning i kurser inom kommunens utbud; anmälan görs via länk på kommunens webbplats. Skolor med prövning i önskad kurs söks i kurskatalogen.',
+    registrationUrl:
+      'https://sundbyberg.se/forskola-utbildning/vuxenutbildning/borja-studera/provning.html',
+    infoUrl:
+      'https://sundbyberg.se/forskola-utbildning/vuxenutbildning/borja-studera/provning.html',
+    description:
+      'Sundbybergs stad låter dig göra prövning i kurser inom kommunens utbud; anmälan görs via länk på kommunens webbplats. Skolor med prövning i önskad kurs söks i kurskatalogen.',
     tags: ['komvux', 'flera ämnen', 'sundbyberg'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1862,7 +2088,8 @@ export const EXAMS: Exam[] = [
     lat: 58.4108,
     lng: 15.6214,
     price: 500,
-    priceNote: '500 kr per kurs, kostnadsfritt vid tidigare betyg F/IG i kursen (betygsutdrag krävs)',
+    priceNote:
+      '500 kr per kurs, kostnadsfritt vid tidigare betyg F/IG i kursen (betygsutdrag krävs)',
     nextPeriod: {
       label: 'Prövningsperiod 3, hösten 2026',
       applicationStart: '2026-08-10',
@@ -1873,9 +2100,12 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_ENGELSKA,
     studyTips: TIPS_ENGELSKA,
-    registrationUrl: 'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildninglinkoping/Linvux/provningar/provning-gymnasial/',
-    infoUrl: 'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildninglinkoping/Linvux/provningar/provning-gymnasial/',
-    description: 'Linvux erbjuder prövning i Engelska 6 under prövningsperiod 3 hösten 2026, med skrivdagar vecka 40–41 på Kunskapsgallerian i Linköping. Ansökan öppnar 10 augusti och stänger 4 september 2026.',
+    registrationUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildninglinkoping/Linvux/provningar/provning-gymnasial/',
+    infoUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildninglinkoping/Linvux/provningar/provning-gymnasial/',
+    description:
+      'Linvux erbjuder prövning i Engelska 6 under prövningsperiod 3 hösten 2026, med skrivdagar vecka 40–41 på Kunskapsgallerian i Linköping. Ansökan öppnar 10 augusti och stänger 4 september 2026.',
     tags: ['engelska', 'gymnasial', 'östergötland'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1905,9 +2135,12 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
-    registrationUrl: 'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildninglinkoping/Linvux/provningar/provning-gymnasial/',
-    infoUrl: 'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildninglinkoping/Linvux/provningar/provning-gymnasial/',
-    description: 'Matematikprövningar (bland annat Matematik 3b/3c) ges av Linvux under prövningsperiod 4 med skrivdag vecka 51 hösten 2026. Provet sker på Kunskapsgallerian i Linköping och kostar 500 kr.',
+    registrationUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildninglinkoping/Linvux/provningar/provning-gymnasial/',
+    infoUrl:
+      'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildninglinkoping/Linvux/provningar/provning-gymnasial/',
+    description:
+      'Matematikprövningar (bland annat Matematik 3b/3c) ges av Linvux under prövningsperiod 4 med skrivdag vecka 51 hösten 2026. Provet sker på Kunskapsgallerian i Linköping och kostar 500 kr.',
     tags: ['matematik', 'gymnasial', 'östergötland'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1939,7 +2172,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_KEMI,
     registrationUrl: 'https://norrkoping.alvis.se/login',
     infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
-    description: 'Komvux Norrköping erbjuder prövning i Kemi 1 på Källvindsskolan; ansökan sker vecka 35–38, första provdatum torsdag vecka 43, sista betygsdatum vecka 51 (2026).',
+    description:
+      'Komvux Norrköping erbjuder prövning i Kemi 1 på Källvindsskolan; ansökan sker vecka 35–38, första provdatum torsdag vecka 43, sista betygsdatum vecka 51 (2026).',
     tags: ['kemi', 'gymnasial', 'östergötland'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1971,7 +2205,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_MATEMATIK,
     registrationUrl: 'https://norrkoping.alvis.se/login',
     infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
-    description: 'Prövning i matematik fortsättningsnivå (motsvarande Matematik 3) ges på Källvindsskolan, med ansökan vecka 35–38 och provstart vecka 43 hösten 2026.',
+    description:
+      'Prövning i matematik fortsättningsnivå (motsvarande Matematik 3) ges på Källvindsskolan, med ansökan vecka 35–38 och provstart vecka 43 hösten 2026.',
     tags: ['matematik', 'gymnasial', 'östergötland'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -1999,9 +2234,12 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://www.motala.se/skola-och-forskola/vuxenutbildning/provning-pa-vuxenutbildningen/',
-    infoUrl: 'https://www.motala.se/skola-och-forskola/vuxenutbildning/provning-pa-vuxenutbildningen/',
-    description: 'Motala vuxenutbildning tar emot anmälningar till höstens prövningsperiod 3 augusti–15 september 2026; prövningen tar oftast cirka sex veckor och saknar fasta provdatum.',
+    registrationUrl:
+      'https://www.motala.se/skola-och-forskola/vuxenutbildning/provning-pa-vuxenutbildningen/',
+    infoUrl:
+      'https://www.motala.se/skola-och-forskola/vuxenutbildning/provning-pa-vuxenutbildningen/',
+    description:
+      'Motala vuxenutbildning tar emot anmälningar till höstens prövningsperiod 3 augusti–15 september 2026; prövningen tar oftast cirka sex veckor och saknar fasta provdatum.',
     tags: ['flera ämnen', 'gymnasial', 'östergötland'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2020,7 +2258,8 @@ export const EXAMS: Exam[] = [
     lat: 59.3706,
     lng: 16.5077,
     price: 500,
-    priceNote: '500 kr per kurs (ordinarie avgift); avgiftsfritt vid tidigare F/IG i kursen enligt kommunens generella prövningsregler',
+    priceNote:
+      '500 kr per kurs (ordinarie avgift); avgiftsfritt vid tidigare F/IG i kursen enligt kommunens generella prövningsregler',
     nextPeriod: {
       label: 'Höstens prövningsperiod 2026',
       applicationStart: '2026-02-02',
@@ -2032,8 +2271,10 @@ export const EXAMS: Exam[] = [
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://eskilstuna.alvis.se/provning/amnesomrade',
-    infoUrl: 'https://www.eskilstuna.se/e-tjanster-och-blanketter/anmal-dig-till-provning-hos-komvux',
-    description: 'Anmälan till höstens prövningsperiod hos Komvux Eskilstuna är öppen 2 februari–15 augusti 2026, med prövningar genomförda 15 september–15 november 2026.',
+    infoUrl:
+      'https://www.eskilstuna.se/e-tjanster-och-blanketter/anmal-dig-till-provning-hos-komvux',
+    description:
+      'Anmälan till höstens prövningsperiod hos Komvux Eskilstuna är öppen 2 februari–15 augusti 2026, med prövningar genomförda 15 september–15 november 2026.',
     tags: ['flera ämnen', 'gymnasial', 'södermanland'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2061,7 +2302,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://www.campusnykoping.se/komvux/vuxenutbildning-gymnasial-niva/',
     infoUrl: 'https://www.campusnykoping.se/komvux/vuxenutbildning-gymnasial-niva/',
-    description: 'Campus Nyköping genomför prövningar vecka 13–15 på våren och vecka 43–45 på hösten; aktuella ansökningsperioder publiceras löpande i kurskatalogen.',
+    description:
+      'Campus Nyköping genomför prövningar vecka 13–15 på våren och vecka 43–45 på hösten; aktuella ansökningsperioder publiceras löpande i kurskatalogen.',
     tags: ['flera ämnen', 'gymnasial', 'södermanland'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2091,9 +2333,12 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://www.vasteras.se/barn-och-utbildning/vuxenutbildning/nivatest-och-provning-infor-vuxenutbildning.html',
-    infoUrl: 'https://www.vasteras.se/barn-och-utbildning/vuxenutbildning/nivatest-och-provning-infor-vuxenutbildning.html',
-    description: 'Västerås stad samordnar prövning i sfi, grundläggande och gymnasiala kurser hos flera anordnare (bl.a. Edströmska); anmälan är öppen 17–31 augusti inför prövningsperiod vecka 41–44, 2026.',
+    registrationUrl:
+      'https://www.vasteras.se/barn-och-utbildning/vuxenutbildning/nivatest-och-provning-infor-vuxenutbildning.html',
+    infoUrl:
+      'https://www.vasteras.se/barn-och-utbildning/vuxenutbildning/nivatest-och-provning-infor-vuxenutbildning.html',
+    description:
+      'Västerås stad samordnar prövning i sfi, grundläggande och gymnasiala kurser hos flera anordnare (bl.a. Edströmska); anmälan är öppen 17–31 augusti inför prövningsperiod vecka 41–44, 2026.',
     tags: ['flera ämnen', 'gymnasial', 'västmanland'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2121,9 +2366,12 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
-    infoUrl: 'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
-    description: 'Komvux Örebro öppnar anmälan till prövningar i grundskole-, gymnasiala- och sfi-kurser hösten 2026 den 14–27 september; kursutbud och provdatum publiceras i augusti.',
+    registrationUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    infoUrl:
+      'https://gymnasieskolor.orebro.se/komvux/provningtentaavkursellerhojbetyg.4.17bd677b15a180b3e7e75d5.html',
+    description:
+      'Komvux Örebro öppnar anmälan till prövningar i grundskole-, gymnasiala- och sfi-kurser hösten 2026 den 14–27 september; kursutbud och provdatum publiceras i augusti.',
     tags: ['flera ämnen', 'gymnasial', 'örebro'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2153,9 +2401,12 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_ENGELSKA,
     studyTips: TIPS_ENGELSKA,
-    registrationUrl: 'https://karlskoga.se/utbildning--barnomsorg/vuxenutbildning/provning/provning-gymnasiekurser.html',
-    infoUrl: 'https://karlskoga.se/utbildning--barnomsorg/vuxenutbildning/provning/provning-gymnasiekurser.html',
-    description: 'Karlskoga erbjuder prövning i Engelska 6 med obligatoriska prövningsveckor 38–39 och 43; ansökan är öppen 10–20 augusti 2026 och prövningen sker på Vuxnas lärande i Karlskoga.',
+    registrationUrl:
+      'https://karlskoga.se/utbildning--barnomsorg/vuxenutbildning/provning/provning-gymnasiekurser.html',
+    infoUrl:
+      'https://karlskoga.se/utbildning--barnomsorg/vuxenutbildning/provning/provning-gymnasiekurser.html',
+    description:
+      'Karlskoga erbjuder prövning i Engelska 6 med obligatoriska prövningsveckor 38–39 och 43; ansökan är öppen 10–20 augusti 2026 och prövningen sker på Vuxnas lärande i Karlskoga.',
     tags: ['engelska', 'gymnasial', 'örebro'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2185,9 +2436,12 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
-    registrationUrl: 'https://karlskoga.se/utbildning--barnomsorg/vuxenutbildning/provning/provning-gymnasiekurser.html',
-    infoUrl: 'https://karlskoga.se/utbildning--barnomsorg/vuxenutbildning/provning/provning-gymnasiekurser.html',
-    description: 'Prövning i Matematik 3b/3c på Vuxnas lärande Karlskoga har obligatoriska prövningsveckor 41–43 hösten 2026; ansökan öppen 10–20 augusti 2026, avgift 500 kr.',
+    registrationUrl:
+      'https://karlskoga.se/utbildning--barnomsorg/vuxenutbildning/provning/provning-gymnasiekurser.html',
+    infoUrl:
+      'https://karlskoga.se/utbildning--barnomsorg/vuxenutbildning/provning/provning-gymnasiekurser.html',
+    description:
+      'Prövning i Matematik 3b/3c på Vuxnas lärande Karlskoga har obligatoriska prövningsveckor 41–43 hösten 2026; ansökan öppen 10–20 augusti 2026, avgift 500 kr.',
     tags: ['matematik', 'gymnasial', 'örebro'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2206,7 +2460,8 @@ export const EXAMS: Exam[] = [
     lat: 60.6065,
     lng: 15.6355,
     price: 500,
-    priceNote: '500 kr anmälningsavgift, kostnadsfritt vid tidigare F/IG i kursen. Prövning i Gy11-kurser erbjuds fram till 2030.',
+    priceNote:
+      '500 kr anmälningsavgift, kostnadsfritt vid tidigare F/IG i kursen. Prövning i Gy11-kurser erbjuds fram till 2030.',
     nextPeriod: {
       label: 'Prövning erbjuds vår och höst; datum för hösten 2026 ej fastställt',
       confirmed: false,
@@ -2215,7 +2470,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://www.falun.se/vuxenutbildningen/utbildningar/provning.html',
     infoUrl: 'https://www.falun.se/vuxenutbildningen/utbildningar/provning.html',
-    description: 'Vuxenutbildningen i Falun erbjuder prövning i alla ämnen som finns i det egna kursutbudet, mot en anmälningsavgift på 500 kr; exakt datum för höstens anmälningsperiod meddelas separat.',
+    description:
+      'Vuxenutbildningen i Falun erbjuder prövning i alla ämnen som finns i det egna kursutbudet, mot en anmälningsavgift på 500 kr; exakt datum för höstens anmälningsperiod meddelas separat.',
     tags: ['flera ämnen', 'gymnasial', 'dalarna'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2245,9 +2501,12 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://www.borlange.se/barn-och-utbildning/vuxenutbildningen/kurser-amnen-och-yrkesutbildningar/provning-nivatest-och-validering/provning---lasa-upp-betyg',
-    infoUrl: 'https://www.borlange.se/barn-och-utbildning/vuxenutbildningen/kurser-amnen-och-yrkesutbildningar/provning-nivatest-och-validering/provning---lasa-upp-betyg',
-    description: 'Vuxenutbildningen i Borlänge har prövningsanmälan för period 2, 2026 öppen 15 augusti–20 september, med prövningsperiod 12 oktober–13 november 2026; max två prövningar per period.',
+    registrationUrl:
+      'https://www.borlange.se/barn-och-utbildning/vuxenutbildningen/kurser-amnen-och-yrkesutbildningar/provning-nivatest-och-validering/provning---lasa-upp-betyg',
+    infoUrl:
+      'https://www.borlange.se/barn-och-utbildning/vuxenutbildningen/kurser-amnen-och-yrkesutbildningar/provning-nivatest-och-validering/provning---lasa-upp-betyg',
+    description:
+      'Vuxenutbildningen i Borlänge har prövningsanmälan för period 2, 2026 öppen 15 augusti–20 september, med prövningsperiod 12 oktober–13 november 2026; max två prövningar per period.',
     tags: ['flera ämnen', 'gymnasial', 'dalarna'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2277,8 +2536,10 @@ export const EXAMS: Exam[] = [
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://sjalvservice.gavle.se/provning',
-    infoUrl: 'https://www.gavle.se/utbildning-och-barnomsorg/vuxenutbildning-i-gavle/for-dig-som-ar-elev-pa-vuxenutbildningen/betyg-studieintyg-och-provning/',
-    description: 'Vuxenutbildningen Gävle erbjuder upp till 3 prövningar per period; period 3, 2026 genomförs vecka 38–40 med sista anmälningsdatum 4 augusti 2026.',
+    infoUrl:
+      'https://www.gavle.se/utbildning-och-barnomsorg/vuxenutbildning-i-gavle/for-dig-som-ar-elev-pa-vuxenutbildningen/betyg-studieintyg-och-provning/',
+    description:
+      'Vuxenutbildningen Gävle erbjuder upp till 3 prövningar per period; period 3, 2026 genomförs vecka 38–40 med sista anmälningsdatum 4 augusti 2026.',
     tags: ['flera ämnen', 'gymnasial', 'gävleborg'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2297,7 +2558,8 @@ export const EXAMS: Exam[] = [
     lat: 60.6167,
     lng: 16.7761,
     price: 500,
-    priceNote: 'Avgift betalas direkt via Swish eller kort vid ansökan (ordinarie prövningsavgift 500 kr)',
+    priceNote:
+      'Avgift betalas direkt via Swish eller kort vid ansökan (ordinarie prövningsavgift 500 kr)',
     nextPeriod: {
       label: 'Hösten 2026',
       applicationStart: '2026-09-10',
@@ -2310,7 +2572,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://minasidor.sandviken.se/oversikt/overview/267',
     infoUrl: 'https://minasidor.sandviken.se/oversikt/overview/267',
-    description: 'Läroviken i Sandviken erbjuder prövning hösten under vecka 45–47 (november) 2026; e-tjänsten för anmälan öppnar 10 september och sista anmälningsdatum är 15 oktober 2026.',
+    description:
+      'Läroviken i Sandviken erbjuder prövning hösten under vecka 45–47 (november) 2026; e-tjänsten för anmälan öppnar 10 september och sista anmälningsdatum är 15 oktober 2026.',
     tags: ['flera ämnen', 'gymnasial', 'gävleborg'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2341,8 +2604,10 @@ export const EXAMS: Exam[] = [
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://hudiksvall.alvis.se/provning/amnesomrade',
-    infoUrl: 'https://www.hudiksvall.se/Sidor/Barn-och-utbildning/Utbildning-for-vuxna---Cul/Komplettera-din-behorighet/Provning-for-betyg.html',
-    description: 'Cul i Hudiksvall genomför en prövningsperiod per år; nästa tillfälle är 3–9 juni 2027 med anmälan öppen 15 mars–15 april 2027.',
+    infoUrl:
+      'https://www.hudiksvall.se/Sidor/Barn-och-utbildning/Utbildning-for-vuxna---Cul/Komplettera-din-behorighet/Provning-for-betyg.html',
+    description:
+      'Cul i Hudiksvall genomför en prövningsperiod per år; nästa tillfälle är 3–9 juni 2027 med anmälan öppen 15 mars–15 april 2027.',
     tags: ['flera ämnen', 'gymnasial', 'gävleborg'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2361,16 +2626,21 @@ export const EXAMS: Exam[] = [
     lat: 56.0294,
     lng: 14.1567,
     price: 500,
-    priceNote: '500 kr per prövning; gratis om du saknar betyg eller har F i kursen (alltid 500 kr för dig som är folkbokförd i annan kommun)',
+    priceNote:
+      '500 kr per prövning; gratis om du saknar betyg eller har F i kursen (alltid 500 kr för dig som är folkbokförd i annan kommun)',
     nextPeriod: {
-      label: 'Fyra prövningsperioder per år (två på våren, två på hösten), varje period löper 10 veckor; exakta datum anges vid ansökan',
+      label:
+        'Fyra prövningsperioder per år (två på våren, två på hösten), varje period löper 10 veckor; exakta datum anges vid ansökan',
       confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://www.kristianstad.se/sv/barn-och-utbildning/vuxenutbildning/vuxenutbildning/ansokan/provning/',
-    infoUrl: 'https://www.kristianstad.se/sv/barn-och-utbildning/vuxenutbildning/vuxenutbildning/ansokan/provning/',
-    description: 'Kristianstads kommun erbjuder betygsprövning i gymnasiala kurser via webbansökan med BankID, max två prövningar per period. Prövning kan inte sökas med CSN-studiemedel.',
+    registrationUrl:
+      'https://www.kristianstad.se/sv/barn-och-utbildning/vuxenutbildning/vuxenutbildning/ansokan/provning/',
+    infoUrl:
+      'https://www.kristianstad.se/sv/barn-och-utbildning/vuxenutbildning/vuxenutbildning/ansokan/provning/',
+    description:
+      'Kristianstads kommun erbjuder betygsprövning i gymnasiala kurser via webbansökan med BankID, max två prövningar per period. Prövning kan inte sökas med CSN-studiemedel.',
     tags: ['komvux', 'kommunal', 'skåne'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2398,7 +2668,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_ENGELSKA,
     registrationUrl: 'https://www.trelleborg.se/barn-utbildning/vuxenutbildning/provning/',
     infoUrl: 'https://www.trelleborg.se/barn-utbildning/vuxenutbildning/provning/',
-    description: 'Campus Trelleborg erbjuder prövning enligt Gy11 i egna kurser, bland annat Engelska 6, med prov på plats i Trelleborg. Betalning ska ske senast ett angivet datum efter antagningsbesked.',
+    description:
+      'Campus Trelleborg erbjuder prövning enligt Gy11 i egna kurser, bland annat Engelska 6, med prov på plats i Trelleborg. Betalning ska ske senast ett angivet datum efter antagningsbesked.',
     tags: ['komvux', 'engelska', 'gy11'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2426,7 +2697,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_SAMHALLSKUNSKAP,
     registrationUrl: 'https://www.trelleborg.se/barn-utbildning/vuxenutbildning/provning/',
     infoUrl: 'https://www.trelleborg.se/barn-utbildning/vuxenutbildning/provning/',
-    description: 'Campus Trelleborg listar Samhällskunskap 1b bland de Gy11-kurser man kan pröva i, med max två prövningar per elev och tillfälle.',
+    description:
+      'Campus Trelleborg listar Samhällskunskap 1b bland de Gy11-kurser man kan pröva i, med max två prövningar per elev och tillfälle.',
     tags: ['komvux', 'samhällskunskap', 'gy11'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2447,14 +2719,16 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per tillfälle (faktureras); gratis vid tidigare F/Icke godkänt i kursen',
     nextPeriod: {
-      label: 'Ingen specifik ansökningsperiod angiven på sidan - ansökan görs löpande via studie- och yrkesvägledare',
+      label:
+        'Ingen specifik ansökningsperiod angiven på sidan - ansökan görs löpande via studie- och yrkesvägledare',
       confirmed: false,
     },
     components: COMPONENTS_SVENSKA,
     studyTips: TIPS_SVENSKA,
     registrationUrl: 'https://eslov.se/utbildning-barnomsorg/vuxenutbildning-yh/ansokan/provning/',
     infoUrl: 'https://eslov.se/utbildning-barnomsorg/vuxenutbildning-yh/ansokan/provning/',
-    description: 'Vuxenutbildningen i Eslöv erbjuder prövning i bland annat svenska/svenska som andraspråk nivå 1, samhällskunskap 1a1 och vårdkurser på gymnasial nivå. Ansökan sker via kommunens studie- och yrkesvägledare med bifogade betygskopior.',
+    description:
+      'Vuxenutbildningen i Eslöv erbjuder prövning i bland annat svenska/svenska som andraspråk nivå 1, samhällskunskap 1a1 och vårdkurser på gymnasial nivå. Ansökan sker via kommunens studie- och yrkesvägledare med bifogade betygskopior.',
     tags: ['komvux', 'svenska', 'skåne'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2484,9 +2758,12 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_ENGELSKA,
     studyTips: TIPS_ENGELSKA,
-    registrationUrl: 'https://www.engelholm.se/barn-och-utbildning/vuxenutbildning/provning-i-kurs-hos-vuxenutbildningen.html',
-    infoUrl: 'https://www.engelholm.se/barn-och-utbildning/vuxenutbildning/provning-i-kurs-hos-vuxenutbildningen.html',
-    description: 'Ängelholms kommun upphandlar prövningsgenomförandet av Talenti; anmälan görs med mobilt BankID och max två kurser per period. Sidan anger exakta datum för prövningsperiod 3 och 4 hösten 2026.',
+    registrationUrl:
+      'https://www.engelholm.se/barn-och-utbildning/vuxenutbildning/provning-i-kurs-hos-vuxenutbildningen.html',
+    infoUrl:
+      'https://www.engelholm.se/barn-och-utbildning/vuxenutbildning/provning-i-kurs-hos-vuxenutbildningen.html',
+    description:
+      'Ängelholms kommun upphandlar prövningsgenomförandet av Talenti; anmälan görs med mobilt BankID och max två kurser per period. Sidan anger exakta datum för prövningsperiod 3 och 4 hösten 2026.',
     tags: ['komvux', 'engelska', 'skåne'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2516,9 +2793,12 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
-    registrationUrl: 'https://www.engelholm.se/barn-och-utbildning/vuxenutbildning/provning-i-kurs-hos-vuxenutbildningen.html',
-    infoUrl: 'https://www.engelholm.se/barn-och-utbildning/vuxenutbildning/provning-i-kurs-hos-vuxenutbildningen.html',
-    description: 'Matematik 3b ingår i kursutbudet för prövning hos Vuxenutbildningen Ängelholm; laborationer och muntliga moment schemaläggs runt slutprovsdatumet.',
+    registrationUrl:
+      'https://www.engelholm.se/barn-och-utbildning/vuxenutbildning/provning-i-kurs-hos-vuxenutbildningen.html',
+    infoUrl:
+      'https://www.engelholm.se/barn-och-utbildning/vuxenutbildning/provning-i-kurs-hos-vuxenutbildningen.html',
+    description:
+      'Matematik 3b ingår i kursutbudet för prövning hos Vuxenutbildningen Ängelholm; laborationer och muntliga moment schemaläggs runt slutprovsdatumet.',
     tags: ['komvux', 'matematik', 'skåne'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2544,9 +2824,12 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://www.karlskrona.se/skola-och-forskola/gymnasieskola-och-gymnasiesarskola/provning-i-gymnasieskolan/',
-    infoUrl: 'https://www.karlskrona.se/skola-och-forskola/gymnasieskola-och-gymnasiesarskola/provning-i-gymnasieskolan/',
-    description: 'Karlskrona kommun tar ut 500 kronor för en prövning av den som avslutat sina gymnasiestudier; kopia på tidigare betygsdokument ska bifogas ansökan.',
+    registrationUrl:
+      'https://www.karlskrona.se/skola-och-forskola/gymnasieskola-och-gymnasiesarskola/provning-i-gymnasieskolan/',
+    infoUrl:
+      'https://www.karlskrona.se/skola-och-forskola/gymnasieskola-och-gymnasiesarskola/provning-i-gymnasieskolan/',
+    description:
+      'Karlskrona kommun tar ut 500 kronor för en prövning av den som avslutat sina gymnasiestudier; kopia på tidigare betygsdokument ska bifogas ansökan.',
     tags: ['gymnasium', 'blekinge', 'prövning'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2565,7 +2848,8 @@ export const EXAMS: Exam[] = [
     lat: 56.1705,
     lng: 14.8594,
     price: 500,
-    priceNote: '500 kr per kurs (300 kr för SFI och grundläggande nivå); gratis vid F-betyg inom komvux',
+    priceNote:
+      '500 kr per kurs (300 kr för SFI och grundläggande nivå); gratis vid F-betyg inom komvux',
     nextPeriod: {
       label: 'Ansökningsperiod 10/8-4/9 2026, prövningsperiod 14/9-20/11 2026',
       applicationStart: '2026-08-10',
@@ -2576,9 +2860,12 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://vuxenutbildningen.karlshamn.se/jag-ar-elev/studieinformation/provning-och-validering/',
-    infoUrl: 'https://vuxenutbildningen.karlshamn.se/jag-ar-elev/studieinformation/provning-och-validering/',
-    description: 'Vuxenutbildningen Karlshamn anger exakta ansöknings- och prövningsdatum för hösten 2026 samt bankgironummer för avgiftsbetalning på 500 kr per kurs.',
+    registrationUrl:
+      'https://vuxenutbildningen.karlshamn.se/jag-ar-elev/studieinformation/provning-och-validering/',
+    infoUrl:
+      'https://vuxenutbildningen.karlshamn.se/jag-ar-elev/studieinformation/provning-och-validering/',
+    description:
+      'Vuxenutbildningen Karlshamn anger exakta ansöknings- och prövningsdatum för hösten 2026 samt bankgironummer för avgiftsbetalning på 500 kr per kurs.',
     tags: ['komvux', 'blekinge', 'validering'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2597,16 +2884,21 @@ export const EXAMS: Exam[] = [
     lat: 56.2128,
     lng: 15.2757,
     price: 500,
-    priceNote: 'Högst 500 kr per prövning; gratis vid F-betyg inom komvux, efter validering, eller F i motsvarande grundskolekurs',
+    priceNote:
+      'Högst 500 kr per prövning; gratis vid F-betyg inom komvux, efter validering, eller F i motsvarande grundskolekurs',
     nextPeriod: {
-      label: 'Sidan visar vårterminens 2026 prövningsschema (ansökan öppnade 2 mars); höstens datum ej publicerade vid senaste uppdatering',
+      label:
+        'Sidan visar vårterminens 2026 prövningsschema (ansökan öppnade 2 mars); höstens datum ej publicerade vid senaste uppdatering',
       confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://www.ronneby.se/sidowebbplatser/ronneby-vuxenutbildning/studie--yrkesvagledning/provning.html',
-    infoUrl: 'https://www.ronneby.se/sidowebbplatser/ronneby-vuxenutbildning/studie--yrkesvagledning/provning.html',
-    description: 'Ronneby Vuxenutbildning kräver bokad tid hos studie- och yrkesvägledare för anmälan till prövning; sidan var senast uppdaterad 2026-03-09 med vårterminens tidsplan.',
+    registrationUrl:
+      'https://www.ronneby.se/sidowebbplatser/ronneby-vuxenutbildning/studie--yrkesvagledning/provning.html',
+    infoUrl:
+      'https://www.ronneby.se/sidowebbplatser/ronneby-vuxenutbildning/studie--yrkesvagledning/provning.html',
+    description:
+      'Ronneby Vuxenutbildning kräver bokad tid hos studie- och yrkesvägledare för anmälan till prövning; sidan var senast uppdaterad 2026-03-09 med vårterminens tidsplan.',
     tags: ['komvux', 'blekinge', 'prövning'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2625,9 +2917,11 @@ export const EXAMS: Exam[] = [
     lat: 57.7826,
     lng: 14.1618,
     price: 500,
-    priceNote: '500 kr per kurs/ämnesnivå och prövningstillfälle (gymnasienivå); kostnadsfritt vid tidigare IG/F eller på grundläggande nivå',
+    priceNote:
+      '500 kr per kurs/ämnesnivå och prövningstillfälle (gymnasienivå); kostnadsfritt vid tidigare IG/F eller på grundläggande nivå',
     nextPeriod: {
-      label: 'Prövningsperiod 3 (gymnasial nivå): 26 oktober - 27 november 2026, anmälan 13 juli - 13 augusti',
+      label:
+        'Prövningsperiod 3 (gymnasial nivå): 26 oktober - 27 november 2026, anmälan 13 juli - 13 augusti',
       applicationStart: '2026-07-13',
       applicationEnd: '2026-08-13',
       examWindowStart: '2026-10-26',
@@ -2636,9 +2930,12 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://www.jonkoping.se/barn--utbildning/vuxenutbildning-och-yrkeshogskola/komvux-i-jonkoping/studievagledning-for-vuxna/att-studera-pa-komvux/provning-och-validering',
-    infoUrl: 'https://www.jonkoping.se/barn--utbildning/vuxenutbildning-och-yrkeshogskola/komvux-i-jonkoping/studievagledning-for-vuxna/att-studera-pa-komvux/provning-och-validering',
-    description: 'Komvux i Jönköping erbjuder prövning i alla kurser/ämnesnivåer i sitt utbud och publicerar en tabell med tre prövningsperioder för 2026, inklusive gymnasial nivå.',
+    registrationUrl:
+      'https://www.jonkoping.se/barn--utbildning/vuxenutbildning-och-yrkeshogskola/komvux-i-jonkoping/studievagledning-for-vuxna/att-studera-pa-komvux/provning-och-validering',
+    infoUrl:
+      'https://www.jonkoping.se/barn--utbildning/vuxenutbildning-och-yrkeshogskola/komvux-i-jonkoping/studievagledning-for-vuxna/att-studera-pa-komvux/provning-och-validering',
+    description:
+      'Komvux i Jönköping erbjuder prövning i alla kurser/ämnesnivåer i sitt utbud och publicerar en tabell med tre prövningsperioder för 2026, inklusive gymnasial nivå.',
     tags: ['komvux', 'jönköping', 'småland'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2657,9 +2954,11 @@ export const EXAMS: Exam[] = [
     lat: 56.8777,
     lng: 14.8091,
     price: 500,
-    priceNote: '500 kr per kurs/ämnesnivå; kostnadsfritt vid F/IG-betyg inom ett år från betygssättning',
+    priceNote:
+      '500 kr per kurs/ämnesnivå; kostnadsfritt vid F/IG-betyg inom ett år från betygssättning',
     nextPeriod: {
-      label: 'Period 2 2026: anmälan öppnar 15 augusti, sista anmälningsdag 22 augusti, prövning ska vara genomförd senast 30 december',
+      label:
+        'Period 2 2026: anmälan öppnar 15 augusti, sista anmälningsdag 22 augusti, prövning ska vara genomförd senast 30 december',
       applicationStart: '2026-08-15',
       applicationEnd: '2026-08-22',
       examWindowEnd: '2026-12-30',
@@ -2669,7 +2968,8 @@ export const EXAMS: Exam[] = [
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://www.vaxjo.se/sidor/forskola-och-skola/komvux/provning.html',
     infoUrl: 'https://www.vaxjo.se/sidor/forskola-och-skola/komvux/provning.html',
-    description: 'Växjö kommun har två anmälningsperioder per år för prövning, max två kurser/ämnesnivåer per tillfälle, med betalning via e-tjänst efter godkänd anmälan.',
+    description:
+      'Växjö kommun har två anmälningsperioder per år för prövning, max två kurser/ämnesnivåer per tillfälle, med betalning via e-tjänst efter godkänd anmälan.',
     tags: ['komvux', 'växjö', 'småland'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2690,14 +2990,18 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per kurs; kostnadsfritt vid tidigare Icke Godkänd/F',
     nextPeriod: {
-      label: 'Tidplan för prövning på gymnasial vux publiceras separat; max två kurser per prövningsperiod',
+      label:
+        'Tidplan för prövning på gymnasial vux publiceras separat; max två kurser per prövningsperiod',
       confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://gyf.se/vara-skolor/axel-weudelskolan/utbildningar/gymnasial-vuxenutbildning/provning-gymnasial-vux',
-    infoUrl: 'https://gyf.se/vara-skolor/axel-weudelskolan/utbildningar/gymnasial-vuxenutbildning/provning-gymnasial-vux',
-    description: 'Axel Weüdelskolan inom Kalmarsunds gymnasieförbund ansvarar för alla prövningar inom vuxenutbildningen i Kalmar, Mörbylånga och Torsås; ansökan sker via webbansökan och betalning via Swish.',
+    registrationUrl:
+      'https://gyf.se/vara-skolor/axel-weudelskolan/utbildningar/gymnasial-vuxenutbildning/provning-gymnasial-vux',
+    infoUrl:
+      'https://gyf.se/vara-skolor/axel-weudelskolan/utbildningar/gymnasial-vuxenutbildning/provning-gymnasial-vux',
+    description:
+      'Axel Weüdelskolan inom Kalmarsunds gymnasieförbund ansvarar för alla prövningar inom vuxenutbildningen i Kalmar, Mörbylånga och Torsås; ansökan sker via webbansökan och betalning via Swish.',
     tags: ['komvux', 'kalmar', 'småland'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2726,9 +3030,12 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://www.vastervik.se/Forskola-skola-och-utbildning/Utbildning-for-vuxna/Komvux/provning/',
-    infoUrl: 'https://www.vastervik.se/Forskola-skola-och-utbildning/Utbildning-for-vuxna/Komvux/provning/',
-    description: 'Komvux Västervik erbjuder fyra prövningstillfällen per år via ifylld blankett skickad per e-post eller post, med angivna sista ansökningsdagar för höstens veckor 37-40 och 42-45.',
+    registrationUrl:
+      'https://www.vastervik.se/Forskola-skola-och-utbildning/Utbildning-for-vuxna/Komvux/provning/',
+    infoUrl:
+      'https://www.vastervik.se/Forskola-skola-och-utbildning/Utbildning-for-vuxna/Komvux/provning/',
+    description:
+      'Komvux Västervik erbjuder fyra prövningstillfällen per år via ifylld blankett skickad per e-post eller post, med angivna sista ansökningsdagar för höstens veckor 37-40 och 42-45.',
     tags: ['komvux', 'västervik', 'småland'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2747,7 +3054,8 @@ export const EXAMS: Exam[] = [
     lat: 55.4295,
     lng: 13.8204,
     price: 500,
-    priceNote: '500 kr enligt Skolverkets regler för prövningsavgift (ej specificerat separat på sidan)',
+    priceNote:
+      '500 kr enligt Skolverkets regler för prövningsavgift (ej specificerat separat på sidan)',
     nextPeriod: {
       label: 'Höstens prövningsdag 7 oktober 2026, anmälan 10-28 augusti 2026',
       applicationStart: '2026-08-10',
@@ -2758,9 +3066,11 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://www.ystad.se/forskola-och-skola/vuxenutbildning/provning-och-tentamenservice',
+    registrationUrl:
+      'https://www.ystad.se/forskola-och-skola/vuxenutbildning/provning-och-tentamenservice',
     infoUrl: 'https://www.ystad.se/forskola-och-skola/vuxenutbildning/provning-och-tentamenservice',
-    description: 'Vuxenutbildningen Ystad anordnar en gemensam prövningsdag per termin; anmälan görs via e-post till ansvarig studie- och yrkesvägledare. Sidan uppdaterades 2026-07-01.',
+    description:
+      'Vuxenutbildningen Ystad anordnar en gemensam prövningsdag per termin; anmälan görs via e-post till ansvarig studie- och yrkesvägledare. Sidan uppdaterades 2026-07-01.',
     tags: ['komvux', 'ystad', 'skåne'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
@@ -2781,19 +3091,23 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per kurs/ämnesnivå och skrivtillfälle; gratis vid IG/F-betyg i kursen',
     nextPeriod: {
-      label: 'Löpande prövningstillfällen varannan onsdag på jämna veckor (bl.a. vecka 36 och 42); anmälan senast fem veckor innan skrivtillfället, i mån av plats',
+      label:
+        'Löpande prövningstillfällen varannan onsdag på jämna veckor (bl.a. vecka 36 och 42); anmälan senast fem veckor innan skrivtillfället, i mån av plats',
       confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://gotland.se/forskola-skola-och-utbildning/utbildning-for-vuxna/vuxenutbildningen/provning',
-    infoUrl: 'https://gotland.se/forskola-skola-och-utbildning/utbildning-for-vuxna/vuxenutbildningen/provning',
-    description: 'Vuxenutbildningen Gotland håller skriftliga prövningar på plats i Visby varannan onsdag (jämna veckor) med muntlig del 1-2 veckor senare digitalt; anmälan sker på blankett i mån av lediga platser.',
+    registrationUrl:
+      'https://gotland.se/forskola-skola-och-utbildning/utbildning-for-vuxna/vuxenutbildningen/provning',
+    infoUrl:
+      'https://gotland.se/forskola-skola-och-utbildning/utbildning-for-vuxna/vuxenutbildningen/provning',
+    description:
+      'Vuxenutbildningen Gotland håller skriftliga prövningar på plats i Visby varannan onsdag (jämna veckor) med muntlig del 1-2 veckor senare digitalt; anmälan sker på blankett i mån av lediga platser.',
     tags: ['komvux', 'gotland', 'visby'],
     verifiedAt: NATIONWIDE_VERIFIED,
   },
 ];
 
-export const SUBJECTS = [...new Set(EXAMS.map(e => e.subject))].sort();
-export const REGIONS = [...new Set(EXAMS.map(e => e.region))].sort();
-export const CITIES = [...new Set(EXAMS.map(e => e.city))].sort();
+export const SUBJECTS = [...new Set(EXAMS.map((e) => e.subject))].sort();
+export const REGIONS = [...new Set(EXAMS.map((e) => e.region))].sort();
+export const CITIES = [...new Set(EXAMS.map((e) => e.city))].sort();

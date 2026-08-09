@@ -1,5 +1,14 @@
 import { useState, useMemo } from 'react';
-import { Search, SlidersHorizontal, X, TrendingUp, Navigation, HelpCircle, List, Map as MapIcon } from 'lucide-react';
+import {
+  Search,
+  SlidersHorizontal,
+  X,
+  TrendingUp,
+  Navigation,
+  HelpCircle,
+  List,
+  Map as MapIcon,
+} from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { ExamCard } from '../components/ExamCard';
 import { FilterSheet } from '../components/FilterSheet';
@@ -12,15 +21,31 @@ import { useMinuteTick } from '../hooks/useMinuteTick';
 const FEATURED_SUBJECTS = ['Matematik', 'Engelska', 'Svenska', 'Biologi', 'Kemi', 'Fysik'];
 
 const STEPS = [
-  { n: '01', title: 'Hitta på kartan', body: 'Zooma in på din stad och se alla verifierade tillfällen nära dig.' },
-  { n: '02', title: 'Jämför tillfällen', body: 'Se riktiga datum, ämne och anordnare samlat på en plats — aldrig gissade.' },
+  {
+    n: '01',
+    title: 'Hitta på kartan',
+    body: 'Zooma in på din stad och se alla verifierade tillfällen nära dig.',
+  },
+  {
+    n: '02',
+    title: 'Jämför tillfällen',
+    body: 'Se riktiga datum, ämne och anordnare samlat på en plats — aldrig gissade.',
+  },
   { n: '03', title: 'Anmäl dig', body: 'Gå vidare direkt till anordnarens egen anmälan.' },
 ];
 
 export function Discover() {
   const {
-    exams, searchQuery, setSearchQuery, filterSubject, filterRegion, filterSortBy,
-    userLocation, locationStatus, requestLocation, setShowingFaq,
+    exams,
+    searchQuery,
+    setSearchQuery,
+    filterSubject,
+    filterRegion,
+    filterSortBy,
+    userLocation,
+    locationStatus,
+    requestLocation,
+    setShowingFaq,
   } = useStore();
   const [showFilter, setShowFilter] = useState(false);
   const [view, setView] = useState<'list' | 'map'>('list');
@@ -29,9 +54,10 @@ export function Discover() {
   const hasActiveFilters = !!(filterSubject || filterRegion);
 
   const filtered = useMemo(() => {
-    let result = exams.filter(e => {
+    const result = exams.filter((e) => {
       const q = searchQuery.toLowerCase();
-      const matchesSearch = !q ||
+      const matchesSearch =
+        !q ||
         e.schoolName.toLowerCase().includes(q) ||
         e.subject.toLowerCase().includes(q) ||
         e.course.toLowerCase().includes(q) ||
@@ -43,8 +69,10 @@ export function Discover() {
       return matchesSearch && matchesSubject && matchesRegion;
     });
 
-    const periodDate = (e: typeof result[0]) =>
-      e.nextPeriod.confirmed ? (e.nextPeriod.applicationEnd || e.nextPeriod.examWindowStart) : undefined;
+    const periodDate = (e: (typeof result)[0]) =>
+      e.nextPeriod.confirmed
+        ? e.nextPeriod.applicationEnd || e.nextPeriod.examWindowStart
+        : undefined;
 
     if (filterSortBy === 'date') {
       result.sort((a, b) => {
@@ -56,9 +84,10 @@ export function Discover() {
         return a.schoolName.localeCompare(b.schoolName);
       });
     } else if (filterSortBy === 'distance' && userLocation) {
-      result.sort((a, b) =>
-        haversineDistanceKm(userLocation.lat, userLocation.lng, a.lat, a.lng) -
-        haversineDistanceKm(userLocation.lat, userLocation.lng, b.lat, b.lng)
+      result.sort(
+        (a, b) =>
+          haversineDistanceKm(userLocation.lat, userLocation.lng, a.lat, a.lng) -
+          haversineDistanceKm(userLocation.lat, userLocation.lng, b.lat, b.lng),
       );
     } else {
       result.sort((a, b) => a.schoolName.localeCompare(b.schoolName));
@@ -67,16 +96,21 @@ export function Discover() {
     return result;
   }, [exams, searchQuery, filterSubject, filterRegion, filterSortBy, userLocation]);
 
-  // tick is a dependency so the live "öppna just nu" count recomputes each minute
-  const stats = useMemo(() => ({
-    providers: new Set(exams.map(e => e.provider)).size,
-    cities: new Set(exams.map(e => e.city)).size,
-    openNow: exams.filter(isOpenForRegistration).length,
-  }), [exams, tick]);
+  // tick isn't read below, it's a trigger so the live "öppna just nu" count
+  // recomputes each minute
+  const stats = useMemo(
+    () => ({
+      providers: new Set(exams.map((e) => e.provider)).size,
+      cities: new Set(exams.map((e) => e.city)).size,
+      openNow: exams.filter(isOpenForRegistration).length,
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [exams, tick],
+  );
 
   const topCities = useMemo(() => {
     const counts = new Map<string, number>();
-    exams.forEach(e => counts.set(e.city, (counts.get(e.city) || 0) + 1));
+    exams.forEach((e) => counts.set(e.city, (counts.get(e.city) || 0) + 1));
     return [...counts.entries()]
       .sort((a, b) => b[1] - a[1])
       .slice(0, 8)
@@ -132,12 +166,15 @@ export function Discover() {
           {/* HERO */}
           <section className="max-w-screen-xl mx-auto w-full px-4 lg:px-8 pt-8 lg:pt-12 pb-6 lg:pb-8 grid grid-cols-1 lg:grid-cols-[minmax(320px,5fr)_7fr] gap-8 lg:gap-10 items-center">
             <div>
-              <h6 className="text-brand-700 text-xs font-semibold uppercase tracking-wider mb-3">{eyebrow}</h6>
+              <h6 className="text-brand-700 text-xs font-semibold uppercase tracking-wider mb-3">
+                {eyebrow}
+              </h6>
               <h1 className="font-display text-4xl lg:text-6xl font-semibold text-ink leading-tight -ml-px mb-3 max-w-[14ch]">
                 Varje prövning i Sverige. På en karta.
               </h1>
               <p className="text-base lg:text-lg text-ink-soft max-w-[42ch] mb-6">
-                Sök, jämför och anmäl dig till {exams.length} verifierade prövningstillfällen i hela landet. Samlat, uppdaterat — och alltid länkat direkt till anordnarens egen anmälan.
+                Sök, jämför och anmäl dig till {exams.length} verifierade prövningstillfällen i hela
+                landet. Samlat, uppdaterat — och alltid länkat direkt till anordnarens egen anmälan.
               </p>
               <div className="flex items-center gap-2 max-w-[440px] mb-3">
                 <div className="flex-1 flex items-center gap-2 bg-sand rounded px-3 py-2.5 relative">
@@ -145,7 +182,7 @@ export function Discover() {
                   <input
                     type="text"
                     value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Sök stad, ämne eller skola..."
                     className="flex-1 bg-transparent text-sm text-ink placeholder-ink-faint outline-none"
                   />
@@ -158,14 +195,17 @@ export function Discover() {
                 <button
                   onClick={() => setShowFilter(true)}
                   className={`w-10 h-10 rounded flex items-center justify-center transition-colors flex-shrink-0 ${
-                    hasActiveFilters ? 'bg-brand-500 text-white' : 'bg-sand text-ink-soft hover:bg-line'
+                    hasActiveFilters
+                      ? 'bg-brand-500 text-white'
+                      : 'bg-sand text-ink-soft hover:bg-line'
                   }`}
                 >
                   <SlidersHorizontal size={16} />
                 </button>
               </div>
               <p className="text-xs text-ink-faint">
-                {stats.providers} verifierade anordnare · 500 kr lagstadgad avgift, gratis vid tidigare F
+                {stats.providers} verifierade anordnare · 500 kr lagstadgad avgift, gratis vid
+                tidigare F
               </p>
             </div>
 
@@ -174,17 +214,21 @@ export function Discover() {
                 <button
                   onClick={() => setSearchQuery('')}
                   className={`text-xs px-2.5 py-1 rounded-sm border transition-colors ${
-                    !searchQuery ? 'bg-brand-100 text-brand-800 border-brand-200' : 'border-line text-ink-soft hover:bg-sand'
+                    !searchQuery
+                      ? 'bg-brand-100 text-brand-800 border-brand-200'
+                      : 'border-line text-ink-soft hover:bg-sand'
                   }`}
                 >
                   Alla ämnen
                 </button>
-                {FEATURED_SUBJECTS.map(s => (
+                {FEATURED_SUBJECTS.map((s) => (
                   <button
                     key={s}
                     onClick={() => setSearchQuery(s)}
                     className={`text-xs px-2.5 py-1 rounded-sm border transition-colors ${
-                      searchQuery === s ? 'bg-brand-100 text-brand-800 border-brand-200' : 'border-line text-ink-soft hover:bg-sand'
+                      searchQuery === s
+                        ? 'bg-brand-100 text-brand-800 border-brand-200'
+                        : 'border-line text-ink-soft hover:bg-sand'
                     }`}
                   >
                     {s}
@@ -193,7 +237,11 @@ export function Discover() {
               </div>
               <div className="relative">
                 <div className="h-[340px] lg:h-[420px] rounded shadow-lg overflow-hidden">
-                  <HeroMap exams={filtered} onCityClick={setSearchQuery} className="w-full h-full" />
+                  <HeroMap
+                    exams={filtered}
+                    onCityClick={setSearchQuery}
+                    className="w-full h-full"
+                  />
                 </div>
                 <div className="absolute bottom-3 left-3 z-[500] bg-cream border border-accent2-200 text-accent2-700 text-xs font-semibold px-2.5 py-1.5 rounded shadow-sm flex items-center gap-1.5">
                   <span className="relative flex h-1.5 w-1.5">
@@ -209,11 +257,15 @@ export function Discover() {
           {/* STATS */}
           <section className="max-w-screen-xl mx-auto w-full px-4 lg:px-8 py-6 flex gap-8 lg:gap-12 flex-wrap border-t border-line">
             <div>
-              <h2 className="font-display text-3xl font-semibold text-brand-700 mb-0.5">{stats.cities}+</h2>
+              <h2 className="font-display text-3xl font-semibold text-brand-700 mb-0.5">
+                {stats.cities}+
+              </h2>
               <p className="text-xs text-ink-faint">städer på kartan, från Kiruna till Ystad</p>
             </div>
             <div>
-              <h2 className="font-display text-3xl font-semibold text-brand-700 mb-0.5">{exams.length}</h2>
+              <h2 className="font-display text-3xl font-semibold text-brand-700 mb-0.5">
+                {exams.length}
+              </h2>
               <p className="text-xs text-ink-faint">verifierade prövningstillfällen</p>
             </div>
             <div>
@@ -224,13 +276,19 @@ export function Discover() {
 
           {/* HOW IT WORKS */}
           <section className="max-w-screen-xl mx-auto w-full px-4 lg:px-8 py-8 border-t border-line">
-            <h6 className="text-brand-700 text-xs font-semibold uppercase tracking-wider mb-2">Från karta till anmälan</h6>
+            <h6 className="text-brand-700 text-xs font-semibold uppercase tracking-wider mb-2">
+              Från karta till anmälan
+            </h6>
             <h2 className="font-display text-2xl font-semibold text-ink mb-6">Hur det fungerar</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-10">
-              {STEPS.map(step => (
+              {STEPS.map((step) => (
                 <div key={step.n}>
-                  <div className="font-display text-5xl font-semibold text-brand-700 leading-none mb-2 opacity-90">{step.n}</div>
-                  <h4 className="font-display text-base font-semibold text-ink mb-1">{step.title}</h4>
+                  <div className="font-display text-5xl font-semibold text-brand-700 leading-none mb-2 opacity-90">
+                    {step.n}
+                  </div>
+                  <h4 className="font-display text-base font-semibold text-ink mb-1">
+                    {step.title}
+                  </h4>
                   <p className="text-sm text-ink-soft">{step.body}</p>
                 </div>
               ))}
@@ -240,7 +298,9 @@ export function Discover() {
           {/* CITIES */}
           {topCities.length > 0 && (
             <section className="max-w-screen-xl mx-auto w-full px-4 lg:px-8 py-8 border-t border-line">
-              <h6 className="text-brand-700 text-xs font-semibold uppercase tracking-wider mb-2">Flest tillfällen just nu</h6>
+              <h6 className="text-brand-700 text-xs font-semibold uppercase tracking-wider mb-2">
+                Flest tillfällen just nu
+              </h6>
               <h2 className="font-display text-2xl font-semibold text-ink mb-4">Populära städer</h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {topCities.map(({ city, count }) => (
@@ -264,8 +324,12 @@ export function Discover() {
                 <div className="w-16 h-16 bg-sand rounded flex items-center justify-center mb-4">
                   <Search size={28} className="text-ink-faint" />
                 </div>
-                <h3 className="text-ink font-display font-semibold mb-1">Inga prövningar hittades</h3>
-                <p className="text-ink-soft text-sm">Prova att ändra dina filter eller söka på något annat.</p>
+                <h3 className="text-ink font-display font-semibold mb-1">
+                  Inga prövningar hittades
+                </h3>
+                <p className="text-ink-soft text-sm">
+                  Prova att ändra dina filter eller söka på något annat.
+                </p>
               </div>
             ) : (
               <>
@@ -280,7 +344,9 @@ export function Discover() {
                     </div>
                     <div className="flex-1">
                       <p className="text-ink text-sm font-bold">Hitta prövningar nära dig</p>
-                      <p className="text-ink-soft text-xs">Aktivera plats för att se avstånd och sortera närmast först</p>
+                      <p className="text-ink-soft text-xs">
+                        Aktivera plats för att se avstånd och sortera närmast först
+                      </p>
                     </div>
                   </button>
                 )}
@@ -288,12 +354,16 @@ export function Discover() {
                 <div className="flex items-center gap-2 text-sm text-ink-soft mb-4">
                   <TrendingUp size={15} className="text-brand-500" />
                   <span className="font-medium">{filtered.length} prövningar</span>
-                  {hasActiveFilters && <span className="text-brand-700 font-semibold">· Filter aktiva</span>}
-                  {filterSortBy === 'distance' && userLocation && <span className="text-brand-700 font-semibold">· Närmast först</span>}
+                  {hasActiveFilters && (
+                    <span className="text-brand-700 font-semibold">· Filter aktiva</span>
+                  )}
+                  {filterSortBy === 'distance' && userLocation && (
+                    <span className="text-brand-700 font-semibold">· Närmast först</span>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {filtered.map(exam => (
+                  {filtered.map((exam) => (
                     <ExamCard key={exam.id} exam={exam} />
                   ))}
                 </div>

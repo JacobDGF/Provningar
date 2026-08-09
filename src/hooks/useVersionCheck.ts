@@ -26,7 +26,9 @@ export function useVersionCheck() {
 
     check();
     const interval = setInterval(check, CHECK_INTERVAL_MS);
-    const onVisible = () => { if (document.visibilityState === 'visible') check(); };
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') check();
+    };
     document.addEventListener('visibilitychange', onVisible);
     window.addEventListener('focus', check);
 

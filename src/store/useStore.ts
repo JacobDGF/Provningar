@@ -78,27 +78,30 @@ export const useStore = create<AppState>()(
       savedExams: [],
 
       saveExam: (examId) => {
-        const existing = get().savedExams.find(e => e.examId === examId);
+        const existing = get().savedExams.find((e) => e.examId === examId);
         if (!existing) {
-          set(s => ({
-            savedExams: [...s.savedExams, {
-              examId,
-              savedAt: new Date().toISOString(),
-              status: 'interested',
-            }],
+          set((s) => ({
+            savedExams: [
+              ...s.savedExams,
+              {
+                examId,
+                savedAt: new Date().toISOString(),
+                status: 'interested',
+              },
+            ],
           }));
         }
       },
 
       unsaveExam: (examId) =>
-        set(s => ({ savedExams: s.savedExams.filter(e => e.examId !== examId) })),
+        set((s) => ({ savedExams: s.savedExams.filter((e) => e.examId !== examId) })),
 
       updateExamStatus: (examId, status) =>
-        set(s => ({
-          savedExams: s.savedExams.map(e => e.examId === examId ? { ...e, status } : e),
+        set((s) => ({
+          savedExams: s.savedExams.map((e) => (e.examId === examId ? { ...e, status } : e)),
         })),
 
-      isExamSaved: (examId) => get().savedExams.some(e => e.examId === examId),
+      isExamSaved: (examId) => get().savedExams.some((e) => e.examId === examId),
 
       viewedExams: [],
       clearHistory: () => set({ viewedExams: [] }),
@@ -129,77 +132,83 @@ export const useStore = create<AppState>()(
             });
           },
           () => set({ locationStatus: 'denied' }),
-          { enableHighAccuracy: false, timeout: 10000, maximumAge: 5 * 60 * 1000 }
+          { enableHighAccuracy: false, timeout: 10000, maximumAge: 5 * 60 * 1000 },
         );
       },
 
       posts: INITIAL_POSTS,
 
       addPost: (content, subject, kind, tags) =>
-        set(s => ({
-          posts: [{
-            id: `p${Date.now()}`,
-            userId: 'me',
-            userName: s.currentUser.name,
-            userAvatar: s.currentUser.avatar,
-            content,
-            subject,
-            kind,
-            createdAt: new Date().toISOString(),
-            likes: 0,
-            likedBy: [],
-            replies: [],
-            tags: tags || [],
-          }, ...s.posts],
+        set((s) => ({
+          posts: [
+            {
+              id: `p${Date.now()}`,
+              userId: 'me',
+              userName: s.currentUser.name,
+              userAvatar: s.currentUser.avatar,
+              content,
+              subject,
+              kind,
+              createdAt: new Date().toISOString(),
+              likes: 0,
+              likedBy: [],
+              replies: [],
+              tags: tags || [],
+            },
+            ...s.posts,
+          ],
         })),
 
       addReply: (postId, content) =>
-        set(s => ({
-          posts: s.posts.map(p =>
+        set((s) => ({
+          posts: s.posts.map((p) =>
             p.id === postId
               ? {
                   ...p,
-                  replies: [...p.replies, {
-                    id: `r${Date.now()}`,
-                    userId: 'me',
-                    userName: s.currentUser.name,
-                    userAvatar: s.currentUser.avatar,
-                    content,
-                    createdAt: new Date().toISOString(),
-                    likes: 0,
-                    likedBy: [],
-                  }],
+                  replies: [
+                    ...p.replies,
+                    {
+                      id: `r${Date.now()}`,
+                      userId: 'me',
+                      userName: s.currentUser.name,
+                      userAvatar: s.currentUser.avatar,
+                      content,
+                      createdAt: new Date().toISOString(),
+                      likes: 0,
+                      likedBy: [],
+                    },
+                  ],
                 }
-              : p
+              : p,
           ),
         })),
 
       toggleLikePost: (postId) =>
-        set(s => ({
-          posts: s.posts.map(p => {
+        set((s) => ({
+          posts: s.posts.map((p) => {
             if (p.id !== postId) return p;
             const liked = p.likedBy.includes('me');
             return {
               ...p,
               likes: liked ? p.likes - 1 : p.likes + 1,
-              likedBy: liked ? p.likedBy.filter(id => id !== 'me') : [...p.likedBy, 'me'],
+              likedBy: liked ? p.likedBy.filter((id) => id !== 'me') : [...p.likedBy, 'me'],
             };
           }),
         })),
 
       toggleLikeReply: (postId, replyId) =>
-        set(s => ({
-          posts: s.posts.map(p => {
+        set((s) => ({
+          posts: s.posts.map((p) => {
             if (p.id !== postId) return p;
             return {
               ...p,
-              replies: p.replies.map(r => {
+              replies: p.replies.map((r) => {
                 if (r.id !== replyId) return r;
                 const liked = r.likedBy.includes('me');
                 return {
                   ...r,
                   likes: liked ? r.likes - 1 : r.likes + 1,
-                  likedBy: liked ? r.likedBy.filter(id => id !== 'me') : [...r.likedBy, 'me'],
+                  likedBy: liked ? r.likedBy.filter((id) => id !== 'me') : [...r.likedBy, 'me'],
                 };
               }),
             };
@@ -207,13 +216,12 @@ export const useStore = create<AppState>()(
         })),
 
       currentUser: DEFAULT_USER,
-      updateUser: (updates) =>
-        set(s => ({ currentUser: { ...s.currentUser, ...updates } })),
+      updateUser: (updates) => set((s) => ({ currentUser: { ...s.currentUser, ...updates } })),
 
       toggleFollow: (userId) =>
-        set(s => {
+        set((s) => {
           const following = s.currentUser.following.includes(userId)
-            ? s.currentUser.following.filter(id => id !== userId)
+            ? s.currentUser.following.filter((id) => id !== userId)
             : [...s.currentUser.following, userId];
           return { currentUser: { ...s.currentUser, following } };
         }),
@@ -221,11 +229,11 @@ export const useStore = create<AppState>()(
       showingExamDetail: null,
       setShowingExamDetail: (id) => {
         if (id) {
-          set(s => ({
+          set((s) => ({
             showingExamDetail: id,
             viewedExams: [
               { examId: id, viewedAt: new Date().toISOString() },
-              ...s.viewedExams.filter(v => v.examId !== id),
+              ...s.viewedExams.filter((v) => v.examId !== id),
             ].slice(0, 40),
           }));
         } else {
@@ -243,6 +251,6 @@ export const useStore = create<AppState>()(
         currentUser: s.currentUser,
         posts: s.posts,
       }),
-    }
-  )
+    },
+  ),
 );

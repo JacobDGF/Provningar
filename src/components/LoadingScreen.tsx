@@ -11,7 +11,7 @@ export function LoadingScreen({ onDone }: LoadingScreenProps) {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setProgress(p => {
+      setProgress((p) => {
         if (p >= 100) {
           clearInterval(interval);
           setTimeout(onDone, 200);
@@ -29,9 +29,15 @@ export function LoadingScreen({ onDone }: LoadingScreenProps) {
       <div className="mb-8 text-center">
         <div className="w-20 h-20 bg-white/20 rounded-lg flex items-center justify-center mx-auto mb-4 backdrop-blur-sm border border-white/30">
           <svg viewBox="0 0 40 40" className="w-12 h-12" fill="none">
-            <path d="M8 32L20 8L32 32" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M12 24H28" stroke="#FBE7C6" strokeWidth="3" strokeLinecap="round"/>
-            <circle cx="20" cy="20" r="4" fill="#FBE7C6"/>
+            <path
+              d="M8 32L20 8L32 32"
+              stroke="white"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path d="M12 24H28" stroke="#FBE7C6" strokeWidth="3" strokeLinecap="round" />
+            <circle cx="20" cy="20" r="4" fill="#FBE7C6" />
           </svg>
         </div>
         <h1 className="text-white text-3xl font-bold tracking-tight font-display">Prövningar</h1>

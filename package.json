@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "description": "En app som hjälper folk hitta och anmäla sig till betygsprövningar i hela Sverige.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -27,11 +31,20 @@
     "zustand": "^5.0.12"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
     "@types/leaflet": "^1.9.21",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.3",
+    "globals": "^17.9.0",
+    "prettier": "^3.9.6",
     "typescript": "^6.0.2",
+    "typescript-eslint": "^8.66.0",
     "vite": "^8.0.3"
   }
 }

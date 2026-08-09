@@ -1,4 +1,14 @@
-import { MapPin, Calendar, Tag, Bookmark, BookmarkCheck, ExternalLink, Clock, Navigation, ShieldCheck } from 'lucide-react';
+import {
+  MapPin,
+  Calendar,
+  Tag,
+  Bookmark,
+  BookmarkCheck,
+  ExternalLink,
+  Clock,
+  Navigation,
+  ShieldCheck,
+} from 'lucide-react';
 import { Exam } from '../types';
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
@@ -31,9 +41,10 @@ function formatDate(dateStr: string) {
 }
 
 export function ExamCard({ exam, compact }: ExamCardProps) {
-  const { isExamSaved, saveExam, unsaveExam, savedExams, setShowingExamDetail, userLocation } = useStore();
+  const { isExamSaved, saveExam, unsaveExam, savedExams, setShowingExamDetail, userLocation } =
+    useStore();
   const saved = isExamSaved(exam.id);
-  const savedExam = savedExams.find(e => e.examId === exam.id);
+  const savedExam = savedExams.find((e) => e.examId === exam.id);
 
   const { nextPeriod } = exam;
   const deadlineDate = nextPeriod.confirmed ? nextPeriod.applicationEnd : undefined;
@@ -47,14 +58,27 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
 
   const handleToggleSave = (e: React.MouseEvent) => {
     e.stopPropagation();
-    saved ? unsaveExam(exam.id) : saveExam(exam.id);
+    if (saved) {
+      unsaveExam(exam.id);
+    } else {
+      saveExam(exam.id);
+    }
   };
 
   const handleOpen = () => setShowingExamDetail(exam.id);
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleOpen();
+    }
+  };
 
   return (
     <div
       onClick={handleOpen}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
       className="bg-surface rounded-md overflow-hidden shadow-sm border border-line active:scale-98 transition-transform cursor-pointer"
     >
       {/* Image */}
@@ -73,10 +97,11 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
           aria-label={saved ? 'Ta bort från sparade' : 'Spara prövning'}
           className="absolute top-3 right-3 w-10 h-10 bg-surface/95 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md active:scale-90 transition-transform"
         >
-          {saved
-            ? <BookmarkCheck size={19} className="text-brand-600" />
-            : <Bookmark size={19} className="text-ink-soft" />
-          }
+          {saved ? (
+            <BookmarkCheck size={19} className="text-brand-600" />
+          ) : (
+            <Bookmark size={19} className="text-ink-soft" />
+          )}
         </button>
 
         {/* Urgent badge */}
@@ -89,7 +114,9 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
 
         {/* Distance badge */}
         {distanceKm !== null && (
-          <div className={`absolute top-3 ${urgent ? 'left-24' : 'left-3'} bg-surface/95 backdrop-blur-sm text-ink text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1 shadow-sm`}>
+          <div
+            className={`absolute top-3 ${urgent ? 'left-24' : 'left-3'} bg-surface/95 backdrop-blur-sm text-ink text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1 shadow-sm`}
+          >
             <Navigation size={11} className="text-brand-600" />
             {formatDistanceKm(distanceKm)}
           </div>
@@ -97,7 +124,9 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
 
         {/* Status badge on saved exams */}
         {savedExam && (
-          <div className={`absolute top-3 right-14 text-xs font-semibold px-2 py-1 rounded-full ${STATUS_COLORS[savedExam.status]}`}>
+          <div
+            className={`absolute top-3 right-14 text-xs font-semibold px-2 py-1 rounded-full ${STATUS_COLORS[savedExam.status]}`}
+          >
             {STATUS_LABELS[savedExam.status]}
           </div>
         )}
@@ -140,7 +169,9 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
             <p className="text-ink-faint text-xs">Anmälan</p>
             {nextPeriod.confirmed ? (
               <p className={`text-sm font-bold ${urgent ? 'text-red-600' : 'text-ink'}`}>
-                {nextPeriod.applicationEnd ? formatDate(nextPeriod.applicationEnd) : nextPeriod.label}
+                {nextPeriod.applicationEnd
+                  ? formatDate(nextPeriod.applicationEnd)
+                  : nextPeriod.label}
               </p>
             ) : (
               <p className="text-sm font-semibold text-ink-faint">Se hos skolan</p>
@@ -150,7 +181,9 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
             <p className="text-ink-faint text-xs">Provperiod</p>
             <p className="text-sm font-bold text-ink flex items-center gap-1">
               <Calendar size={13} className="text-brand-500" />
-              {nextPeriod.confirmed && nextPeriod.examWindowStart ? formatDate(nextPeriod.examWindowStart) : '—'}
+              {nextPeriod.confirmed && nextPeriod.examWindowStart
+                ? formatDate(nextPeriod.examWindowStart)
+                : '—'}
             </p>
           </div>
           <div>
@@ -167,7 +200,7 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
           href={exam.registrationUrl}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={e => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
           className="mt-4 w-full flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold py-3 rounded transition-colors active:scale-98 shadow-sm shadow-brand-200"
         >
           <ExternalLink size={15} />

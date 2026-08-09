@@ -6,7 +6,8 @@ export const INITIAL_POSTS: Post[] = [
     userId: 'u2',
     userName: 'Emma Lindqvist',
     userAvatar: 'https://i.pravatar.cc/150?img=47',
-    content: 'Klarade precis min Ma 3c prövning med A! Tips: börja med gamla nationella prov 3-4 veckor innan. Och plugga derivation ORDENTLIGT – det brukar vara halva poängen 🎉',
+    content:
+      'Klarade precis min Ma 3c prövning med A! Tips: börja med gamla nationella prov 3-4 veckor innan. Och plugga derivation ORDENTLIGT – det brukar vara halva poängen 🎉',
     subject: 'Matematik',
     kind: 'seger',
     createdAt: '2026-04-03T14:30:00Z',
@@ -29,7 +30,8 @@ export const INITIAL_POSTS: Post[] = [
         userId: 'u2',
         userName: 'Emma Lindqvist',
         userAvatar: 'https://i.pravatar.cc/150?img=47',
-        content: 'Ungefär 6 veckor, 2 timmar per dag. Var ganska intensivt mot slutet men värt det!',
+        content:
+          'Ungefär 6 veckor, 2 timmar per dag. Var ganska intensivt mot slutet men värt det!',
         createdAt: '2026-04-03T15:45:00Z',
         likes: 8,
         likedBy: [],
@@ -41,7 +43,8 @@ export const INITIAL_POSTS: Post[] = [
     userId: 'u4',
     userName: 'Sofia Andersson',
     userAvatar: 'https://i.pravatar.cc/150?img=29',
-    content: 'Vet någon en bra skola i Stockholmsregionen för Engelska 6 prövning? Hörde att Nacka Komvux är bra men är det verkligen värt resan från Södermalm?',
+    content:
+      'Vet någon en bra skola i Stockholmsregionen för Engelska 6 prövning? Hörde att Nacka Komvux är bra men är det verkligen värt resan från Södermalm?',
     subject: 'Engelska',
     kind: 'fråga',
     createdAt: '2026-04-02T10:15:00Z',
@@ -54,7 +57,8 @@ export const INITIAL_POSTS: Post[] = [
         userId: 'u5',
         userName: 'Mikael Holm',
         userAvatar: 'https://i.pravatar.cc/150?img=68',
-        content: 'Nacka är toppen! Lärarna är superhjälpsamma och lokalen är bra. Tar 25 min med T-bana från Slussen.',
+        content:
+          'Nacka är toppen! Lärarna är superhjälpsamma och lokalen är bra. Tar 25 min med T-bana från Slussen.',
         createdAt: '2026-04-02T11:30:00Z',
         likes: 15,
         likedBy: [],
@@ -66,7 +70,8 @@ export const INITIAL_POSTS: Post[] = [
     userId: 'u6',
     userName: 'Ahmed Hassan',
     userAvatar: 'https://i.pravatar.cc/150?img=52',
-    content: 'Prövning vs. att plugga en hel termin på Komvux – vad rekommenderar ni? Jag har ganska goda förkunskaper i kemi men saknar det formella betyget.',
+    content:
+      'Prövning vs. att plugga en hel termin på Komvux – vad rekommenderar ni? Jag har ganska goda förkunskaper i kemi men saknar det formella betyget.',
     subject: 'Kemi',
     kind: 'diskussion',
     createdAt: '2026-04-01T09:00:00Z',
@@ -79,7 +84,8 @@ export const INITIAL_POSTS: Post[] = [
         userId: 'u7',
         userName: 'Karin Svensson',
         userAvatar: 'https://i.pravatar.cc/150?img=19',
-        content: 'Prövning om du redan kan grunderna! Sparar minst 6 månader och kostar bara en bråkdel. Jag klarade Kemi 1 och 2 på prövning.',
+        content:
+          'Prövning om du redan kan grunderna! Sparar minst 6 månader och kostar bara en bråkdel. Jag klarade Kemi 1 och 2 på prövning.',
         createdAt: '2026-04-01T10:20:00Z',
         likes: 22,
         likedBy: [],
@@ -89,7 +95,8 @@ export const INITIAL_POSTS: Post[] = [
         userId: 'u8',
         userName: 'Pontus Nilsson',
         userAvatar: 'https://i.pravatar.cc/150?img=33',
-        content: 'Håller med! Prövning är helt klart bättre om du är självdisciplinerad och kan plugga på egen hand.',
+        content:
+          'Håller med! Prövning är helt klart bättre om du är självdisciplinerad och kan plugga på egen hand.',
         createdAt: '2026-04-01T11:00:00Z',
         likes: 11,
         likedBy: [],
@@ -101,7 +108,8 @@ export const INITIAL_POSTS: Post[] = [
     userId: 'u9',
     userName: 'Hanna Eriksson',
     userAvatar: 'https://i.pravatar.cc/150?img=44',
-    content: 'Missade anmälningsdeadlinen till Fysik 1 prövningen 😭 Vet någon om det finns skolor som har löpande anmälan eller sent antagning?',
+    content:
+      'Missade anmälningsdeadlinen till Fysik 1 prövningen 😭 Vet någon om det finns skolor som har löpande anmälan eller sent antagning?',
     subject: 'Fysik',
     kind: 'fråga',
     createdAt: '2026-03-30T16:45:00Z',
@@ -114,7 +122,8 @@ export const INITIAL_POSTS: Post[] = [
         userId: 'u10',
         userName: 'Marcus Lindgren',
         userAvatar: 'https://i.pravatar.cc/150?img=57',
-        content: 'Ring direkt till skolan! Många har reservplatser och tar emot sent anmälda. Uppsala Komvux brukar vara flexibla.',
+        content:
+          'Ring direkt till skolan! Många har reservplatser och tar emot sent anmälda. Uppsala Komvux brukar vara flexibla.',
         createdAt: '2026-03-30T17:30:00Z',
         likes: 14,
         likedBy: [],
@@ -126,7 +135,8 @@ export const INITIAL_POSTS: Post[] = [
     userId: 'u11',
     userName: 'Isabelle Magnusson',
     userAvatar: 'https://i.pravatar.cc/150?img=38',
-    content: 'Tips för Historia 1b: Gör en tidslinje med de viktigaste händelserna från 1800-2000-tal. Det hjälpte mig enormt att se sammanhangen. Fick A på prövningen förra veckan!',
+    content:
+      'Tips för Historia 1b: Gör en tidslinje med de viktigaste händelserna från 1800-2000-tal. Det hjälpte mig enormt att se sammanhangen. Fick A på prövningen förra veckan!',
     subject: 'Historia',
     kind: 'tips',
     createdAt: '2026-03-28T13:20:00Z',
