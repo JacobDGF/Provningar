@@ -35,6 +35,7 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run format:check
+      - run: npm test
       # vite.config.ts stamps public/version.json with the same build ID it
       # bakes into the JS bundle via `define: { __BUILD_ID__ }`, so the two
       # always agree — src/hooks/useVersionCheck.ts compares them to decide
