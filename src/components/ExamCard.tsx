@@ -8,11 +8,14 @@ import {
   Clock,
   Navigation,
   ShieldCheck,
+  MousePointerClick,
 } from 'lucide-react';
 import { Exam } from '../types';
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
 import { isOpenForRegistration, daysUntil } from '../lib/examStatus';
+import { getRegistrationFlow } from '../lib/registrationFlow';
+import { SchoolCover } from './SchoolCover';
 
 interface ExamCardProps {
   exam: Exam;
@@ -51,6 +54,7 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
   const deadlineDays = deadlineDate ? daysUntil(deadlineDate) : null;
   const urgent = deadlineDays !== null && deadlineDays <= 7 && deadlineDays >= 0;
   const openNow = isOpenForRegistration(exam);
+  const flow = getRegistrationFlow(exam);
 
   const distanceKm = userLocation
     ? haversineDistanceKm(userLocation.lat, userLocation.lng, exam.lat, exam.lng)
@@ -83,12 +87,7 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
     >
       {/* Image */}
       <div className="relative">
-        <img
-          src={exam.schoolImage}
-          alt={exam.schoolName}
-          className={`w-full object-cover ${compact ? 'h-36' : 'h-48'}`}
-          loading="lazy"
-        />
+        <SchoolCover exam={exam} className={`w-full ${compact ? 'h-36' : 'h-48'}`} />
         <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
 
         {/* Save button */}
@@ -140,15 +139,23 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
 
       {/* Body */}
       <div className="p-4">
-        {openNow && (
-          <div className="inline-flex items-center gap-1.5 bg-trust-50 text-trust-700 text-xs font-bold px-2.5 py-1 rounded-full mb-2.5">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-trust-500 opacity-75" />
-              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-trust-600" />
+        <div className="flex flex-wrap items-center gap-1.5 empty:hidden mb-2.5">
+          {openNow && (
+            <span className="inline-flex items-center gap-1.5 bg-trust-50 text-trust-700 text-xs font-bold px-2.5 py-1 rounded-full">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-trust-500 opacity-75" />
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-trust-600" />
+              </span>
+              Öppen för anmälan just nu
             </span>
-            Öppen för anmälan just nu
-          </div>
-        )}
+          )}
+          {flow.direct && (
+            <span className="inline-flex items-center gap-1 bg-brand-50 text-brand-700 text-xs font-bold px-2.5 py-1 rounded-full">
+              <MousePointerClick size={11} />
+              {flow.steps.length} steg till bokning
+            </span>
+          )}
+        </div>
         <div className="flex flex-wrap gap-1.5 mb-3">
           <span className="bg-brand-50 text-brand-700 text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1">
             <Tag size={11} />
@@ -204,7 +211,7 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
           className="mt-4 w-full flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold py-3 rounded transition-colors active:scale-98 shadow-sm shadow-brand-200"
         >
           <ExternalLink size={15} />
-          Anmäl dig hos {exam.provider}
+          {flow.ctaLabel} hos {exam.provider}
         </a>
       </div>
     </div>
