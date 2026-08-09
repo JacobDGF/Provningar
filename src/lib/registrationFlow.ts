@@ -67,6 +67,16 @@ const FLOWS: Record<RegistrationKind, Omit<RegistrationFlow, 'kind'>> = {
     ],
     direct: false,
   },
+  email: {
+    ctaLabel: 'Läs hur du anmäler dig',
+    landing: 'Anmälan görs via e-post till skolan — adressen står på sidan.',
+    steps: [
+      'Betala avgiften enligt sidans betalningsuppgifter',
+      'Mejla skolan med personnummer, kontaktuppgifter och vilken kurs det gäller',
+      'Bifoga kvitto på betalningen (eller betygskopia om prövningen är avgiftsfri)',
+    ],
+    direct: false,
+  },
   page: {
     ctaLabel: 'Gå till anmälan',
     landing: 'Länken går till skolans prövningssida, där anmälan görs.',
@@ -97,7 +107,7 @@ const RULES: Array<{ kind: RegistrationKind; match: (url: URL) => boolean }> = [
   {
     kind: 'eservice',
     match: u =>
-      /^(sjalvservice|minasidor|e-tjanster|e|ansokanvux|barnskolautbildning|webb)\./.test(u.hostname) ||
+      /^(sjalvservice|sjalvbetjaning|minasidor|e-tjanst|e-tjanster|etjanst|etjanster|eservice|e|ansokanvux|barnskolautbildning|webb)\./.test(u.hostname) ||
       u.hostname.endsWith('.enamnd.se') ||
       u.hostname.startsWith('centrumvux.'),
   },

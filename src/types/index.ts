@@ -9,7 +9,7 @@ export interface NextPeriod {
 }
 
 /** What kind of system `registrationUrl` drops the user into. */
-export type RegistrationKind = 'form' | 'coursepicker' | 'eservice' | 'webshop' | 'pdf' | 'page';
+export type RegistrationKind = 'form' | 'coursepicker' | 'eservice' | 'webshop' | 'pdf' | 'email' | 'page';
 
 export interface RegistrationFlow {
   kind: RegistrationKind;

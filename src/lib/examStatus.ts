@@ -4,15 +4,19 @@ import { Exam } from '../types';
     against today's date. Only ever true for exams with confirmed, real
     dates — never guessed.
 
-    Some providers only publish a closing date ("anmälan stänger 11 augusti")
-    and never say when the window opened. That is still enough to know the
-    booking is open today, so an end date on its own counts. */
+    Providers publish these windows half-open in both directions: some only say
+    when applications close ("anmälan stänger 11 augusti"), others only when
+    they open, and never publish a closing date. Either end alone is enough to
+    place today inside or outside the window, so a period counts as open when
+    every end it does state has been satisfied. */
 export function isOpenForRegistration(exam: Exam): boolean {
-  const { nextPeriod } = exam;
-  if (!nextPeriod.confirmed || !nextPeriod.applicationEnd) return false;
+  const { nextPeriod: p } = exam;
+  if (!p.confirmed) return false;
+  if (!p.applicationStart && !p.applicationEnd) return false;
   const now = Date.now();
-  if (now > endOfDay(nextPeriod.applicationEnd)) return false;
-  return !nextPeriod.applicationStart || now >= new Date(nextPeriod.applicationStart).getTime();
+  if (p.applicationStart && now < new Date(p.applicationStart).getTime()) return false;
+  if (p.applicationEnd && now > endOfDay(p.applicationEnd)) return false;
+  return true;
 }
 
 export function daysUntil(dateStr: string): number {

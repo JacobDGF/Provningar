@@ -15,6 +15,8 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
     setFilterRegion,
     filterSortBy,
     setFilterSortBy,
+    filterDirectOnly,
+    setFilterDirectOnly,
     userLocation,
     locationStatus,
     requestLocation,
@@ -23,11 +25,13 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
   const [localSubject, setLocalSubject] = useState(filterSubject);
   const [localRegion, setLocalRegion] = useState(filterRegion);
   const [localSortBy, setLocalSortBy] = useState(filterSortBy);
+  const [localDirectOnly, setLocalDirectOnly] = useState(filterDirectOnly);
 
   const apply = () => {
     setFilterSubject(localSubject);
     setFilterRegion(localRegion);
     setFilterSortBy(localSortBy);
+    setFilterDirectOnly(localDirectOnly);
     onClose();
   };
 
@@ -35,6 +39,7 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
     setLocalSubject('');
     setLocalRegion('');
     setLocalSortBy('date');
+    setLocalDirectOnly(false);
   };
 
   const chip = (active: boolean) =>
@@ -71,6 +76,31 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
               <X size={16} className="text-ink-soft" />
             </button>
           </div>
+        </div>
+
+        {/* Only listings whose link lands on the booking itself. The steps are
+            already on every card; this turns that into something you can search on. */}
+        <div className="mb-6">
+          <button
+            type="button"
+            onClick={() => setLocalDirectOnly(v => !v)}
+            aria-pressed={localDirectOnly}
+            className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded border transition-colors text-left ${
+              localDirectOnly ? 'bg-brand-50 border-brand-300' : 'bg-sand border-transparent'
+            }`}
+          >
+            <span>
+              <span className="block text-sm font-semibold text-ink">Bara direktanmälan</span>
+              <span className="block text-xs text-ink-soft mt-0.5">
+                Länken går till bokningen — inte till en sida om den.
+              </span>
+            </span>
+            <span className={`w-11 h-6 rounded-full flex-shrink-0 flex items-center px-0.5 transition-colors ${
+              localDirectOnly ? 'bg-brand-500 justify-end' : 'bg-line justify-start'
+            }`}>
+              <span className="w-5 h-5 bg-white rounded-full shadow-sm" />
+            </span>
+          </button>
         </div>
 
         {/* Sort */}

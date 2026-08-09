@@ -15,6 +15,7 @@ import { ExamCard } from '../components/ExamCard';
 import { FilterSheet } from '../components/FilterSheet';
 import { haversineDistanceKm } from '../lib/distance';
 import { isOpenForRegistration } from '../lib/examStatus';
+import { getRegistrationFlow } from '../lib/registrationFlow';
 import { useMinuteTick } from '../hooks/useMinuteTick';
 
 // Leaflet is the single largest dependency in the bundle; both maps are
@@ -56,6 +57,7 @@ export function Discover() {
     filterSubject,
     filterRegion,
     filterSortBy,
+    filterDirectOnly,
     userLocation,
     locationStatus,
     requestLocation,
@@ -65,7 +67,7 @@ export function Discover() {
   const [view, setView] = useState<'list' | 'map'>('list');
   const tick = useMinuteTick();
 
-  const hasActiveFilters = !!(filterSubject || filterRegion);
+  const hasActiveFilters = !!(filterSubject || filterRegion || filterDirectOnly);
 
   const filtered = useMemo(() => {
     const result = exams.filter((e) => {
@@ -80,7 +82,8 @@ export function Discover() {
         e.provider.toLowerCase().includes(q);
       const matchesSubject = !filterSubject || e.subject === filterSubject;
       const matchesRegion = !filterRegion || e.region === filterRegion;
-      return matchesSearch && matchesSubject && matchesRegion;
+      const matchesDirect = !filterDirectOnly || getRegistrationFlow(e).direct;
+      return matchesSearch && matchesSubject && matchesRegion && matchesDirect;
     });
 
     const periodDate = (e: (typeof result)[0]) =>
@@ -108,7 +111,7 @@ export function Discover() {
     }
 
     return result;
-  }, [exams, searchQuery, filterSubject, filterRegion, filterSortBy, userLocation]);
+  }, [exams, searchQuery, filterSubject, filterRegion, filterSortBy, filterDirectOnly, userLocation]);
 
   // tick isn't read below, it's a trigger so the live "öppna just nu" count
   // recomputes each minute
@@ -261,7 +264,7 @@ export function Discover() {
                     />
                   </Suspense>
                 </div>
-                <div className="absolute bottom-3 left-3 z-[500] bg-cream border border-accent2-200 text-accent2-700 text-xs font-semibold px-2.5 py-1.5 rounded shadow-sm flex items-center gap-1.5">
+                <div className="absolute bottom-3 left-3 z-10 bg-cream border border-accent2-200 text-accent2-700 text-xs font-semibold px-2.5 py-1.5 rounded shadow-sm flex items-center gap-1.5">
                   <span className="relative flex h-1.5 w-1.5">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent2-500 opacity-75" />
                     <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-accent2-500" />
