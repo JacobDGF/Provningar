@@ -1,8 +1,10 @@
-import { MapPin, Calendar, Tag, Bookmark, BookmarkCheck, ExternalLink, Clock, Navigation, ShieldCheck } from 'lucide-react';
+import { MapPin, Calendar, Tag, Bookmark, BookmarkCheck, ExternalLink, Clock, Navigation, ShieldCheck, ArrowRightCircle, Info } from 'lucide-react';
 import { Exam } from '../types';
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
 import { isOpenForRegistration, daysUntil } from '../lib/examStatus';
+import { classifyRegistrationUrl, REGISTRATION_KIND_META } from '../lib/registration';
+import { SubjectCrest } from './SubjectCrest';
 
 interface ExamCardProps {
   exam: Exam;
@@ -52,19 +54,18 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
 
   const handleOpen = () => setShowingExamDetail(exam.id);
 
+  const regKindId = classifyRegistrationUrl(exam.registrationUrl);
+  const regKind = REGISTRATION_KIND_META[regKindId];
+  const directBooking = regKindId === 'booking';
+
   return (
     <div
       onClick={handleOpen}
-      className="bg-surface rounded-md overflow-hidden shadow-sm border border-line active:scale-98 transition-transform cursor-pointer"
+      className="bg-surface rounded-md overflow-hidden shadow-sm border border-line active:scale-98 transition-transform cursor-pointer h-full flex flex-col"
     >
       {/* Image */}
-      <div className="relative">
-        <img
-          src={exam.schoolImage}
-          alt={exam.schoolName}
-          className={`w-full object-cover ${compact ? 'h-36' : 'h-48'}`}
-          loading="lazy"
-        />
+      <div className="relative flex-shrink-0">
+        <SubjectCrest exam={exam} className={`w-full ${compact ? 'h-36' : 'h-48'}`} />
         <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
 
         {/* Save button */}
@@ -109,8 +110,9 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
         </div>
       </div>
 
-      {/* Body */}
-      <div className="p-4">
+      {/* Body — a column so the CTA can sit on the baseline of every card in a
+          row regardless of how much metadata each listing carries. */}
+      <div className="p-4 flex-1 flex flex-col">
         {openNow && (
           <div className="inline-flex items-center gap-1.5 bg-trust-50 text-trust-700 text-xs font-bold px-2.5 py-1 rounded-full mb-2.5">
             <span className="relative flex h-1.5 w-1.5">
@@ -138,10 +140,15 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <p className="text-ink-faint text-xs">Anmälan</p>
-            {nextPeriod.confirmed ? (
+            {/* Only ever a date here. `label` is a full sentence on some
+                listings and rendering it raw stretched one card to twice the
+                height of its row-mates. The sentence lives in the detail sheet. */}
+            {nextPeriod.confirmed && nextPeriod.applicationEnd ? (
               <p className={`text-sm font-bold ${urgent ? 'text-red-600' : 'text-ink'}`}>
-                {nextPeriod.applicationEnd ? formatDate(nextPeriod.applicationEnd) : nextPeriod.label}
+                {formatDate(nextPeriod.applicationEnd)}
               </p>
+            ) : nextPeriod.confirmed ? (
+              <p className="text-sm font-semibold text-ink">Se datum</p>
             ) : (
               <p className="text-sm font-semibold text-ink-faint">Se hos skolan</p>
             )}
@@ -163,16 +170,25 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
           </div>
         </div>
 
-        <a
-          href={exam.registrationUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={e => e.stopPropagation()}
-          className="mt-4 w-full flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold py-3 rounded transition-colors active:scale-98 shadow-sm shadow-brand-200"
-        >
-          <ExternalLink size={15} />
-          Anmäl dig hos {exam.provider}
-        </a>
+        <div className="mt-auto pt-4">
+          <a
+            href={exam.registrationUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={e => e.stopPropagation()}
+            className="w-full flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold py-3 rounded transition-colors active:scale-98 shadow-sm shadow-brand-200"
+          >
+            <ExternalLink size={15} />
+            {regKind.cta} {exam.provider}
+          </a>
+          <p className="mt-2 text-center text-xs text-ink-faint flex items-center justify-center gap-1.5">
+            {directBooking
+              ? <ArrowRightCircle size={12} className="text-trust-600" />
+              : <Info size={12} />
+            }
+            <span className={directBooking ? 'text-trust-700 font-semibold' : undefined}>{regKind.badge}</span>
+          </p>
+        </div>
       </div>
     </div>
   );

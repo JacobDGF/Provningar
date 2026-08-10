@@ -2,6 +2,8 @@ import { X, MapPin, Calendar, CreditCard, Clock, BookOpen, Lightbulb, ExternalLi
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
 import { isOpenForRegistration, daysUntil } from '../lib/examStatus';
+import { classifyRegistrationUrl, REGISTRATION_KIND_META } from '../lib/registration';
+import { SubjectCrest } from './SubjectCrest';
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
@@ -27,6 +29,8 @@ export function ExamDetail() {
     ? haversineDistanceKm(userLocation.lat, userLocation.lng, exam.lat, exam.lng)
     : null;
 
+  const regKind = REGISTRATION_KIND_META[classifyRegistrationUrl(exam.registrationUrl)];
+
   const { lat, lng } = exam;
   // Keyless embedded map (OpenStreetMap). To use Google tiles instead, drop a
   // Google Maps Embed API key in below and swap the iframe src.
@@ -42,7 +46,7 @@ export function ExamDetail() {
       >
         {/* Image header */}
         <div className="relative flex-shrink-0">
-          <img src={exam.schoolImage} alt={exam.schoolName} className="w-full h-52 object-cover" />
+          <SubjectCrest exam={exam} className="w-full h-52" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
           <button
             onClick={() => setShowingExamDetail(null)}
@@ -69,7 +73,7 @@ export function ExamDetail() {
         </div>
 
         {/* Scroll content */}
-        <div className="overflow-y-auto flex-1 pb-28">
+        <div className="overflow-y-auto flex-1">
           <div className="p-4 space-y-4">
 
             {/* Trust banner */}
@@ -250,8 +254,10 @@ export function ExamDetail() {
           </div>
         </div>
 
-        {/* CTA */}
-        <div className="absolute bottom-0 left-0 right-0 bg-surface border-t border-line p-4 space-y-2">
+        {/* CTA — a flex sibling, not absolutely positioned: the sheet has no
+            positioned ancestor of its own, so `absolute` used to pin this bar
+            to the viewport instead of to the sheet on desktop. */}
+        <div className="flex-shrink-0 bg-surface border-t border-line p-4 pb-[max(1rem,env(safe-area-inset-bottom))] space-y-2">
           <a
             href={exam.registrationUrl}
             target="_blank"
@@ -259,15 +265,16 @@ export function ExamDetail() {
             className="w-full flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-bold py-4 rounded-md text-base shadow-lg shadow-brand-200 active:scale-98 transition-transform"
           >
             <ExternalLink size={18} />
-            Gå till anmälan hos {exam.provider}
+            {regKind.cta} {exam.provider}
             <ChevronRight size={18} />
           </a>
+          <p className="text-ink-soft text-xs leading-relaxed text-center px-2">{regKind.note}</p>
           {exam.infoUrl !== exam.registrationUrl && (
             <a
               href={exam.infoUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full flex items-center justify-center gap-1.5 text-ink-soft text-xs font-medium py-1"
+              className="w-full flex items-center justify-center gap-1.5 text-brand-600 text-xs font-bold py-1 hover:underline"
             >
               Mer information på skolans webbplats <ExternalLink size={11} />
             </a>

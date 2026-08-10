@@ -1,6 +1,7 @@
 import { Camera, MapPin, Mail, Edit3, Check, X, GraduationCap, Users, BookMarked, Star, LogOut, HelpCircle, ChevronRight, History as HistoryIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useStore } from '../store/useStore';
+import { SubjectCrest } from '../components/SubjectCrest';
 
 const GRADE_OPTIONS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -220,7 +221,7 @@ export function Profile() {
                 if (!exam) return null;
                 return (
                   <button key={se.examId} onClick={() => setShowingExamDetail(exam.id)} className="flex items-center gap-3 w-full text-left">
-                    <img src={exam.schoolImage} alt="" className="w-10 h-10 rounded object-cover flex-shrink-0" />
+                    <SubjectCrest exam={exam} compact className="w-10 h-10 rounded flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-ink truncate">{exam.course}</p>
                       <p className="text-xs text-ink-soft">

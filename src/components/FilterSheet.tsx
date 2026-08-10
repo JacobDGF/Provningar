@@ -12,17 +12,23 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
     filterSubject, setFilterSubject,
     filterRegion, setFilterRegion,
     filterSortBy, setFilterSortBy,
+    filterOpenNow, setFilterOpenNow,
+    filterDirectBooking, setFilterDirectBooking,
     userLocation, locationStatus, requestLocation,
   } = useStore();
 
   const [localSubject, setLocalSubject] = useState(filterSubject);
   const [localRegion, setLocalRegion] = useState(filterRegion);
   const [localSortBy, setLocalSortBy] = useState(filterSortBy);
+  const [localOpenNow, setLocalOpenNow] = useState(filterOpenNow);
+  const [localDirectBooking, setLocalDirectBooking] = useState(filterDirectBooking);
 
   const apply = () => {
     setFilterSubject(localSubject);
     setFilterRegion(localRegion);
     setFilterSortBy(localSortBy);
+    setFilterOpenNow(localOpenNow);
+    setFilterDirectBooking(localDirectBooking);
     onClose();
   };
 
@@ -30,6 +36,8 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
     setLocalSubject('');
     setLocalRegion('');
     setLocalSortBy('date');
+    setLocalOpenNow(false);
+    setLocalDirectBooking(false);
   };
 
   const chip = (active: boolean) =>
@@ -50,6 +58,25 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
             <button onClick={onClose} className="w-8 h-8 bg-sand rounded-full flex items-center justify-center">
               <X size={16} className="text-ink-soft" />
             </button>
+          </div>
+        </div>
+
+        {/* Status */}
+        <div className="mb-6">
+          <label className="text-sm font-semibold text-ink block mb-2">Visa bara</label>
+          <div className="space-y-2">
+            <Toggle
+              checked={localOpenNow}
+              onChange={setLocalOpenNow}
+              label="Öppna för anmälan just nu"
+              hint="Anmälningsperioden pågår idag enligt anordnarens egna datum."
+            />
+            <Toggle
+              checked={localDirectBooking}
+              onChange={setLocalDirectBooking}
+              label="Länkar direkt till anmälan"
+              hint="Länken öppnar ett anmälningsformulär eller en e-tjänst — inte en informationssida."
+            />
           </div>
         </div>
 
@@ -130,5 +157,36 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
         </button>
       </div>
     </div>
+  );
+}
+
+function Toggle({ checked, onChange, label, hint }: {
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  label: string;
+  hint: string;
+}) {
+  return (
+    <button
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+      className={`w-full flex items-start gap-3 text-left rounded-md border p-3 transition-colors ${
+        checked ? 'bg-brand-50 border-brand-200' : 'bg-surface border-line hover:bg-sand'
+      }`}
+    >
+      <span
+        aria-hidden
+        className={`mt-0.5 w-9 h-5 rounded-full flex-shrink-0 flex items-center px-0.5 transition-colors ${
+          checked ? 'bg-brand-500 justify-end' : 'bg-line justify-start'
+        }`}
+      >
+        <span className="w-4 h-4 rounded-full bg-white shadow-sm" />
+      </span>
+      <span className="min-w-0">
+        <span className="block text-sm font-semibold text-ink">{label}</span>
+        <span className="block text-xs text-ink-soft leading-relaxed mt-0.5">{hint}</span>
+      </span>
+    </button>
   );
 }

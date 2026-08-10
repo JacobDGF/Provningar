@@ -8,11 +8,24 @@ export interface NextPeriod {
   confirmed: boolean;
 }
 
+/**
+ * What the "anmälan" link actually opens. Users kept landing on a municipal
+ * front page and having to hunt for the form, so we tell them up front how far
+ * the link takes them.
+ *
+ * - `booking`  – the prövning booking form itself (subject picker / product
+ *                page). One or two steps from being registered.
+ * - `etjanst`  – the municipality's e-service. Real booking, but you log in
+ *                with BankID/e-legitimation first.
+ * - `blankett` – a PDF form you fill in and send to the school.
+ * - `info`     – the school's own prövning page; the anmälan starts there.
+ */
+export type RegistrationKind = 'booking' | 'etjanst' | 'blankett' | 'info';
+
 export interface Exam {
   id: string;
   schoolName: string;
   provider: string;
-  schoolImage: string;
   subject: string;
   course: string;
   courseCode: string;

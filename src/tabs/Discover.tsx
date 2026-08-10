@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Search, SlidersHorizontal, X, TrendingUp, Navigation, HelpCircle, List, Map as MapIcon } from 'lucide-react';
+import { Search, SlidersHorizontal, X, TrendingUp, Navigation, HelpCircle, List, Map as MapIcon, ArrowRightCircle } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { ExamCard } from '../components/ExamCard';
 import { FilterSheet } from '../components/FilterSheet';
@@ -7,6 +7,7 @@ import { MapView } from '../components/MapView';
 import { HeroMap } from '../components/HeroMap';
 import { haversineDistanceKm } from '../lib/distance';
 import { isOpenForRegistration } from '../lib/examStatus';
+import { classifyRegistrationUrl } from '../lib/registration';
 import { useMinuteTick } from '../hooks/useMinuteTick';
 
 const FEATURED_SUBJECTS = ['Matematik', 'Engelska', 'Svenska', 'Biologi', 'Kemi', 'Fysik'];
@@ -19,15 +20,17 @@ const STEPS = [
 
 export function Discover() {
   const {
-    exams, searchQuery, setSearchQuery, filterSubject, filterRegion, filterSortBy,
+    exams, searchQuery, setSearchQuery, filterSubject, setFilterSubject, filterRegion, setFilterRegion, filterSortBy,
+    filterOpenNow, setFilterOpenNow, filterDirectBooking, setFilterDirectBooking,
     userLocation, locationStatus, requestLocation, setShowingFaq,
   } = useStore();
   const [showFilter, setShowFilter] = useState(false);
   const [view, setView] = useState<'list' | 'map'>('list');
   const tick = useMinuteTick();
 
-  const hasActiveFilters = !!(filterSubject || filterRegion);
+  const hasActiveFilters = !!(filterSubject || filterRegion || filterOpenNow || filterDirectBooking);
 
+  // tick is a dependency because filterOpenNow is evaluated against the clock
   const filtered = useMemo(() => {
     let result = exams.filter(e => {
       const q = searchQuery.toLowerCase();
@@ -40,7 +43,9 @@ export function Discover() {
         e.provider.toLowerCase().includes(q);
       const matchesSubject = !filterSubject || e.subject === filterSubject;
       const matchesRegion = !filterRegion || e.region === filterRegion;
-      return matchesSearch && matchesSubject && matchesRegion;
+      const matchesOpen = !filterOpenNow || isOpenForRegistration(e);
+      const matchesBooking = !filterDirectBooking || classifyRegistrationUrl(e.registrationUrl) !== 'info';
+      return matchesSearch && matchesSubject && matchesRegion && matchesOpen && matchesBooking;
     });
 
     const periodDate = (e: typeof result[0]) =>
@@ -65,13 +70,14 @@ export function Discover() {
     }
 
     return result;
-  }, [exams, searchQuery, filterSubject, filterRegion, filterSortBy, userLocation]);
+  }, [exams, searchQuery, filterSubject, filterRegion, filterSortBy, filterOpenNow, filterDirectBooking, userLocation, tick]);
 
   // tick is a dependency so the live "öppna just nu" count recomputes each minute
   const stats = useMemo(() => ({
     providers: new Set(exams.map(e => e.provider)).size,
     cities: new Set(exams.map(e => e.city)).size,
     openNow: exams.filter(isOpenForRegistration).length,
+    directBooking: exams.filter(e => classifyRegistrationUrl(e.registrationUrl) !== 'info').length,
   }), [exams, tick]);
 
   const topCities = useMemo(() => {
@@ -266,6 +272,17 @@ export function Discover() {
                 </div>
                 <h3 className="text-ink font-display font-semibold mb-1">Inga prövningar hittades</h3>
                 <p className="text-ink-soft text-sm">Prova att ändra dina filter eller söka på något annat.</p>
+                {/* The quick-filter chips live in the results branch, so without
+                    this the user can filter themselves into a dead end with no
+                    visible way back out. */}
+                {(hasActiveFilters || searchQuery) && (
+                  <button
+                    onClick={() => { setFilterOpenNow(false); setFilterDirectBooking(false); setFilterSubject(''); setFilterRegion(''); setSearchQuery(''); }}
+                    className="mt-5 inline-flex items-center gap-2 bg-brand-500 text-white text-sm font-bold px-5 py-2.5 rounded active:scale-95 transition-transform"
+                  >
+                    <X size={15} /> Rensa alla filter
+                  </button>
+                )}
               </div>
             ) : (
               <>
@@ -285,10 +302,51 @@ export function Discover() {
                   </button>
                 )}
 
+                {/* Quick filters. These two are the questions people actually
+                    arrive with — "can I sign up today?" and "will this link
+                    take me to a form?" — so they sit inline rather than behind
+                    the filter sheet. */}
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <button
+                    onClick={() => setFilterOpenNow(!filterOpenNow)}
+                    aria-pressed={filterOpenNow}
+                    className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors ${
+                      filterOpenNow
+                        ? 'bg-trust-600 border-trust-600 text-white'
+                        : 'bg-surface border-line text-ink-soft hover:bg-sand'
+                    }`}
+                  >
+                    <span className="relative flex h-1.5 w-1.5">
+                      {!filterOpenNow && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-trust-500 opacity-75" />}
+                      <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${filterOpenNow ? 'bg-white' : 'bg-trust-600'}`} />
+                    </span>
+                    Öppen för anmälan nu ({stats.openNow})
+                  </button>
+                  <button
+                    onClick={() => setFilterDirectBooking(!filterDirectBooking)}
+                    aria-pressed={filterDirectBooking}
+                    className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors ${
+                      filterDirectBooking
+                        ? 'bg-brand-500 border-brand-500 text-white'
+                        : 'bg-surface border-line text-ink-soft hover:bg-sand'
+                    }`}
+                  >
+                    <ArrowRightCircle size={13} />
+                    Direkt till anmälan ({stats.directBooking})
+                  </button>
+                  {hasActiveFilters && (
+                    <button
+                      onClick={() => { setFilterOpenNow(false); setFilterDirectBooking(false); setFilterSubject(''); setFilterRegion(''); }}
+                      className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-full text-ink-faint hover:text-ink"
+                    >
+                      <X size={12} /> Rensa filter
+                    </button>
+                  )}
+                </div>
+
                 <div className="flex items-center gap-2 text-sm text-ink-soft mb-4">
                   <TrendingUp size={15} className="text-brand-500" />
                   <span className="font-medium">{filtered.length} prövningar</span>
-                  {hasActiveFilters && <span className="text-brand-700 font-semibold">· Filter aktiva</span>}
                   {filterSortBy === 'distance' && userLocation && <span className="text-brand-700 font-semibold">· Närmast först</span>}
                 </div>
 
