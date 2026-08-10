@@ -3,15 +3,16 @@ import { Search, SlidersHorizontal, X, TrendingUp, Navigation, HelpCircle, List,
 import { useStore } from '../store/useStore';
 import { ExamCard } from '../components/ExamCard';
 import { FilterSheet } from '../components/FilterSheet';
+import { haversineDistanceKm } from '../lib/distance';
+import { isOpenForRegistration } from '../lib/examStatus';
+import { classifyRegistrationUrl } from '../lib/registration';
+import { useMinuteTick } from '../hooks/useMinuteTick';
+
 // Leaflet plus its CSS and marker assets is the single largest dependency in
 // the app, and neither map is needed to render the hero copy, the search box or
 // the results list. Split out so the shell paints without waiting for it.
 const MapView = lazy(() => import('../components/MapView').then(m => ({ default: m.MapView })));
 const HeroMap = lazy(() => import('../components/HeroMap').then(m => ({ default: m.HeroMap })));
-import { haversineDistanceKm } from '../lib/distance';
-import { isOpenForRegistration } from '../lib/examStatus';
-import { classifyRegistrationUrl } from '../lib/registration';
-import { useMinuteTick } from '../hooks/useMinuteTick';
 
 const FEATURED_SUBJECTS = ['Matematik', 'Engelska', 'Svenska', 'Biologi', 'Kemi', 'Fysik'];
 
@@ -44,7 +45,7 @@ export function Discover() {
 
   // tick is a dependency because filterOpenNow is evaluated against the clock
   const filtered = useMemo(() => {
-    let result = exams.filter(e => {
+    const result = exams.filter(e => {
       const q = searchQuery.toLowerCase();
       const matchesSearch = !q ||
         e.schoolName.toLowerCase().includes(q) ||
@@ -82,6 +83,10 @@ export function Discover() {
     }
 
     return result;
+    // `tick` is intentionally a dependency and intentionally unused in the
+    // body: isOpenForRegistration reads the clock, so this must recompute
+    // every minute for the live status to stay true.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exams, searchQuery, filterSubject, filterRegion, filterSortBy, filterOpenNow, filterDirectBooking, userLocation, tick]);
 
   // tick is a dependency so the live "öppna just nu" count recomputes each minute
@@ -90,6 +95,8 @@ export function Discover() {
     cities: new Set(exams.map(e => e.city)).size,
     openNow: exams.filter(isOpenForRegistration).length,
     directBooking: exams.filter(e => classifyRegistrationUrl(e.registrationUrl) !== 'info').length,
+    // Same as above: the openNow count is clock-dependent.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [exams, tick]);
 
   const topCities = useMemo(() => {

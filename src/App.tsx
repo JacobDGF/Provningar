@@ -37,10 +37,10 @@ function TabFallback() {
 
 export default function App() {
   const { activeTab, showingExamDetail, showingFaq, setShowingFaq } = useStore();
+  // Adjusted during render rather than in an effect: an effect would render the
+  // new tab's empty panel once before the state that mounts it lands.
   const [visited, setVisited] = useState<Set<string>>(() => new Set([activeTab]));
-  useEffect(() => {
-    setVisited(prev => (prev.has(activeTab) ? prev : new Set(prev).add(activeTab)));
-  }, [activeTab]);
+  if (!visited.has(activeTab)) setVisited(new Set(visited).add(activeTab));
   const [loading, setLoading] = useState(true);
   const updateAvailable = useVersionCheck();
 

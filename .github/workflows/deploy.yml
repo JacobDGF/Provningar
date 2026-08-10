@@ -34,6 +34,8 @@ jobs:
 
       - run: npm ci
 
+      - run: npm run lint
+
       # Unit tests cover the registration-link classifier, the live
       # "open for registration" clock, and the dataset invariants the product's
       # accuracy claim rests on. Runs before the build so a bad dataset never

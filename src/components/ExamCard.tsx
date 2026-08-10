@@ -49,7 +49,8 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
 
   const handleToggleSave = (e: React.MouseEvent) => {
     e.stopPropagation();
-    saved ? unsaveExam(exam.id) : saveExam(exam.id);
+    if (saved) unsaveExam(exam.id);
+    else saveExam(exam.id);
   };
 
   const handleOpen = () => setShowingExamDetail(exam.id);
