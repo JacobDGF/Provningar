@@ -33,6 +33,13 @@ jobs:
           cache: npm
 
       - run: npm ci
+
+      # Unit tests cover the registration-link classifier, the live
+      # "open for registration" clock, and the dataset invariants the product's
+      # accuracy claim rests on. Runs before the build so a bad dataset never
+      # reaches gh-pages.
+      - run: npm test
+
       # vite.config.ts stamps public/version.json with the same build ID it
       # bakes into the JS bundle via `define: { __BUILD_ID__ }`, so the two
       # always agree — src/hooks/useVersionCheck.ts compares them to decide

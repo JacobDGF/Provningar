@@ -1,10 +1,13 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, lazy, Suspense } from 'react';
 import { Search, SlidersHorizontal, X, TrendingUp, Navigation, HelpCircle, List, Map as MapIcon, ArrowRightCircle } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { ExamCard } from '../components/ExamCard';
 import { FilterSheet } from '../components/FilterSheet';
-import { MapView } from '../components/MapView';
-import { HeroMap } from '../components/HeroMap';
+// Leaflet plus its CSS and marker assets is the single largest dependency in
+// the app, and neither map is needed to render the hero copy, the search box or
+// the results list. Split out so the shell paints without waiting for it.
+const MapView = lazy(() => import('../components/MapView').then(m => ({ default: m.MapView })));
+const HeroMap = lazy(() => import('../components/HeroMap').then(m => ({ default: m.HeroMap })));
 import { haversineDistanceKm } from '../lib/distance';
 import { isOpenForRegistration } from '../lib/examStatus';
 import { classifyRegistrationUrl } from '../lib/registration';
@@ -17,6 +20,15 @@ const STEPS = [
   { n: '02', title: 'Jämför tillfällen', body: 'Se riktiga datum, ämne och anordnare samlat på en plats — aldrig gissade.' },
   { n: '03', title: 'Anmäl dig', body: 'Gå vidare direkt till anordnarens egen anmälan.' },
 ];
+
+/** Holds the map's box while its chunk loads, so nothing below it shifts. */
+function MapSkeleton({ className = '' }: { className?: string }) {
+  return (
+    <div className={`bg-sand flex items-center justify-center ${className}`} role="status" aria-label="Kartan laddas">
+      <div className="w-7 h-7 rounded-full border-2 border-line border-t-brand-500 animate-spin" />
+    </div>
+  );
+}
 
 export function Discover() {
   const {
@@ -131,7 +143,9 @@ export function Discover() {
 
       {view === 'map' ? (
         <div className="flex-1 min-h-0" style={{ height: 'calc(100vh - 44px)' }}>
-          <MapView exams={filtered} className="w-full h-full" />
+          <Suspense fallback={<MapSkeleton className="w-full h-full" />}>
+            <MapView exams={filtered} className="w-full h-full" />
+          </Suspense>
         </div>
       ) : (
         <>
@@ -199,7 +213,9 @@ export function Discover() {
               </div>
               <div className="relative">
                 <div className="h-[340px] lg:h-[420px] rounded shadow-lg overflow-hidden">
-                  <HeroMap exams={filtered} onCityClick={setSearchQuery} className="w-full h-full" />
+                  <Suspense fallback={<MapSkeleton className="w-full h-full" />}>
+                    <HeroMap exams={filtered} onCityClick={setSearchQuery} className="w-full h-full" />
+                  </Suspense>
                 </div>
                 <div className="absolute bottom-3 left-3 z-[500] bg-cream border border-accent2-200 text-accent2-700 text-xs font-semibold px-2.5 py-1.5 rounded shadow-sm flex items-center gap-1.5">
                   <span className="relative flex h-1.5 w-1.5">
