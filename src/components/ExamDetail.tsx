@@ -180,16 +180,20 @@ export function ExamDetail() {
                   {nextPeriod.examWindowStart && nextPeriod.examWindowEnd && (
                     <InfoRow
                       label="Provperiod"
-                      value={nextPeriod.examWindowStart === nextPeriod.examWindowEnd
-                        ? formatDate(nextPeriod.examWindowStart)
-                        : `${formatDate(nextPeriod.examWindowStart)} – ${formatDate(nextPeriod.examWindowEnd)}`}
+                      value={
+                        nextPeriod.examWindowStart === nextPeriod.examWindowEnd
+                          ? formatDate(nextPeriod.examWindowStart)
+                          : `${formatDate(nextPeriod.examWindowStart)} – ${formatDate(nextPeriod.examWindowEnd)}`
+                      }
                     />
                   )}
                   {!nextPeriod.applicationEnd && !nextPeriod.examWindowStart && (
                     <InfoRow label="Anmälan" value={nextPeriod.label} />
                   )}
                   {(nextPeriod.applicationEnd || nextPeriod.examWindowStart) && (
-                    <p className="text-ink-soft text-xs leading-relaxed pt-1 border-t border-line">{nextPeriod.label}</p>
+                    <p className="text-ink-soft text-xs leading-relaxed pt-1 border-t border-line">
+                      {nextPeriod.label}
+                    </p>
                   )}
                 </div>
               ) : (
@@ -221,9 +225,11 @@ export function ExamDetail() {
                   <ListChecks size={16} className="text-brand-600" />
                   Så anmäler du dig
                 </h3>
-                <span className={`text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${
-                  flow.direct ? 'bg-trust-50 text-trust-700' : 'bg-sand text-ink-soft'
-                }`}>
+                <span
+                  className={`text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${
+                    flow.direct ? 'bg-trust-50 text-trust-700' : 'bg-sand text-ink-soft'
+                  }`}
+                >
                   {flow.steps.length} steg kvar
                 </span>
               </div>

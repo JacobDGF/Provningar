@@ -83,7 +83,7 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
         <div className="mb-6">
           <button
             type="button"
-            onClick={() => setLocalDirectOnly(v => !v)}
+            onClick={() => setLocalDirectOnly((v) => !v)}
             aria-pressed={localDirectOnly}
             className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded border transition-colors text-left ${
               localDirectOnly ? 'bg-brand-50 border-brand-300' : 'bg-sand border-transparent'
@@ -95,9 +95,11 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
                 Länken går till bokningen — inte till en sida om den.
               </span>
             </span>
-            <span className={`w-11 h-6 rounded-full flex-shrink-0 flex items-center px-0.5 transition-colors ${
-              localDirectOnly ? 'bg-brand-500 justify-end' : 'bg-line justify-start'
-            }`}>
+            <span
+              className={`w-11 h-6 rounded-full flex-shrink-0 flex items-center px-0.5 transition-colors ${
+                localDirectOnly ? 'bg-brand-500 justify-end' : 'bg-line justify-start'
+              }`}
+            >
               <span className="w-5 h-5 bg-white rounded-full shadow-sm" />
             </span>
           </button>

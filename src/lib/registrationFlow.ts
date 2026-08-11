@@ -92,22 +92,30 @@ const FLOWS: Record<RegistrationKind, Omit<RegistrationFlow, 'kind'>> = {
 /** First match wins. Ordered most specific → most general. */
 const RULES: Array<{ kind: RegistrationKind; match: (url: URL) => boolean }> = [
   // Standalone form builders — always land straight on the form itself.
-  { kind: 'form', match: u => /(^|\.)(typeform\.com|office\.com|forms\.gle|google\.com)$/.test(u.hostname) },
-  { kind: 'form', match: u => u.hostname === 'ansokan-provning.nti.se' },
-  { kind: 'pdf', match: u => u.pathname.toLowerCase().endsWith('.pdf') },
+  {
+    kind: 'form',
+    match: (u) => /(^|\.)(typeform\.com|office\.com|forms\.gle|google\.com)$/.test(u.hostname),
+  },
+  { kind: 'form', match: (u) => u.hostname === 'ansokan-provning.nti.se' },
+  { kind: 'pdf', match: (u) => u.pathname.toLowerCase().endsWith('.pdf') },
   // Webshops — Iris and MedLearn sell prövningsplatser like any other product.
-  { kind: 'webshop', match: u => u.hostname.startsWith('shop.') },
+  { kind: 'webshop', match: (u) => u.hostname.startsWith('shop.') },
   // Alvis: the /provning/amnesomrade and /hittakurser entry points are course
   // pickers; anything else on Alvis (e.g. /login) is a plain e-service.
-  { kind: 'coursepicker', match: u => u.hostname.endsWith('.alvis.se') && /provning|hittakurser/.test(u.pathname) },
-  { kind: 'coursepicker', match: u => u.hostname === 'education.service.tieto.com' },
-  { kind: 'eservice', match: u => u.hostname.endsWith('.alvis.se') },
+  {
+    kind: 'coursepicker',
+    match: (u) => u.hostname.endsWith('.alvis.se') && /provning|hittakurser/.test(u.pathname),
+  },
+  { kind: 'coursepicker', match: (u) => u.hostname === 'education.service.tieto.com' },
+  { kind: 'eservice', match: (u) => u.hostname.endsWith('.alvis.se') },
   // Municipal self-service portals. These all sit on their own subdomain,
   // which is what separates them from the ordinary kommun website.
   {
     kind: 'eservice',
-    match: u =>
-      /^(sjalvservice|sjalvbetjaning|minasidor|e-tjanst|e-tjanster|etjanst|etjanster|eservice|e|ansokanvux|barnskolautbildning|webb)\./.test(u.hostname) ||
+    match: (u) =>
+      /^(sjalvservice|sjalvbetjaning|minasidor|e-tjanst|e-tjanster|etjanst|etjanster|eservice|e|ansokanvux|barnskolautbildning|webb)\./.test(
+        u.hostname,
+      ) ||
       u.hostname.endsWith('.enamnd.se') ||
       u.hostname.startsWith('centrumvux.'),
   },
@@ -120,7 +128,7 @@ export function getRegistrationFlow(exam: Exam): RegistrationFlow {
   let kind: RegistrationKind = 'page';
   try {
     const url = new URL(exam.registrationUrl);
-    kind = RULES.find(r => r.match(url))?.kind ?? 'page';
+    kind = RULES.find((r) => r.match(url))?.kind ?? 'page';
   } catch {
     // Malformed URL in the dataset — fall back to the conservative flow rather
     // than promising the user a one-click booking that isn't there.

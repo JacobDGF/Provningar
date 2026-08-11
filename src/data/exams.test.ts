@@ -24,8 +24,18 @@ describe('EXAMS dataset', () => {
     expect([...seen].filter(([, n]) => n > 1)).toEqual([]);
   });
 
-  it.each(EXAMS.map(e => [e.id, e] as const))('%s is well formed', (_id, exam) => {
-    for (const field of ['schoolName', 'provider', 'subject', 'course', 'courseCode', 'city', 'region', 'address', 'description'] as const) {
+  it.each(EXAMS.map((e) => [e.id, e] as const))('%s is well formed', (_id, exam) => {
+    for (const field of [
+      'schoolName',
+      'provider',
+      'subject',
+      'course',
+      'courseCode',
+      'city',
+      'region',
+      'address',
+      'description',
+    ] as const) {
       expect(exam[field].trim()).not.toBe('');
     }
     expect(exam.price).toBeGreaterThanOrEqual(0);
@@ -35,21 +45,21 @@ describe('EXAMS dataset', () => {
     expect(exam.verifiedAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
 
-  it.each(EXAMS.map(e => [e.id, e] as const))('%s points at https URLs', (_id, exam) => {
+  it.each(EXAMS.map((e) => [e.id, e] as const))('%s points at https URLs', (_id, exam) => {
     for (const url of [exam.registrationUrl, exam.infoUrl]) {
       expect(() => new URL(url)).not.toThrow();
       expect(new URL(url).protocol).toBe('https:');
     }
   });
 
-  it.each(EXAMS.map(e => [e.id, e] as const))('%s sits inside Sweden', (_id, exam) => {
+  it.each(EXAMS.map((e) => [e.id, e] as const))('%s sits inside Sweden', (_id, exam) => {
     expect(exam.lat).toBeGreaterThanOrEqual(SWEDEN.minLat);
     expect(exam.lat).toBeLessThanOrEqual(SWEDEN.maxLat);
     expect(exam.lng).toBeGreaterThanOrEqual(SWEDEN.minLng);
     expect(exam.lng).toBeLessThanOrEqual(SWEDEN.maxLng);
   });
 
-  it.each(EXAMS.map(e => [e.id, e] as const))('%s has coherent dates', (_id, exam) => {
+  it.each(EXAMS.map((e) => [e.id, e] as const))('%s has coherent dates', (_id, exam) => {
     const { nextPeriod: p } = exam;
     for (const d of [p.applicationStart, p.applicationEnd, p.examWindowStart, p.examWindowEnd]) {
       if (d !== undefined) expect(d).toMatch(/^\d{4}-\d{2}-\d{2}$/);
@@ -67,18 +77,24 @@ describe('EXAMS dataset', () => {
 
   it('never claims a confirmed period without a real date', () => {
     const bad = EXAMS.filter(
-      e => e.nextPeriod.confirmed &&
-        !e.nextPeriod.applicationStart && !e.nextPeriod.applicationEnd && !e.nextPeriod.examWindowStart,
+      (e) =>
+        e.nextPeriod.confirmed &&
+        !e.nextPeriod.applicationStart &&
+        !e.nextPeriod.applicationEnd &&
+        !e.nextPeriod.examWindowStart,
     );
-    expect(bad.map(e => e.id)).toEqual([]);
+    expect(bad.map((e) => e.id)).toEqual([]);
   });
 
   it('never carries dates on an unconfirmed period', () => {
     const bad = EXAMS.filter(
-      e => !e.nextPeriod.confirmed &&
-        (e.nextPeriod.applicationStart || e.nextPeriod.applicationEnd || e.nextPeriod.examWindowStart),
+      (e) =>
+        !e.nextPeriod.confirmed &&
+        (e.nextPeriod.applicationStart ||
+          e.nextPeriod.applicationEnd ||
+          e.nextPeriod.examWindowStart),
     );
-    expect(bad.map(e => e.id)).toEqual([]);
+    expect(bad.map((e) => e.id)).toEqual([]);
   });
 
   it('resolves a registration flow for every listing', () => {

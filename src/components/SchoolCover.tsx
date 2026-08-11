@@ -39,13 +39,26 @@ function inkFor(subject: string): [string, string] {
 /** Up to two initials from the school name, skipping the filler words that
     every Swedish adult-education provider shares. */
 function initials(schoolName: string): string {
-  const skip = new Set(['komvux', 'vuxenutbildningen', 'vuxenutbildning', 'i', 'och', 'för', 'kommun', 'stad']);
+  const skip = new Set([
+    'komvux',
+    'vuxenutbildningen',
+    'vuxenutbildning',
+    'i',
+    'och',
+    'för',
+    'kommun',
+    'stad',
+  ]);
   const words = schoolName
     .split(/[\s–—-]+/)
-    .map(w => w.replace(/[^\p{L}\p{N}]/gu, ''))
-    .filter(w => w && !skip.has(w.toLowerCase()));
+    .map((w) => w.replace(/[^\p{L}\p{N}]/gu, ''))
+    .filter((w) => w && !skip.has(w.toLowerCase()));
   const source = words.length ? words : schoolName.split(/\s+/);
-  return source.slice(0, 2).map(w => w[0]).join('').toUpperCase();
+  return source
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join('')
+    .toUpperCase();
 }
 
 interface Props {

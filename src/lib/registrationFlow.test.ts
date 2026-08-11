@@ -9,11 +9,17 @@ function examWith(registrationUrl: string, registration?: Exam['registration']):
 const CASES: Array<[string, RegistrationKind]> = [
   ['https://form.typeform.com/to/Nitj2W7p', 'form'],
   ['https://ansokan-provning.nti.se/', 'form'],
-  ['https://vuxenutbildningen.karlshamn.se/wp-content/uploads/2026/04/anmalan_till_provning.pdf', 'pdf'],
+  [
+    'https://vuxenutbildningen.karlshamn.se/wp-content/uploads/2026/04/anmalan_till_provning.pdf',
+    'pdf',
+  ],
   ['https://shop.iris.se/produkt/provning-for-betyg-i-flemingsberg/', 'webshop'],
   ['https://huddinge.alvis.se/provning/amnesomrade', 'coursepicker'],
   ['https://provningsenheten.alvis.se/hittakurser', 'coursepicker'],
-  ['https://education.service.tieto.com/AdultApplication.Student/#/search-offering/kv?domain=molndaledu', 'coursepicker'],
+  [
+    'https://education.service.tieto.com/AdultApplication.Student/#/search-offering/kv?domain=molndaledu',
+    'coursepicker',
+  ],
   ['https://norrkoping.alvis.se/login', 'eservice'],
   ['https://sjalvservice.malmo.se/oversikt/overview/926', 'eservice'],
   ['https://boden.enamnd.se/oversikt/overview/3858', 'eservice'],
@@ -28,7 +34,9 @@ describe('getRegistrationFlow', () => {
 
   it('only calls a flow direct when the link lands on the booking itself', () => {
     expect(getRegistrationFlow(examWith('https://shop.iris.se/produkt/x/')).direct).toBe(true);
-    expect(getRegistrationFlow(examWith('https://example.se/vuxenutbildning/provning/')).direct).toBe(false);
+    expect(
+      getRegistrationFlow(examWith('https://example.se/vuxenutbildning/provning/')).direct,
+    ).toBe(false);
   });
 
   it('lets a listing override the derived flow', () => {

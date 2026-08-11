@@ -111,7 +111,15 @@ export function Discover() {
     }
 
     return result;
-  }, [exams, searchQuery, filterSubject, filterRegion, filterSortBy, filterDirectOnly, userLocation]);
+  }, [
+    exams,
+    searchQuery,
+    filterSubject,
+    filterRegion,
+    filterSortBy,
+    filterDirectOnly,
+    userLocation,
+  ]);
 
   // tick isn't read below, it's a trigger so the live "öppna just nu" count
   // recomputes each minute

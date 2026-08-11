@@ -48,7 +48,9 @@ async function check({ url, fields }) {
     });
     // Some kommun platforms answer 200 while redirecting to their own error
     // page — a dead link that never shows up as a dead status code.
-    const softDead = /statuscode\/404|\/404($|[/?#])|sidan-finns-inte|page-not-found/i.test(res.url);
+    const softDead = /statuscode\/404|\/404($|[/?#])|sidan-finns-inte|page-not-found/i.test(
+      res.url,
+    );
     return {
       url,
       fields,
@@ -57,7 +59,14 @@ async function check({ url, fields }) {
       ok: res.ok && !softDead,
     };
   } catch (err) {
-    return { url, fields, status: err.name === 'AbortError' ? 'timeout' : 'error', finalUrl: '', ok: false, detail: err.message };
+    return {
+      url,
+      fields,
+      status: err.name === 'AbortError' ? 'timeout' : 'error',
+      finalUrl: '',
+      ok: false,
+      detail: err.message,
+    };
   } finally {
     clearTimeout(timer);
   }
@@ -82,8 +91,8 @@ const urls = collectUrls();
 console.log(`Kontrollerar ${urls.length} unika länkar från ${SOURCE.replace(ROOT + '/', '')}…\n`);
 
 const results = await mapPool(urls, check, CONCURRENCY);
-const broken = results.filter(r => !r.ok);
-const redirected = results.filter(r => r.ok && r.finalUrl && r.finalUrl !== r.url);
+const broken = results.filter((r) => !r.ok);
+const redirected = results.filter((r) => r.ok && r.finalUrl && r.finalUrl !== r.url);
 
 if (redirected.length && showAll) {
   console.log(`↪ ${redirected.length} omdirigerade (fungerar, men länken kan uppdateras):`);
@@ -100,5 +109,7 @@ console.error(`✗ ${broken.length} av ${results.length} länkar svarar inte:\n`
 for (const r of broken) {
   console.error(`   [${r.status}] ${r.url}  (${r.fields})${r.detail ? `\n     ${r.detail}` : ''}`);
 }
-console.error('\nNågra värdar blockerar automatiserade anrop — kontrollera i webbläsare innan du ändrar datan.');
+console.error(
+  '\nNågra värdar blockerar automatiserade anrop — kontrollera i webbläsare innan du ändrar datan.',
+);
 process.exit(1);
