@@ -191,6 +191,9 @@ const COMPONENTS_FLERA: ExamComponent[] = [
 // Second research pass covering providers outside the initial 23 (nationwide sweep).
 const NATIONWIDE_VERIFIED = '2026-07-12';
 const STHLM_LAN_VERIFIED = '2026-08-09';
+// Autumn 2026 sweep: re-read the providers whose application windows open in
+// August, since those are the listings a stale date hurts most.
+const AUTUMN_VERIFIED = '2026-08-11';
 
 export const EXAMS: Exam[] = [
   {
@@ -415,9 +418,13 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: FREE_IF_PRIOR_F,
     nextPeriod: {
+      // JENSEN publishes an opening time, not a closing date: the form shuts
+      // the moment the course fills, and there is no reserve list. Leaving
+      // applicationEnd unset is the honest encoding — see examStatus.ts, which
+      // treats a half-open window as open once the start has passed.
       label:
-        'Anmälan till höstens prövning stänger 11 augusti kl 11:00. Efter det är nästa tillfälle i början av 2027.',
-      applicationEnd: '2026-08-11',
+        'Anmälan öppnade 11 augusti 2026 kl. 11:00 och stänger så snart kursen är fullbokad — JENSEN har ingen reservlista. Prövningen genomförs 7–18 september eller 12–23 oktober; exakt datum meddelas när anmälan är bekräftad.',
+      applicationStart: '2026-08-11',
       examWindowStart: '2026-09-07',
       examWindowEnd: '2026-10-23',
       confirmed: true,
@@ -429,7 +436,7 @@ export const EXAMS: Exam[] = [
     description:
       'JENSEN vuxenutbildning erbjuder prövning i Matematik 2b i Stockholm. Missar du höstens omgång är nästa tillfälle i början av 2027.',
     tags: ['matematik', 'stockholm', 'jensen'],
-    verifiedAt: VERIFIED,
+    verifiedAt: AUTUMN_VERIFIED,
   },
   {
     id: 'jensen-fysik1a',
@@ -447,9 +454,13 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: FREE_IF_PRIOR_F + ' Laborativa moment genomförs på plats, inte på distans.',
     nextPeriod: {
+      // JENSEN publishes an opening time, not a closing date: the form shuts
+      // the moment the course fills, and there is no reserve list. Leaving
+      // applicationEnd unset is the honest encoding — see examStatus.ts, which
+      // treats a half-open window as open once the start has passed.
       label:
-        'Anmälan till höstens prövning stänger 11 augusti kl 11:00. Efter det är nästa tillfälle i början av 2027.',
-      applicationEnd: '2026-08-11',
+        'Anmälan öppnade 11 augusti 2026 kl. 11:00 och stänger så snart kursen är fullbokad — JENSEN har ingen reservlista. Prövningen genomförs 7–18 september eller 12–23 oktober; exakt datum meddelas när anmälan är bekräftad.',
+      applicationStart: '2026-08-11',
       examWindowStart: '2026-09-07',
       examWindowEnd: '2026-10-23',
       confirmed: true,
@@ -461,7 +472,7 @@ export const EXAMS: Exam[] = [
     description:
       'JENSEN vuxenutbildning erbjuder prövning i Fysik 1a i Stockholm, med laborativa moment på plats.',
     tags: ['fysik', 'stockholm', 'jensen'],
-    verifiedAt: VERIFIED,
+    verifiedAt: AUTUMN_VERIFIED,
   },
   {
     id: 'jensen-kemi1',
@@ -479,9 +490,13 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: FREE_IF_PRIOR_F,
     nextPeriod: {
+      // JENSEN publishes an opening time, not a closing date: the form shuts
+      // the moment the course fills, and there is no reserve list. Leaving
+      // applicationEnd unset is the honest encoding — see examStatus.ts, which
+      // treats a half-open window as open once the start has passed.
       label:
-        'Anmälan till höstens prövning stänger 11 augusti kl 11:00. Efter det är nästa tillfälle i början av 2027.',
-      applicationEnd: '2026-08-11',
+        'Anmälan öppnade 11 augusti 2026 kl. 11:00 och stänger så snart kursen är fullbokad — JENSEN har ingen reservlista. Prövningen genomförs 7–18 september eller 12–23 oktober; exakt datum meddelas när anmälan är bekräftad.',
+      applicationStart: '2026-08-11',
       examWindowStart: '2026-09-07',
       examWindowEnd: '2026-10-23',
       confirmed: true,
@@ -492,7 +507,7 @@ export const EXAMS: Exam[] = [
     infoUrl: 'https://www.jensenkomvux.se/provning',
     description: 'JENSEN vuxenutbildning erbjuder prövning i Kemi 1 i Stockholm.',
     tags: ['kemi', 'stockholm', 'jensen'],
-    verifiedAt: VERIFIED,
+    verifiedAt: AUTUMN_VERIFIED,
   },
   {
     id: 'iris-upplandsvasby-fysik1a',
@@ -918,12 +933,16 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://e-tjanster.sundsvall.se/oversikt/overview/331',
-    infoUrl: 'https://sundsvall.se/kommun/utbildning-och-forskola/vuxenutbildning/ansokan/provning',
+    // The kommun's e-tjänst for prövning is taken down between periods — the
+    // old deep link (oversikt/overview/331) now 404s. Their own prövningssida
+    // carries the live link whenever it opens, so that is the honest target.
+    registrationUrl:
+      'https://sundsvall.se/kommun/utbildning-och-forskola/vuxenutbildning/ansokan/provning',
+    infoUrl: 'https://sundsvall.se/kommun/utbildning-och-forskola/vuxenutbildning/ansokan',
     description:
       'Vuxenutbildningen Sundsvall erbjuder prövning fyra gånger per år i ämnen ur den ordinarie kurskatalogen (Alvis). E-tjänsten för oktoberperioden öppnar 17 augusti 2026 med sista anmälningsdag 20 september; prövningstillfällena är 21 och 24 oktober beroende på skolenhet (Arena/Jensen).',
     tags: ['kommun', 'gymnasial', 'flera-amnen'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: AUTUMN_VERIFIED,
   },
   {
     id: 'vuxenutbildningen-ornskoldsvik-komvux-arken-ornskoldsvik-fle',

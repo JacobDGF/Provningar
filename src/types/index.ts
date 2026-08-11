@@ -81,7 +81,11 @@ export interface Post {
   id: string;
   userId: string;
   userName: string;
-  userAvatar: string;
+  /**
+   * Only ever a photo the author took themselves (`data:`/`blob:`), and only on
+   * this device. Everyone else renders as a drawn monogram — see `lib/avatar.ts`.
+   */
+  userAvatar?: string;
   content: string;
   subject?: string;
   kind?: PostKind;
@@ -96,7 +100,8 @@ export interface Reply {
   id: string;
   userId: string;
   userName: string;
-  userAvatar: string;
+  /** Same rule as `Post.userAvatar`: the author's own photo, or nothing. */
+  userAvatar?: string;
   content: string;
   createdAt: string;
   likes: number;
@@ -107,6 +112,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  /** Empty until the user supplies their own photo; never a stock image. */
   avatar: string;
   bio: string;
   following: string[];

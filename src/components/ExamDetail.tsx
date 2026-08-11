@@ -15,11 +15,13 @@ import {
   Info,
   Map,
   ListChecks,
+  Globe,
 } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
 import { isOpenForRegistration, daysUntil } from '../lib/examStatus';
 import { getRegistrationFlow } from '../lib/registrationFlow';
+import { getProviderLinks } from '../lib/providerLinks';
 import { SchoolCover } from './SchoolCover';
 
 function formatDate(dateStr: string) {
@@ -59,6 +61,7 @@ export function ExamDetail() {
   const urgent = deadlineDays !== null && deadlineDays <= 7 && deadlineDays >= 0;
   const openNow = isOpenForRegistration(exam);
   const flow = getRegistrationFlow(exam);
+  const links = getProviderLinks(exam);
 
   const distanceKm = userLocation
     ? haversineDistanceKm(userLocation.lat, userLocation.lng, exam.lat, exam.lng)
@@ -373,9 +376,12 @@ export function ExamDetail() {
         {/* CTA — a flex sibling, not absolutely positioned: an `absolute` bar
             here resolves against the fixed backdrop, not the sheet, and gets
             clipped away entirely by the sheet's overflow on desktop. */}
+        {/* Two ways out, both explicit. The first is the deep link we verified;
+            the second is for people who'd rather start at the provider's own
+            site and do it themselves. See lib/providerLinks.ts. */}
         <div className="flex-shrink-0 bg-surface border-t border-line p-4 space-y-2 safe-bottom">
           <a
-            href={exam.registrationUrl}
+            href={links.booking}
             target="_blank"
             rel="noopener noreferrer"
             className="w-full flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-bold py-4 rounded-md text-base shadow-lg shadow-brand-200 active:scale-98 transition-transform"
@@ -384,15 +390,25 @@ export function ExamDetail() {
             {flow.ctaLabel} hos {exam.provider}
             <ChevronRight size={18} />
           </a>
-          {exam.infoUrl !== exam.registrationUrl && (
-            <a
-              href={exam.infoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full flex items-center justify-center gap-1.5 text-ink-soft text-xs font-medium py-1"
-            >
-              Mer information på skolans webbplats <ExternalLink size={11} />
-            </a>
+          {links.hasAlternative && (
+            <>
+              <a
+                href={links.site}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center justify-center gap-2 bg-surface border border-line hover:border-brand-300 hover:bg-brand-50 text-ink font-bold py-3.5 rounded-md text-sm active:scale-98 transition-all"
+              >
+                <Globe size={16} className="text-brand-600" />
+                {links.siteIsHomepage
+                  ? `Gå till ${exam.provider}s webbplats`
+                  : 'Läs mer på skolans egen sida'}
+              </a>
+              <p className="text-ink-faint text-[11px] text-center leading-relaxed">
+                Översta knappen tar dig{' '}
+                {flow.direct ? 'direkt till bokningen' : 'så nära anmälan vi kommer'} ·{' '}
+                {links.siteLabel} om du hellre letar dig fram själv
+              </p>
+            </>
           )}
         </div>
       </div>

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { useStore } from './useStore';
+import { useStore, stripStockAvatars } from './useStore';
 
 const initialState = useStore.getState();
 
@@ -172,5 +172,69 @@ describe('requestLocation', () => {
     expect(useStore.getState().locationStatus).toBe('error');
 
     Object.defineProperty(navigator, 'geolocation', { value: original, configurable: true });
+  });
+});
+
+describe('deletePost', () => {
+  it('removes the user’s own post', () => {
+    useStore.getState().addPost('Mitt inlägg', 'Matematik', 'tips');
+    const mine = useStore.getState().posts.find((p) => p.userId === 'me');
+    useStore.getState().deletePost(mine!.id);
+    expect(useStore.getState().posts.some((p) => p.id === mine!.id)).toBe(false);
+  });
+
+  it('refuses to delete somebody else’s post', () => {
+    const other = useStore.getState().posts.find((p) => p.userId !== 'me');
+    useStore.getState().deletePost(other!.id);
+    expect(useStore.getState().posts.some((p) => p.id === other!.id)).toBe(true);
+  });
+});
+
+describe('stripStockAvatars (persist v0 → v1)', () => {
+  it('drops a stock portrait left in a returning user’s storage', () => {
+    const migrated = stripStockAvatars({
+      currentUser: { name: 'Du', avatar: 'https://i.pravatar.cc/150?img=1' },
+      posts: [
+        {
+          id: 'p1',
+          userId: 'u2',
+          userName: 'Emma',
+          userAvatar: 'https://i.pravatar.cc/150?img=47',
+          replies: [
+            { id: 'r1', userId: 'u3', userName: 'Lars', userAvatar: 'https://i.pravatar.cc/150' },
+          ],
+        },
+      ],
+    }) as {
+      currentUser: { avatar: string };
+      posts: { userAvatar?: string; replies: { userAvatar?: string }[] }[];
+    };
+
+    expect(migrated.currentUser.avatar).toBe('');
+    expect(migrated.posts[0].userAvatar).toBeUndefined();
+    expect(migrated.posts[0].replies[0].userAvatar).toBeUndefined();
+  });
+
+  it('keeps a photo the user took themselves', () => {
+    const migrated = stripStockAvatars({
+      currentUser: { avatar: 'data:image/jpeg;base64,abc' },
+      posts: [],
+    }) as { currentUser: { avatar: string } };
+    expect(migrated.currentUser.avatar).toBe('data:image/jpeg;base64,abc');
+  });
+
+  it('survives storage that predates these fields entirely', () => {
+    expect(stripStockAvatars({ savedExams: [] })).toEqual({ savedExams: [] });
+    expect(stripStockAvatars(null)).toBeNull();
+  });
+});
+
+describe('the default profile', () => {
+  it('ships without a picture rather than with somebody else’s face', () => {
+    expect(useStore.getState().currentUser.avatar).toBe('');
+  });
+
+  it('ships without invented followers', () => {
+    expect(useStore.getState().currentUser.followers).toEqual([]);
   });
 });

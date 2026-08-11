@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import { Exam, SavedExam, ViewedExam, Post, User, TabId } from '../types';
 import { EXAMS } from '../data/exams';
 import { INITIAL_POSTS } from '../data/community';
+import { isOwnPhoto } from '../lib/avatar';
 
 interface AppState {
   // Navigation
@@ -43,6 +44,8 @@ interface AppState {
   posts: Post[];
   addPost: (content: string, subject?: string, kind?: Post['kind'], tags?: string[]) => void;
   addReply: (postId: string, content: string) => void;
+  /** Only ever called for the user's own posts — the UI hides it on everyone else's. */
+  deletePost: (postId: string) => void;
   toggleLikePost: (postId: string) => void;
   toggleLikeReply: (postId: string, replyId: string) => void;
 
@@ -58,14 +61,16 @@ interface AppState {
   setShowingFaq: (v: boolean) => void;
 }
 
-const DEFAULT_USER: User = {
+export const DEFAULT_USER: User = {
   id: 'me',
   name: 'Du',
   email: 'din@email.com',
-  avatar: 'https://i.pravatar.cc/150?img=1',
+  // Empty by design: a face here is one the user took themselves, or none.
+  avatar: '',
   bio: 'Pluggar för att höja mina betyg och nå mitt drömprogram.',
   following: [],
-  followers: ['u2', 'u4'],
+  // Nobody follows a brand-new account. Seeding two was invented social proof.
+  followers: [],
   completedExams: [],
   joinedAt: '2026-01-15',
   location: 'Stockholm',
@@ -188,6 +193,11 @@ export const useStore = create<AppState>()(
           ),
         })),
 
+      deletePost: (postId) =>
+        set((s) => ({
+          posts: s.posts.filter((p) => !(p.id === postId && p.userId === 'me')),
+        })),
+
       toggleLikePost: (postId) =>
         set((s) => ({
           posts: s.posts.map((p) => {
@@ -250,12 +260,44 @@ export const useStore = create<AppState>()(
     }),
     {
       name: 'provningar-storage',
+      version: 1,
       partialize: (s) => ({
         savedExams: s.savedExams,
         viewedExams: s.viewedExams,
         currentUser: s.currentUser,
         posts: s.posts,
       }),
+      migrate: (persisted, version) => (version < 1 ? stripStockAvatars(persisted) : persisted),
     },
   ),
 );
+
+/**
+ * v0 → v1: drop the stock photographs.
+ *
+ * Posts and the user's own profile are persisted, so returning users still have
+ * pravatar URLs of strangers sitting in localStorage. Removing them from the
+ * source data alone would leave those faces on screen forever, so the stored
+ * copy gets the same rule applied on load: keep the photo only if the user
+ * supplied it themselves.
+ */
+export function stripStockAvatars(persisted: unknown): unknown {
+  if (!persisted || typeof persisted !== 'object') return persisted;
+  const state = persisted as {
+    currentUser?: Partial<User>;
+    posts?: Post[];
+  };
+  const clean = (src?: string) => (isOwnPhoto(src) ? src : undefined);
+
+  return {
+    ...state,
+    currentUser: state.currentUser
+      ? { ...state.currentUser, avatar: clean(state.currentUser.avatar) ?? '' }
+      : state.currentUser,
+    posts: state.posts?.map((p) => ({
+      ...p,
+      userAvatar: clean(p.userAvatar),
+      replies: p.replies?.map((r) => ({ ...r, userAvatar: clean(r.userAvatar) })) ?? [],
+    })),
+  };
+}

@@ -9,12 +9,14 @@ import {
   Navigation,
   ShieldCheck,
   MousePointerClick,
+  Globe,
 } from 'lucide-react';
 import { Exam } from '../types';
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
 import { isOpenForRegistration, daysUntil } from '../lib/examStatus';
 import { getRegistrationFlow } from '../lib/registrationFlow';
+import { getProviderLinks } from '../lib/providerLinks';
 import { SchoolCover } from './SchoolCover';
 
 interface ExamCardProps {
@@ -55,6 +57,7 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
   const urgent = deadlineDays !== null && deadlineDays <= 7 && deadlineDays >= 0;
   const openNow = isOpenForRegistration(exam);
   const flow = getRegistrationFlow(exam);
+  const links = getProviderLinks(exam);
 
   const distanceKm = userLocation
     ? haversineDistanceKm(userLocation.lat, userLocation.lng, exam.lat, exam.lng)
@@ -203,16 +206,33 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
           </div>
         </div>
 
-        <a
-          href={exam.registrationUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
-          className="mt-4 w-full flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold py-3 rounded transition-colors active:scale-98 shadow-sm shadow-brand-200"
-        >
-          <ExternalLink size={15} />
-          {flow.ctaLabel} hos {exam.provider}
-        </a>
+        {/* Two destinations: the verified deep link, and the provider's own site
+            for anyone who'd rather navigate it themselves. */}
+        <div className="mt-4 flex gap-2">
+          <a
+            href={links.booking}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="flex-1 flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold py-3 rounded transition-colors active:scale-98 shadow-sm shadow-brand-200"
+          >
+            <ExternalLink size={15} />
+            {flow.ctaLabel}
+          </a>
+          {links.hasAlternative && (
+            <a
+              href={links.site}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              title={`Öppna ${links.siteLabel}`}
+              className="flex items-center justify-center gap-1.5 bg-surface border border-line hover:border-brand-300 hover:bg-brand-50 text-ink-soft text-sm font-bold px-3 py-3 rounded transition-colors active:scale-98"
+            >
+              <Globe size={15} className="text-brand-600" />
+              <span className="hidden sm:inline">Skolans sida</span>
+            </a>
+          )}
+        </div>
       </div>
     </div>
   );

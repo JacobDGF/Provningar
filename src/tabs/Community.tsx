@@ -8,9 +8,11 @@ import {
   ChevronUp,
   Users,
   HelpCircle,
+  Trash2,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useStore } from '../store/useStore';
+import { Avatar } from '../components/Avatar';
 import { Post, PostKind } from '../types';
 
 const KINDS: { value: PostKind; label: string; emoji: string; color: string }[] = [
@@ -36,12 +38,14 @@ function timeAgo(dateStr: string) {
 }
 
 function PostCard({ post }: { post: Post }) {
-  const { toggleLikePost, toggleLikeReply, addReply, currentUser, toggleFollow } = useStore();
+  const { toggleLikePost, toggleLikeReply, addReply, deletePost, currentUser, toggleFollow } =
+    useStore();
   const [showReplies, setShowReplies] = useState(false);
   const [replyText, setReplyText] = useState('');
   const [showReplyInput, setShowReplyInput] = useState(false);
 
   const isLiked = post.likedBy.includes('me');
+  const isMine = post.userId === 'me';
   const isFollowing = currentUser.following.includes(post.userId);
   const meta = kindMeta(post.kind);
 
@@ -58,16 +62,17 @@ function PostCard({ post }: { post: Post }) {
       {/* Author */}
       <div className="p-4 pb-3">
         <div className="flex items-start gap-3">
-          <img
-            src={post.userAvatar}
-            alt={post.userName}
-            className="w-10 h-10 rounded-full object-cover flex-shrink-0"
-          />
+          <Avatar name={post.userName} src={post.userAvatar} seed={post.userId} size={40} />
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="font-bold text-ink text-sm">{post.userName}</span>
-                {post.userId !== 'me' && (
+                {isMine && (
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-50 text-brand-700">
+                    Ditt inlägg
+                  </span>
+                )}
+                {!isMine && (
                   <button
                     onClick={() => toggleFollow(post.userId)}
                     className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
@@ -132,16 +137,23 @@ function PostCard({ post }: { post: Post }) {
         >
           {showReplyInput ? 'Avbryt' : 'Skriv svar'}
         </button>
+        {isMine && (
+          <button
+            onClick={() => {
+              if (window.confirm('Ta bort inlägget?')) deletePost(post.id);
+            }}
+            aria-label="Ta bort inlägget"
+            className="text-ink-faint hover:text-red-500 transition-colors"
+          >
+            <Trash2 size={16} />
+          </button>
+        )}
       </div>
 
       {/* Reply input */}
       {showReplyInput && (
         <div className="px-4 pb-3 flex gap-2">
-          <img
-            src={currentUser.avatar}
-            alt="Du"
-            className="w-7 h-7 rounded-full object-cover flex-shrink-0"
-          />
+          <Avatar name={currentUser.name} src={currentUser.avatar} seed="me" size={28} />
           <div className="flex-1 flex gap-2 bg-sand rounded px-3 py-2">
             <input
               type="text"
@@ -178,10 +190,12 @@ function PostCard({ post }: { post: Post }) {
             const replyLiked = reply.likedBy.includes('me');
             return (
               <div key={reply.id} className="px-4 py-3 flex gap-2.5">
-                <img
+                <Avatar
+                  name={reply.userName}
                   src={reply.userAvatar}
-                  alt={reply.userName}
-                  className="w-7 h-7 rounded-full object-cover flex-shrink-0 mt-0.5"
+                  seed={reply.userId}
+                  size={28}
+                  className="mt-0.5"
                 />
                 <div className="flex-1">
                   <div className="bg-surface rounded px-3 py-2 border border-line">
@@ -291,8 +305,17 @@ export function Community() {
             <PostCard key={post.id} post={post} />
           ))}
           {filteredPosts.length === 0 && (
-            <div className="text-center py-12 text-ink-faint">
-              Inga inlägg i den här kategorin än.
+            <div className="text-center py-12 px-6">
+              <p className="text-ink font-semibold">Inga inlägg i den här kategorin än.</p>
+              <p className="text-ink-soft text-sm mt-1">
+                Bli den första som skriver — det är ofta någon annan som undrar samma sak.
+              </p>
+              <button
+                onClick={() => setShowCompose(true)}
+                className="mt-4 inline-flex items-center gap-1.5 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold px-4 py-2.5 rounded transition-colors"
+              >
+                <Plus size={15} /> Skriv ett inlägg
+              </button>
             </div>
           )}
         </div>
@@ -340,11 +363,7 @@ export function Community() {
             </div>
 
             <div className="flex gap-3 mb-4">
-              <img
-                src={currentUser.avatar}
-                alt="Du"
-                className="w-10 h-10 rounded-full object-cover flex-shrink-0"
-              />
+              <Avatar name={currentUser.name} src={currentUser.avatar} seed="me" size={40} />
               <textarea
                 value={newPost}
                 onChange={(e) => setNewPost(e.target.value)}
@@ -354,6 +373,13 @@ export function Community() {
                 autoFocus
               />
             </div>
+
+            {!currentUser.avatar && (
+              <p className="text-ink-faint text-xs -mt-2 mb-4">
+                Du visas med dina initialer. Vill du ha en bild lägger du till en egen under Profil
+                — appen använder aldrig färdiga porträtt av andra.
+              </p>
+            )}
 
             {/* Subject select */}
             <div className="mb-4">
