@@ -3305,6 +3305,116 @@ export const EXAMS: Exam[] = [
     tags: ['svenska-som-andrasprak', 'sollentuna', 'stockholm', 'jutus'],
     verifiedAt: AUTUMN_VERIFIED,
   },
+  // Mora vuxenutbildning — verified against moragymnasium.se 2026-08-11 (their
+  // page was itself updated 7 August). Two fixed periods a year, both timed so
+  // the grade lands before a högskola application deadline: ansökan 14–20
+  // februari with the prövning in vecka 13, and ansökan 14–20 september with
+  // the prövning in vecka 44. Autumn 2026 is the period encoded below.
+  {
+    id: 'mora-vuxenutbildning-engelska-6',
+    schoolName: 'Mora vuxenutbildning',
+    provider: 'Mora kommun',
+    subject: 'Engelska',
+    course: 'Engelska 6',
+    courseCode: 'ENGENG06',
+    level: 'Komvux',
+    city: 'Mora',
+    region: 'Dalarna',
+    address: 'Mora gymnasium, Älvgatan 27, 792 32 Mora',
+    lat: 61.0122,
+    lng: 14.5639,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du är inskriven elev vid vuxenutbildningen och har F eller IG i kursen — det behöver styrkas. ' +
+      'Avgiften är bindande, återbetalas inte och ska vara betald senast sista dagen i ansökningsmånaden.',
+    nextPeriod: {
+      label:
+        'Höstens ansökningsperiod är 14–20 september 2026 och prövningen genomförs vecka 44. Antalet platser är begränsat, och du kan bara ansöka om en prövning per period.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-20',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-01',
+      confirmed: true,
+    },
+    components: COMPONENTS_ENGELSKA,
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: 'https://etjanster.morakommun.se/oversikt/overview/108',
+    infoUrl: 'https://moragymnasium.se/mora-vuxenutbildning/provning.html',
+    description:
+      'Mora vuxenutbildning prövar alla kurser och nivåer som kommunens vuxenutbildning anordnar. Prövningen sker på plats i Mora och kan innehålla inlämningsuppgifter, laborationer samt skriftliga och muntliga prov — skolan publicerar en prövningsanvisning per kurs som säger exakt vad som ingår.',
+    tags: ['engelska', 'mora', 'dalarna'],
+    verifiedAt: AUTUMN_VERIFIED,
+  },
+  {
+    id: 'mora-vuxenutbildning-svenska-3',
+    schoolName: 'Mora vuxenutbildning',
+    provider: 'Mora kommun',
+    subject: 'Svenska',
+    course: 'Svenska 3',
+    courseCode: 'SVESVE03',
+    level: 'Komvux',
+    city: 'Mora',
+    region: 'Dalarna',
+    address: 'Mora gymnasium, Älvgatan 27, 792 32 Mora',
+    lat: 61.0122,
+    lng: 14.5639,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du är inskriven elev vid vuxenutbildningen och har F eller IG i kursen — det behöver styrkas. ' +
+      'Avgiften är bindande, återbetalas inte och ska vara betald senast sista dagen i ansökningsmånaden.',
+    nextPeriod: {
+      label:
+        'Höstens ansökningsperiod är 14–20 september 2026 och prövningen genomförs vecka 44. Antalet platser är begränsat, och du kan bara ansöka om en prövning per period.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-20',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-01',
+      confirmed: true,
+    },
+    components: COMPONENTS_SVENSKA,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://etjanster.morakommun.se/oversikt/overview/108',
+    infoUrl: 'https://moragymnasium.se/mora-vuxenutbildning/provning.html',
+    description:
+      'Mora vuxenutbildning prövar alla kurser och nivåer som kommunens vuxenutbildning anordnar. Prövningen sker på plats i Mora och kan innehålla inlämningsuppgifter, laborationer samt skriftliga och muntliga prov — skolan publicerar en prövningsanvisning per kurs som säger exakt vad som ingår.',
+    tags: ['svenska', 'mora', 'dalarna'],
+    verifiedAt: AUTUMN_VERIFIED,
+  },
+  {
+    id: 'mora-vuxenutbildning-psykologi-1',
+    schoolName: 'Mora vuxenutbildning',
+    provider: 'Mora kommun',
+    subject: 'Psykologi',
+    course: 'Psykologi 1',
+    courseCode: 'PSKPSY01',
+    level: 'Komvux',
+    city: 'Mora',
+    region: 'Dalarna',
+    address: 'Mora gymnasium, Älvgatan 27, 792 32 Mora',
+    lat: 61.0122,
+    lng: 14.5639,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du är inskriven elev vid vuxenutbildningen och har F eller IG i kursen — det behöver styrkas. ' +
+      'Avgiften är bindande, återbetalas inte och ska vara betald senast sista dagen i ansökningsmånaden.',
+    nextPeriod: {
+      label:
+        'Höstens ansökningsperiod är 14–20 september 2026 och prövningen genomförs vecka 44. Antalet platser är begränsat, och du kan bara ansöka om en prövning per period.',
+      applicationStart: '2026-09-14',
+      applicationEnd: '2026-09-20',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-01',
+      confirmed: true,
+    },
+    components: COMPONENTS_PSYKOLOGI,
+    studyTips: TIPS_PSYKOLOGI,
+    registrationUrl: 'https://etjanster.morakommun.se/oversikt/overview/108',
+    infoUrl: 'https://moragymnasium.se/mora-vuxenutbildning/provning.html',
+    description:
+      'Mora vuxenutbildning prövar alla kurser och nivåer som kommunens vuxenutbildning anordnar. Prövningen sker på plats i Mora och kan innehålla inlämningsuppgifter, laborationer samt skriftliga och muntliga prov — skolan publicerar en prövningsanvisning per kurs som säger exakt vad som ingår.',
+    tags: ['psykologi', 'mora', 'dalarna'],
+    verifiedAt: AUTUMN_VERIFIED,
+  },
 ];
 
 export const SUBJECTS = [...new Set(EXAMS.map((e) => e.subject))].sort();
