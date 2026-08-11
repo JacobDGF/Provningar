@@ -11,6 +11,13 @@
  *
  *   npm run check:links              report everything that failed
  *   npm run check:links -- --all     also list the URLs that redirected
+ *
+ * Behind a TLS-intercepting proxy, every https host fails at once (typically as
+ * a wall of 503s) because Node doesn't trust the proxy's CA. That is the
+ * environment failing, not ~70 kommuner going down together — point Node at the
+ * bundle before blaming the data:
+ *
+ *   NODE_EXTRA_CA_CERTS=/path/to/ca-bundle.crt npm run check:links
  */
 
 import { readFileSync } from 'node:fs';

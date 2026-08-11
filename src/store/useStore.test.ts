@@ -238,3 +238,15 @@ describe('the default profile', () => {
     expect(useStore.getState().currentUser.followers).toEqual([]);
   });
 });
+
+describe('filterOpenOnly', () => {
+  it('defaults to off so the first screen shows everything', () => {
+    expect(useStore.getState().filterOpenOnly).toBe(false);
+  });
+
+  it('toggles independently of the direct-booking filter', () => {
+    useStore.getState().setFilterOpenOnly(true);
+    expect(useStore.getState().filterOpenOnly).toBe(true);
+    expect(useStore.getState().filterDirectOnly).toBe(false);
+  });
+});

@@ -1,4 +1,4 @@
-import { Exam, ExamComponent } from '../types';
+import { Exam, ExamComponent, NextPeriod } from '../types';
 
 // Date this dataset's facts (providers, prices, URLs, periods) were checked against
 // each provider's own website / official municipal source.
@@ -195,6 +195,25 @@ const STHLM_LAN_VERIFIED = '2026-08-09';
 // August, since those are the listings a stale date hurts most.
 const AUTUMN_VERIFIED = '2026-08-11';
 
+/**
+ * Stockholms stad's autumn 2026 prövningsomgång.
+ *
+ * The city moved to one opening day per school, staggered across weeks 33–35
+ * (Jensen 11 aug, Komvux Södermalm 13 aug, NTI 17 aug, Hermods 26 aug), and no
+ * school publishes a closing date — registration shuts when the seats are gone.
+ * So the window is encoded half-open: a real start, no invented end.
+ */
+function sthlmAutumn2026(opensOn: string, opensLabel: string): NextPeriod {
+  return {
+    label:
+      `Anmälan öppnar ${opensLabel} och stänger så snart platserna är fullbokade. ` +
+      'Prövningen genomförs under hösten 2026, planerad så att betyget hinner fram till sista ' +
+      'kompletteringsdagen i början av december. Nästa möjlighet därefter är i början av 2027.',
+    applicationStart: opensOn,
+    confirmed: true,
+  };
+}
+
 export const EXAMS: Exam[] = [
   {
     id: 'sodermalm-kemi1',
@@ -211,11 +230,7 @@ export const EXAMS: Exam[] = [
     lng: 18.0735,
     price: 500,
     priceNote: FREE_IF_PRIOR_F,
-    nextPeriod: {
-      label:
-        'Nästa omgång preliminärt september 2026 — fullständigt schema publiceras av skolan i maj.',
-      confirmed: false,
-    },
+    nextPeriod: sthlmAutumn2026('2026-08-13', 'torsdag 13 augusti 2026'),
     components: COMPONENTS_KEMI,
     studyTips: TIPS_KEMI,
     registrationUrl: 'https://komvuxsodermalm.stockholm/provningar/anmalan-till-provning/',
@@ -224,7 +239,7 @@ export const EXAMS: Exam[] = [
     description:
       'Prövning i Kemi 1 hos Komvux Södermalm, en av Stockholms stads vuxenutbildningar. Avgiften följer det nationella pristaket på 500 kr.',
     tags: ['kemi', 'naturvetenskap', 'stockholm'],
-    verifiedAt: VERIFIED,
+    verifiedAt: AUTUMN_VERIFIED,
   },
   {
     id: 'sodermalm-fysik2',
@@ -241,10 +256,7 @@ export const EXAMS: Exam[] = [
     lng: 18.0735,
     price: 500,
     priceNote: FREE_IF_PRIOR_F,
-    nextPeriod: {
-      label: 'Löpande prövningsomgångar — se skolans sida för nästa datum.',
-      confirmed: false,
-    },
+    nextPeriod: sthlmAutumn2026('2026-08-13', 'torsdag 13 augusti 2026'),
     components: COMPONENTS_FYSIK,
     studyTips: TIPS_FYSIK,
     registrationUrl: 'https://komvuxsodermalm.stockholm/provningar/anmalan-till-provning/',
@@ -253,7 +265,7 @@ export const EXAMS: Exam[] = [
     description:
       'Prövning i Fysik 2 hos Komvux Södermalm. Krävs ofta för tekniska och naturvetenskapliga högskoleutbildningar.',
     tags: ['fysik', 'naturvetenskap', 'stockholm'],
-    verifiedAt: VERIFIED,
+    verifiedAt: AUTUMN_VERIFIED,
   },
   {
     id: 'taby-flera',
@@ -301,10 +313,7 @@ export const EXAMS: Exam[] = [
     lng: 18.0125,
     price: 500,
     priceNote: FREE_IF_PRIOR_F + ' Förutsätter att din hemkommun har avtal med Hermods.',
-    nextPeriod: {
-      label: 'Höstens provdatum meddelas av Hermods i juni 2026 — se skolans sida.',
-      confirmed: false,
-    },
+    nextPeriod: sthlmAutumn2026('2026-08-26', 'onsdag 26 augusti 2026'),
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
     registrationUrl: 'https://sites.google.com/a/edu.hermods.se/provning-stockholm',
@@ -312,7 +321,7 @@ export const EXAMS: Exam[] = [
     description:
       'Hermods erbjuder prövning i Matematik 2b på kontrakt åt anslutna kommuner, med skriftligt prov på plats i Liljeholmen.',
     tags: ['matematik', 'stockholm', 'hermods'],
-    verifiedAt: VERIFIED,
+    verifiedAt: AUTUMN_VERIFIED,
   },
   {
     id: 'nti-ma2b',
@@ -3193,6 +3202,108 @@ export const EXAMS: Exam[] = [
       'Arena Utbildning anordnar prövning för Solna vuxenutbildning. Anmälan görs per e-post med personnummer, kontaktuppgifter och vilken kurs prövningen gäller — glöm inte ange om kursen följer GY11 eller GY25.',
     tags: ['komvux', 'solna', 'stockholm'],
     verifiedAt: STHLM_LAN_VERIFIED,
+  },
+  // Jutus Vux — one of the providers Sollentuna and its neighbouring kommuner
+  // buy vuxenutbildning from. Verified against jutusvux.se/provningar 2026-08-11:
+  // 500 kr, free with a prior F from komvux, GY25 ämnesnivåer only, and the
+  // anmälan is a form on the page itself rather than a link onward. Jutus takes
+  // one application per person at a time and assigns a prövningsperiod on
+  // acceptance, so there is no published window to encode.
+  {
+    id: 'jutus-vux-sollentuna-engelska-niva-2',
+    schoolName: 'Jutus Vux Sollentuna',
+    provider: 'Jutus Vux',
+    subject: 'Engelska',
+    course: 'Engelska nivå 2 (GY25)',
+    courseCode: 'GY25-ämnesnivå (kod meddelas vid antagning)',
+    level: 'Komvux',
+    city: 'Sollentuna',
+    region: 'Stockholm',
+    address: 'Häggviksvägen 2 A, 191 50 Sollentuna',
+    lat: 59.4466,
+    lng: 17.9402,
+    price: 500,
+    priceNote:
+      FREE_IF_PRIOR_F + ' Anmälan blir bindande först när du fått en plats bekräftad via e-post.',
+    nextPeriod: {
+      label:
+        'Jutus Vux publicerar inga fasta prövningsperioder. Du anmäler dig via formuläret, och när du fått en plats tilldelas du en prövningsperiod med start- och slutdatum samt ett bokat slutprov i skolans lokaler i Häggvik.',
+      confirmed: false,
+    },
+    components: COMPONENTS_ENGELSKA,
+    studyTips: TIPS_ENGELSKA,
+    // The booking form is embedded on the page — no onward link to follow.
+    registration: { kind: 'form' },
+    registrationUrl: 'https://jutusvux.se/provningar/',
+    infoUrl: 'https://jutusvux.se/',
+    description:
+      'Jutus Vux tar emot prövningar för dig som är folkbokförd i Danderyd, Lidingö, Sigtuna, Sollentuna, Solna, Täby, Upplands Väsby, Vallentuna, Vaxholm eller Österåker. Prövningen omfattar ett skriftligt prov med läs- och hörförståelse samt en muntlig del, och görs enbart på ämnesnivå enligt GY25. Du får bara ha en ansökan igång åt gången.',
+    tags: ['engelska', 'sollentuna', 'stockholm', 'jutus'],
+    verifiedAt: AUTUMN_VERIFIED,
+  },
+  {
+    id: 'jutus-vux-sollentuna-svenska-niva-1',
+    schoolName: 'Jutus Vux Sollentuna',
+    provider: 'Jutus Vux',
+    subject: 'Svenska',
+    course: 'Svenska nivå 1 (GY25)',
+    courseCode: 'GY25-ämnesnivå (kod meddelas vid antagning)',
+    level: 'Komvux',
+    city: 'Sollentuna',
+    region: 'Stockholm',
+    address: 'Häggviksvägen 2 A, 191 50 Sollentuna',
+    lat: 59.4466,
+    lng: 17.9402,
+    price: 500,
+    priceNote:
+      FREE_IF_PRIOR_F + ' Anmälan blir bindande först när du fått en plats bekräftad via e-post.',
+    nextPeriod: {
+      label:
+        'Jutus Vux publicerar inga fasta prövningsperioder. Du anmäler dig via formuläret, och när du fått en plats tilldelas du en prövningsperiod med start- och slutdatum samt ett bokat slutprov i skolans lokaler i Häggvik.',
+      confirmed: false,
+    },
+    components: COMPONENTS_SVENSKA,
+    studyTips: TIPS_SVENSKA,
+    // The booking form is embedded on the page — no onward link to follow.
+    registration: { kind: 'form' },
+    registrationUrl: 'https://jutusvux.se/provningar/',
+    infoUrl: 'https://jutusvux.se/',
+    description:
+      'Jutus Vux tar emot prövningar för dig som är folkbokförd i Danderyd, Lidingö, Sigtuna, Sollentuna, Solna, Täby, Upplands Väsby, Vallentuna, Vaxholm eller Österåker. Prövningen omfattar ett skriftligt prov med läs- och hörförståelse samt en muntlig del, och görs enbart på ämnesnivå enligt GY25. Du får bara ha en ansökan igång åt gången.',
+    tags: ['svenska', 'sollentuna', 'stockholm', 'jutus'],
+    verifiedAt: AUTUMN_VERIFIED,
+  },
+  {
+    id: 'jutus-vux-sollentuna-svenska-som-andrasprak-niva-2',
+    schoolName: 'Jutus Vux Sollentuna',
+    provider: 'Jutus Vux',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk nivå 2 (GY25)',
+    courseCode: 'GY25-ämnesnivå (kod meddelas vid antagning)',
+    level: 'Komvux',
+    city: 'Sollentuna',
+    region: 'Stockholm',
+    address: 'Häggviksvägen 2 A, 191 50 Sollentuna',
+    lat: 59.4466,
+    lng: 17.9402,
+    price: 500,
+    priceNote:
+      FREE_IF_PRIOR_F + ' Anmälan blir bindande först när du fått en plats bekräftad via e-post.',
+    nextPeriod: {
+      label:
+        'Jutus Vux publicerar inga fasta prövningsperioder. Du anmäler dig via formuläret, och när du fått en plats tilldelas du en prövningsperiod med start- och slutdatum samt ett bokat slutprov i skolans lokaler i Häggvik.',
+      confirmed: false,
+    },
+    components: COMPONENTS_SVENSKA,
+    studyTips: TIPS_SVENSKA,
+    // The booking form is embedded on the page — no onward link to follow.
+    registration: { kind: 'form' },
+    registrationUrl: 'https://jutusvux.se/provningar/',
+    infoUrl: 'https://jutusvux.se/',
+    description:
+      'Jutus Vux tar emot prövningar för dig som är folkbokförd i Danderyd, Lidingö, Sigtuna, Sollentuna, Solna, Täby, Upplands Väsby, Vallentuna, Vaxholm eller Österåker. Prövningen omfattar ett skriftligt prov med läs- och hörförståelse samt en muntlig del, och görs enbart på ämnesnivå enligt GY25. Du får bara ha en ansökan igång åt gången.',
+    tags: ['svenska-som-andrasprak', 'sollentuna', 'stockholm', 'jutus'],
+    verifiedAt: AUTUMN_VERIFIED,
   },
 ];
 

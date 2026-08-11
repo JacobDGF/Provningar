@@ -83,6 +83,35 @@ body {
   letter-spacing: -0.015em;
 }
 
+/* Keyboard focus.
+   Nearly every control here is styled with `outline-none`, which on its own
+   leaves a keyboard user with no idea where they are — the app was navigable
+   but invisible to anyone not using a pointer. `:focus-visible` puts the ring
+   back for keyboard and assistive-tech users only, so tapping a card on a
+   phone still doesn't flash an outline. */
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* On the brand-teal profile header, a teal ring would disappear into it. */
+.bg-gradient-to-b :where(a, button, input):focus-visible {
+  outline-color: #ffffff;
+}
+
+/* Selection in the brand pair rather than the browser's blue. */
+::selection {
+  background: var(--color-brand-100);
+  color: var(--color-ink);
+}
+
+/* Swedish text sets long words (anmälningsperiod, prövningstillfällen); let
+   headings and body wrap rather than push a card into a horizontal scroll. */
+body {
+  overflow-wrap: break-word;
+}
+
 /* Hide scrollbars but keep functionality */
 .scrollbar-hide {
   -ms-overflow-style: none;

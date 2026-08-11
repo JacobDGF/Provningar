@@ -34,6 +34,9 @@ interface AppState {
   /** Only listings whose link lands on the booking itself, not a page about it. */
   filterDirectOnly: boolean;
   setFilterDirectOnly: (v: boolean) => void;
+  /** Only listings whose application window is open today. */
+  filterOpenOnly: boolean;
+  setFilterOpenOnly: (v: boolean) => void;
 
   // Location / GPS
   userLocation: { lat: number; lng: number } | null;
@@ -124,6 +127,8 @@ export const useStore = create<AppState>()(
       setFilterSortBy: (s) => set({ filterSortBy: s }),
       filterDirectOnly: false,
       setFilterDirectOnly: (v) => set({ filterDirectOnly: v }),
+      filterOpenOnly: false,
+      setFilterOpenOnly: (v) => set({ filterOpenOnly: v }),
 
       userLocation: null,
       locationStatus: 'idle',

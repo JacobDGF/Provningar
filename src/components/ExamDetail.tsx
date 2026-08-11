@@ -9,7 +9,6 @@ import {
   ExternalLink,
   Bookmark,
   BookmarkCheck,
-  ChevronRight,
   ShieldCheck,
   Navigation,
   Info,
@@ -384,11 +383,12 @@ export function ExamDetail() {
             href={links.booking}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-bold py-4 rounded-md text-base shadow-lg shadow-brand-200 active:scale-98 transition-transform"
+            className="w-full flex items-center justify-center gap-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold py-4 px-4 rounded-md text-base leading-snug text-center shadow-lg shadow-brand-200 active:scale-98 transition-transform"
           >
-            <ExternalLink size={18} />
-            {flow.ctaLabel} hos {exam.provider}
-            <ChevronRight size={18} />
+            <ExternalLink size={18} className="flex-shrink-0" />
+            <span>
+              {flow.ctaLabel} hos {exam.provider}
+            </span>
           </a>
           {links.hasAlternative && (
             <>
@@ -404,9 +404,8 @@ export function ExamDetail() {
                   : 'Läs mer på skolans egen sida'}
               </a>
               <p className="text-ink-faint text-[11px] text-center leading-relaxed">
-                Översta knappen tar dig{' '}
-                {flow.direct ? 'direkt till bokningen' : 'så nära anmälan vi kommer'} ·{' '}
-                {links.siteLabel} om du hellre letar dig fram själv
+                {flow.direct ? 'Direkt till bokningen' : 'Så nära anmälan vi kommer'} — eller{' '}
+                {links.siteLabel}, om du hellre gör allt själv.
               </p>
             </>
           )}

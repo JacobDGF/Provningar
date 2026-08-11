@@ -46,7 +46,11 @@ const STEPS = [
     title: 'Jämför tillfällen',
     body: 'Se riktiga datum, ämne och anordnare samlat på en plats — aldrig gissade.',
   },
-  { n: '03', title: 'Anmäl dig', body: 'Gå vidare direkt till anordnarens egen anmälan.' },
+  {
+    n: '03',
+    title: 'Anmäl dig',
+    body: 'Gå direkt till bokningen — eller till skolans egen sida, om du hellre gör allt själv.',
+  },
 ];
 
 export function Discover() {
@@ -58,6 +62,11 @@ export function Discover() {
     filterRegion,
     filterSortBy,
     filterDirectOnly,
+    filterOpenOnly,
+    setFilterOpenOnly,
+    setFilterSubject,
+    setFilterRegion,
+    setFilterDirectOnly,
     userLocation,
     locationStatus,
     requestLocation,
@@ -67,7 +76,15 @@ export function Discover() {
   const [view, setView] = useState<'list' | 'map'>('list');
   const tick = useMinuteTick();
 
-  const hasActiveFilters = !!(filterSubject || filterRegion || filterDirectOnly);
+  const hasActiveFilters = !!(filterSubject || filterRegion || filterDirectOnly || filterOpenOnly);
+
+  const clearFilters = () => {
+    setFilterSubject('');
+    setFilterRegion('');
+    setFilterDirectOnly(false);
+    setFilterOpenOnly(false);
+    setSearchQuery('');
+  };
 
   const filtered = useMemo(() => {
     const result = exams.filter((e) => {
@@ -83,7 +100,8 @@ export function Discover() {
       const matchesSubject = !filterSubject || e.subject === filterSubject;
       const matchesRegion = !filterRegion || e.region === filterRegion;
       const matchesDirect = !filterDirectOnly || getRegistrationFlow(e).direct;
-      return matchesSearch && matchesSubject && matchesRegion && matchesDirect;
+      const matchesOpen = !filterOpenOnly || isOpenForRegistration(e);
+      return matchesSearch && matchesSubject && matchesRegion && matchesDirect && matchesOpen;
     });
 
     const periodDate = (e: (typeof result)[0]) =>
@@ -111,6 +129,7 @@ export function Discover() {
     }
 
     return result;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     exams,
     searchQuery,
@@ -118,6 +137,11 @@ export function Discover() {
     filterRegion,
     filterSortBy,
     filterDirectOnly,
+    filterOpenOnly,
+    setFilterOpenOnly,
+    setFilterSubject,
+    setFilterRegion,
+    setFilterDirectOnly,
     userLocation,
   ]);
 
@@ -201,7 +225,8 @@ export function Discover() {
               </h1>
               <p className="text-base lg:text-lg text-ink-soft max-w-[42ch] mb-6">
                 Sök, jämför och anmäl dig till {exams.length} verifierade prövningstillfällen i hela
-                landet. Samlat, uppdaterat — och alltid länkat direkt till anordnarens egen anmälan.
+                landet. Varje listning länkar både till själva bokningen och till skolans egen sida
+                — du väljer om du vill gå den snabba vägen eller göra allt själv.
               </p>
               <div className="flex items-center gap-2 max-w-[440px] mb-3">
                 <div className="flex-1 flex items-center gap-2 bg-sand rounded px-3 py-2.5 relative">
@@ -248,6 +273,27 @@ export function Discover() {
                 >
                   Alla ämnen
                 </button>
+                {stats.openNow > 0 && (
+                  <button
+                    onClick={() => setFilterOpenOnly(!filterOpenOnly)}
+                    aria-pressed={filterOpenOnly}
+                    className={`text-xs px-2.5 py-1 rounded-sm border transition-colors inline-flex items-center gap-1.5 ${
+                      filterOpenOnly
+                        ? 'bg-trust-500 text-white border-trust-500'
+                        : 'border-trust-100 bg-trust-50 text-trust-700 hover:bg-trust-100'
+                    }`}
+                  >
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span
+                        className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${filterOpenOnly ? 'bg-white' : 'bg-trust-500'}`}
+                      />
+                      <span
+                        className={`relative inline-flex rounded-full h-1.5 w-1.5 ${filterOpenOnly ? 'bg-white' : 'bg-trust-600'}`}
+                      />
+                    </span>
+                    Öppna nu ({stats.openNow})
+                  </button>
+                )}
                 {FEATURED_SUBJECTS.map((s) => (
                   <button
                     key={s}
@@ -359,6 +405,14 @@ export function Discover() {
                 <p className="text-ink-soft text-sm">
                   Prova att ändra dina filter eller söka på något annat.
                 </p>
+                {(hasActiveFilters || searchQuery) && (
+                  <button
+                    onClick={clearFilters}
+                    className="mt-4 inline-flex items-center gap-1.5 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold px-4 py-2.5 rounded transition-colors"
+                  >
+                    <X size={15} /> Rensa alla filter
+                  </button>
+                )}
               </div>
             ) : (
               <>
@@ -384,7 +438,12 @@ export function Discover() {
                   <TrendingUp size={15} className="text-brand-500" />
                   <span className="font-medium">{filtered.length} prövningar</span>
                   {hasActiveFilters && (
-                    <span className="text-brand-700 font-semibold">· Filter aktiva</span>
+                    <button
+                      onClick={clearFilters}
+                      className="text-brand-700 font-semibold hover:underline"
+                    >
+                      · Filter aktiva — rensa
+                    </button>
                   )}
                   {filterSortBy === 'distance' && userLocation && (
                     <span className="text-brand-700 font-semibold">· Närmast först</span>
