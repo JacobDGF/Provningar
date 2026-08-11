@@ -8,6 +8,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { useStore } from '../store/useStore';
+import { SchoolCover } from '../components/SchoolCover';
 
 function timeAgo(dateStr: string) {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -98,11 +99,7 @@ export function History() {
                         onClick={() => setShowingExamDetail(exam.id)}
                         className="w-full bg-surface border border-line rounded-md p-3 flex items-center gap-3 text-left active:scale-98 transition-transform"
                       >
-                        <img
-                          src={exam.schoolImage}
-                          alt=""
-                          className="w-14 h-14 rounded object-cover flex-shrink-0"
-                        />
+                        <SchoolCover exam={exam} className="w-14 h-14 rounded flex-shrink-0" />
                         <div className="flex-1 min-w-0">
                           <p className="font-bold text-ink text-sm truncate">{exam.course}</p>
                           <p className="text-xs text-ink-soft truncate flex items-center gap-1">

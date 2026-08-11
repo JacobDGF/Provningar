@@ -137,6 +137,15 @@ body {
   animation: sheet-up 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* Leaflet numbers its own panes and controls in the 400–1000 range, which is
+   far above our sheets and modals (z-50). Giving the map its own stacking
+   context keeps those numbers local, so zoom buttons and attribution stop
+   floating over an open filter or detail sheet. */
+.leaflet-container {
+  isolation: isolate;
+  z-index: 0;
+}
+
 /* Range input styling — brand teal */
 input[type='range'] {
   -webkit-appearance: none;

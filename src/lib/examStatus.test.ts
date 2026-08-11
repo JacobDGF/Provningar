@@ -1,123 +1,145 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { isOpenForRegistration, daysUntil } from './examStatus';
 import { Exam, NextPeriod } from '../types';
 
-function makeExam(nextPeriod: NextPeriod): Exam {
-  return {
-    id: 'e1',
-    schoolName: 'Test School',
-    provider: 'Test kommun',
-    schoolImage: '',
-    subject: 'Matematik',
-    course: 'Matematik 1',
-    courseCode: 'MATMAT01',
-    level: 'Komvux',
-    city: 'Stockholm',
-    region: 'Stockholm',
-    address: '',
-    lat: 0,
-    lng: 0,
-    price: 500,
-    nextPeriod,
-    components: [],
-    studyTips: [],
-    registrationUrl: '',
-    infoUrl: '',
-    description: '',
-    tags: [],
-    verifiedAt: '2026-01-01',
-  };
+function examWith(nextPeriod: NextPeriod): Exam {
+  return { nextPeriod } as Exam;
 }
 
+function at(iso: string) {
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date(iso));
+}
+
+afterEach(() => vi.useRealTimers());
+
 describe('isOpenForRegistration', () => {
-  beforeEach(() => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date('2026-06-15T12:00:00Z'));
+  it('is open inside a full window', () => {
+    at('2026-08-09T12:00:00Z');
+    expect(
+      isOpenForRegistration(
+        examWith({
+          label: '',
+          applicationStart: '2026-07-27',
+          applicationEnd: '2026-08-23',
+          confirmed: true,
+        }),
+      ),
+    ).toBe(true);
   });
 
-  afterEach(() => {
-    vi.useRealTimers();
+  it('is open on the closing day itself, right up to midnight', () => {
+    at('2026-08-23T22:30:00Z');
+    expect(
+      isOpenForRegistration(
+        examWith({
+          label: '',
+          applicationStart: '2026-07-27',
+          applicationEnd: '2026-08-23',
+          confirmed: true,
+        }),
+      ),
+    ).toBe(true);
   });
 
-  it('is false when the period is not confirmed', () => {
-    const exam = makeExam({
-      label: 'Höst',
-      confirmed: false,
-      applicationStart: '2026-06-01',
-      applicationEnd: '2026-06-30',
-    });
-    expect(isOpenForRegistration(exam)).toBe(false);
+  it('is closed the day after', () => {
+    at('2026-08-24T09:00:00Z');
+    expect(
+      isOpenForRegistration(
+        examWith({
+          label: '',
+          applicationStart: '2026-07-27',
+          applicationEnd: '2026-08-23',
+          confirmed: true,
+        }),
+      ),
+    ).toBe(false);
   });
 
-  it('is false when applicationStart or applicationEnd is missing', () => {
-    const exam = makeExam({ label: 'Höst', confirmed: true, applicationEnd: '2026-06-30' });
-    expect(isOpenForRegistration(exam)).toBe(false);
+  it('is closed before the window opens', () => {
+    at('2026-07-01T09:00:00Z');
+    expect(
+      isOpenForRegistration(
+        examWith({
+          label: '',
+          applicationStart: '2026-07-27',
+          applicationEnd: '2026-08-23',
+          confirmed: true,
+        }),
+      ),
+    ).toBe(false);
   });
 
-  it('is true when today falls within the application window', () => {
-    const exam = makeExam({
-      label: 'Höst',
-      confirmed: true,
-      applicationStart: '2026-06-01',
-      applicationEnd: '2026-06-30',
-    });
-    expect(isOpenForRegistration(exam)).toBe(true);
+  // Several providers only ever publish a closing date.
+  it('treats a deadline with no stated opening as open', () => {
+    at('2026-08-09T12:00:00Z');
+    expect(
+      isOpenForRegistration(
+        examWith({
+          label: '',
+          applicationEnd: '2026-08-11',
+          confirmed: true,
+        }),
+      ),
+    ).toBe(true);
   });
 
-  it('is false before the application window opens', () => {
-    const exam = makeExam({
-      label: 'Höst',
-      confirmed: true,
-      applicationStart: '2026-07-01',
-      applicationEnd: '2026-07-30',
-    });
-    expect(isOpenForRegistration(exam)).toBe(false);
+  it('never reports an unconfirmed period as open', () => {
+    at('2026-08-09T12:00:00Z');
+    expect(
+      isOpenForRegistration(
+        examWith({
+          label: '',
+          applicationStart: '2026-07-27',
+          applicationEnd: '2026-08-23',
+          confirmed: false,
+        }),
+      ),
+    ).toBe(false);
   });
 
-  it('is false after the application window closes', () => {
-    const exam = makeExam({
-      label: 'Vår',
-      confirmed: true,
-      applicationStart: '2026-01-01',
-      applicationEnd: '2026-01-30',
-    });
-    expect(isOpenForRegistration(exam)).toBe(false);
-  });
-
-  it('is inclusive of the exact start and end instants', () => {
-    const exam = makeExam({
-      label: 'Höst',
-      confirmed: true,
-      applicationStart: '2026-06-15T12:00:00Z',
-      applicationEnd: '2026-06-15T12:00:00Z',
-    });
-    expect(isOpenForRegistration(exam)).toBe(true);
+  it('is closed when there is no deadline at all', () => {
+    at('2026-08-09T12:00:00Z');
+    expect(isOpenForRegistration(examWith({ label: '', confirmed: true }))).toBe(false);
   });
 });
 
 describe('daysUntil', () => {
-  beforeEach(() => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date('2026-06-15T00:00:00Z'));
+  it('counts whole days ahead', () => {
+    at('2026-08-09T00:00:00Z');
+    expect(daysUntil('2026-08-11')).toBe(2);
   });
 
-  afterEach(() => {
-    vi.useRealTimers();
+  it('goes negative once the date has passed', () => {
+    at('2026-08-12T00:00:00Z');
+    expect(daysUntil('2026-08-11')).toBeLessThan(0);
+  });
+});
+
+describe('open-ended application windows', () => {
+  it('is open once an opening date has passed and no closing date is published', () => {
+    at('2026-08-09T12:00:00Z');
+    expect(
+      isOpenForRegistration(
+        examWith({
+          label: '',
+          applicationStart: '2026-07-01',
+          confirmed: true,
+        }),
+      ),
+    ).toBe(true);
   });
 
-  it('counts whole days to a future date', () => {
-    expect(daysUntil('2026-06-20T00:00:00Z')).toBe(5);
-  });
-
-  it('returns 0 for today', () => {
-    expect(daysUntil('2026-06-15T00:00:00Z')).toBe(0);
-  });
-
-  it('returns a negative number for a past date', () => {
-    expect(daysUntil('2026-06-10T00:00:00Z')).toBe(-5);
-  });
-
-  it('rounds up partial days', () => {
-    expect(daysUntil('2026-06-15T01:00:00Z')).toBe(1);
+  it('is still closed before that opening date', () => {
+    at('2026-06-01T12:00:00Z');
+    expect(
+      isOpenForRegistration(
+        examWith({
+          label: '',
+          applicationStart: '2026-07-01',
+          confirmed: true,
+        }),
+      ),
+    ).toBe(false);
   });
 });

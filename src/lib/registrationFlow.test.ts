@@ -1,0 +1,55 @@
+import { describe, it, expect } from 'vitest';
+import { getRegistrationFlow } from './registrationFlow';
+import { Exam, RegistrationKind } from '../types';
+
+function examWith(registrationUrl: string, registration?: Exam['registration']): Exam {
+  return { registrationUrl, registration } as Exam;
+}
+
+const CASES: Array<[string, RegistrationKind]> = [
+  ['https://form.typeform.com/to/Nitj2W7p', 'form'],
+  ['https://ansokan-provning.nti.se/', 'form'],
+  [
+    'https://vuxenutbildningen.karlshamn.se/wp-content/uploads/2026/04/anmalan_till_provning.pdf',
+    'pdf',
+  ],
+  ['https://shop.iris.se/produkt/provning-for-betyg-i-flemingsberg/', 'webshop'],
+  ['https://huddinge.alvis.se/provning/amnesomrade', 'coursepicker'],
+  ['https://provningsenheten.alvis.se/hittakurser', 'coursepicker'],
+  [
+    'https://education.service.tieto.com/AdultApplication.Student/#/search-offering/kv?domain=molndaledu',
+    'coursepicker',
+  ],
+  ['https://norrkoping.alvis.se/login', 'eservice'],
+  ['https://sjalvservice.malmo.se/oversikt/overview/926', 'eservice'],
+  ['https://boden.enamnd.se/oversikt/overview/3858', 'eservice'],
+  ['https://etjanst.motala.se/provning', 'eservice'],
+  ['https://www.uppsala.se/skola-forskola-och-komvux/komvux/studera-pa-komvux/provning/', 'page'],
+];
+
+describe('getRegistrationFlow', () => {
+  it.each(CASES)('classifies %s as %s', (url, kind) => {
+    expect(getRegistrationFlow(examWith(url)).kind).toBe(kind);
+  });
+
+  it('only calls a flow direct when the link lands on the booking itself', () => {
+    expect(getRegistrationFlow(examWith('https://shop.iris.se/produkt/x/')).direct).toBe(true);
+    expect(
+      getRegistrationFlow(examWith('https://example.se/vuxenutbildning/provning/')).direct,
+    ).toBe(false);
+  });
+
+  it('lets a listing override the derived flow', () => {
+    const flow = getRegistrationFlow(
+      examWith('https://karlskoga.se/vuxenutbildning/provning.html', { kind: 'email' }),
+    );
+    expect(flow.kind).toBe('email');
+    expect(flow.steps.join(' ')).toMatch(/[Mm]ejla/);
+  });
+
+  it('falls back to the cautious flow on a malformed URL', () => {
+    const flow = getRegistrationFlow(examWith('not a url'));
+    expect(flow.kind).toBe('page');
+    expect(flow.direct).toBe(false);
+  });
+});

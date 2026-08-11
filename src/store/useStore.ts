@@ -30,6 +30,9 @@ interface AppState {
   setFilterRegion: (r: string) => void;
   filterSortBy: 'date' | 'name' | 'distance';
   setFilterSortBy: (s: 'date' | 'name' | 'distance') => void;
+  /** Only listings whose link lands on the booking itself, not a page about it. */
+  filterDirectOnly: boolean;
+  setFilterDirectOnly: (v: boolean) => void;
 
   // Location / GPS
   userLocation: { lat: number; lng: number } | null;
@@ -114,6 +117,8 @@ export const useStore = create<AppState>()(
       setFilterRegion: (r) => set({ filterRegion: r }),
       filterSortBy: 'date',
       setFilterSortBy: (s) => set({ filterSortBy: s }),
+      filterDirectOnly: false,
+      setFilterDirectOnly: (v) => set({ filterDirectOnly: v }),
 
       userLocation: null,
       locationStatus: 'idle',

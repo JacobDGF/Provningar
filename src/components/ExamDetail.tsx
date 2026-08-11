@@ -14,10 +14,13 @@ import {
   Navigation,
   Info,
   Map,
+  ListChecks,
 } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
 import { isOpenForRegistration, daysUntil } from '../lib/examStatus';
+import { getRegistrationFlow } from '../lib/registrationFlow';
+import { SchoolCover } from './SchoolCover';
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('sv-SE', {
@@ -55,6 +58,7 @@ export function ExamDetail() {
   const deadlineDays = deadlineDate ? daysUntil(deadlineDate) : null;
   const urgent = deadlineDays !== null && deadlineDays <= 7 && deadlineDays >= 0;
   const openNow = isOpenForRegistration(exam);
+  const flow = getRegistrationFlow(exam);
 
   const distanceKm = userLocation
     ? haversineDistanceKm(userLocation.lat, userLocation.lng, exam.lat, exam.lng)
@@ -82,7 +86,7 @@ export function ExamDetail() {
       >
         {/* Image header */}
         <div className="relative flex-shrink-0">
-          <img src={exam.schoolImage} alt={exam.schoolName} className="w-full h-52 object-cover" />
+          <SchoolCover exam={exam} className="w-full h-52" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
           <button
             onClick={() => setShowingExamDetail(null)}
@@ -112,7 +116,7 @@ export function ExamDetail() {
         </div>
 
         {/* Scroll content */}
-        <div className="overflow-y-auto flex-1 pb-28">
+        <div className="overflow-y-auto flex-1">
           <div className="p-4 space-y-4">
             {/* Trust banner */}
             <div className="bg-trust-50 border border-trust-100 rounded p-3 flex items-center gap-2">
@@ -166,14 +170,30 @@ export function ExamDetail() {
                       urgent={urgent}
                     />
                   )}
+                  {!nextPeriod.applicationStart && nextPeriod.applicationEnd && (
+                    <InfoRow
+                      label="Sista anmälningsdag"
+                      value={formatDate(nextPeriod.applicationEnd)}
+                      urgent={urgent}
+                    />
+                  )}
                   {nextPeriod.examWindowStart && nextPeriod.examWindowEnd && (
                     <InfoRow
                       label="Provperiod"
-                      value={`${formatDate(nextPeriod.examWindowStart)} – ${formatDate(nextPeriod.examWindowEnd)}`}
+                      value={
+                        nextPeriod.examWindowStart === nextPeriod.examWindowEnd
+                          ? formatDate(nextPeriod.examWindowStart)
+                          : `${formatDate(nextPeriod.examWindowStart)} – ${formatDate(nextPeriod.examWindowEnd)}`
+                      }
                     />
                   )}
-                  {!nextPeriod.applicationStart && !nextPeriod.examWindowStart && (
+                  {!nextPeriod.applicationEnd && !nextPeriod.examWindowStart && (
                     <InfoRow label="Anmälan" value={nextPeriod.label} />
+                  )}
+                  {(nextPeriod.applicationEnd || nextPeriod.examWindowStart) && (
+                    <p className="text-ink-soft text-xs leading-relaxed pt-1 border-t border-line">
+                      {nextPeriod.label}
+                    </p>
                   )}
                 </div>
               ) : (
@@ -196,6 +216,34 @@ export function ExamDetail() {
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* How you actually book — what's left after tapping the button */}
+            <div className="bg-surface rounded-md p-4 border border-line">
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <h3 className="font-bold text-ink flex items-center gap-2">
+                  <ListChecks size={16} className="text-brand-600" />
+                  Så anmäler du dig
+                </h3>
+                <span
+                  className={`text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${
+                    flow.direct ? 'bg-trust-50 text-trust-700' : 'bg-sand text-ink-soft'
+                  }`}
+                >
+                  {flow.steps.length} steg kvar
+                </span>
+              </div>
+              <p className="text-ink-soft text-xs leading-relaxed mb-3">{flow.landing}</p>
+              <ol className="space-y-2">
+                {flow.steps.map((step, i) => (
+                  <li key={i} className="flex gap-2.5">
+                    <span className="w-5 h-5 bg-brand-50 text-brand-600 rounded-full text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                      {i + 1}
+                    </span>
+                    <p className="text-ink text-sm leading-relaxed">{step}</p>
+                  </li>
+                ))}
+              </ol>
             </div>
 
             {/* Practical info */}
@@ -322,8 +370,10 @@ export function ExamDetail() {
           </div>
         </div>
 
-        {/* CTA */}
-        <div className="absolute bottom-0 left-0 right-0 bg-surface border-t border-line p-4 space-y-2">
+        {/* CTA — a flex sibling, not absolutely positioned: an `absolute` bar
+            here resolves against the fixed backdrop, not the sheet, and gets
+            clipped away entirely by the sheet's overflow on desktop. */}
+        <div className="flex-shrink-0 bg-surface border-t border-line p-4 space-y-2 safe-bottom">
           <a
             href={exam.registrationUrl}
             target="_blank"
@@ -331,7 +381,7 @@ export function ExamDetail() {
             className="w-full flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-bold py-4 rounded-md text-base shadow-lg shadow-brand-200 active:scale-98 transition-transform"
           >
             <ExternalLink size={18} />
-            Gå till anmälan hos {exam.provider}
+            {flow.ctaLabel} hos {exam.provider}
             <ChevronRight size={18} />
           </a>
           {exam.infoUrl !== exam.registrationUrl && (
