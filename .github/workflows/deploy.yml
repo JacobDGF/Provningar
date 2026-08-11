@@ -89,7 +89,17 @@ jobs:
           git fetch origin gh-pages
           git worktree add ../gh-pages-deploy origin/gh-pages
 
-          rsync -a --delete --exclude .git dist/ ../gh-pages-deploy/
+          # --checksum, not just -a: index.html and version.json are the only
+          # two output files with a name that's stable across builds, and both
+          # happen to be the same byte size every build (the hash strings and
+          # the 13-digit timestamp never change length). Without --checksum,
+          # rsync's default quick-check (size + mtime, not content) treats
+          # same-size files with close-enough mtimes as unchanged and skips
+          # re-copying them — silently deploying a new JS/CSS bundle under a
+          # stale index.html that still points at the previous one. Confirmed
+          # live: this shipped a blank page (404 on the referenced bundle) for
+          # every deploy since 2026-08-08 while every other file updated fine.
+          rsync -a --checksum --delete --exclude .git dist/ ../gh-pages-deploy/
 
           cd ../gh-pages-deploy
           git add -A
