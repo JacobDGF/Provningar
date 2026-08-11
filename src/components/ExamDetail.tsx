@@ -1,18 +1,51 @@
-import { X, MapPin, Calendar, CreditCard, Clock, BookOpen, Lightbulb, ExternalLink, Bookmark, BookmarkCheck, ChevronRight, ShieldCheck, Navigation, Info, Map } from 'lucide-react';
+import {
+  X,
+  MapPin,
+  Calendar,
+  CreditCard,
+  Clock,
+  BookOpen,
+  Lightbulb,
+  ExternalLink,
+  Bookmark,
+  BookmarkCheck,
+  ChevronRight,
+  ShieldCheck,
+  Navigation,
+  Info,
+  Map,
+} from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
 import { isOpenForRegistration, daysUntil } from '../lib/examStatus';
 
 function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  return new Date(dateStr).toLocaleDateString('sv-SE', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
 }
 function formatDateShort(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('sv-SE', { day: 'numeric', month: 'long', year: 'numeric' });
+  return new Date(dateStr).toLocaleDateString('sv-SE', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
 }
 
 export function ExamDetail() {
-  const { showingExamDetail, setShowingExamDetail, exams, isExamSaved, saveExam, unsaveExam, userLocation } = useStore();
-  const exam = exams.find(e => e.id === showingExamDetail);
+  const {
+    showingExamDetail,
+    setShowingExamDetail,
+    exams,
+    isExamSaved,
+    saveExam,
+    unsaveExam,
+    userLocation,
+  } = useStore();
+  const exam = exams.find((e) => e.id === showingExamDetail);
 
   if (!exam) return null;
 
@@ -35,10 +68,17 @@ export function ExamDetail() {
   const gmapsDir = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-end lg:items-center lg:justify-center" onClick={() => setShowingExamDetail(null)}>
+    // Backdrop closes on click as a mouse convenience; the sheet has its own
+    // keyboard-reachable close button below, so this isn't the only way out.
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
+    <div
+      className="fixed inset-0 bg-black/50 z-50 flex items-end lg:items-center lg:justify-center"
+      onClick={() => setShowingExamDetail(null)}
+    >
+      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events -- stops the backdrop's close-on-click from firing when interacting with the sheet itself */}
       <div
         className="bg-cream w-full lg:max-w-2xl max-h-[92vh] lg:max-h-[88vh] rounded-t-lg lg:rounded-lg overflow-hidden flex flex-col animate-sheet-up"
-        onClick={e => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Image header */}
         <div className="relative flex-shrink-0">
@@ -52,17 +92,20 @@ export function ExamDetail() {
             <X size={18} className="text-white" />
           </button>
           <button
-            onClick={() => saved ? unsaveExam(exam.id) : saveExam(exam.id)}
+            onClick={() => (saved ? unsaveExam(exam.id) : saveExam(exam.id))}
             aria-label={saved ? 'Ta bort från sparade' : 'Spara prövning'}
             className="absolute top-4 right-16 w-9 h-9 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center active:scale-90"
           >
-            {saved
-              ? <BookmarkCheck size={18} className="text-brand-300" />
-              : <Bookmark size={18} className="text-white" />
-            }
+            {saved ? (
+              <BookmarkCheck size={18} className="text-brand-300" />
+            ) : (
+              <Bookmark size={18} className="text-white" />
+            )}
           </button>
           <div className="absolute bottom-4 left-4 right-4">
-            <p className="text-white/80 text-sm">{exam.schoolName} · {exam.provider}</p>
+            <p className="text-white/80 text-sm">
+              {exam.schoolName} · {exam.provider}
+            </p>
             <h2 className="text-white text-2xl font-bold font-display">{exam.course}</h2>
             <p className="text-brand-200 text-sm">{exam.courseCode}</p>
           </div>
@@ -71,12 +114,12 @@ export function ExamDetail() {
         {/* Scroll content */}
         <div className="overflow-y-auto flex-1 pb-28">
           <div className="p-4 space-y-4">
-
             {/* Trust banner */}
             <div className="bg-trust-50 border border-trust-100 rounded p-3 flex items-center gap-2">
               <ShieldCheck size={18} className="text-trust-600 flex-shrink-0" />
               <p className="text-trust-700 text-xs">
-                Uppgifterna kontrollerade mot {exam.provider}s webbplats {formatDateShort(exam.verifiedAt)}.
+                Uppgifterna kontrollerade mot {exam.provider}s webbplats{' '}
+                {formatDateShort(exam.verifiedAt)}.
               </p>
             </div>
 
@@ -96,7 +139,9 @@ export function ExamDetail() {
               <div className="bg-red-50 border border-red-200 rounded p-3 flex items-center gap-2">
                 <Clock size={18} className="text-red-500 flex-shrink-0" />
                 <p className="text-red-700 text-sm font-semibold">
-                  {deadlineDays === 0 ? 'Sista anmälningsdagen idag!' : `Bara ${deadlineDays} dagar kvar att anmäla sig!`}
+                  {deadlineDays === 0
+                    ? 'Sista anmälningsdagen idag!'
+                    : `Bara ${deadlineDays} dagar kvar att anmäla sig!`}
                 </p>
               </div>
             )}
@@ -115,10 +160,17 @@ export function ExamDetail() {
               {nextPeriod.confirmed ? (
                 <div className="space-y-2.5">
                   {nextPeriod.applicationStart && nextPeriod.applicationEnd && (
-                    <InfoRow label="Ansökningsperiod" value={`${formatDate(nextPeriod.applicationStart)} – ${formatDate(nextPeriod.applicationEnd)}`} urgent={urgent} />
+                    <InfoRow
+                      label="Ansökningsperiod"
+                      value={`${formatDate(nextPeriod.applicationStart)} – ${formatDate(nextPeriod.applicationEnd)}`}
+                      urgent={urgent}
+                    />
                   )}
                   {nextPeriod.examWindowStart && nextPeriod.examWindowEnd && (
-                    <InfoRow label="Provperiod" value={`${formatDate(nextPeriod.examWindowStart)} – ${formatDate(nextPeriod.examWindowEnd)}`} />
+                    <InfoRow
+                      label="Provperiod"
+                      value={`${formatDate(nextPeriod.examWindowStart)} – ${formatDate(nextPeriod.examWindowEnd)}`}
+                    />
                   )}
                   {!nextPeriod.applicationStart && !nextPeriod.examWindowStart && (
                     <InfoRow label="Anmälan" value={nextPeriod.label} />
@@ -130,7 +182,8 @@ export function ExamDetail() {
                   <div>
                     <p className="text-ink text-sm font-semibold">{nextPeriod.label}</p>
                     <p className="text-ink-soft text-xs mt-1">
-                      Vi visar aldrig gissade datum. Se aktuella anmälningstider hos {exam.provider} innan du planerar din prövning.
+                      Vi visar aldrig gissade datum. Se aktuella anmälningstider hos {exam.provider}{' '}
+                      innan du planerar din prövning.
                     </p>
                     <a
                       href={exam.infoUrl}
@@ -152,12 +205,29 @@ export function ExamDetail() {
                 Praktisk info
               </h3>
               <div className="space-y-2.5">
-                <InfoRow label="Pris" value={exam.priceNote ? `${exam.price} kr · ${exam.priceNote}` : `${exam.price} kr`} />
-                <InfoRow label="Anordnare" value={exam.provider} icon={<ShieldCheck size={14} className="text-ink-faint" />} />
-                <InfoRow label="Ort" value={exam.city} icon={<MapPin size={14} className="text-ink-faint" />} />
+                <InfoRow
+                  label="Pris"
+                  value={
+                    exam.priceNote ? `${exam.price} kr · ${exam.priceNote}` : `${exam.price} kr`
+                  }
+                />
+                <InfoRow
+                  label="Anordnare"
+                  value={exam.provider}
+                  icon={<ShieldCheck size={14} className="text-ink-faint" />}
+                />
+                <InfoRow
+                  label="Ort"
+                  value={exam.city}
+                  icon={<MapPin size={14} className="text-ink-faint" />}
+                />
                 <InfoRow label="Adress" value={exam.address} />
                 {distanceKm !== null && (
-                  <InfoRow label="Avstånd från dig" value={formatDistanceKm(distanceKm)} icon={<Navigation size={14} className="text-ink-faint" />} />
+                  <InfoRow
+                    label="Avstånd från dig"
+                    value={formatDistanceKm(distanceKm)}
+                    icon={<Navigation size={14} className="text-ink-faint" />}
+                  />
                 )}
                 <InfoRow label="Region" value={exam.region} />
                 <InfoRow label="Nivå" value={exam.level} />
@@ -243,8 +313,10 @@ export function ExamDetail() {
 
             {/* Tags */}
             <div className="flex flex-wrap gap-2">
-              {exam.tags.map(tag => (
-                <span key={tag} className="bg-sand text-ink-soft text-xs px-3 py-1 rounded-full">#{tag}</span>
+              {exam.tags.map((tag) => (
+                <span key={tag} className="bg-sand text-ink-soft text-xs px-3 py-1 rounded-full">
+                  #{tag}
+                </span>
               ))}
             </div>
           </div>
@@ -278,14 +350,26 @@ export function ExamDetail() {
   );
 }
 
-function InfoRow({ label, value, urgent, icon }: { label: string; value: string; urgent?: boolean; icon?: React.ReactNode }) {
+function InfoRow({
+  label,
+  value,
+  urgent,
+  icon,
+}: {
+  label: string;
+  value: string;
+  urgent?: boolean;
+  icon?: React.ReactNode;
+}) {
   return (
     <div className="flex items-center justify-between gap-3">
       <span className="text-ink-soft text-sm flex items-center gap-1.5 flex-shrink-0">
         {icon}
         {label}
       </span>
-      <span className={`text-sm font-semibold text-right ${urgent ? 'text-red-600' : 'text-ink'}`}>{value}</span>
+      <span className={`text-sm font-semibold text-right ${urgent ? 'text-red-600' : 'text-ink'}`}>
+        {value}
+      </span>
     </div>
   );
 }

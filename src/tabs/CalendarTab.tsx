@@ -2,11 +2,28 @@ import { ChevronLeft, ChevronRight, Calendar, MapPin, Clock } from 'lucide-react
 import { useState, useMemo } from 'react';
 import { useStore } from '../store/useStore';
 
-const MONTHS = ['Januari', 'Februari', 'Mars', 'April', 'Maj', 'Juni', 'Juli', 'Augusti', 'September', 'Oktober', 'November', 'December'];
+const MONTHS = [
+  'Januari',
+  'Februari',
+  'Mars',
+  'April',
+  'Maj',
+  'Juni',
+  'Juli',
+  'Augusti',
+  'September',
+  'Oktober',
+  'November',
+  'December',
+];
 const WEEKDAYS = ['Mån', 'Tis', 'Ons', 'Tor', 'Fre', 'Lör', 'Sön'];
 
 function isSameDay(a: Date, b: Date) {
-  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
 }
 
 /** Calendar of the user's saved-exam dates. Header-less so it can be embedded
@@ -18,10 +35,10 @@ export function CalendarView() {
 
   const eventMap = useMemo(() => {
     const map: Record<string, string[]> = {};
-    savedExams.forEach(se => {
-      const exam = exams.find(e => e.id === se.examId);
+    savedExams.forEach((se) => {
+      const exam = exams.find((e) => e.id === se.examId);
       if (!exam || !exam.nextPeriod.confirmed) return;
-      [exam.nextPeriod.applicationEnd, exam.nextPeriod.examWindowStart].forEach(d => {
+      [exam.nextPeriod.applicationEnd, exam.nextPeriod.examWindowStart].forEach((d) => {
         if (!d) return;
         if (!map[d]) map[d] = [];
         if (!map[d].includes(se.examId)) map[d].push(se.examId);
@@ -51,8 +68,8 @@ export function CalendarView() {
     if (!selectedDay) return [];
     const key = `${selectedDay.getFullYear()}-${String(selectedDay.getMonth() + 1).padStart(2, '0')}-${String(selectedDay.getDate()).padStart(2, '0')}`;
     const ids = eventMap[key] || [];
-    return ids.map(id => {
-      const exam = exams.find(e => e.id === id)!;
+    return ids.map((id) => {
+      const exam = exams.find((e) => e.id === id)!;
       const isDeadline = exam.nextPeriod.applicationEnd === key;
       return { exam, isDeadline };
     });
@@ -76,11 +93,19 @@ export function CalendarView() {
           </div>
         </div>
         <div className="flex items-center gap-1">
-          <button onClick={prevMonth} className="w-8 h-8 bg-sand rounded-lg flex items-center justify-center active:scale-95">
+          <button
+            onClick={prevMonth}
+            className="w-8 h-8 bg-sand rounded-lg flex items-center justify-center active:scale-95"
+          >
             <ChevronLeft size={16} className="text-ink-soft" />
           </button>
-          <span className="text-sm font-semibold text-ink min-w-[100px] text-center">{MONTHS[month]} {year}</span>
-          <button onClick={nextMonth} className="w-8 h-8 bg-sand rounded-lg flex items-center justify-center active:scale-95">
+          <span className="text-sm font-semibold text-ink min-w-[100px] text-center">
+            {MONTHS[month]} {year}
+          </span>
+          <button
+            onClick={nextMonth}
+            className="w-8 h-8 bg-sand rounded-lg flex items-center justify-center active:scale-95"
+          >
             <ChevronRight size={16} className="text-ink-soft" />
           </button>
         </div>
@@ -89,8 +114,10 @@ export function CalendarView() {
       {/* Calendar grid */}
       <div className="bg-surface rounded-md overflow-hidden border border-line">
         <div className="grid grid-cols-7 border-b border-line">
-          {WEEKDAYS.map(d => (
-            <div key={d} className="text-center text-xs font-semibold text-ink-faint py-2">{d}</div>
+          {WEEKDAYS.map((d) => (
+            <div key={d} className="text-center text-xs font-semibold text-ink-faint py-2">
+              {d}
+            </div>
           ))}
         </div>
         <div className="grid grid-cols-7">
@@ -100,25 +127,41 @@ export function CalendarView() {
             const events = eventMap[key] || [];
             const isToday = isSameDay(date, today);
             const isSelected = selectedDay && isSameDay(date, selectedDay);
-            const hasDeadline = events.some(id => exams.find(e => e.id === id)?.nextPeriod.applicationEnd === key);
-            const hasExam = events.some(id => exams.find(e => e.id === id)?.nextPeriod.examWindowStart === key);
+            const hasDeadline = events.some(
+              (id) => exams.find((e) => e.id === id)?.nextPeriod.applicationEnd === key,
+            );
+            const hasExam = events.some(
+              (id) => exams.find((e) => e.id === id)?.nextPeriod.examWindowStart === key,
+            );
             return (
               <button
                 key={i}
-                onClick={() => setSelectedDay(isSameDay(date, selectedDay || new Date(0)) ? null : date)}
+                onClick={() =>
+                  setSelectedDay(isSameDay(date, selectedDay || new Date(0)) ? null : date)
+                }
                 className={`aspect-square flex flex-col items-center justify-center transition-colors relative ${
                   isSelected ? 'bg-brand-500' : isToday ? 'bg-brand-50' : ''
                 }`}
               >
-                <span className={`text-sm font-medium leading-none ${
-                  isSelected ? 'text-white' : isToday ? 'text-brand-600' : 'text-ink'
-                }`}>
+                <span
+                  className={`text-sm font-medium leading-none ${
+                    isSelected ? 'text-white' : isToday ? 'text-brand-600' : 'text-ink'
+                  }`}
+                >
                   {date.getDate()}
                 </span>
                 {events.length > 0 && (
                   <div className="flex gap-0.5 mt-0.5">
-                    {hasDeadline && <div className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white/80' : 'bg-red-500'}`} />}
-                    {hasExam && <div className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white/80' : 'bg-brand-500'}`} />}
+                    {hasDeadline && (
+                      <div
+                        className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white/80' : 'bg-red-500'}`}
+                      />
+                    )}
+                    {hasExam && (
+                      <div
+                        className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white/80' : 'bg-brand-500'}`}
+                      />
+                    )}
                   </div>
                 )}
               </button>
@@ -132,7 +175,11 @@ export function CalendarView() {
         <div className="mt-4 space-y-3">
           <h3 className="font-bold text-ink flex items-center gap-2">
             <Calendar size={16} className="text-brand-600" />
-            {selectedDay.toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' })}
+            {selectedDay.toLocaleDateString('sv-SE', {
+              weekday: 'long',
+              day: 'numeric',
+              month: 'long',
+            })}
           </h3>
           {selectedDayExams.length === 0 ? (
             <p className="text-ink-faint text-sm">Inga händelser denna dag.</p>
@@ -143,9 +190,11 @@ export function CalendarView() {
                 onClick={() => setShowingExamDetail(exam.id)}
                 className="w-full bg-surface border border-line rounded-md p-4 text-left active:scale-98 transition-transform"
               >
-                <div className={`text-xs font-semibold px-2 py-0.5 rounded-full inline-flex items-center gap-1 mb-2 ${
-                  isDeadline ? 'bg-red-100 text-red-600' : 'bg-brand-100 text-brand-700'
-                }`}>
+                <div
+                  className={`text-xs font-semibold px-2 py-0.5 rounded-full inline-flex items-center gap-1 mb-2 ${
+                    isDeadline ? 'bg-red-100 text-red-600' : 'bg-brand-100 text-brand-700'
+                  }`}
+                >
                   <Clock size={11} />
                   {isDeadline ? 'Anmälningsstopp' : 'Provdag'}
                 </div>
@@ -168,21 +217,33 @@ export function CalendarView() {
             {savedExams.length === 0 ? (
               <div className="bg-sand rounded-md p-6 text-center">
                 <Calendar size={28} className="text-ink-faint mx-auto mb-2" />
-                <p className="text-ink-soft text-sm">Spara prövningar för att se dem i kalendern.</p>
+                <p className="text-ink-soft text-sm">
+                  Spara prövningar för att se dem i kalendern.
+                </p>
               </div>
             ) : (
               <>
                 <div className="space-y-2">
                   {savedExams
-                    .flatMap(se => {
-                      const exam = exams.find(e => e.id === se.examId);
+                    .flatMap((se) => {
+                      const exam = exams.find((e) => e.id === se.examId);
                       if (!exam || !exam.nextPeriod.confirmed) return [];
-                      const events: { exam: typeof exam; date: string; type: 'deadline' | 'exam' }[] = [];
-                      if (exam.nextPeriod.applicationEnd) events.push({ exam, date: exam.nextPeriod.applicationEnd, type: 'deadline' });
-                      if (exam.nextPeriod.examWindowStart) events.push({ exam, date: exam.nextPeriod.examWindowStart, type: 'exam' });
+                      const events: {
+                        exam: typeof exam;
+                        date: string;
+                        type: 'deadline' | 'exam';
+                      }[] = [];
+                      if (exam.nextPeriod.applicationEnd)
+                        events.push({
+                          exam,
+                          date: exam.nextPeriod.applicationEnd,
+                          type: 'deadline',
+                        });
+                      if (exam.nextPeriod.examWindowStart)
+                        events.push({ exam, date: exam.nextPeriod.examWindowStart, type: 'exam' });
                       return events;
                     })
-                    .filter(e => new Date(e.date) >= today)
+                    .filter((e) => new Date(e.date) >= today)
                     .sort((a, b) => a.date.localeCompare(b.date))
                     .slice(0, 10)
                     .map(({ exam, date, type }) => (
@@ -191,19 +252,27 @@ export function CalendarView() {
                         onClick={() => setShowingExamDetail(exam.id)}
                         className="w-full bg-surface border border-line rounded p-3 text-left flex items-center gap-3 active:scale-98 transition-transform"
                       >
-                        <div className={`w-10 h-10 rounded flex flex-col items-center justify-center flex-shrink-0 ${
-                          type === 'deadline' ? 'bg-red-50' : 'bg-brand-50'
-                        }`}>
-                          <span className={`text-xs font-bold ${type === 'deadline' ? 'text-red-600' : 'text-brand-600'}`}>
+                        <div
+                          className={`w-10 h-10 rounded flex flex-col items-center justify-center flex-shrink-0 ${
+                            type === 'deadline' ? 'bg-red-50' : 'bg-brand-50'
+                          }`}
+                        >
+                          <span
+                            className={`text-xs font-bold ${type === 'deadline' ? 'text-red-600' : 'text-brand-600'}`}
+                          >
                             {new Date(date).toLocaleDateString('sv-SE', { day: 'numeric' })}
                           </span>
-                          <span className={`text-[9px] ${type === 'deadline' ? 'text-red-400' : 'text-brand-400'}`}>
+                          <span
+                            className={`text-[9px] ${type === 'deadline' ? 'text-red-400' : 'text-brand-400'}`}
+                          >
                             {new Date(date).toLocaleDateString('sv-SE', { month: 'short' })}
                           </span>
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-semibold text-ink text-sm truncate">{exam.course}</p>
-                          <p className={`text-xs ${type === 'deadline' ? 'text-red-500' : 'text-brand-500'}`}>
+                          <p
+                            className={`text-xs ${type === 'deadline' ? 'text-red-500' : 'text-brand-500'}`}
+                          >
                             {type === 'deadline' ? 'Anmälningsstopp' : 'Provdag'} · {exam.city}
                           </p>
                         </div>
@@ -215,14 +284,16 @@ export function CalendarView() {
           </div>
 
           {/* Saved exams without confirmed dates */}
-          {savedExams.some(se => !exams.find(e => e.id === se.examId)?.nextPeriod.confirmed) && (
+          {savedExams.some(
+            (se) => !exams.find((e) => e.id === se.examId)?.nextPeriod.confirmed,
+          ) && (
             <div>
               <h3 className="font-bold text-ink mb-3">Väntar på datum från skolan</h3>
               <div className="space-y-2">
                 {savedExams
-                  .map(se => exams.find(e => e.id === se.examId))
+                  .map((se) => exams.find((e) => e.id === se.examId))
                   .filter((e): e is NonNullable<typeof e> => !!e && !e.nextPeriod.confirmed)
-                  .map(exam => (
+                  .map((exam) => (
                     <button
                       key={exam.id}
                       onClick={() => setShowingExamDetail(exam.id)}
@@ -233,7 +304,9 @@ export function CalendarView() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-ink text-sm truncate">{exam.course}</p>
-                        <p className="text-xs text-ink-soft line-clamp-1">{exam.nextPeriod.label} · {exam.city}</p>
+                        <p className="text-xs text-ink-soft line-clamp-1">
+                          {exam.nextPeriod.label} · {exam.city}
+                        </p>
                       </div>
                     </button>
                   ))}

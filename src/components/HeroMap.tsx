@@ -31,7 +31,11 @@ export function HeroMap({ exams, onCityClick, className }: HeroMapProps) {
     }).addTo(map);
     mapRef.current = map;
     layerRef.current = L.layerGroup().addTo(map);
-    return () => { map.remove(); mapRef.current = null; layerRef.current = null; };
+    return () => {
+      map.remove();
+      mapRef.current = null;
+      layerRef.current = null;
+    };
   }, []);
 
   useEffect(() => {
@@ -41,7 +45,7 @@ export function HeroMap({ exams, onCityClick, className }: HeroMapProps) {
     layer.clearLayers();
 
     const byCity = new Map<string, { count: number; lat: number; lng: number }>();
-    exams.forEach(e => {
+    exams.forEach((e) => {
       const cur = byCity.get(e.city);
       if (cur) cur.count += 1;
       else byCity.set(e.city, { count: 1, lat: e.lat, lng: e.lng });
@@ -57,14 +61,18 @@ export function HeroMap({ exams, onCityClick, className }: HeroMapProps) {
       }).addTo(layer);
       marker.bindPopup(
         `<strong style="font-size:15px;">${escapeHtml(city)}</strong><br>${c.count} prövningstillfällen<br>` +
-        `<a href="#" data-city="${escapeHtml(city)}" style="color:#006786;">Se alla i ${escapeHtml(city)} →</a>`
+          `<a href="#" data-city="${escapeHtml(city)}" style="color:#006786;">Se alla i ${escapeHtml(city)} →</a>`,
       );
       marker.on('popupopen', () => {
         const link = document.querySelector(`a[data-city="${CSS.escape(city)}"]`);
-        link?.addEventListener('click', (ev) => {
-          ev.preventDefault();
-          onCityClick?.(city);
-        }, { once: true });
+        link?.addEventListener(
+          'click',
+          (ev) => {
+            ev.preventDefault();
+            onCityClick?.(city);
+          },
+          { once: true },
+        );
       });
     });
   }, [exams, onCityClick]);
@@ -73,5 +81,8 @@ export function HeroMap({ exams, onCityClick, className }: HeroMapProps) {
 }
 
 function escapeHtml(s: string) {
-  return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string));
+  return s.replace(
+    /[&<>"']/g,
+    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] as string,
+  );
 }

@@ -13,8 +13,13 @@ import { isOpenForRegistration } from '../lib/examStatus';
 // works offline/self-contained with no external CDN dependency at runtime.
 
 const defaultIcon = L.icon({
-  iconUrl, iconRetinaUrl, shadowUrl,
-  iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41],
+  iconUrl,
+  iconRetinaUrl,
+  shadowUrl,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
 });
 
 const openIcon = L.divIcon({
@@ -73,7 +78,7 @@ export function MapView({ exams, className }: MapViewProps) {
     layer.clearLayers();
     const points: L.LatLngExpression[] = [];
 
-    exams.forEach(exam => {
+    exams.forEach((exam) => {
       const icon = isOpenForRegistration(exam) ? openIcon : defaultIcon;
       const marker = L.marker([exam.lat, exam.lng], { icon });
       marker.bindPopup(`
@@ -107,5 +112,8 @@ export function MapView({ exams, className }: MapViewProps) {
 }
 
 function escapeHtml(s: string) {
-  return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string));
+  return s.replace(
+    /[&<>"']/g,
+    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] as string,
+  );
 }

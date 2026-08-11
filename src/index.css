@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 /* Source Serif 4 is loaded via a <link> in index.html, not @import here —
    Tailwind's own @import expands at build time and pushes anything after
    it out of leading position, which is invalid CSS and gets silently
@@ -15,49 +15,49 @@
    ------------------------------------------------------------------ */
 @theme {
   /* Brand — teal (primary CTAs, active states, links) */
-  --color-brand-50:  #E9F8FF;
-  --color-brand-100: #CBEEFF;
-  --color-brand-200: #99E0FF;
-  --color-brand-300: #62C5EE;
-  --color-brand-400: #38A6CF;
-  --color-brand-500: #0088B0;
-  --color-brand-600: #1186AC;
+  --color-brand-50: #e9f8ff;
+  --color-brand-100: #cbeeff;
+  --color-brand-200: #99e0ff;
+  --color-brand-300: #62c5ee;
+  --color-brand-400: #38a6cf;
+  --color-brand-500: #0088b0;
+  --color-brand-600: #1186ac;
   --color-brand-700: #006786;
   --color-brand-800: #004961;
-  --color-brand-900: #0A303E;
+  --color-brand-900: #0a303e;
 
   /* Accent 2 — magenta (secondary spot color, used small and deliberately) */
-  --color-accent2-50:  #FFF1F4;
-  --color-accent2-100: #FFDEE6;
-  --color-accent2-200: #FFC0D0;
-  --color-accent2-300: #FF90B1;
-  --color-accent2-500: #D6006C;
-  --color-accent2-700: #AA0B56;
-  --color-accent2-800: #790E3D;
+  --color-accent2-50: #fff1f4;
+  --color-accent2-100: #ffdee6;
+  --color-accent2-200: #ffc0d0;
+  --color-accent2-300: #ff90b1;
+  --color-accent2-500: #d6006c;
+  --color-accent2-700: #aa0b56;
+  --color-accent2-800: #790e3d;
 
   /* Ink — near-black text on the newsprint ground */
-  --color-ink:        #201E1D;
-  --color-ink-soft:   #605D5D;
-  --color-ink-faint:  #9B9797;
+  --color-ink: #201e1d;
+  --color-ink-soft: #605d5d;
+  --color-ink-faint: #9b9797;
 
   /* Warm neutral surfaces */
-  --color-cream:      #F3F2F2;
-  --color-sand:       #EAE7E7;
-  --color-surface:    #F8F4F4;
-  --color-line:       #D7D3D3;
+  --color-cream: #f3f2f2;
+  --color-sand: #eae7e7;
+  --color-surface: #f8f4f4;
+  --color-line: #d7d3d3;
 
   /* Trust green — verification only, kept distinct from the brand pair */
-  --color-trust-50:  #E9F4EC;
-  --color-trust-100: #CFE8D6;
-  --color-trust-500: #2F8457;
-  --color-trust-600: #256B46;
-  --color-trust-700: #1D5537;
+  --color-trust-50: #e9f4ec;
+  --color-trust-100: #cfe8d6;
+  --color-trust-500: #2f8457;
+  --color-trust-600: #256b46;
+  --color-trust-700: #1d5537;
 
   /* Warm amber — tips / highlights */
-  --color-amber-accent:   #B8860B;
-  --color-amber-accent-50: #FBF2E1;
+  --color-amber-accent: #b8860b;
+  --color-amber-accent-50: #fbf2e1;
 
-  --font-display: "Source Serif 4", "Iowan Old Style", ui-serif, serif;
+  --font-display: 'Source Serif 4', 'Iowan Old Style', ui-serif, serif;
 }
 
 * {
@@ -69,8 +69,8 @@ body {
   margin: 0;
   padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background: #F3F2F2;
-  color: #201E1D;
+  background: #f3f2f2;
+  color: #201e1d;
   overscroll-behavior: none;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -112,41 +112,53 @@ body {
 
 /* Subtle entrance animation for cards / sheets */
 @keyframes rise {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .animate-rise {
   animation: rise 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes sheet-up {
-  from { transform: translateY(100%); }
-  to   { transform: translateY(0); }
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 .animate-sheet-up {
   animation: sheet-up 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* Range input styling — brand teal */
-input[type="range"] {
+input[type='range'] {
   -webkit-appearance: none;
   height: 4px;
   border-radius: 4px;
-  background: #D7D3D3;
+  background: #d7d3d3;
   outline: none;
 }
-input[type="range"]::-webkit-slider-thumb {
+input[type='range']::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #0088B0;
+  background: #0088b0;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(0, 136, 176, 0.35);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

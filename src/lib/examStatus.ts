@@ -5,9 +5,13 @@ import { Exam } from '../types';
     dates — never guessed. */
 export function isOpenForRegistration(exam: Exam): boolean {
   const { nextPeriod } = exam;
-  if (!nextPeriod.confirmed || !nextPeriod.applicationStart || !nextPeriod.applicationEnd) return false;
+  if (!nextPeriod.confirmed || !nextPeriod.applicationStart || !nextPeriod.applicationEnd)
+    return false;
   const now = Date.now();
-  return now >= new Date(nextPeriod.applicationStart).getTime() && now <= new Date(nextPeriod.applicationEnd).getTime();
+  return (
+    now >= new Date(nextPeriod.applicationStart).getTime() &&
+    now <= new Date(nextPeriod.applicationEnd).getTime()
+  );
 }
 
 export function daysUntil(dateStr: string): number {

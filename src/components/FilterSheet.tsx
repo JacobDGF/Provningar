@@ -9,10 +9,15 @@ interface FilterSheetProps {
 
 export function FilterSheet({ onClose }: FilterSheetProps) {
   const {
-    filterSubject, setFilterSubject,
-    filterRegion, setFilterRegion,
-    filterSortBy, setFilterSortBy,
-    userLocation, locationStatus, requestLocation,
+    filterSubject,
+    setFilterSubject,
+    filterRegion,
+    setFilterRegion,
+    filterSortBy,
+    setFilterSortBy,
+    userLocation,
+    locationStatus,
+    requestLocation,
   } = useStore();
 
   const [localSubject, setLocalSubject] = useState(filterSubject);
@@ -38,16 +43,31 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
     }`;
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-end lg:items-center lg:justify-center" onClick={onClose}>
-      <div className="bg-cream w-full lg:max-w-lg rounded-t-lg lg:rounded-lg p-6 max-h-[82vh] overflow-y-auto animate-sheet-up" onClick={e => e.stopPropagation()}>
+    // Backdrop closes on click as a mouse convenience; the sheet has its own
+    // keyboard-reachable close button below, so this isn't the only way out.
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
+    <div
+      className="fixed inset-0 bg-black/50 z-50 flex items-end lg:items-center lg:justify-center"
+      onClick={onClose}
+    >
+      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events -- stops the backdrop's close-on-click from firing when interacting with the sheet itself */}
+      <div
+        className="bg-cream w-full lg:max-w-lg rounded-t-lg lg:rounded-lg p-6 max-h-[82vh] overflow-y-auto animate-sheet-up"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
             <SlidersHorizontal size={20} className="text-brand-600" />
             <h2 className="text-lg font-bold text-ink font-display">Filter</h2>
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={reset} className="text-brand-600 text-sm font-semibold">Rensa</button>
-            <button onClick={onClose} className="w-8 h-8 bg-sand rounded-full flex items-center justify-center">
+            <button onClick={reset} className="text-brand-600 text-sm font-semibold">
+              Rensa
+            </button>
+            <button
+              onClick={onClose}
+              className="w-8 h-8 bg-sand rounded-full flex items-center justify-center"
+            >
               <X size={16} className="text-ink-soft" />
             </button>
           </div>
@@ -55,9 +75,11 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
 
         {/* Sort */}
         <div className="mb-6">
-          <label className="text-sm font-semibold text-ink block mb-2">Sortera efter</label>
-          <div className="flex gap-2">
-            {(['date', 'distance', 'name'] as const).map(s => (
+          <span id="filter-sort-label" className="text-sm font-semibold text-ink block mb-2">
+            Sortera efter
+          </span>
+          <div className="flex gap-2" role="group" aria-labelledby="filter-sort-label">
+            {(['date', 'distance', 'name'] as const).map((s) => (
               <button
                 key={s}
                 disabled={s === 'distance' && !userLocation}
@@ -76,10 +98,11 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
               disabled={locationStatus === 'pending'}
               className="mt-2 w-full flex items-center justify-center gap-2 bg-brand-50 text-brand-700 text-xs font-bold py-2.5 rounded"
             >
-              {locationStatus === 'pending'
-                ? <Loader2 size={14} className="animate-spin" />
-                : <Navigation size={14} />
-              }
+              {locationStatus === 'pending' ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : (
+                <Navigation size={14} />
+              )}
               {locationStatus === 'denied'
                 ? 'Plats nekad — aktivera i webbläsarinställningar'
                 : 'Aktivera plats för att sortera på avstånd'}
@@ -89,11 +112,23 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
 
         {/* Subject */}
         <div className="mb-6">
-          <label className="text-sm font-semibold text-ink block mb-2">Ämne</label>
-          <div className="grid grid-cols-2 gap-2">
-            <button onClick={() => setLocalSubject('')} className={chip(!localSubject)}>Alla ämnen</button>
-            {SUBJECTS.map(s => (
-              <button key={s} onClick={() => setLocalSubject(s === localSubject ? '' : s)} className={chip(localSubject === s)}>
+          <span id="filter-subject-label" className="text-sm font-semibold text-ink block mb-2">
+            Ämne
+          </span>
+          <div
+            className="grid grid-cols-2 gap-2"
+            role="group"
+            aria-labelledby="filter-subject-label"
+          >
+            <button onClick={() => setLocalSubject('')} className={chip(!localSubject)}>
+              Alla ämnen
+            </button>
+            {SUBJECTS.map((s) => (
+              <button
+                key={s}
+                onClick={() => setLocalSubject(s === localSubject ? '' : s)}
+                className={chip(localSubject === s)}
+              >
                 {s}
               </button>
             ))}
@@ -102,11 +137,23 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
 
         {/* Region */}
         <div className="mb-6">
-          <label className="text-sm font-semibold text-ink block mb-2">Region</label>
-          <div className="grid grid-cols-2 gap-2">
-            <button onClick={() => setLocalRegion('')} className={chip(!localRegion)}>Alla regioner</button>
-            {REGIONS.map(r => (
-              <button key={r} onClick={() => setLocalRegion(r === localRegion ? '' : r)} className={chip(localRegion === r)}>
+          <span id="filter-region-label" className="text-sm font-semibold text-ink block mb-2">
+            Region
+          </span>
+          <div
+            className="grid grid-cols-2 gap-2"
+            role="group"
+            aria-labelledby="filter-region-label"
+          >
+            <button onClick={() => setLocalRegion('')} className={chip(!localRegion)}>
+              Alla regioner
+            </button>
+            {REGIONS.map((r) => (
+              <button
+                key={r}
+                onClick={() => setLocalRegion(r === localRegion ? '' : r)}
+                className={chip(localRegion === r)}
+              >
                 {r}
               </button>
             ))}
@@ -117,8 +164,9 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
         <div className="mb-8 flex items-start gap-2.5 bg-trust-50 border border-trust-100 rounded-md p-3.5">
           <ShieldCheck size={18} className="text-trust-600 flex-shrink-0 mt-0.5" />
           <p className="text-xs text-trust-700 leading-relaxed">
-            Avgiften för betygsprövning är lagstadgad och kostar <span className="font-semibold">500 kr</span> per
-            prövning hos alla anordnare (gratis om du redan har betyget F). Inget pris att filtrera på.
+            Avgiften för betygsprövning är lagstadgad och kostar{' '}
+            <span className="font-semibold">500 kr</span> per prövning hos alla anordnare (gratis om
+            du redan har betyget F). Inget pris att filtrera på.
           </p>
         </div>
 
