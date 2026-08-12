@@ -2,12 +2,14 @@ import { X, SlidersHorizontal, Navigation, Loader2, ShieldCheck } from 'lucide-r
 import { useState } from 'react';
 import { useStore } from '../store/useStore';
 import { SUBJECTS, REGIONS } from '../data/exams';
+import { useEscapeKey } from '../hooks/useEscapeKey';
 
 interface FilterSheetProps {
   onClose: () => void;
 }
 
 export function FilterSheet({ onClose }: FilterSheetProps) {
+  useEscapeKey(onClose);
   const {
     filterSubject,
     setFilterSubject,

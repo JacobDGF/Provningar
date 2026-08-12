@@ -18,12 +18,14 @@ import {
   Ban,
   CalendarPlus,
 } from 'lucide-react';
+import { useCallback } from 'react';
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
 import { isOpenForRegistration, isFullyBooked, daysUntil } from '../lib/examStatus';
 import { getRegistrationFlow } from '../lib/registrationFlow';
 import { getProviderLinks } from '../lib/providerLinks';
 import { examCalendarEvents, downloadCalendar } from '../lib/calendarFile';
+import { useEscapeKey } from '../hooks/useEscapeKey';
 import { SchoolCover } from './SchoolCover';
 
 function formatDate(dateStr: string) {
@@ -53,6 +55,9 @@ export function ExamDetail() {
     userLocation,
   } = useStore();
   const exam = exams.find((e) => e.id === showingExamDetail);
+  // Before the early return: hooks can't run conditionally, and the sheet is
+  // only mounted while an exam is showing anyway.
+  useEscapeKey(useCallback(() => setShowingExamDetail(null), [setShowingExamDetail]));
 
   if (!exam) return null;
 

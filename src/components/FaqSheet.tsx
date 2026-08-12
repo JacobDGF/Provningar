@@ -1,5 +1,6 @@
 import { X, HelpCircle, ChevronDown, ExternalLink, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
+import { useEscapeKey } from '../hooks/useEscapeKey';
 
 interface FaqItem {
   q: string;
@@ -76,6 +77,7 @@ function FaqRow({ item, open, onToggle }: { item: FaqItem; open: boolean; onTogg
 }
 
 export function FaqSheet({ onClose }: { onClose: () => void }) {
+  useEscapeKey(onClose);
   const [openIdx, setOpenIdx] = useState<number | null>(0);
 
   return (

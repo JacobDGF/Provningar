@@ -13,9 +13,10 @@ import {
   ArrowUpDown,
   ArrowRight,
 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useStore } from '../store/useStore';
 import { Avatar } from '../components/Avatar';
+import { useEscapeKey } from '../hooks/useEscapeKey';
 import { Post, PostKind } from '../types';
 
 const KINDS: { value: PostKind; label: string; emoji: string; color: string }[] = [
@@ -265,6 +266,11 @@ export function Community() {
   const [query, setQuery] = useState('');
   const [sortBy, setSortBy] = useState<'new' | 'top'>('new');
 
+  useEscapeKey(
+    useCallback(() => setShowCompose(false), []),
+    showCompose,
+  );
+
   const FILTERS = ['all', 'fråga', 'tips', 'diskussion', 'seger'];
 
   // Searching the replies too, not just the post: the answer you're looking for
@@ -334,25 +340,42 @@ export function Community() {
             </div>
           </div>
 
-          {/* Search */}
-          <div className="flex items-center gap-2 bg-sand rounded-md px-3 py-2.5 mb-2.5">
-            <Search size={17} className="text-ink-faint flex-shrink-0" />
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Sök i inlägg och svar…"
-              aria-label="Sök i communityn"
-              className="flex-1 bg-transparent text-sm text-ink placeholder-ink-faint outline-none min-w-0"
-            />
-            {query && (
-              <button onClick={() => setQuery('')} aria-label="Rensa sökningen">
-                <X size={15} className="text-ink-faint" />
-              </button>
-            )}
+          {/* Search + sort. The sort control sits here rather than at the end of
+              the filter row: that row scrolls horizontally on a phone, and
+              anything past "Diskussion" is off-screen and undiscoverable. */}
+          <div className="flex items-center gap-2 mb-2.5">
+            <div className="flex-1 flex items-center gap-2 bg-sand rounded-md px-3 py-2.5 min-w-0">
+              <Search size={17} className="text-ink-faint flex-shrink-0" />
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Sök i inlägg och svar…"
+                aria-label="Sök i communityn"
+                className="flex-1 bg-transparent text-sm text-ink placeholder-ink-faint outline-none min-w-0"
+              />
+              {query && (
+                <button onClick={() => setQuery('')} aria-label="Rensa sökningen">
+                  <X size={15} className="text-ink-faint" />
+                </button>
+              )}
+            </div>
+            <button
+              onClick={() => setSortBy((s) => (s === 'new' ? 'top' : 'new'))}
+              title={sortBy === 'new' ? 'Visar senaste först' : 'Visar mest engagemang först'}
+              aria-label={
+                sortBy === 'new'
+                  ? 'Sortering: senaste först. Byt till mest engagemang.'
+                  : 'Sortering: mest engagemang först. Byt till senaste.'
+              }
+              className="flex-shrink-0 h-[42px] px-3 rounded-md bg-sand hover:bg-line text-ink-soft text-xs font-semibold transition-colors inline-flex items-center gap-1.5"
+            >
+              <ArrowUpDown size={14} />
+              {sortBy === 'new' ? 'Senaste' : 'Populärast'}
+            </button>
           </div>
 
-          {/* Kind filter + sort */}
+          {/* Kind filter */}
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {FILTERS.map((f) => (
               <button
@@ -367,14 +390,6 @@ export function Community() {
                   : `${kindMeta(f as PostKind)?.emoji} ${kindMeta(f as PostKind)?.label}`}
               </button>
             ))}
-            <span className="flex-shrink-0 w-px bg-line mx-1 my-1" aria-hidden="true" />
-            <button
-              onClick={() => setSortBy((s) => (s === 'new' ? 'top' : 'new'))}
-              className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs lg:text-sm font-semibold bg-sand text-ink-soft hover:bg-line transition-colors inline-flex items-center gap-1"
-            >
-              <ArrowUpDown size={12} />
-              {sortBy === 'new' ? 'Senaste' : 'Mest engagemang'}
-            </button>
           </div>
         </div>
       </div>

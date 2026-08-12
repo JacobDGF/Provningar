@@ -215,15 +215,20 @@ export function Discover() {
       ) : (
         <>
           {/* HERO */}
-          <section className="max-w-screen-xl mx-auto w-full px-4 lg:px-8 pt-8 lg:pt-12 pb-6 lg:pb-8 grid grid-cols-1 lg:grid-cols-[minmax(320px,5fr)_7fr] gap-8 lg:gap-10 items-center">
+          {/* The type scale steps down on a phone rather than holding desktop
+              size: at text-4xl the headline set three lines and the standfirst
+              four, which between them filled a 390×844 screen edge to edge —
+              the search field, the filters and the first listing all began
+              below the fold. */}
+          <section className="max-w-screen-xl mx-auto w-full px-4 lg:px-8 pt-5 sm:pt-8 lg:pt-12 pb-5 sm:pb-6 lg:pb-8 grid grid-cols-1 lg:grid-cols-[minmax(320px,5fr)_7fr] gap-8 lg:gap-10 items-center">
             <div>
-              <h6 className="text-brand-700 text-xs font-semibold uppercase tracking-wider mb-3">
+              <h6 className="text-brand-700 text-xs font-semibold uppercase tracking-wider mb-2 sm:mb-3">
                 {eyebrow}
               </h6>
-              <h1 className="font-display text-4xl lg:text-6xl font-semibold text-ink leading-tight -ml-px mb-3 max-w-[14ch]">
+              <h1 className="font-display text-3xl sm:text-4xl lg:text-6xl font-semibold text-ink leading-tight -ml-px mb-2.5 sm:mb-3 max-w-[14ch]">
                 Varje prövning i Sverige. På en karta.
               </h1>
-              <p className="text-base lg:text-lg text-ink-soft max-w-[42ch] mb-6">
+              <p className="text-sm sm:text-base lg:text-lg text-ink-soft max-w-[42ch] mb-4 sm:mb-6">
                 Sök, jämför och anmäl dig till {exams.length} verifierade prövningstillfällen i hela
                 landet. Varje listning länkar både till själva bokningen och till skolans egen sida
                 — du väljer om du vill gå den snabba vägen eller göra allt själv.

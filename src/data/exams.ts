@@ -1839,15 +1839,17 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    // Checked 2026-08-11: the page still shows an unfilled "[LÄNK TILL
-    // KURSLISTA]" placeholder and offers no way to apply online. The URL is a
-    // page-builder slug and likely to move.
+    // Checked 2026-08-12: the page still shows an unfilled "[LÄNK TILL
+    // KURSLISTA]" placeholder and offers no way to apply online — anmälan is a
+    // mail to info@akadeva.se, so the derived `page` flow would promise a form
+    // that isn't there. The URL is a page-builder slug and likely to move.
+    registration: { kind: 'email' },
     registrationUrl: 'https://www.akadeva.se/elementor-689/',
     infoUrl: 'https://www.akadeva.se/elementor-689/',
     description:
       'Akadeva i Sollentuna erbjuder prövning i kurser enligt GY11 för folkbokförda i bland annat Sollentuna, Solna, Sigtuna, Lidingö, Danderyd, Täby, Vallentuna, Vaxholm, Österåker och Upplands Väsby. Anmälan görs via e-post till info@akadeva.se, platserna är begränsade.',
     tags: ['komvux', 'flera ämnen', 'sollentuna'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: LATE_SUMMER_VERIFIED,
   },
   {
     id: 'akadeva-vuxenutbildning-sollentuna-flera-kurser-kontakta-sko-2',
@@ -1874,15 +1876,17 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    // Checked 2026-08-11: the page still shows an unfilled "[LÄNK TILL
-    // KURSLISTA]" placeholder and offers no way to apply online. The URL is a
-    // page-builder slug and likely to move.
+    // Checked 2026-08-12: the page still shows an unfilled "[LÄNK TILL
+    // KURSLISTA]" placeholder and offers no way to apply online — anmälan is a
+    // mail to info@akadeva.se, so the derived `page` flow would promise a form
+    // that isn't there. The URL is a page-builder slug and likely to move.
+    registration: { kind: 'email' },
     registrationUrl: 'https://www.akadeva.se/elementor-689/',
     infoUrl: 'https://www.akadeva.se/elementor-689/',
     description:
       'Ytterligare prövningsomgång hos Akadeva i Sollentuna (vinterperioden). Samma villkor: 500 kr per kurs, anmälan via e-post, begränsat antal platser utan reservlista.',
     tags: ['komvux', 'flera ämnen', 'sollentuna'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: LATE_SUMMER_VERIFIED,
   },
   {
     id: 'komvux-uppsala-kommun-provning-teoretiska-kurser-via-nti-sko',

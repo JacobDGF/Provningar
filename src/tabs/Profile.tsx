@@ -19,10 +19,11 @@ import {
   TrendingUp,
   Download,
 } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useStore } from '../store/useStore';
 import { SchoolCover } from '../components/SchoolCover';
 import { Avatar } from '../components/Avatar';
+import { useEscapeKey } from '../hooks/useEscapeKey';
 import { fileToAvatarDataUrl } from '../lib/avatar';
 import { summarizeGrades, gradeChipClass } from '../lib/grades';
 import { daysUntil, isFullyBooked } from '../lib/examStatus';
@@ -60,6 +61,14 @@ export function Profile() {
   // phone, which is wrong when the photo you want is already in your library.
   const cameraInput = useRef<HTMLInputElement>(null);
   const libraryInput = useRef<HTMLInputElement>(null);
+
+  useEscapeKey(
+    useCallback(() => {
+      setShowPhotoSheet(false);
+      setShowAddExam(false);
+    }, []),
+    showPhotoSheet || showAddExam,
+  );
 
   const myPosts = posts.filter((p) => p.userId === 'me');
   const totalLikes = myPosts.reduce((sum, p) => sum + p.likes, 0);
