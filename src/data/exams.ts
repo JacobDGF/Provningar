@@ -977,21 +977,29 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per kurs, betalas via Swish (123 562 2162) vid anmälan. Kostnadsfritt om man läst samma/motsvarande kurs hos kommunal vuxenutbildning och fått betyg F eller IG.',
     nextPeriod: {
-      label: 'Provperiod 2026-10-07 – 2026-10-08',
+      label:
+        'Anmälan för HT26 är öppen 17 augusti – 11 september. Prövningarna hålls 7 och 8 oktober kl. 11.30.',
       applicationStart: '2026-08-17',
+      applicationEnd: '2026-09-11',
       examWindowStart: '2026-10-07',
       examWindowEnd: '2026-10-08',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    registrationUrl: 'https://e-tjanster.ornskoldsvik.se/oversikt',
+    // Was https://e-tjanster.ornskoldsvik.se/oversikt — checked 2026-08-12, that
+    // directory lists no prövningstjänst at all, so the button dropped the user
+    // in a list of unrelated e-tjänster. Anmälan really is by mail/phone to
+    // Arena utbildning, and the kommun's own page is where those details live.
+    registration: { kind: 'email' },
+    registrationUrl:
+      'https://www.ornskoldsvik.se/utbildning-och-barnomsorg/vuxenstuderande/vuxenutbildning---komvux/anmal-till-provning-for-betyg---vuxenstuderande',
     infoUrl:
       'https://www.ornskoldsvik.se/utbildning-och-barnomsorg/vuxenstuderande/vuxenutbildning---komvux/anmal-till-provning-for-betyg---vuxenstuderande',
     description:
-      'Prövning erbjuds endast i nya GY25-ämnesnivåer, med fyra fasta datum per år; höstens tillfällen är 7 och 8 oktober 2026 kl. 11:30 i Studielänkens lokaler. Nästa anmälningsperiod öppnar 17 augusti 2026.',
+      'Prövning erbjuds endast i nya GY25-ämnesnivåer, med fyra fasta datum per år; höstens tillfällen är 7 och 8 oktober 2026 kl. 11:30 i Studielänkens lokaler. Anmälan görs till Arena utbildning på arenautbildning@arenakoncernen.se eller 010-788 00 39, och avgiften på 500 kr swishas till 123 562 2162.',
     tags: ['kommun', 'gymnasial', 'gy25'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: LATE_SUMMER_VERIFIED,
   },
   {
     id: 'vuxenutbildningen-harnosand-harnosand-flera-kurser-kontakta-',

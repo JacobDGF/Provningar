@@ -30,7 +30,13 @@ function isSameDay(a: Date, b: Date) {
     inside the Prövningar tab under a Lista/Kalender toggle. */
 export function CalendarView() {
   const { savedExams, exams, setShowingExamDetail } = useStore();
-  const [currentDate, setCurrentDate] = useState(new Date(2026, 3)); // April 2026
+  // Opens on the month you are actually in. This used to be a hardcoded
+  // `new Date(2026, 3)`, so from May onwards the calendar greeted everyone with
+  // an empty April and their real deadlines a swipe or two away.
+  const [currentDate, setCurrentDate] = useState(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth());
+  });
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
 
   const eventMap = useMemo(() => {
@@ -77,6 +83,11 @@ export function CalendarView() {
 
   const prevMonth = () => setCurrentDate(new Date(year, month - 1));
   const nextMonth = () => setCurrentDate(new Date(year, month + 1));
+  const onCurrentMonth = year === today.getFullYear() && month === today.getMonth();
+  const goToToday = () => {
+    setCurrentDate(new Date(today.getFullYear(), today.getMonth()));
+    setSelectedDay(null);
+  };
 
   return (
     <div className="px-4 lg:px-8 py-4 lg:py-6 max-w-2xl mx-auto w-full">
@@ -93,8 +104,17 @@ export function CalendarView() {
           </div>
         </div>
         <div className="flex items-center gap-1">
+          {!onCurrentMonth && (
+            <button
+              onClick={goToToday}
+              className="text-brand-600 text-xs font-bold px-2 py-1.5 rounded hover:bg-brand-50 transition-colors"
+            >
+              Idag
+            </button>
+          )}
           <button
             onClick={prevMonth}
+            aria-label="Föregående månad"
             className="w-8 h-8 bg-sand rounded-lg flex items-center justify-center active:scale-95"
           >
             <ChevronLeft size={16} className="text-ink-soft" />
@@ -104,6 +124,7 @@ export function CalendarView() {
           </span>
           <button
             onClick={nextMonth}
+            aria-label="Nästa månad"
             className="w-8 h-8 bg-sand rounded-lg flex items-center justify-center active:scale-95"
           >
             <ChevronRight size={16} className="text-ink-soft" />

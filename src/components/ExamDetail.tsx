@@ -16,12 +16,14 @@ import {
   ListChecks,
   Globe,
   Ban,
+  CalendarPlus,
 } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
 import { isOpenForRegistration, isFullyBooked, daysUntil } from '../lib/examStatus';
 import { getRegistrationFlow } from '../lib/registrationFlow';
 import { getProviderLinks } from '../lib/providerLinks';
+import { examCalendarEvents, downloadCalendar } from '../lib/calendarFile';
 import { SchoolCover } from './SchoolCover';
 
 function formatDate(dateStr: string) {
@@ -64,6 +66,7 @@ export function ExamDetail() {
   const openNow = isOpenForRegistration(exam);
   const flow = getRegistrationFlow(exam);
   const links = getProviderLinks(exam);
+  const calendarEvents = examCalendarEvents(exam);
 
   const distanceKm = userLocation
     ? haversineDistanceKm(userLocation.lat, userLocation.lng, exam.lat, exam.lng)
@@ -214,6 +217,17 @@ export function ExamDetail() {
                     <p className="text-ink-soft text-xs leading-relaxed pt-1 border-t border-line">
                       {nextPeriod.label}
                     </p>
+                  )}
+                  {/* The dates only help while the app is open. This puts them
+                      in the calendar the user already checks. */}
+                  {calendarEvents.length > 0 && (
+                    <button
+                      onClick={() => downloadCalendar(exam)}
+                      className="w-full mt-1 flex items-center justify-center gap-2 bg-brand-50 hover:bg-brand-100 text-brand-700 text-sm font-bold py-2.5 rounded transition-colors active:scale-98"
+                    >
+                      <CalendarPlus size={15} />
+                      Lägg till i min kalender
+                    </button>
                   )}
                 </div>
               ) : (
