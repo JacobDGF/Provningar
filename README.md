@@ -29,6 +29,19 @@ Två regler styr datan, och båda testas i
 - **Länken ska leda till anmälan.** `registrationUrl` pekar så nära själva
   bokningen som anordnaren tillåter — e-tjänsten, kurslistan eller kassan, inte
   en informationssida, när ett djupare mål finns.
+- **Anordnarens ord gäller före kalendern.** `nextPeriod.full` sätts när
+  anordnaren själv skrivit att omgången är fullbokad. Då är listningen stängd
+  för anmälan även om datumen ser öppna ut, och nedräkningen tystnar — en
+  röd "3 dagar kvar" på en omgång ingen kan söka till är bara press utan utväg.
+
+### Två vägar ut ur varje listning
+
+[`src/lib/providerLinks.ts`](src/lib/providerLinks.ts) ger varje listning två mål,
+och appen visar båda som egna knappar: `booking` är den verifierade djuplänken
+in i anordnarens bokning, och `site` är anordnarens egen sida för den som hellre
+läser först och gör allt själv. När `infoUrl` och `registrationUrl` är samma sida
+härleds `site` till anordnarens startsida — alltid ur `infoUrl`, aldrig ur
+bokningslänken, eftersom "skolans webbplats" inte betyder alvis.se.
 
 ### Anmälningsflöden
 
@@ -47,9 +60,43 @@ npm run check:links -- --all # visar även omdirigeringar
 ```
 
 Skriptet ingår medvetet inte i `npm test` — det beror på att ~90 externa
-webbplatser svarar. Vissa kommunplattformar blockerar automatiserade anrop och
-rapporteras som fel även när de fungerar i webbläsaren; kontrollera manuellt
-innan du ändrar datan.
+webbplatser svarar. Värdar som blockerar automatiserade anrop (Alvis, ett par
+kommunsajter) står i `BOT_BLOCKED` i skriptet och rapporteras separat som
+"kunde inte kontrolleras" i stället för som fel — annars drunknar en verklig
+död länk i röd text som alltid är röd. Priset är att en länk som faktiskt dör
+på en sådan värd måste upptäckas för hand, så listan gäller bara så länge den
+senaste manuella kontrollen håller.
+
+Får du plötsligt fel på nästan alla länkar samtidigt är det nästan aldrig datan.
+Bakom en TLS-inspekterande proxy litar Node inte på proxyns certifikat och varje
+https-anrop faller:
+
+```sh
+NODE_EXTRA_CA_CERTS=/sökväg/till/ca-bundle.crt npm run check:links
+```
+
+## Profilbilder och community
+
+Appen visar aldrig färdiga porträtt av påhittade personer. En profilbild är en
+bild användaren själv tar eller väljer, den skalas ned och sparas som `data:`-URL
+i webbläsaren, och den lämnar aldrig enheten. Alla andra visas som ett ritat
+monogram. [`src/lib/avatar.ts`](src/lib/avatar.ts) vägrar därför bild-URL:er som
+pekar utanför enheten — vilket också rensar bort de gamla stockbilderna ur
+localStorage hos återvändande användare (`persist` v0 → v1).
+
+## Datum, kalender och dina data
+
+Appen påminner ingen om något när den är stängd, och den har ingen server.
+Därför två utvägar, båda helt lokala:
+
+- [`src/lib/calendarFile.ts`](src/lib/calendarFile.ts) bygger en `.ics` med
+  sista anmälningsdag och provperiod (heldagshändelser, påminnelse dagen före)
+  som användaren lägger i telefonens egen kalender. Ingen händelse skapas för en
+  period som inte är bekräftad — ett gissat datum i någons kalender är sämre än
+  inget datum.
+- Profilfliken exporterar allt appen vet om användaren som JSON. Allt ligger i
+  en enda webbläsares `localStorage`, så exporten är den enda säkerhetskopia som
+  finns — den ligger direkt ovanför knappen som raderar originalet.
 
 ## Deploy
 

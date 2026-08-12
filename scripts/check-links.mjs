@@ -11,6 +11,13 @@
  *
  *   npm run check:links              report everything that failed
  *   npm run check:links -- --all     also list the URLs that redirected
+ *
+ * Behind a TLS-intercepting proxy, every https host fails at once (typically as
+ * a wall of 503s) because Node doesn't trust the proxy's CA. That is the
+ * environment failing, not ~70 kommuner going down together — point Node at the
+ * bundle before blaming the data:
+ *
+ *   NODE_EXTRA_CA_CERTS=/path/to/ca-bundle.crt npm run check:links
  */
 
 import { readFileSync } from 'node:fs';
@@ -35,6 +42,35 @@ function collectUrls() {
     byUrl.get(url).add(field);
   }
   return [...byUrl].map(([url, fields]) => ({ url, fields: [...fields].sort().join(', ') }));
+}
+
+/**
+ * Hosts that answer a bot with 503 while serving the page fine in a browser.
+ *
+ * Sweeping every link and getting a wall of red teaches you to skim the report,
+ * which defeats the point of running it — so these get their own section and
+ * don't fail the run. The cost is real: a link that genuinely dies on one of
+ * these hosts will not be caught here, and has to be checked by hand. Each
+ * entry stays only as long as the last manual check holds.
+ */
+const BOT_BLOCKED = [
+  // Checked by hand 2026-08-12: every one of these renders normally in a
+  // browser and returns 503 to fetch(), regardless of user-agent.
+  '.alvis.se', // Alvis (Tieto) — all municipal instances
+  'komvuxsodermalm.stockholm', // Stockholms stads komvux sites
+  'komvuxskarholmen.stockholm',
+  'www.akadeva.se',
+  'www.falun.se',
+  'www.landskrona.se',
+];
+
+function isBotBlocked(url) {
+  try {
+    const { hostname } = new URL(url);
+    return BOT_BLOCKED.some((h) => (h.startsWith('.') ? hostname.endsWith(h) : hostname === h));
+  } catch {
+    return false;
+  }
 }
 
 async function check({ url, fields }) {
@@ -91,7 +127,13 @@ const urls = collectUrls();
 console.log(`Kontrollerar ${urls.length} unika länkar från ${SOURCE.replace(ROOT + '/', '')}…\n`);
 
 const results = await mapPool(urls, check, CONCURRENCY);
-const broken = results.filter((r) => !r.ok);
+const failed = results.filter((r) => !r.ok);
+// A 404 is a 404 even from a host that usually stonewalls us; only the
+// stonewalling itself (503/timeout/connection error) gets the benefit of doubt.
+const unverifiable = failed.filter(
+  (r) => isBotBlocked(r.url) && [503, 403, 429, 'timeout', 'error'].includes(r.status),
+);
+const broken = failed.filter((r) => !unverifiable.includes(r));
 const redirected = results.filter((r) => r.ok && r.finalUrl && r.finalUrl !== r.url);
 
 if (redirected.length && showAll) {
@@ -100,8 +142,17 @@ if (redirected.length && showAll) {
   console.log('');
 }
 
+if (unverifiable.length) {
+  console.log(`⃠ ${unverifiable.length} kunde inte kontrolleras automatiskt (värden blockerar):`);
+  for (const r of unverifiable) console.log(`   [${r.status}] ${r.url}  (${r.fields})`);
+  console.log('   Kontrollera dessa i webbläsare — sweepen kan inte se om de dör.\n');
+}
+
 if (!broken.length) {
-  console.log(`✓ Alla ${results.length} länkar svarar. ${redirected.length} omdirigerar.`);
+  console.log(
+    `✓ ${results.length - unverifiable.length} av ${results.length} länkar svarar. ` +
+      `${redirected.length} omdirigerar.`,
+  );
   process.exit(0);
 }
 
@@ -110,6 +161,7 @@ for (const r of broken) {
   console.error(`   [${r.status}] ${r.url}  (${r.fields})${r.detail ? `\n     ${r.detail}` : ''}`);
 }
 console.error(
-  '\nNågra värdar blockerar automatiserade anrop — kontrollera i webbläsare innan du ändrar datan.',
+  '\nBlockerar värden automatiserade anrop? Lägg till den i BOT_BLOCKED efter att du\n' +
+    'kontrollerat länken i en webbläsare — annars är det datan som behöver rättas.',
 );
 process.exit(1);

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { isOpenForRegistration, daysUntil } from './examStatus';
+import { isOpenForRegistration, isFullyBooked, daysUntil } from './examStatus';
 import { Exam, NextPeriod } from '../types';
 
 function examWith(nextPeriod: NextPeriod): Exam {
@@ -101,6 +101,44 @@ describe('isOpenForRegistration', () => {
   it('is closed when there is no deadline at all', () => {
     at('2026-08-09T12:00:00Z');
     expect(isOpenForRegistration(examWith({ label: '', confirmed: true }))).toBe(false);
+  });
+
+  it('is closed inside the window when the provider says the round is full', () => {
+    at('2026-08-15T12:00:00Z');
+    expect(
+      isOpenForRegistration(
+        examWith({
+          label: '',
+          applicationStart: '2026-08-10',
+          applicationEnd: '2026-08-31',
+          confirmed: true,
+          full: true,
+        }),
+      ),
+    ).toBe(false);
+  });
+});
+
+describe('isFullyBooked', () => {
+  it('is true only when the provider published the round as full', () => {
+    expect(isFullyBooked(examWith({ label: '', confirmed: true, full: true }))).toBe(true);
+    expect(isFullyBooked(examWith({ label: '', confirmed: true }))).toBe(false);
+    expect(isFullyBooked(examWith({ label: '', confirmed: true, full: false }))).toBe(false);
+  });
+
+  // "Full" and "not open" are different answers to the user: one sends you to
+  // the next round, the other to a date in your calendar.
+  it('is independent of whether the window is open', () => {
+    at('2026-09-30T12:00:00Z');
+    const closedAndFull = examWith({
+      label: '',
+      applicationStart: '2026-08-10',
+      applicationEnd: '2026-08-31',
+      confirmed: true,
+      full: true,
+    });
+    expect(isOpenForRegistration(closedAndFull)).toBe(false);
+    expect(isFullyBooked(closedAndFull)).toBe(true);
   });
 });
 

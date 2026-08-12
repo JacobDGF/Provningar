@@ -2,12 +2,14 @@ import { X, SlidersHorizontal, Navigation, Loader2, ShieldCheck } from 'lucide-r
 import { useState } from 'react';
 import { useStore } from '../store/useStore';
 import { SUBJECTS, REGIONS } from '../data/exams';
+import { useEscapeKey } from '../hooks/useEscapeKey';
 
 interface FilterSheetProps {
   onClose: () => void;
 }
 
 export function FilterSheet({ onClose }: FilterSheetProps) {
+  useEscapeKey(onClose);
   const {
     filterSubject,
     setFilterSubject,
@@ -17,6 +19,8 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
     setFilterSortBy,
     filterDirectOnly,
     setFilterDirectOnly,
+    filterOpenOnly,
+    setFilterOpenOnly,
     userLocation,
     locationStatus,
     requestLocation,
@@ -26,12 +30,14 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
   const [localRegion, setLocalRegion] = useState(filterRegion);
   const [localSortBy, setLocalSortBy] = useState(filterSortBy);
   const [localDirectOnly, setLocalDirectOnly] = useState(filterDirectOnly);
+  const [localOpenOnly, setLocalOpenOnly] = useState(filterOpenOnly);
 
   const apply = () => {
     setFilterSubject(localSubject);
     setFilterRegion(localRegion);
     setFilterSortBy(localSortBy);
     setFilterDirectOnly(localDirectOnly);
+    setFilterOpenOnly(localOpenOnly);
     onClose();
   };
 
@@ -40,6 +46,7 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
     setLocalRegion('');
     setLocalSortBy('date');
     setLocalDirectOnly(false);
+    setLocalOpenOnly(false);
   };
 
   const chip = (active: boolean) =>
@@ -98,6 +105,34 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
             <span
               className={`w-11 h-6 rounded-full flex-shrink-0 flex items-center px-0.5 transition-colors ${
                 localDirectOnly ? 'bg-brand-500 justify-end' : 'bg-line justify-start'
+              }`}
+            >
+              <span className="w-5 h-5 bg-white rounded-full shadow-sm" />
+            </span>
+          </button>
+        </div>
+
+        {/* Application windows open today. Providers stagger their opening days
+            across weeks, so "can I still apply?" is the question most often
+            behind a search. */}
+        <div className="mb-6">
+          <button
+            type="button"
+            onClick={() => setLocalOpenOnly((v) => !v)}
+            aria-pressed={localOpenOnly}
+            className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded border transition-colors text-left ${
+              localOpenOnly ? 'bg-trust-50 border-trust-500' : 'bg-sand border-transparent'
+            }`}
+          >
+            <span>
+              <span className="block text-sm font-semibold text-ink">Öppna för anmälan nu</span>
+              <span className="block text-xs text-ink-soft mt-0.5">
+                Bara tillfällen vars anmälningsperiod är öppen idag.
+              </span>
+            </span>
+            <span
+              className={`w-11 h-6 rounded-full flex-shrink-0 flex items-center px-0.5 transition-colors ${
+                localOpenOnly ? 'bg-trust-500 justify-end' : 'bg-line justify-start'
               }`}
             >
               <span className="w-5 h-5 bg-white rounded-full shadow-sm" />

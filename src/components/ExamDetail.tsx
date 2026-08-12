@@ -9,17 +9,23 @@ import {
   ExternalLink,
   Bookmark,
   BookmarkCheck,
-  ChevronRight,
   ShieldCheck,
   Navigation,
   Info,
   Map,
   ListChecks,
+  Globe,
+  Ban,
+  CalendarPlus,
 } from 'lucide-react';
+import { useCallback } from 'react';
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
-import { isOpenForRegistration, daysUntil } from '../lib/examStatus';
+import { isOpenForRegistration, isFullyBooked, daysUntil } from '../lib/examStatus';
 import { getRegistrationFlow } from '../lib/registrationFlow';
+import { getProviderLinks } from '../lib/providerLinks';
+import { examCalendarEvents, downloadCalendar } from '../lib/calendarFile';
+import { useEscapeKey } from '../hooks/useEscapeKey';
 import { SchoolCover } from './SchoolCover';
 
 function formatDate(dateStr: string) {
@@ -49,6 +55,9 @@ export function ExamDetail() {
     userLocation,
   } = useStore();
   const exam = exams.find((e) => e.id === showingExamDetail);
+  // Before the early return: hooks can't run conditionally, and the sheet is
+  // only mounted while an exam is showing anyway.
+  useEscapeKey(useCallback(() => setShowingExamDetail(null), [setShowingExamDetail]));
 
   if (!exam) return null;
 
@@ -56,9 +65,13 @@ export function ExamDetail() {
   const { nextPeriod } = exam;
   const deadlineDate = nextPeriod.confirmed ? nextPeriod.applicationEnd : undefined;
   const deadlineDays = deadlineDate ? daysUntil(deadlineDate) : null;
-  const urgent = deadlineDays !== null && deadlineDays <= 7 && deadlineDays >= 0;
+  const full = isFullyBooked(exam);
+  // A countdown on a round nobody can join is just pressure with no exit.
+  const urgent = deadlineDays !== null && deadlineDays <= 7 && deadlineDays >= 0 && !full;
   const openNow = isOpenForRegistration(exam);
   const flow = getRegistrationFlow(exam);
+  const links = getProviderLinks(exam);
+  const calendarEvents = examCalendarEvents(exam);
 
   const distanceKm = userLocation
     ? haversineDistanceKm(userLocation.lat, userLocation.lng, exam.lat, exam.lng)
@@ -127,6 +140,21 @@ export function ExamDetail() {
               </p>
             </div>
 
+            {/* Round is full — said outright, because the dates below still
+                look like an open window and would otherwise mislead. */}
+            {full && (
+              <div className="bg-sand border border-line rounded p-3 flex items-start gap-2">
+                <Ban size={18} className="text-ink-soft flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-ink text-sm font-semibold">Den här omgången är fullbokad</p>
+                  <p className="text-ink-soft text-xs mt-0.5 leading-relaxed">
+                    {exam.provider} har meddelat att platserna är slut. Datumen nedan gäller
+                    fortfarande — men du behöver vänta på nästa omgång.
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Open for registration now */}
             {openNow && (
               <div className="bg-trust-50 border border-trust-100 rounded p-3 flex items-center gap-2">
@@ -194,6 +222,17 @@ export function ExamDetail() {
                     <p className="text-ink-soft text-xs leading-relaxed pt-1 border-t border-line">
                       {nextPeriod.label}
                     </p>
+                  )}
+                  {/* The dates only help while the app is open. This puts them
+                      in the calendar the user already checks. */}
+                  {calendarEvents.length > 0 && (
+                    <button
+                      onClick={() => downloadCalendar(exam)}
+                      className="w-full mt-1 flex items-center justify-center gap-2 bg-brand-50 hover:bg-brand-100 text-brand-700 text-sm font-bold py-2.5 rounded transition-colors active:scale-98"
+                    >
+                      <CalendarPlus size={15} />
+                      Lägg till i min kalender
+                    </button>
                   )}
                 </div>
               ) : (
@@ -373,26 +412,39 @@ export function ExamDetail() {
         {/* CTA — a flex sibling, not absolutely positioned: an `absolute` bar
             here resolves against the fixed backdrop, not the sheet, and gets
             clipped away entirely by the sheet's overflow on desktop. */}
+        {/* Two ways out, both explicit. The first is the deep link we verified;
+            the second is for people who'd rather start at the provider's own
+            site and do it themselves. See lib/providerLinks.ts. */}
         <div className="flex-shrink-0 bg-surface border-t border-line p-4 space-y-2 safe-bottom">
           <a
-            href={exam.registrationUrl}
+            href={links.booking}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-bold py-4 rounded-md text-base shadow-lg shadow-brand-200 active:scale-98 transition-transform"
+            className="w-full flex items-center justify-center gap-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold py-4 px-4 rounded-md text-base leading-snug text-center shadow-lg shadow-brand-200 active:scale-98 transition-transform"
           >
-            <ExternalLink size={18} />
-            {flow.ctaLabel} hos {exam.provider}
-            <ChevronRight size={18} />
+            <ExternalLink size={18} className="flex-shrink-0" />
+            <span>
+              {flow.ctaLabel} hos {exam.provider}
+            </span>
           </a>
-          {exam.infoUrl !== exam.registrationUrl && (
-            <a
-              href={exam.infoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full flex items-center justify-center gap-1.5 text-ink-soft text-xs font-medium py-1"
-            >
-              Mer information på skolans webbplats <ExternalLink size={11} />
-            </a>
+          {links.hasAlternative && (
+            <>
+              <a
+                href={links.site}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center justify-center gap-2 bg-surface border border-line hover:border-brand-300 hover:bg-brand-50 text-ink font-bold py-3.5 rounded-md text-sm active:scale-98 transition-all"
+              >
+                <Globe size={16} className="text-brand-600" />
+                {links.siteIsHomepage
+                  ? `Gå till ${exam.provider}s webbplats`
+                  : 'Läs mer på skolans egen sida'}
+              </a>
+              <p className="text-ink-faint text-[11px] text-center leading-relaxed">
+                {flow.direct ? 'Direkt till bokningen' : 'Så nära anmälan vi kommer'} — eller{' '}
+                {links.siteLabel}, om du hellre gör allt själv.
+              </p>
+            </>
           )}
         </div>
       </div>

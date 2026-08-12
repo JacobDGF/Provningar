@@ -98,6 +98,14 @@ const RULES: Array<{ kind: RegistrationKind; match: (url: URL) => boolean }> = [
   },
   { kind: 'form', match: (u) => u.hostname === 'ansokan-provning.nti.se' },
   { kind: 'pdf', match: (u) => u.pathname.toLowerCase().endsWith('.pdf') },
+  // Document endpoints that serve a PDF without saying so in the path. Gotland's
+  // document service is the one in the dataset (verified: application/pdf), and
+  // a blankett behind an opaque URL is still a blankett — promising the user a
+  // web form there would be wrong.
+  { kind: 'pdf', match: (u) => u.hostname.startsWith('dokument.') },
+  // IST Open24 — the application portal several kommuner run their vuxenutbildning
+  // on. You land on its login, which is the e-service itself, not a page about one.
+  { kind: 'eservice', match: (u) => u.hostname === 'open24.ist-asp.com' },
   // Webshops — Iris and MedLearn sell prövningsplatser like any other product.
   { kind: 'webshop', match: (u) => u.hostname.startsWith('shop.') },
   // Alvis: the /provning/amnesomrade and /hittakurser entry points are course

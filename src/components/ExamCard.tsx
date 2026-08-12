@@ -9,12 +9,15 @@ import {
   Navigation,
   ShieldCheck,
   MousePointerClick,
+  Globe,
+  Ban,
 } from 'lucide-react';
 import { Exam } from '../types';
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
-import { isOpenForRegistration, daysUntil } from '../lib/examStatus';
+import { isOpenForRegistration, isFullyBooked, daysUntil } from '../lib/examStatus';
 import { getRegistrationFlow } from '../lib/registrationFlow';
+import { getProviderLinks } from '../lib/providerLinks';
 import { SchoolCover } from './SchoolCover';
 
 interface ExamCardProps {
@@ -52,9 +55,12 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
   const { nextPeriod } = exam;
   const deadlineDate = nextPeriod.confirmed ? nextPeriod.applicationEnd : undefined;
   const deadlineDays = deadlineDate ? daysUntil(deadlineDate) : null;
-  const urgent = deadlineDays !== null && deadlineDays <= 7 && deadlineDays >= 0;
+  const full = isFullyBooked(exam);
+  // A countdown on a round nobody can join is just pressure with no exit.
+  const urgent = deadlineDays !== null && deadlineDays <= 7 && deadlineDays >= 0 && !full;
   const openNow = isOpenForRegistration(exam);
   const flow = getRegistrationFlow(exam);
+  const links = getProviderLinks(exam);
 
   const distanceKm = userLocation
     ? haversineDistanceKm(userLocation.lat, userLocation.lng, exam.lat, exam.lng)
@@ -140,6 +146,12 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
       {/* Body */}
       <div className="p-4">
         <div className="flex flex-wrap items-center gap-1.5 empty:hidden mb-2.5">
+          {full && (
+            <span className="inline-flex items-center gap-1 bg-sand text-ink-soft text-xs font-bold px-2.5 py-1 rounded-full">
+              <Ban size={11} />
+              Fullbokat
+            </span>
+          )}
           {openNow && (
             <span className="inline-flex items-center gap-1.5 bg-trust-50 text-trust-700 text-xs font-bold px-2.5 py-1 rounded-full">
               <span className="relative flex h-1.5 w-1.5">
@@ -203,16 +215,33 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
           </div>
         </div>
 
-        <a
-          href={exam.registrationUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
-          className="mt-4 w-full flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold py-3 rounded transition-colors active:scale-98 shadow-sm shadow-brand-200"
-        >
-          <ExternalLink size={15} />
-          {flow.ctaLabel} hos {exam.provider}
-        </a>
+        {/* Two destinations: the verified deep link, and the provider's own site
+            for anyone who'd rather navigate it themselves. */}
+        <div className="mt-4 flex gap-2">
+          <a
+            href={links.booking}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="flex-1 flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold py-3 rounded transition-colors active:scale-98 shadow-sm shadow-brand-200"
+          >
+            <ExternalLink size={15} />
+            {flow.ctaLabel}
+          </a>
+          {links.hasAlternative && (
+            <a
+              href={links.site}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              title={`Öppna ${links.siteLabel}`}
+              className="flex items-center justify-center gap-1.5 bg-surface border border-line hover:border-brand-300 hover:bg-brand-50 text-ink-soft text-sm font-bold px-3 py-3 rounded transition-colors active:scale-98"
+            >
+              <Globe size={15} className="text-brand-600" />
+              <span className="hidden sm:inline">Skolans sida</span>
+            </a>
+          )}
+        </div>
       </div>
     </div>
   );

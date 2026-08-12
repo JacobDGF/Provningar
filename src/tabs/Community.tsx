@@ -8,9 +8,15 @@ import {
   ChevronUp,
   Users,
   HelpCircle,
+  Trash2,
+  Search,
+  ArrowUpDown,
+  ArrowRight,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useStore } from '../store/useStore';
+import { Avatar } from '../components/Avatar';
+import { useEscapeKey } from '../hooks/useEscapeKey';
 import { Post, PostKind } from '../types';
 
 const KINDS: { value: PostKind; label: string; emoji: string; color: string }[] = [
@@ -36,14 +42,33 @@ function timeAgo(dateStr: string) {
 }
 
 function PostCard({ post }: { post: Post }) {
-  const { toggleLikePost, toggleLikeReply, addReply, currentUser, toggleFollow } = useStore();
+  const {
+    toggleLikePost,
+    toggleLikeReply,
+    addReply,
+    deletePost,
+    currentUser,
+    toggleFollow,
+    setActiveTab,
+    setFilterSubject,
+    setSearchQuery,
+  } = useStore();
   const [showReplies, setShowReplies] = useState(false);
   const [replyText, setReplyText] = useState('');
   const [showReplyInput, setShowReplyInput] = useState(false);
 
   const isLiked = post.likedBy.includes('me');
+  const isMine = post.userId === 'me';
   const isFollowing = currentUser.following.includes(post.userId);
   const meta = kindMeta(post.kind);
+  const subject = post.subject;
+
+  /** Jump from a post's subject to the listings in that subject. */
+  const showExamsForSubject = (subject: string) => {
+    setFilterSubject(subject);
+    setSearchQuery('');
+    setActiveTab('discover');
+  };
 
   const submitReply = () => {
     if (!replyText.trim()) return;
@@ -58,16 +83,17 @@ function PostCard({ post }: { post: Post }) {
       {/* Author */}
       <div className="p-4 pb-3">
         <div className="flex items-start gap-3">
-          <img
-            src={post.userAvatar}
-            alt={post.userName}
-            className="w-10 h-10 rounded-full object-cover flex-shrink-0"
-          />
+          <Avatar name={post.userName} src={post.userAvatar} seed={post.userId} size={40} />
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="font-bold text-ink text-sm">{post.userName}</span>
-                {post.userId !== 'me' && (
+                {isMine && (
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-50 text-brand-700">
+                    Ditt inlägg
+                  </span>
+                )}
+                {!isMine && (
                   <button
                     onClick={() => toggleFollow(post.userId)}
                     className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
@@ -88,10 +114,18 @@ function PostCard({ post }: { post: Post }) {
                   {meta.emoji} {meta.label}
                 </span>
               )}
-              {post.subject && (
-                <span className="text-xs bg-brand-50 text-brand-700 px-2 py-0.5 rounded-full font-medium">
-                  {post.subject}
-                </span>
+              {subject && (
+                // The tab's dead end used to be right here: you'd read that
+                // someone passed Kemi 1 and then have to go hunt for kemi
+                // prövningar by hand. The chip is the shortcut.
+                <button
+                  onClick={() => showExamsForSubject(subject)}
+                  title={`Visa prövningar i ${subject}`}
+                  className="text-xs bg-brand-50 hover:bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full font-medium inline-flex items-center gap-1 transition-colors"
+                >
+                  {subject}
+                  <ArrowRight size={10} />
+                </button>
               )}
             </div>
           </div>
@@ -132,16 +166,23 @@ function PostCard({ post }: { post: Post }) {
         >
           {showReplyInput ? 'Avbryt' : 'Skriv svar'}
         </button>
+        {isMine && (
+          <button
+            onClick={() => {
+              if (window.confirm('Ta bort inlägget?')) deletePost(post.id);
+            }}
+            aria-label="Ta bort inlägget"
+            className="text-ink-faint hover:text-red-500 transition-colors"
+          >
+            <Trash2 size={16} />
+          </button>
+        )}
       </div>
 
       {/* Reply input */}
       {showReplyInput && (
         <div className="px-4 pb-3 flex gap-2">
-          <img
-            src={currentUser.avatar}
-            alt="Du"
-            className="w-7 h-7 rounded-full object-cover flex-shrink-0"
-          />
+          <Avatar name={currentUser.name} src={currentUser.avatar} seed="me" size={28} />
           <div className="flex-1 flex gap-2 bg-sand rounded px-3 py-2">
             <input
               type="text"
@@ -178,10 +219,12 @@ function PostCard({ post }: { post: Post }) {
             const replyLiked = reply.likedBy.includes('me');
             return (
               <div key={reply.id} className="px-4 py-3 flex gap-2.5">
-                <img
+                <Avatar
+                  name={reply.userName}
                   src={reply.userAvatar}
-                  alt={reply.userName}
-                  className="w-7 h-7 rounded-full object-cover flex-shrink-0 mt-0.5"
+                  seed={reply.userId}
+                  size={28}
+                  className="mt-0.5"
                 />
                 <div className="flex-1">
                   <div className="bg-surface rounded px-3 py-2 border border-line">
@@ -220,10 +263,41 @@ export function Community() {
   const [newSubject, setNewSubject] = useState('');
   const [newKind, setNewKind] = useState<PostKind>('fråga');
   const [activeFilter, setActiveFilter] = useState('all');
+  const [query, setQuery] = useState('');
+  const [sortBy, setSortBy] = useState<'new' | 'top'>('new');
+
+  useEscapeKey(
+    useCallback(() => setShowCompose(false), []),
+    showCompose,
+  );
 
   const FILTERS = ['all', 'fråga', 'tips', 'diskussion', 'seger'];
 
-  const filteredPosts = posts.filter((p) => activeFilter === 'all' || p.kind === activeFilter);
+  // Searching the replies too, not just the post: the answer you're looking for
+  // is usually in a thread whose opening question is worded nothing like it.
+  const filteredPosts = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const matches = posts.filter((p) => {
+      if (activeFilter !== 'all' && p.kind !== activeFilter) return false;
+      if (!q) return true;
+      const haystack = [
+        p.content,
+        p.userName,
+        p.subject ?? '',
+        ...p.tags,
+        ...p.replies.map((r) => r.content),
+      ]
+        .join(' ')
+        .toLowerCase();
+      return haystack.includes(q);
+    });
+
+    return [...matches].sort((a, b) =>
+      sortBy === 'top'
+        ? b.likes + b.replies.length - (a.likes + a.replies.length)
+        : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+  }, [posts, activeFilter, query, sortBy]);
 
   const handlePost = () => {
     if (!newPost.trim()) return;
@@ -266,6 +340,41 @@ export function Community() {
             </div>
           </div>
 
+          {/* Search + sort. The sort control sits here rather than at the end of
+              the filter row: that row scrolls horizontally on a phone, and
+              anything past "Diskussion" is off-screen and undiscoverable. */}
+          <div className="flex items-center gap-2 mb-2.5">
+            <div className="flex-1 flex items-center gap-2 bg-sand rounded-md px-3 py-2.5 min-w-0">
+              <Search size={17} className="text-ink-faint flex-shrink-0" />
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Sök i inlägg och svar…"
+                aria-label="Sök i communityn"
+                className="flex-1 bg-transparent text-sm text-ink placeholder-ink-faint outline-none min-w-0"
+              />
+              {query && (
+                <button onClick={() => setQuery('')} aria-label="Rensa sökningen">
+                  <X size={15} className="text-ink-faint" />
+                </button>
+              )}
+            </div>
+            <button
+              onClick={() => setSortBy((s) => (s === 'new' ? 'top' : 'new'))}
+              title={sortBy === 'new' ? 'Visar senaste först' : 'Visar mest engagemang först'}
+              aria-label={
+                sortBy === 'new'
+                  ? 'Sortering: senaste först. Byt till mest engagemang.'
+                  : 'Sortering: mest engagemang först. Byt till senaste.'
+              }
+              className="flex-shrink-0 h-[42px] px-3 rounded-md bg-sand hover:bg-line text-ink-soft text-xs font-semibold transition-colors inline-flex items-center gap-1.5"
+            >
+              <ArrowUpDown size={14} />
+              {sortBy === 'new' ? 'Senaste' : 'Populärast'}
+            </button>
+          </div>
+
           {/* Kind filter */}
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {FILTERS.map((f) => (
@@ -290,11 +399,43 @@ export function Community() {
           {filteredPosts.map((post) => (
             <PostCard key={post.id} post={post} />
           ))}
-          {filteredPosts.length === 0 && (
-            <div className="text-center py-12 text-ink-faint">
-              Inga inlägg i den här kategorin än.
-            </div>
-          )}
+          {filteredPosts.length === 0 &&
+            (query.trim() ? (
+              <div className="text-center py-12 px-6">
+                <p className="text-ink font-semibold">Inget inlägg matchar ”{query.trim()}”.</p>
+                <p className="text-ink-soft text-sm mt-1">
+                  Sökningen täcker både inlägg och svar. Prova ett kortare ord — eller ställ frågan
+                  själv.
+                </p>
+                <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
+                  <button
+                    onClick={() => setQuery('')}
+                    className="inline-flex items-center gap-1.5 bg-sand hover:bg-line text-ink-soft text-sm font-bold px-4 py-2.5 rounded transition-colors"
+                  >
+                    <X size={15} /> Rensa sökningen
+                  </button>
+                  <button
+                    onClick={() => setShowCompose(true)}
+                    className="inline-flex items-center gap-1.5 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold px-4 py-2.5 rounded transition-colors"
+                  >
+                    <Plus size={15} /> Ställ frågan
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-12 px-6">
+                <p className="text-ink font-semibold">Inga inlägg i den här kategorin än.</p>
+                <p className="text-ink-soft text-sm mt-1">
+                  Bli den första som skriver — det är ofta någon annan som undrar samma sak.
+                </p>
+                <button
+                  onClick={() => setShowCompose(true)}
+                  className="mt-4 inline-flex items-center gap-1.5 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold px-4 py-2.5 rounded transition-colors"
+                >
+                  <Plus size={15} /> Skriv ett inlägg
+                </button>
+              </div>
+            ))}
         </div>
       </div>
 
@@ -340,11 +481,7 @@ export function Community() {
             </div>
 
             <div className="flex gap-3 mb-4">
-              <img
-                src={currentUser.avatar}
-                alt="Du"
-                className="w-10 h-10 rounded-full object-cover flex-shrink-0"
-              />
+              <Avatar name={currentUser.name} src={currentUser.avatar} seed="me" size={40} />
               <textarea
                 value={newPost}
                 onChange={(e) => setNewPost(e.target.value)}
@@ -354,6 +491,13 @@ export function Community() {
                 autoFocus
               />
             </div>
+
+            {!currentUser.avatar && (
+              <p className="text-ink-faint text-xs -mt-2 mb-4">
+                Du visas med dina initialer. Vill du ha en bild lägger du till en egen under Profil
+                — appen använder aldrig färdiga porträtt av andra.
+              </p>
+            )}
 
             {/* Subject select */}
             <div className="mb-4">

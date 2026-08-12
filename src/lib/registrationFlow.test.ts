@@ -21,6 +21,9 @@ const CASES: Array<[string, RegistrationKind]> = [
     'coursepicker',
   ],
   ['https://norrkoping.alvis.se/login', 'eservice'],
+  // Verified as application/pdf despite the URL saying nothing about it.
+  ['https://dokument.gotland.se/IntegrationService.svc/doc/content/47915', 'pdf'],
+  ['https://open24.ist-asp.com/kunskapsnavet/vux/Vux/Login?ref=Application%2FOverview', 'eservice'],
   ['https://sjalvservice.malmo.se/oversikt/overview/926', 'eservice'],
   ['https://boden.enamnd.se/oversikt/overview/3858', 'eservice'],
   ['https://etjanst.motala.se/provning', 'eservice'],

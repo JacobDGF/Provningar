@@ -6,6 +6,15 @@ export interface NextPeriod {
   examWindowEnd?: string;
   /** True when we have a real confirmed date for this period. When false, the UI must not present a fabricated date — link out instead. */
   confirmed: boolean;
+  /**
+   * True when the provider has published this round as fully booked.
+   *
+   * A dated window that is already full is the one case where "öppen för
+   * anmälan" would be true and useless — the dates say yes, the provider says
+   * no. Set it only from the provider's own wording ("Fullbokat", "inga platser
+   * kvar"), never inferred.
+   */
+  full?: boolean;
 }
 
 /** What kind of system `registrationUrl` drops the user into. */
@@ -81,7 +90,11 @@ export interface Post {
   id: string;
   userId: string;
   userName: string;
-  userAvatar: string;
+  /**
+   * Only ever a photo the author took themselves (`data:`/`blob:`), and only on
+   * this device. Everyone else renders as a drawn monogram — see `lib/avatar.ts`.
+   */
+  userAvatar?: string;
   content: string;
   subject?: string;
   kind?: PostKind;
@@ -96,7 +109,8 @@ export interface Reply {
   id: string;
   userId: string;
   userName: string;
-  userAvatar: string;
+  /** Same rule as `Post.userAvatar`: the author's own photo, or nothing. */
+  userAvatar?: string;
   content: string;
   createdAt: string;
   likes: number;
@@ -107,6 +121,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  /** Empty until the user supplies their own photo; never a stock image. */
   avatar: string;
   bio: string;
   following: string[];
