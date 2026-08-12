@@ -15,10 +15,11 @@ import {
   Map,
   ListChecks,
   Globe,
+  Ban,
 } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
-import { isOpenForRegistration, daysUntil } from '../lib/examStatus';
+import { isOpenForRegistration, isFullyBooked, daysUntil } from '../lib/examStatus';
 import { getRegistrationFlow } from '../lib/registrationFlow';
 import { getProviderLinks } from '../lib/providerLinks';
 import { SchoolCover } from './SchoolCover';
@@ -57,7 +58,9 @@ export function ExamDetail() {
   const { nextPeriod } = exam;
   const deadlineDate = nextPeriod.confirmed ? nextPeriod.applicationEnd : undefined;
   const deadlineDays = deadlineDate ? daysUntil(deadlineDate) : null;
-  const urgent = deadlineDays !== null && deadlineDays <= 7 && deadlineDays >= 0;
+  const full = isFullyBooked(exam);
+  // A countdown on a round nobody can join is just pressure with no exit.
+  const urgent = deadlineDays !== null && deadlineDays <= 7 && deadlineDays >= 0 && !full;
   const openNow = isOpenForRegistration(exam);
   const flow = getRegistrationFlow(exam);
   const links = getProviderLinks(exam);
@@ -128,6 +131,21 @@ export function ExamDetail() {
                 {formatDateShort(exam.verifiedAt)}.
               </p>
             </div>
+
+            {/* Round is full — said outright, because the dates below still
+                look like an open window and would otherwise mislead. */}
+            {full && (
+              <div className="bg-sand border border-line rounded p-3 flex items-start gap-2">
+                <Ban size={18} className="text-ink-soft flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-ink text-sm font-semibold">Den här omgången är fullbokad</p>
+                  <p className="text-ink-soft text-xs mt-0.5 leading-relaxed">
+                    {exam.provider} har meddelat att platserna är slut. Datumen nedan gäller
+                    fortfarande — men du behöver vänta på nästa omgång.
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* Open for registration now */}
             {openNow && (

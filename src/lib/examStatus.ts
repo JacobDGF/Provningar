@@ -12,11 +12,21 @@ import { Exam } from '../types';
 export function isOpenForRegistration(exam: Exam): boolean {
   const { nextPeriod: p } = exam;
   if (!p.confirmed) return false;
+  // A full round is closed however its dates read: the provider has said so
+  // outright, and that beats the calendar.
+  if (p.full) return false;
   if (!p.applicationStart && !p.applicationEnd) return false;
   const now = Date.now();
   if (p.applicationStart && now < new Date(p.applicationStart).getTime()) return false;
   if (p.applicationEnd && now > endOfDay(p.applicationEnd)) return false;
   return true;
+}
+
+/** True when the provider has published this round as fully booked. Kept
+    separate from `isOpenForRegistration` so the UI can say *why* it is closed —
+    "fullbokat" and "inte öppnat än" send the user to different next steps. */
+export function isFullyBooked(exam: Exam): boolean {
+  return exam.nextPeriod.full === true;
 }
 
 export function daysUntil(dateStr: string): number {

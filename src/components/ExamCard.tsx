@@ -10,11 +10,12 @@ import {
   ShieldCheck,
   MousePointerClick,
   Globe,
+  Ban,
 } from 'lucide-react';
 import { Exam } from '../types';
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
-import { isOpenForRegistration, daysUntil } from '../lib/examStatus';
+import { isOpenForRegistration, isFullyBooked, daysUntil } from '../lib/examStatus';
 import { getRegistrationFlow } from '../lib/registrationFlow';
 import { getProviderLinks } from '../lib/providerLinks';
 import { SchoolCover } from './SchoolCover';
@@ -54,7 +55,9 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
   const { nextPeriod } = exam;
   const deadlineDate = nextPeriod.confirmed ? nextPeriod.applicationEnd : undefined;
   const deadlineDays = deadlineDate ? daysUntil(deadlineDate) : null;
-  const urgent = deadlineDays !== null && deadlineDays <= 7 && deadlineDays >= 0;
+  const full = isFullyBooked(exam);
+  // A countdown on a round nobody can join is just pressure with no exit.
+  const urgent = deadlineDays !== null && deadlineDays <= 7 && deadlineDays >= 0 && !full;
   const openNow = isOpenForRegistration(exam);
   const flow = getRegistrationFlow(exam);
   const links = getProviderLinks(exam);
@@ -143,6 +146,12 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
       {/* Body */}
       <div className="p-4">
         <div className="flex flex-wrap items-center gap-1.5 empty:hidden mb-2.5">
+          {full && (
+            <span className="inline-flex items-center gap-1 bg-sand text-ink-soft text-xs font-bold px-2.5 py-1 rounded-full">
+              <Ban size={11} />
+              Fullbokat
+            </span>
+          )}
           {openNow && (
             <span className="inline-flex items-center gap-1.5 bg-trust-50 text-trust-700 text-xs font-bold px-2.5 py-1 rounded-full">
               <span className="relative flex h-1.5 w-1.5">
