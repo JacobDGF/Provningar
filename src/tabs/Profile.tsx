@@ -17,6 +17,7 @@ import {
   Trash2,
   CalendarClock,
   TrendingUp,
+  Download,
 } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useStore } from '../store/useStore';
@@ -24,7 +25,7 @@ import { SchoolCover } from '../components/SchoolCover';
 import { Avatar } from '../components/Avatar';
 import { fileToAvatarDataUrl } from '../lib/avatar';
 import { summarizeGrades, gradeChipClass } from '../lib/grades';
-import { daysUntil } from '../lib/examStatus';
+import { daysUntil, isFullyBooked } from '../lib/examStatus';
 
 const GRADE_OPTIONS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -73,7 +74,12 @@ export function Profile() {
       exam,
       days: exam.nextPeriod.applicationEnd ? daysUntil(exam.nextPeriod.applicationEnd) : null,
     }))
-    .filter((d) => d.exam.nextPeriod.confirmed && d.days !== null && d.days >= 0)
+    // A full round has a deadline you cannot act on, so it isn't the one to
+    // put at the top of the profile.
+    .filter(
+      (d) =>
+        d.exam.nextPeriod.confirmed && !isFullyBooked(d.exam) && d.days !== null && d.days >= 0,
+    )
     .sort((a, b) => (a.days as number) - (b.days as number))[0];
 
   const pickPhoto = async (file: File | undefined) => {
@@ -114,8 +120,41 @@ export function Profile() {
     setShowAddExam(false);
   };
 
+  /**
+   * Everything in this app lives in one browser's localStorage: clear the site
+   * data, switch phone, or hit "Återställ appen" and the saved prövningar,
+   * grades and posts are gone with no server-side copy to restore from. An
+   * export is the only backup that exists, so it sits right next to the button
+   * that destroys the original.
+   */
+  const exportData = () => {
+    const payload = {
+      exporteradFrån: 'Hitta prövningar',
+      exporteradDen: new Date().toISOString(),
+      profil: currentUser,
+      sparadePrövningar: savedExams,
+      minaInlägg: myPosts,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: 'application/json;charset=utf-8',
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `provningar-mina-data-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+
   const resetApp = () => {
-    if (window.confirm('Är du säker? All data raderas.')) {
+    if (
+      window.confirm(
+        'Är du säker? Sparade prövningar, betyg och inlägg raderas från den här enheten och går ' +
+          'inte att få tillbaka. Exportera dina data först om du vill ha en kopia.',
+      )
+    ) {
       localStorage.clear();
       window.location.reload();
     }
@@ -539,6 +578,26 @@ export function Profile() {
             webbläsaren. Ingenting skickas till någon server, och appen tar aldrig emot din anmälan:
             den görs alltid hos skolan.
           </p>
+
+          {/* Your data — export sits above reset on purpose: the backup should
+              be the thing you see first, not an afterthought next to the wipe. */}
+          <div className="bg-surface mx-4 lg:mx-0 mt-3 rounded-md p-4 border border-line">
+            <h3 className="font-bold text-ink mb-1 flex items-center gap-2">
+              <Download size={16} className="text-brand-600" />
+              Dina data
+            </h3>
+            <p className="text-ink-soft text-sm leading-relaxed mb-3">
+              Allt du sparar ligger bara i den här webbläsaren — inget skickas någonstans. Byter du
+              telefon eller rensar webbläsaren försvinner det, så ta en kopia först.
+            </p>
+            <button
+              onClick={exportData}
+              className="w-full flex items-center justify-center gap-2 bg-brand-50 hover:bg-brand-100 text-brand-700 text-sm font-bold py-3 rounded transition-colors active:scale-98"
+            >
+              <Download size={15} />
+              Exportera mina data (JSON)
+            </button>
+          </div>
 
           {/* Reset */}
           <div className="mx-4 lg:mx-0 mt-3 mb-4">

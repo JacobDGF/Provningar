@@ -9,8 +9,11 @@ import {
   Users,
   HelpCircle,
   Trash2,
+  Search,
+  ArrowUpDown,
+  ArrowRight,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useStore } from '../store/useStore';
 import { Avatar } from '../components/Avatar';
 import { Post, PostKind } from '../types';
@@ -38,8 +41,17 @@ function timeAgo(dateStr: string) {
 }
 
 function PostCard({ post }: { post: Post }) {
-  const { toggleLikePost, toggleLikeReply, addReply, deletePost, currentUser, toggleFollow } =
-    useStore();
+  const {
+    toggleLikePost,
+    toggleLikeReply,
+    addReply,
+    deletePost,
+    currentUser,
+    toggleFollow,
+    setActiveTab,
+    setFilterSubject,
+    setSearchQuery,
+  } = useStore();
   const [showReplies, setShowReplies] = useState(false);
   const [replyText, setReplyText] = useState('');
   const [showReplyInput, setShowReplyInput] = useState(false);
@@ -48,6 +60,14 @@ function PostCard({ post }: { post: Post }) {
   const isMine = post.userId === 'me';
   const isFollowing = currentUser.following.includes(post.userId);
   const meta = kindMeta(post.kind);
+  const subject = post.subject;
+
+  /** Jump from a post's subject to the listings in that subject. */
+  const showExamsForSubject = (subject: string) => {
+    setFilterSubject(subject);
+    setSearchQuery('');
+    setActiveTab('discover');
+  };
 
   const submitReply = () => {
     if (!replyText.trim()) return;
@@ -93,10 +113,18 @@ function PostCard({ post }: { post: Post }) {
                   {meta.emoji} {meta.label}
                 </span>
               )}
-              {post.subject && (
-                <span className="text-xs bg-brand-50 text-brand-700 px-2 py-0.5 rounded-full font-medium">
-                  {post.subject}
-                </span>
+              {subject && (
+                // The tab's dead end used to be right here: you'd read that
+                // someone passed Kemi 1 and then have to go hunt for kemi
+                // prövningar by hand. The chip is the shortcut.
+                <button
+                  onClick={() => showExamsForSubject(subject)}
+                  title={`Visa prövningar i ${subject}`}
+                  className="text-xs bg-brand-50 hover:bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full font-medium inline-flex items-center gap-1 transition-colors"
+                >
+                  {subject}
+                  <ArrowRight size={10} />
+                </button>
               )}
             </div>
           </div>
@@ -234,10 +262,36 @@ export function Community() {
   const [newSubject, setNewSubject] = useState('');
   const [newKind, setNewKind] = useState<PostKind>('fråga');
   const [activeFilter, setActiveFilter] = useState('all');
+  const [query, setQuery] = useState('');
+  const [sortBy, setSortBy] = useState<'new' | 'top'>('new');
 
   const FILTERS = ['all', 'fråga', 'tips', 'diskussion', 'seger'];
 
-  const filteredPosts = posts.filter((p) => activeFilter === 'all' || p.kind === activeFilter);
+  // Searching the replies too, not just the post: the answer you're looking for
+  // is usually in a thread whose opening question is worded nothing like it.
+  const filteredPosts = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const matches = posts.filter((p) => {
+      if (activeFilter !== 'all' && p.kind !== activeFilter) return false;
+      if (!q) return true;
+      const haystack = [
+        p.content,
+        p.userName,
+        p.subject ?? '',
+        ...p.tags,
+        ...p.replies.map((r) => r.content),
+      ]
+        .join(' ')
+        .toLowerCase();
+      return haystack.includes(q);
+    });
+
+    return [...matches].sort((a, b) =>
+      sortBy === 'top'
+        ? b.likes + b.replies.length - (a.likes + a.replies.length)
+        : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+  }, [posts, activeFilter, query, sortBy]);
 
   const handlePost = () => {
     if (!newPost.trim()) return;
@@ -280,7 +334,25 @@ export function Community() {
             </div>
           </div>
 
-          {/* Kind filter */}
+          {/* Search */}
+          <div className="flex items-center gap-2 bg-sand rounded-md px-3 py-2.5 mb-2.5">
+            <Search size={17} className="text-ink-faint flex-shrink-0" />
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Sök i inlägg och svar…"
+              aria-label="Sök i communityn"
+              className="flex-1 bg-transparent text-sm text-ink placeholder-ink-faint outline-none min-w-0"
+            />
+            {query && (
+              <button onClick={() => setQuery('')} aria-label="Rensa sökningen">
+                <X size={15} className="text-ink-faint" />
+              </button>
+            )}
+          </div>
+
+          {/* Kind filter + sort */}
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {FILTERS.map((f) => (
               <button
@@ -295,6 +367,14 @@ export function Community() {
                   : `${kindMeta(f as PostKind)?.emoji} ${kindMeta(f as PostKind)?.label}`}
               </button>
             ))}
+            <span className="flex-shrink-0 w-px bg-line mx-1 my-1" aria-hidden="true" />
+            <button
+              onClick={() => setSortBy((s) => (s === 'new' ? 'top' : 'new'))}
+              className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs lg:text-sm font-semibold bg-sand text-ink-soft hover:bg-line transition-colors inline-flex items-center gap-1"
+            >
+              <ArrowUpDown size={12} />
+              {sortBy === 'new' ? 'Senaste' : 'Mest engagemang'}
+            </button>
           </div>
         </div>
       </div>
@@ -304,20 +384,43 @@ export function Community() {
           {filteredPosts.map((post) => (
             <PostCard key={post.id} post={post} />
           ))}
-          {filteredPosts.length === 0 && (
-            <div className="text-center py-12 px-6">
-              <p className="text-ink font-semibold">Inga inlägg i den här kategorin än.</p>
-              <p className="text-ink-soft text-sm mt-1">
-                Bli den första som skriver — det är ofta någon annan som undrar samma sak.
-              </p>
-              <button
-                onClick={() => setShowCompose(true)}
-                className="mt-4 inline-flex items-center gap-1.5 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold px-4 py-2.5 rounded transition-colors"
-              >
-                <Plus size={15} /> Skriv ett inlägg
-              </button>
-            </div>
-          )}
+          {filteredPosts.length === 0 &&
+            (query.trim() ? (
+              <div className="text-center py-12 px-6">
+                <p className="text-ink font-semibold">Inget inlägg matchar ”{query.trim()}”.</p>
+                <p className="text-ink-soft text-sm mt-1">
+                  Sökningen täcker både inlägg och svar. Prova ett kortare ord — eller ställ frågan
+                  själv.
+                </p>
+                <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
+                  <button
+                    onClick={() => setQuery('')}
+                    className="inline-flex items-center gap-1.5 bg-sand hover:bg-line text-ink-soft text-sm font-bold px-4 py-2.5 rounded transition-colors"
+                  >
+                    <X size={15} /> Rensa sökningen
+                  </button>
+                  <button
+                    onClick={() => setShowCompose(true)}
+                    className="inline-flex items-center gap-1.5 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold px-4 py-2.5 rounded transition-colors"
+                  >
+                    <Plus size={15} /> Ställ frågan
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-12 px-6">
+                <p className="text-ink font-semibold">Inga inlägg i den här kategorin än.</p>
+                <p className="text-ink-soft text-sm mt-1">
+                  Bli den första som skriver — det är ofta någon annan som undrar samma sak.
+                </p>
+                <button
+                  onClick={() => setShowCompose(true)}
+                  className="mt-4 inline-flex items-center gap-1.5 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold px-4 py-2.5 rounded transition-colors"
+                >
+                  <Plus size={15} /> Skriv ett inlägg
+                </button>
+              </div>
+            ))}
         </div>
       </div>
 
