@@ -97,6 +97,37 @@ describe('EXAMS dataset', () => {
     expect(bad.map((e) => e.id)).toEqual([]);
   });
 
+  /**
+   * The one flow that leaves work on the user's desk.
+   *
+   * Every other kind lands somewhere that *is* the booking, or says plainly
+   * that it isn't (a blankett, an e-postadress, a form that goes up on a named
+   * date). A bare `page` says "leta upp anmälningslänken på sidan" and hopes.
+   * That is sometimes the truth — a few providers really do bury the link — but
+   * it is also what a listing looks like when nobody has checked it yet, and
+   * the two are indistinguishable from the outside.
+   *
+   * So the set is pinned rather than counted. Adding a listing that only
+   * reaches an information page is allowed; doing it without noticing is not.
+   * Fixing one means deleting a line here, which is the good direction.
+   */
+  it('names every listing that only reaches an information page', () => {
+    const stranded = EXAMS.filter((e) => !e.registration && getRegistrationFlow(e).kind === 'page');
+    expect(stranded.map((e) => e.id).sort()).toEqual([
+      // Jönköping: the kommun says anmälan sker "via e-tjänsten" but publishes
+      // no link to it, and their självservice portal has no prövning entry.
+      'komvux-i-jonkoping-jonkoping-flera-kurser-kontakta-skolan-fo',
+      // Komvux Södermalm: the site refuses automated requests (503), so the
+      // registration route can only be re-checked by hand.
+      'sodermalm-fysik2',
+      'sodermalm-kemi1',
+      // Skövde: the prövningssida lists courses and nothing else — no form, no
+      // e-tjänst, no address, only kommunens växel.
+      'vuxenutbildning-skovde-skovde-matematik-3b',
+      'vuxenutbildning-skovde-skovde-svenska-3',
+    ]);
+  });
+
   it('resolves a registration flow for every listing', () => {
     for (const exam of EXAMS) {
       const flow = getRegistrationFlow(exam);
