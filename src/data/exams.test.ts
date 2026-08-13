@@ -107,25 +107,14 @@ describe('EXAMS dataset', () => {
    * it is also what a listing looks like when nobody has checked it yet, and
    * the two are indistinguishable from the outside.
    *
-   * So the set is pinned rather than counted. Adding a listing that only
-   * reaches an information page is allowed; doing it without noticing is not.
-   * Fixing one means deleting a line here, which is the good direction.
+   * The list is empty: every listing either lands on the booking or carries a
+   * `registration` override saying what the user meets instead. Adding one that
+   * does neither is allowed — but it has to be written down here first, so it
+   * is a decision somebody made rather than a row nobody got to.
    */
   it('names every listing that only reaches an information page', () => {
     const stranded = EXAMS.filter((e) => !e.registration && getRegistrationFlow(e).kind === 'page');
-    expect(stranded.map((e) => e.id).sort()).toEqual([
-      // Jönköping: the kommun says anmälan sker "via e-tjänsten" but publishes
-      // no link to it, and their självservice portal has no prövning entry.
-      'komvux-i-jonkoping-jonkoping-flera-kurser-kontakta-skolan-fo',
-      // Komvux Södermalm: the site refuses automated requests (503), so the
-      // registration route can only be re-checked by hand.
-      'sodermalm-fysik2',
-      'sodermalm-kemi1',
-      // Skövde: the prövningssida lists courses and nothing else — no form, no
-      // e-tjänst, no address, only kommunens växel.
-      'vuxenutbildning-skovde-skovde-matematik-3b',
-      'vuxenutbildning-skovde-skovde-svenska-3',
-    ]);
+    expect(stranded.map((e) => e.id).sort()).toEqual([]);
   });
 
   it('resolves a registration flow for every listing', () => {

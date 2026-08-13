@@ -264,16 +264,18 @@ export const EXAMS: Exam[] = [
     nextPeriod: sthlmAutumn2026('2026-08-13', 'torsdag 13 augusti 2026'),
     components: COMPONENTS_KEMI,
     studyTips: TIPS_KEMI,
-    // Checked 2026-08-11: anmälan is a form published on this page when the
-    // school's window opens (13 augusti, per Stockholms stads rota). No deeper
-    // link exists to point at in the meantime.
+    // Checked 2026-08-13: anmälan is a form published on this page when the
+    // school's window opens — "anmälan blir tillgänglig på den dag och tid som
+    // anges i prövningsschemat", först till kvarn, ingen reservlista och ingen
+    // efteranmälan. No deeper link exists to point at in the meantime.
+    registration: publishedOnPage('anmälningsformuläret', 'den 13 augusti kl. 10'),
     registrationUrl: 'https://komvuxsodermalm.stockholm/provningar/anmalan-till-provning/',
     infoUrl:
       'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/kemi-laroplan-gy11gy25/provning-i-kemi-1/',
     description:
       'Prövning i Kemi 1 hos Komvux Södermalm, en av Stockholms stads vuxenutbildningar. Avgiften följer det nationella pristaket på 500 kr.',
     tags: ['kemi', 'naturvetenskap', 'stockholm'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: LINK_SWEEP_VERIFIED,
   },
   {
     id: 'sodermalm-fysik2',
@@ -293,16 +295,18 @@ export const EXAMS: Exam[] = [
     nextPeriod: sthlmAutumn2026('2026-08-13', 'torsdag 13 augusti 2026'),
     components: COMPONENTS_FYSIK,
     studyTips: TIPS_FYSIK,
-    // Checked 2026-08-11: anmälan is a form published on this page when the
-    // school's window opens (13 augusti, per Stockholms stads rota). No deeper
-    // link exists to point at in the meantime.
+    // Checked 2026-08-13: anmälan is a form published on this page when the
+    // school's window opens — "anmälan blir tillgänglig på den dag och tid som
+    // anges i prövningsschemat", först till kvarn, ingen reservlista och ingen
+    // efteranmälan. No deeper link exists to point at in the meantime.
+    registration: publishedOnPage('anmälningsformuläret', 'den 13 augusti kl. 10'),
     registrationUrl: 'https://komvuxsodermalm.stockholm/provningar/anmalan-till-provning/',
     infoUrl:
       'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/fysik-laroplan-gy11gy25/provning-i-fysik-2/',
     description:
       'Prövning i Fysik 2 hos Komvux Södermalm. Krävs ofta för tekniska och naturvetenskapliga högskoleutbildningar.',
     tags: ['fysik', 'naturvetenskap', 'stockholm'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: LINK_SWEEP_VERIFIED,
   },
   {
     id: 'taby-flera',
@@ -1408,9 +1412,21 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
-    // Checked 2026-08-11: the page carries course-by-course prövningsupplägg
-    // and no registration link of any kind — Skövde takes anmälan via
-    // kontaktcenter. There is nothing deeper to link to.
+    // Re-checked 2026-08-13: the page is a course catalogue and nothing else —
+    // no form, no e-tjänst, no dates, no prices, and no anmälningsväg anywhere
+    // under vuxenutbildningen in the site tree. Kontaktcenter is the only door
+    // Skövde publishes, so the flow says that outright rather than telling the
+    // user to look for a link that isn't on the page.
+    registration: {
+      kind: 'email',
+      landing:
+        'Skövde publicerar varken blankett eller e-tjänst för prövning — sidan visar bara vad prövningen i varje kurs innehåller.',
+      steps: [
+        'Läs upplägget för din kurs på sidan, så vet du vad prövningen omfattar',
+        'Ring kontaktcenter 0500-49 80 00 eller mejla skovdekommun@skovde.se och be om prövningsanmälan',
+        'Anmäl dig och betala avgiften enligt de instruktioner du får av vuxenutbildningen',
+      ],
+    },
     registrationUrl:
       'https://www.skovde.se/barnomsorg-utbildning/vuxenutbildning-skovde/komvux/vara-utbildningar/gymnasial-niva-gy/provningar-i-teoretiska-gymnasiala-kurser-gy11/',
     infoUrl:
@@ -1418,7 +1434,7 @@ export const EXAMS: Exam[] = [
     description:
       'Komvux Skövde beskriver detaljerat provupplägget för Matematik 3b: ett nationellt prov på plats (4 timmar) följt av en muntlig del på cirka 30 minuter, ofta inom en vecka.',
     tags: ['komvux', 'skovde', 'matematik'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: LINK_SWEEP_VERIFIED,
   },
   {
     id: 'vuxenutbildning-skovde-skovde-svenska-3',
@@ -1443,9 +1459,21 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_SVENSKA,
     studyTips: TIPS_SVENSKA,
-    // Checked 2026-08-11: the page carries course-by-course prövningsupplägg
-    // and no registration link of any kind — Skövde takes anmälan via
-    // kontaktcenter. There is nothing deeper to link to.
+    // Re-checked 2026-08-13: the page is a course catalogue and nothing else —
+    // no form, no e-tjänst, no dates, no prices, and no anmälningsväg anywhere
+    // under vuxenutbildningen in the site tree. Kontaktcenter is the only door
+    // Skövde publishes, so the flow says that outright rather than telling the
+    // user to look for a link that isn't on the page.
+    registration: {
+      kind: 'email',
+      landing:
+        'Skövde publicerar varken blankett eller e-tjänst för prövning — sidan visar bara vad prövningen i varje kurs innehåller.',
+      steps: [
+        'Läs upplägget för din kurs på sidan, så vet du vad prövningen omfattar',
+        'Ring kontaktcenter 0500-49 80 00 eller mejla skovdekommun@skovde.se och be om prövningsanmälan',
+        'Anmäl dig och betala avgiften enligt de instruktioner du får av vuxenutbildningen',
+      ],
+    },
     registrationUrl:
       'https://www.skovde.se/barnomsorg-utbildning/vuxenutbildning-skovde/komvux/vara-utbildningar/gymnasial-niva-gy/provningar-i-teoretiska-gymnasiala-kurser-gy11/',
     infoUrl:
@@ -1453,7 +1481,7 @@ export const EXAMS: Exam[] = [
     description:
       'Prövningen i Svenska 3 hos Komvux Skövde består av tre skriftliga delprov (ca 3 timmar vardera) samt det nationella provet med skriftlig och muntlig del, allt genomfört i skolans lokaler.',
     tags: ['komvux', 'skovde', 'svenska'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: LINK_SWEEP_VERIFIED,
   },
   {
     id: 'uddevalla-vuxenutbildning-uddevalla-flera-kurser-kontakta-sk',
@@ -3089,16 +3117,30 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    // Checked 2026-08-11: no application link on the page — Jönköping's
-    // prövningsanmälan goes through their studievägledning.
+    // Checked 2026-08-13: the page says "Du kan anmäla dig till prövning i
+    // gymnasiala kurser/ämnesnivåer via e-tjänsten (se nedan)", but the
+    // e-tjänst block is rendered client-side and carries no URL we can reach —
+    // etjanst.jonkoping.se refuses automated requests, so there is no deep link
+    // to verify. Grundläggande och sfi anmäls på plats hos SYV oavsett.
+    registration: {
+      kind: 'page',
+      ctaLabel: 'Öppna anmälningssidan',
+      landing:
+        'Anmälan till gymnasiala kurser görs i kommunens e-tjänst, som ligger längst ned på den här sidan under anmälningsperioden.',
+      steps: [
+        'Öppna e-tjänsten längst ned på sidan och logga in',
+        'Välj rätt kurs eller ämnesnivå — fråga SYV först om du är osäker',
+        'Fakturan skickas några veckor innan perioden startar; anmälan är bindande',
+      ],
+    },
     registrationUrl:
       'https://www.jonkoping.se/barn--utbildning/vuxenutbildning-och-yrkeshogskola/komvux-i-jonkoping/studievagledning-for-vuxna/att-studera-pa-komvux/provning-och-validering',
     infoUrl:
       'https://www.jonkoping.se/barn--utbildning/vuxenutbildning-och-yrkeshogskola/komvux-i-jonkoping/studievagledning-for-vuxna/att-studera-pa-komvux/provning-och-validering',
     description:
-      'Komvux i Jönköping erbjuder prövning i alla kurser/ämnesnivåer i sitt utbud och publicerar en tabell med tre prövningsperioder för 2026, inklusive gymnasial nivå.',
+      'Komvux i Jönköping erbjuder prövning i alla kurser/ämnesnivåer i sitt utbud och publicerar en tabell med tre prövningsperioder för 2026. Gymnasiala kurser anmäls i kommunens e-tjänst; för sfi och grundläggande kurser gör du anmälan på plats hos studie- och yrkesvägledare på Lärcentrum, Barnarpsgatan 40.',
     tags: ['komvux', 'jönköping', 'småland'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: LINK_SWEEP_VERIFIED,
   },
   {
     id: 'komvux-vaxjo-vaxjo-flera-kurser-kontakta-skolan-for-kurskod',

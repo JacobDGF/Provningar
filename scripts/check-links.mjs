@@ -51,18 +51,41 @@ function collectUrls() {
  * which defeats the point of running it — so these get their own section and
  * don't fail the run. The cost is real: a link that genuinely dies on one of
  * these hosts will not be caught here, and has to be checked by hand. Each
- * entry stays only as long as the last manual check holds.
+ * entry stays only as long as the last manual check holds, so the list is kept
+ * as short as the evidence allows.
+ *
+ * It used to be longer. Alvis and www.falun.se sat here on the strength of a
+ * 503 that turned out to be rate limiting from our own eight-wide pool — they
+ * answer 200 every time when asked one at a time (see `recheck` below). Waiving
+ * a host is not free: it is the one place a dead link can hide, so a host earns
+ * a line here only by failing the serial retry too.
  */
 const BOT_BLOCKED = [
-  // Checked by hand 2026-08-12: every one of these renders normally in a
-  // browser and returns 503 to fetch(), regardless of user-agent.
-  '.alvis.se', // Alvis (Tieto) — all municipal instances
+  // Checked by hand 2026-08-13: both serve 200 to curl with a browser
+  // user-agent and 503 to fetch() on every attempt, serial or not — they
+  // fingerprint the client, not the rate.
   'komvuxsodermalm.stockholm', // Stockholms stads komvux sites
-  'komvuxskarholmen.stockholm',
-  'www.akadeva.se',
-  'www.falun.se',
   'www.landskrona.se',
+  // Carried over from 2026-08-12 and unobserved since: the dataset has no
+  // link on this host, so the sweep never asks it. Re-check by hand if one
+  // turns up again.
+  'komvuxskarholmen.stockholm',
 ];
+// www.akadeva.se and jgy.se were on this list until 2026-08-13. Both now clear
+// the sweep — jgy.se needed the serial retry, akadeva.se not even that — so
+// they are back under real observation rather than permanently waived.
+
+/**
+ * Statuses worth a second, unhurried ask.
+ *
+ * Eight parallel requests is enough to trip the rate limiter on several kommun
+ * platforms, and their way of saying "slow down" is the same 503 a dying host
+ * gives. Retrying serially separates the two: a rate-limited host answers 200
+ * on its own, a blocked one keeps refusing. Without this the report cries wolf
+ * about four or five live links per run, and a report you learn to skim is a
+ * report that stops catching anything.
+ */
+const RETRYABLE = [429, 503, 502, 504, 'timeout', 'error'];
 
 function isBotBlocked(url) {
   try {
@@ -127,14 +150,30 @@ const urls = collectUrls();
 console.log(`Kontrollerar ${urls.length} unika länkar från ${SOURCE.replace(ROOT + '/', '')}…\n`);
 
 const results = await mapPool(urls, check, CONCURRENCY);
-const failed = results.filter((r) => !r.ok);
+
+/** Re-ask the ones that may only have been throttled, one at a time. */
+async function recheck(all) {
+  const retry = all.filter((r) => !r.ok && RETRYABLE.includes(r.status));
+  if (!retry.length) return all;
+  console.log(`↻ ${retry.length} svarade trögt — kontrollerar dem en i taget…\n`);
+  const fixed = new Map();
+  for (const r of retry) {
+    await new Promise((resolve) => setTimeout(resolve, 1_500));
+    const second = await check(r);
+    if (second.ok) fixed.set(r.url, second);
+  }
+  return all.map((r) => fixed.get(r.url) ?? r);
+}
+
+const checked = await recheck(results);
+const failed = checked.filter((r) => !r.ok);
 // A 404 is a 404 even from a host that usually stonewalls us; only the
 // stonewalling itself (503/timeout/connection error) gets the benefit of doubt.
 const unverifiable = failed.filter(
   (r) => isBotBlocked(r.url) && [503, 403, 429, 'timeout', 'error'].includes(r.status),
 );
 const broken = failed.filter((r) => !unverifiable.includes(r));
-const redirected = results.filter((r) => r.ok && r.finalUrl && r.finalUrl !== r.url);
+const redirected = checked.filter((r) => r.ok && r.finalUrl && r.finalUrl !== r.url);
 
 if (redirected.length && showAll) {
   console.log(`↪ ${redirected.length} omdirigerade (fungerar, men länken kan uppdateras):`);
@@ -150,13 +189,13 @@ if (unverifiable.length) {
 
 if (!broken.length) {
   console.log(
-    `✓ ${results.length - unverifiable.length} av ${results.length} länkar svarar. ` +
+    `✓ ${checked.length - unverifiable.length} av ${checked.length} länkar svarar. ` +
       `${redirected.length} omdirigerar.`,
   );
   process.exit(0);
 }
 
-console.error(`✗ ${broken.length} av ${results.length} länkar svarar inte:\n`);
+console.error(`✗ ${broken.length} av ${checked.length} länkar svarar inte:\n`);
 for (const r of broken) {
   console.error(`   [${r.status}] ${r.url}  (${r.fields})${r.detail ? `\n     ${r.detail}` : ''}`);
 }
