@@ -13,6 +13,38 @@ import { getRegistrationFlow } from '../lib/registrationFlow';
 /** Rough bounding box for Sweden, generous at the edges. */
 const SWEDEN = { minLat: 55.2, maxLat: 69.1, minLng: 10.8, maxLng: 24.2 };
 
+/**
+ * Sweden's 21 län, without the "-s län" suffix, exactly as `region` spells them.
+ *
+ * The filter is built from whatever `region` happens to contain, so a landscape
+ * slipped in there ("Småland" covered Jönköping, Kalmar and Kronoberg) doesn't
+ * look wrong in review — it just quietly removes three län from the filter and
+ * leaves someone in Växjö scrolling past their own county.
+ */
+const LAN = [
+  'Blekinge',
+  'Dalarna',
+  'Gotland',
+  'Gävleborg',
+  'Halland',
+  'Jämtland',
+  'Jönköping',
+  'Kalmar',
+  'Kronoberg',
+  'Norrbotten',
+  'Skåne',
+  'Stockholm',
+  'Södermanland',
+  'Uppsala',
+  'Värmland',
+  'Västerbotten',
+  'Västernorrland',
+  'Västmanland',
+  'Västra Götaland',
+  'Örebro',
+  'Östergötland',
+];
+
 describe('EXAMS dataset', () => {
   it('is non-empty', () => {
     expect(EXAMS.length).toBeGreaterThan(0);
@@ -95,6 +127,11 @@ describe('EXAMS dataset', () => {
           e.nextPeriod.examWindowStart),
     );
     expect(bad.map((e) => e.id)).toEqual([]);
+  });
+
+  it('files every listing under one of Sweden’s 21 län', () => {
+    const strays = [...new Set(EXAMS.map((e) => e.region))].filter((r) => !LAN.includes(r));
+    expect(strays).toEqual([]);
   });
 
   it('resolves a registration flow for every listing', () => {

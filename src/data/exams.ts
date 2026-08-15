@@ -195,6 +195,9 @@ const STHLM_LAN_VERIFIED = '2026-08-09';
 // August, since those are the listings a stale date hurts most.
 const AUTUMN_VERIFIED = '2026-08-11';
 const LATE_SUMMER_VERIFIED = '2026-08-12';
+// Sweep for the län the dataset barely covered — Kronoberg, Jönköping and
+// Halland each had a single town, so someone outside it saw an empty map.
+const THIN_LAN_VERIFIED = '2026-08-15';
 
 /**
  * Stockholms stad's autumn 2026 prövningsomgång.
@@ -2975,7 +2978,7 @@ export const EXAMS: Exam[] = [
     courseCode: 'Varierar',
     level: 'Komvux',
     city: 'Jönköping',
-    region: 'Småland',
+    region: 'Jönköping',
     address: 'Lärcentrum, Barnarpsgatan 40, Jönköping',
     lat: 57.7826,
     lng: 14.1618,
@@ -3013,7 +3016,7 @@ export const EXAMS: Exam[] = [
     courseCode: 'Varierar',
     level: 'Komvux',
     city: 'Växjö',
-    region: 'Småland',
+    region: 'Kronoberg',
     address: 'Norra Järnvägsgatan 7, Växjö (kommunens kontaktcenter)',
     lat: 56.8777,
     lng: 14.8091,
@@ -3045,7 +3048,7 @@ export const EXAMS: Exam[] = [
     courseCode: 'Varierar',
     level: 'Komvux',
     city: 'Kalmar',
-    region: 'Småland',
+    region: 'Kalmar',
     address: 'Norra vägen 47, 392 34 Kalmar',
     lat: 56.6634,
     lng: 16.3567,
@@ -3076,7 +3079,7 @@ export const EXAMS: Exam[] = [
     courseCode: 'Varierar',
     level: 'Komvux',
     city: 'Västervik',
-    region: 'Småland',
+    region: 'Kalmar',
     address: 'Komvux, 593 80 Västervik',
     lat: 57.7595,
     lng: 16.6386,
@@ -3762,6 +3765,133 @@ export const EXAMS: Exam[] = [
       'Prövning i Svenska som andraspråk hos Jutus Vux i Sollentuna, höstens andra omgång. Anmälan görs i formuläret på skolans prövningssida och stänger sista anmälningsdagen kl. 23.59.',
     tags: ['svenska som andraspråk', 'sollentuna', 'stockholm'],
     verifiedAt: LATE_SUMMER_VERIFIED,
+  },
+  {
+    id: 'vuxenutbildningen-falkenberg-flera-kurser',
+    schoolName: 'Vuxenutbildningen Falkenberg',
+    provider: 'Falkenbergs kommun',
+    subject: 'Flera ämnen',
+    course: 'Flera kurser (kontakta skolan för kurskod)',
+    courseCode: 'Varierar',
+    level: 'Komvux',
+    city: 'Falkenberg',
+    region: 'Halland',
+    address: 'Nyhems plan 2, Falkenberg',
+    lat: 56.9027,
+    lng: 12.4885,
+    price: 500,
+    priceNote:
+      '500 kr per tillfälle om du har godkänt betyg sedan tidigare, streck (-) eller inget betyg alls. ' +
+      NON_REFUNDABLE +
+      ' Återbetalning sker bara mot läkarintyg.',
+    nextPeriod: {
+      label:
+        'Hösten 2026: anmälan 9 september (kl. 10.00) – 23 september. Prövningen görs 7 oktober eller 27 oktober — du väljer ett av tillfällena vid anmälan.',
+      applicationStart: '2026-09-09',
+      applicationEnd: '2026-09-23',
+      examWindowStart: '2026-10-07',
+      examWindowEnd: '2026-10-27',
+      confirmed: true,
+    },
+    components: COMPONENTS_FLERA,
+    studyTips: TIPS_FLERA,
+    // The kommun's egen sida leder bara vidare; anmälan görs i e-tjänsten på
+    // service.falkenberg.se, som är målet här.
+    registrationUrl: 'https://service.falkenberg.se/provning-ovriga-kurser',
+    infoUrl:
+      'https://vuxenutbildningenfalkenberg.se/proevning-och-validering?view=article&id=178:proevningar&catid=8',
+    description:
+      'Falkenberg kör två prövningstillfällen i höst med ett gemensamt anmälningsfönster i september. De flesta prövningar hanteras av Hermods men görs på plats i Falkenberg. Du kan anmäla dig till högst en prövning per termin, och betalningen är bindande.',
+    tags: ['komvux', 'falkenberg', 'halland'],
+    verifiedAt: THIN_LAN_VERIFIED,
+  },
+  {
+    id: 'varnamo-vuxenutbildning-flera-kurser',
+    schoolName: 'Värnamo Vuxenutbildning',
+    provider: 'Värnamo kommun',
+    subject: 'Flera ämnen',
+    course: 'Flera kurser (kontakta skolan för kurskod)',
+    courseCode: 'Varierar',
+    level: 'Komvux',
+    city: 'Värnamo',
+    region: 'Jönköping',
+    address: 'Boagatan 2, 331 83 Värnamo',
+    lat: 57.1842,
+    lng: 14.0432,
+    price: 500,
+    priceNote: '500 kr per kurs, betalas efter att anmälan godkänts och innan prövningen startar.',
+    nextPeriod: {
+      // Ansökan sägs vara "öppen i augusti" utan startdatum, så bara sista
+      // dagen står här — ett påhittat startdatum vore ett sämre svar än inget.
+      label:
+        'Hösten 2026: ansökan är öppen i augusti och sista dag att ansöka är 28 augusti. Prövningsdatum får du besked om när ansökan har bedömts. (Våren 2027: sista ansökningsdag 29 januari.)',
+      applicationEnd: '2026-08-28',
+      confirmed: true,
+    },
+    components: COMPONENTS_FLERA,
+    studyTips: TIPS_FLERA,
+    registration: {
+      kind: 'pdf',
+      ctaLabel: 'Hämta anmälningsblanketten',
+      landing:
+        'Länken går till prövningssidan, där blanketterna ligger — en för Vuxenutbildningen och en för kurser som prövas på Finnvedens gymnasium.',
+      steps: [
+        'Ladda ner rätt blankett: Vux/Grund eller FIGY',
+        'Lämna in den ifyllda blanketten till SYV på vuxenutbildningen (även FIGY-prövningar lämnas dit)',
+        'Vänta på besked om prövningen kan genomföras — betala avgiften först därefter',
+      ],
+    },
+    registrationUrl:
+      'https://kommun.varnamo.se/miniwebbar/varnamo-vuxenutbildning/borja-studera/provning.html',
+    infoUrl:
+      'https://kommun.varnamo.se/miniwebbar/varnamo-vuxenutbildning/borja-studera/provning.html',
+    description:
+      'Värnamo tar emot prövningsansökningar på papper hos studie- och yrkesvägledarna, även för de kurser som prövas på Finnvedens gymnasium. Du kan bara pröva kurser som finns i Värnamos eller Finnvedens utbud, och först efter godkänd ansökan betalar du avgiften.',
+    tags: ['komvux', 'värnamo', 'jönköping', 'småland'],
+    verifiedAt: THIN_LAN_VERIFIED,
+  },
+  {
+    id: 'vuxenutbildningen-ljungby-flera-kurser',
+    schoolName: 'Vuxenutbildningen Ljungby',
+    provider: 'Ljungby kommun',
+    subject: 'Flera ämnen',
+    course: 'Flera kurser (kontakta skolan för kurskod)',
+    courseCode: 'Varierar',
+    level: 'Komvux',
+    city: 'Ljungby',
+    region: 'Kronoberg',
+    address: 'Axel Roothsgatan 13, 341 41 Ljungby',
+    lat: 56.8324,
+    lng: 13.9366,
+    price: 500,
+    priceNote:
+      '500 kr per prövningstillfälle, betalas i förskott — kvittot visas upp vid prövningen. ' +
+      'Kostnadsfritt om du redan har betyget F/IG i kursen.',
+    nextPeriod: {
+      label:
+        'Hösten 2026 har två prövningstillfällen. Anmäl dig senast 20 september eller 20 oktober. (Våren: senast 20 februari eller 1 april.)',
+      applicationEnd: '2026-09-20',
+      confirmed: true,
+    },
+    components: COMPONENTS_FLERA,
+    studyTips: TIPS_FLERA,
+    registration: {
+      kind: 'page',
+      ctaLabel: 'Läs hur du anmäler dig',
+      landing:
+        'Länken går till kommunens vuxenutbildningssida, där prövningsavsnittet och anmälningsblanketten ligger.',
+      steps: [
+        'Kontakta studie- och yrkesvägledaren eller administratören — de gör prövningsansökan tillsammans med dig',
+        'Fyll i blanketten på sidan före sista anmälningsdagen',
+        'Betala 500 kr i förskott och ta med kvittot till prövningen (gratis vid tidigare F/IG)',
+      ],
+    },
+    registrationUrl: 'https://www.ljungby.se/forskola-skola-och-utbildning/vuxenutbildning',
+    infoUrl: 'https://www.ljungby.se/forskola-skola-och-utbildning/vuxenutbildning',
+    description:
+      'Ljungby har två prövningstillfällen per termin och tar anmälan via blankett efter kontakt med vägledaren. Vuxenutbildningen nås på 0372-78 40 60 och vuxenutbildningen@skola.ljungby.se.',
+    tags: ['komvux', 'ljungby', 'kronoberg', 'småland'],
+    verifiedAt: THIN_LAN_VERIFIED,
   },
 ];
 
