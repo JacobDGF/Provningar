@@ -18,6 +18,7 @@ import { useStore } from '../store/useStore';
 import { Avatar } from '../components/Avatar';
 import { useEscapeKey } from '../hooks/useEscapeKey';
 import { Post, PostKind } from '../types';
+import { timeAgo } from '../lib/relativeTime';
 
 const KINDS: { value: PostKind; label: string; emoji: string; color: string }[] = [
   { value: 'fråga', label: 'Fråga', emoji: '❓', color: 'bg-brand-100 text-brand-700' },
@@ -28,17 +29,6 @@ const KINDS: { value: PostKind; label: string; emoji: string; color: string }[] 
 
 function kindMeta(kind?: PostKind) {
   return KINDS.find((k) => k.value === kind);
-}
-
-function timeAgo(dateStr: string) {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diff / 60000);
-  const hours = Math.floor(mins / 60);
-  const days = Math.floor(hours / 24);
-  if (days > 0) return `${days}d sedan`;
-  if (hours > 0) return `${hours}h sedan`;
-  if (mins > 0) return `${mins}m sedan`;
-  return 'Nu nyss';
 }
 
 function PostCard({ post }: { post: Post }) {

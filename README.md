@@ -75,6 +75,15 @@ https-anrop faller:
 NODE_EXTRA_CA_CERTS=/sökväg/till/ca-bundle.crt npm run check:links
 ```
 
+### En region är ett län
+
+`region` innehåller ett av Sveriges 21 länsnamn, aldrig ett landskap, och
+[`src/data/exams.test.ts`](src/data/exams.test.ts) håller listan till just de 21.
+Filtret i Discover byggs ur fältet, så ett landskap där ("Småland" täckte
+Jönköping, Kalmar och Kronoberg) tar tyst bort tre län ur filtret. Landskapet
+får däremot gärna ligga kvar som `tag` — då hittar en sökning på "småland"
+fortfarande fram.
+
 ## Profilbilder och community
 
 Appen visar aldrig färdiga porträtt av påhittade personer. En profilbild är en
@@ -83,6 +92,13 @@ i webbläsaren, och den lämnar aldrig enheten. Alla andra visas som ett ritat
 monogram. [`src/lib/avatar.ts`](src/lib/avatar.ts) vägrar därför bild-URL:er som
 pekar utanför enheten — vilket också rensar bort de gamla stockbilderna ur
 localStorage hos återvändande användare (`persist` v0 → v1).
+
+Inget i appen är skrivet en gång för alla: ett eget inlägg och ett eget svar går
+att ta bort, och en genomförd prövning går att rätta eller radera i
+[`src/components/CompletedExamSheet.tsx`](src/components/CompletedExamSheet.tsx),
+som är samma ark oavsett om du lägger till eller ändrar. Betygsraderna räknas
+in i snittpoängen på profilen, så ett betyg på fel rad var tidigare ett fel svar
+på appens enda riktiga fråga — utan annan väg tillbaka än att radera allt.
 
 ## Datum, kalender och dina data
 

@@ -161,7 +161,9 @@ export function Profile() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="bg-gradient-to-b from-brand-600 to-brand-500 px-4 lg:px-8 pt-14 lg:pt-8 pb-6">
+      {/* The header is the whole first screen on a phone, and for a new
+          profile most of it is zeroes — so it gives back what it can. */}
+      <div className="bg-gradient-to-b from-brand-600 to-brand-500 px-4 lg:px-8 pt-11 lg:pt-8 pb-5 lg:pb-6">
         <div className="flex flex-col items-center max-w-2xl mx-auto">
           {/* Avatar */}
           <div className="relative mb-3">
@@ -349,21 +351,6 @@ export function Profile() {
               <ChevronRight size={20} className="text-ink-faint" />
             </button>
           )}
-
-          {/* Big FAQ button */}
-          <button
-            onClick={() => setShowingFaq(true)}
-            className="w-[calc(100%-2rem)] lg:w-full mx-4 lg:mx-0 mt-3 flex items-center gap-3 bg-surface border border-line rounded-md p-4 lg:p-5 active:scale-98 transition-transform hover:border-brand-200"
-          >
-            <div className="w-14 h-14 bg-brand-500 rounded-md flex items-center justify-center flex-shrink-0 shadow-sm shadow-brand-200">
-              <HelpCircle size={28} className="text-white" strokeWidth={2.2} />
-            </div>
-            <div className="flex-1 text-left">
-              <p className="font-bold text-ink text-lg">Vanliga frågor</p>
-              <p className="text-ink-soft text-sm">Allt om prövningar, kostnad och anmälan</p>
-            </div>
-            <ChevronRight size={22} className="text-ink-faint" />
-          </button>
 
           {/* Bio */}
           <div className="bg-surface mx-4 lg:mx-0 mt-3 rounded-md p-4 border border-line">
@@ -582,6 +569,21 @@ export function Profile() {
             webbläsaren. Ingenting skickas till någon server, och appen tar aldrig emot din anmälan:
             den görs alltid hos skolan.
           </p>
+
+          {/* Big FAQ button */}
+          <button
+            onClick={() => setShowingFaq(true)}
+            className="w-[calc(100%-2rem)] lg:w-full mx-4 lg:mx-0 mt-4 flex items-center gap-3 bg-surface border border-line rounded-md p-4 lg:p-5 active:scale-98 transition-transform hover:border-brand-200"
+          >
+            <div className="w-14 h-14 bg-brand-500 rounded-md flex items-center justify-center flex-shrink-0 shadow-sm shadow-brand-200">
+              <HelpCircle size={28} className="text-white" strokeWidth={2.2} />
+            </div>
+            <div className="flex-1 text-left">
+              <p className="font-bold text-ink text-lg">Vanliga frågor</p>
+              <p className="text-ink-soft text-sm">Allt om prövningar, kostnad och anmälan</p>
+            </div>
+            <ChevronRight size={22} className="text-ink-faint" />
+          </button>
 
           {/* Your data — export sits above reset on purpose: the backup should
               be the thing you see first, not an afterthought next to the wipe. */}
