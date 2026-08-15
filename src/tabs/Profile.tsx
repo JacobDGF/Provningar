@@ -25,10 +25,9 @@ import { SchoolCover } from '../components/SchoolCover';
 import { Avatar } from '../components/Avatar';
 import { useEscapeKey } from '../hooks/useEscapeKey';
 import { fileToAvatarDataUrl } from '../lib/avatar';
+import { CompletedExamSheet, CompletedExamDraft } from '../components/CompletedExamSheet';
 import { summarizeGrades, gradeChipClass } from '../lib/grades';
 import { daysUntil, isFullyBooked } from '../lib/examStatus';
-
-const GRADE_OPTIONS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
 export function Profile() {
   const {
@@ -40,6 +39,8 @@ export function Profile() {
     setActiveTab,
     setShowingExamDetail,
     setShowingFaq,
+    updateCompletedExam,
+    removeCompletedExam,
   } = useStore();
   const [editingName, setEditingName] = useState(false);
   const [editingBio, setEditingBio] = useState(false);
@@ -51,11 +52,8 @@ export function Profile() {
   const [locationVal, setLocationVal] = useState(currentUser.location);
   const [showPhotoSheet, setShowPhotoSheet] = useState(false);
   const [photoError, setPhotoError] = useState<string | null>(null);
-  const [showAddExam, setShowAddExam] = useState(false);
-  const [newExamSubject, setNewExamSubject] = useState('');
-  const [newExamCourse, setNewExamCourse] = useState('');
-  const [newExamGrade, setNewExamGrade] = useState('A');
-  const [newExamDate, setNewExamDate] = useState('');
+  /** null = closed, 'new' = logging one, a number = correcting that row. */
+  const [examEditor, setExamEditor] = useState<'new' | number | null>(null);
 
   // Two inputs rather than one: `capture` opens the camera straight away on a
   // phone, which is wrong when the photo you want is already in your library.
@@ -65,9 +63,8 @@ export function Profile() {
   useEscapeKey(
     useCallback(() => {
       setShowPhotoSheet(false);
-      setShowAddExam(false);
     }, []),
-    showPhotoSheet || showAddExam,
+    showPhotoSheet,
   );
 
   const myPosts = posts.filter((p) => p.userId === 'me');
@@ -107,26 +104,18 @@ export function Profile() {
     }
   };
 
-  const addCompletedExam = () => {
-    if (!newExamSubject || !newExamCourse || !newExamDate) return;
-    updateUser({
-      completedExams: [
-        ...currentUser.completedExams,
-        {
-          examId: `manual-${Date.now()}`,
-          schoolName: 'Eget',
-          subject: newExamSubject,
-          course: newExamCourse,
-          date: newExamDate,
-          grade: newExamGrade,
-        },
-      ],
-    });
-    setNewExamSubject('');
-    setNewExamCourse('');
-    setNewExamGrade('A');
-    setNewExamDate('');
-    setShowAddExam(false);
+  const saveCompletedExam = (draft: CompletedExamDraft) => {
+    if (examEditor === 'new') {
+      updateUser({
+        completedExams: [
+          ...currentUser.completedExams,
+          { examId: `manual-${Date.now()}`, schoolName: 'Eget', ...draft },
+        ],
+      });
+    } else if (typeof examEditor === 'number') {
+      updateCompletedExam(examEditor, draft);
+    }
+    setExamEditor(null);
   };
 
   /**
@@ -520,7 +509,7 @@ export function Profile() {
                 Genomförda prövningar
               </h3>
               <button
-                onClick={() => setShowAddExam(true)}
+                onClick={() => setExamEditor('new')}
                 className="text-brand-600 text-xs font-bold bg-brand-50 px-3 py-1.5 rounded-full"
               >
                 + Lägg till
@@ -531,13 +520,18 @@ export function Profile() {
             ) : (
               <>
                 <div className="space-y-2">
+                  {/* Newest first, but each row keeps its real index — that's
+                      what the editor writes back to. */}
                   {currentUser.completedExams
+                    .map((ce, index) => ({ ce, index }))
                     .slice(-4)
                     .reverse()
-                    .map((ce, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center gap-3 py-2 border-b border-line last:border-0"
+                    .map(({ ce, index }) => (
+                      <button
+                        key={index}
+                        onClick={() => setExamEditor(index)}
+                        aria-label={`Ändra ${ce.course}`}
+                        className="w-full flex items-center gap-3 py-2 text-left border-b border-line last:border-0 rounded hover:bg-cream transition-colors"
                       >
                         <div
                           className={`w-10 h-10 rounded flex items-center justify-center font-bold text-lg flex-shrink-0 ${gradeChipClass(ce.grade)}`}
@@ -555,7 +549,8 @@ export function Profile() {
                             })}
                           </p>
                         </div>
-                      </div>
+                        <Edit3 size={15} className="text-ink-faint flex-shrink-0" />
+                      </button>
                     ))}
                 </div>
                 <button
@@ -716,80 +711,23 @@ export function Profile() {
         </div>
       )}
 
-      {/* Add exam modal */}
-      {showAddExam && (
-        // Backdrop closes on click as a mouse convenience; the sheet has its own
-        // keyboard-reachable close button below, so this isn't the only way out.
-        // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
-        <div
-          className="fixed inset-0 bg-black/50 z-50 flex items-end lg:items-center lg:justify-center"
-          onClick={() => setShowAddExam(false)}
-        >
-          {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events -- stops the backdrop's close-on-click from firing when interacting with the sheet itself */}
-          <div
-            className="bg-cream w-full lg:max-w-md rounded-t-lg lg:rounded-lg p-6 animate-sheet-up"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-ink font-display">Lägg till prövning</h2>
-              <button
-                onClick={() => setShowAddExam(false)}
-                aria-label="Stäng"
-                className="w-8 h-8 bg-sand rounded-full flex items-center justify-center"
-              >
-                <X size={16} className="text-ink-soft" />
-              </button>
-            </div>
-            <div className="space-y-3">
-              <input
-                value={newExamSubject}
-                onChange={(e) => setNewExamSubject(e.target.value)}
-                placeholder="Ämne (t.ex. Matematik)"
-                aria-label="Ämne"
-                className="w-full bg-surface border border-line rounded px-4 py-3 text-sm outline-none"
-              />
-              <input
-                value={newExamCourse}
-                onChange={(e) => setNewExamCourse(e.target.value)}
-                placeholder="Kurs (t.ex. Matematik 3b)"
-                aria-label="Kurs"
-                className="w-full bg-surface border border-line rounded px-4 py-3 text-sm outline-none"
-              />
-              <input
-                type="date"
-                value={newExamDate}
-                onChange={(e) => setNewExamDate(e.target.value)}
-                aria-label="Datum"
-                className="w-full bg-surface border border-line rounded px-4 py-3 text-sm outline-none"
-              />
-              <div>
-                <p className="text-xs text-ink-soft font-semibold mb-2">Betyg</p>
-                <div className="flex gap-2">
-                  {GRADE_OPTIONS.map((g) => (
-                    <button
-                      key={g}
-                      onClick={() => setNewExamGrade(g)}
-                      className={`flex-1 py-2 rounded text-sm font-bold transition-colors ${
-                        newExamGrade === g
-                          ? 'bg-brand-500 text-white'
-                          : 'bg-surface border border-line text-ink-soft'
-                      }`}
-                    >
-                      {g}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <button
-                onClick={addCompletedExam}
-                disabled={!newExamSubject || !newExamCourse || !newExamDate}
-                className="w-full bg-brand-500 disabled:bg-sand disabled:text-ink-faint text-white font-bold py-4 rounded-md"
-              >
-                Spara
-              </button>
-            </div>
-          </div>
-        </div>
+      {/* Log a prövning, or correct one that's already logged */}
+      {examEditor !== null && (
+        <CompletedExamSheet
+          initial={
+            typeof examEditor === 'number' ? currentUser.completedExams[examEditor] : undefined
+          }
+          onSave={saveCompletedExam}
+          onDelete={
+            typeof examEditor === 'number'
+              ? () => {
+                  removeCompletedExam(examEditor);
+                  setExamEditor(null);
+                }
+              : undefined
+          }
+          onClose={() => setExamEditor(null)}
+        />
       )}
     </div>
   );
