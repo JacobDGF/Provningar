@@ -3690,6 +3690,84 @@ export const EXAMS: Exam[] = [
     tags: ['svenska som andraspråk', 'sollentuna', 'stockholm'],
     verifiedAt: AUG_18_VERIFIED,
   },
+  // Two providers added 2026-08-18, each read off its own page, in län the
+  // dataset barely covered: Västernorrland had three schools and Västmanland
+  // exactly one.
+  {
+    id: 'vuxenutbildningen-ornskoldsvik-flera-kurser',
+    schoolName: 'Vuxenutbildningen Örnsköldsvik',
+    provider: 'Örnsköldsviks kommun',
+    subject: 'Flera ämnen',
+    course: 'Flera kurser (kontakta skolan för kurskod)',
+    courseCode: 'Varierar',
+    level: 'Komvux',
+    city: 'Örnsköldsvik',
+    region: 'Västernorrland',
+    address: 'Torggatan 10, våning 3, 891 33 Örnsköldsvik',
+    lat: 63.2909,
+    lng: 18.716,
+    price: 500,
+    priceNote: 'Avgiften betalas med Swish direkt vid anmälan (123 562 2162).',
+    nextPeriod: {
+      label:
+        'Anmälan till höstens prövningar öppnade 17 augusti 2026 och stänger 11 september. Prövningarna skrivs onsdag 7 oktober och torsdag 8 oktober kl. 11.30 hos Studielänken.',
+      applicationStart: '2026-08-17',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-07',
+      examWindowEnd: '2026-10-08',
+      confirmed: true,
+    },
+    components: COMPONENTS_FLERA,
+    studyTips: TIPS_FLERA,
+    // Anmälningsformuläret ligger på sidan självt — det finns ingen e-tjänst
+    // att länka vidare till, och avgiften swishas i samma steg.
+    registration: { kind: 'form' },
+    registrationUrl:
+      'https://www.ornskoldsvik.se/utbildning-och-barnomsorg/vuxenstuderande/vuxenutbildning---komvux/anmal-till-provning-for-betyg---vuxenstuderande',
+    infoUrl:
+      'https://www.ornskoldsvik.se/utbildning-och-barnomsorg/vuxenstuderande/vuxenutbildning---komvux',
+    description:
+      'Vuxenutbildningen i Örnsköldsvik håller två skrivdagar per termin i Studielänkens lokaler på Torggatan 10. Anmälan görs i formuläret på kommunens sida och avgiften swishas samtidigt — betalningen är det som gör anmälan giltig. Frågor: vuxenutbildningen@ornskoldsvik.se eller 0660-789 10, tisdagar 10.00–11.30.',
+    tags: ['komvux', 'flera ämnen', 'örnsköldsvik', 'västernorrland'],
+    verifiedAt: AUG_18_VERIFIED,
+  },
+  {
+    id: 'koping-kompetenscenter-flera-kurser',
+    schoolName: 'Köpings kompetenscenter',
+    provider: 'Köpings kommun',
+    subject: 'Flera ämnen',
+    course: 'Flera kurser (kontakta skolan för kurskod)',
+    courseCode: 'Varierar',
+    level: 'Komvux',
+    city: 'Köping',
+    region: 'Västmanland',
+    address: 'Glasgatan 20 B, 731 85 Köping',
+    lat: 59.5133,
+    lng: 15.9946,
+    price: 500,
+    priceNote:
+      'Faktura skickas när anmälningsperioden stängt. Anmälan är bindande — avgiften tas ut även om du uteblir.',
+    nextPeriod: {
+      // Köping skriver ut sina två sista anmälningsdagar utan årtal, som en
+      // rytm snarare än ett datum: 1 februari för prövning i maj/juni,
+      // 7 juni för prövning i november. Vilket år som gäller står det ingen
+      // stans, och årtalet är inte vårt att fylla i.
+      label:
+        'Två omgångar per år: sista anmälningsdag 1 februari för prövning i maj eller juni, och 7 juni för prövning i november. Köping skriver inte ut årtalen — hör med studievägledarna vilken omgång som är öppen.',
+      confirmed: false,
+    },
+    components: COMPONENTS_FLERA,
+    studyTips: TIPS_FLERA,
+    // Ingen e-tjänst och ingen blankett på sidan: anmälan går via
+    // studievägledarna, som sidan hänvisar till med e-post och telefon.
+    registration: { kind: 'email' },
+    registrationUrl: 'https://koping.se/kompetenscenter/vara-utbildningar/provning.html',
+    infoUrl: 'https://koping.se/kompetenscenter/vara-utbildningar/provning.html',
+    description:
+      'Köpings kompetenscenter prövar gymnasiekurser i två omgångar per år, högst två prövningar per omgång. Anmälan görs via studievägledarna på studievagledarna.kkc@koping.se eller 0221-25 400 — sidan har varken blankett eller e-tjänst.',
+    tags: ['komvux', 'flera ämnen', 'köping', 'västmanland'],
+    verifiedAt: AUG_18_VERIFIED,
+  },
 ];
 
 export const SUBJECTS = [...new Set(EXAMS.map((e) => e.subject))].sort();
