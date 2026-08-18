@@ -11,11 +11,17 @@ import {
   MousePointerClick,
   Globe,
   Ban,
+  CalendarX,
 } from 'lucide-react';
 import { Exam } from '../types';
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
-import { isOpenForRegistration, isFullyBooked, daysUntil } from '../lib/examStatus';
+import {
+  isOpenForRegistration,
+  isFullyBooked,
+  hasApplicationClosed,
+  daysUntil,
+} from '../lib/examStatus';
 import { getRegistrationFlow } from '../lib/registrationFlow';
 import { getProviderLinks } from '../lib/providerLinks';
 import { SchoolCover } from './SchoolCover';
@@ -56,6 +62,7 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
   const deadlineDate = nextPeriod.confirmed ? nextPeriod.applicationEnd : undefined;
   const deadlineDays = deadlineDate ? daysUntil(deadlineDate) : null;
   const full = isFullyBooked(exam);
+  const closed = hasApplicationClosed(exam);
   // A countdown on a round nobody can join is just pressure with no exit.
   const urgent = deadlineDays !== null && deadlineDays <= 7 && deadlineDays >= 0 && !full;
   const openNow = isOpenForRegistration(exam);
@@ -152,6 +159,12 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
               Fullbokat
             </span>
           )}
+          {closed && !full && (
+            <span className="inline-flex items-center gap-1 bg-sand text-ink-soft text-xs font-bold px-2.5 py-1 rounded-full">
+              <CalendarX size={11} />
+              Anmälan stängde {formatDate(nextPeriod.applicationEnd!)}
+            </span>
+          )}
           {openNow && (
             <span className="inline-flex items-center gap-1.5 bg-trust-50 text-trust-700 text-xs font-bold px-2.5 py-1 rounded-full">
               <span className="relative flex h-1.5 w-1.5">
@@ -187,7 +200,9 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
           <div>
             <p className="text-ink-faint text-xs">Anmälan</p>
             {nextPeriod.confirmed ? (
-              <p className={`text-sm font-bold ${urgent ? 'text-red-600' : 'text-ink'}`}>
+              <p
+                className={`text-sm font-bold ${urgent ? 'text-red-600' : closed ? 'text-ink-faint line-through decoration-ink-faint/60' : 'text-ink'}`}
+              >
                 {nextPeriod.applicationEnd
                   ? formatDate(nextPeriod.applicationEnd)
                   : nextPeriod.label}

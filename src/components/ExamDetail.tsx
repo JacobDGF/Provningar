@@ -16,12 +16,19 @@ import {
   ListChecks,
   Globe,
   Ban,
+  CalendarX,
   CalendarPlus,
 } from 'lucide-react';
 import { useCallback } from 'react';
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
-import { isOpenForRegistration, isFullyBooked, daysUntil } from '../lib/examStatus';
+import {
+  isOpenForRegistration,
+  isFullyBooked,
+  hasApplicationClosed,
+  hasPeriodPassed,
+  daysUntil,
+} from '../lib/examStatus';
 import { getRegistrationFlow } from '../lib/registrationFlow';
 import { getProviderLinks } from '../lib/providerLinks';
 import { examCalendarEvents, downloadCalendar } from '../lib/calendarFile';
@@ -66,6 +73,9 @@ export function ExamDetail() {
   const deadlineDate = nextPeriod.confirmed ? nextPeriod.applicationEnd : undefined;
   const deadlineDays = deadlineDate ? daysUntil(deadlineDate) : null;
   const full = isFullyBooked(exam);
+  const closed = hasApplicationClosed(exam);
+  // Nothing in a round that is over belongs in anyone's calendar.
+  const passed = hasPeriodPassed(exam);
   // A countdown on a round nobody can join is just pressure with no exit.
   const urgent = deadlineDays !== null && deadlineDays <= 7 && deadlineDays >= 0 && !full;
   const openNow = isOpenForRegistration(exam);
@@ -155,6 +165,23 @@ export function ExamDetail() {
               </div>
             )}
 
+            {/* The round's deadline has passed. Said before the dates, because
+                the dates below otherwise read as an upcoming window. */}
+            {closed && !full && (
+              <div className="bg-sand border border-line rounded p-3 flex items-start gap-2">
+                <CalendarX size={18} className="text-ink-soft flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-ink text-sm font-semibold">
+                    Anmälan till den här omgången stängde {formatDate(nextPeriod.applicationEnd!)}
+                  </p>
+                  <p className="text-ink-soft text-xs mt-0.5 leading-relaxed">
+                    Datumen nedan är omgången som varit. {exam.provider} publicerar nästa
+                    anmälningsperiod på sin egen sida — börja där.
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Open for registration now */}
             {openNow && (
               <div className="bg-trust-50 border border-trust-100 rounded p-3 flex items-center gap-2">
@@ -225,7 +252,7 @@ export function ExamDetail() {
                   )}
                   {/* The dates only help while the app is open. This puts them
                       in the calendar the user already checks. */}
-                  {calendarEvents.length > 0 && (
+                  {calendarEvents.length > 0 && !passed && (
                     <button
                       onClick={() => downloadCalendar(exam)}
                       className="w-full mt-1 flex items-center justify-center gap-2 bg-brand-50 hover:bg-brand-100 text-brand-700 text-sm font-bold py-2.5 rounded transition-colors active:scale-98"
