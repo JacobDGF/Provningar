@@ -728,9 +728,12 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: FREE_IF_PRIOR_F + ' Svenska har två obligatoriska provdagar.',
     nextPeriod: {
-      label: 'Anmälan period 3 2026',
-      applicationStart: '2026-07-27',
-      applicationEnd: '2026-08-07',
+      label:
+        'Period 4 2026: anmälan 7–18 september, prövningsperiod 26 oktober – 25 november. (Period 3 stängde 7 augusti.)',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-18',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-25',
       confirmed: true,
     },
     components: COMPONENTS_SVENSKA,
@@ -759,9 +762,12 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: FREE_IF_PRIOR_F,
     nextPeriod: {
-      label: 'Anmälan period 3 2026',
-      applicationStart: '2026-07-27',
-      applicationEnd: '2026-08-07',
+      label:
+        'Period 4 2026: anmälan 7–18 september, prövningsperiod 26 oktober – 25 november. (Period 3 stängde 7 augusti.)',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-18',
+      examWindowStart: '2026-10-26',
+      examWindowEnd: '2026-11-25',
       confirmed: true,
     },
     components: COMPONENTS_ENGELSKA,
@@ -1894,7 +1900,8 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per prövning, faktureras vid antagning; anmälan bindande så snart bekräftelse mottagits.',
     nextPeriod: {
-      label: 'Hösten 2026: prövningsperiod 14 september - 30 oktober, ansökan öppen 10-14 augusti',
+      label:
+        'Höstens ansökan stängde 14 augusti 2026 och prövningsperioden är 14 september – 30 oktober. Uppsala lägger upp anmälningsformuläret på sidan när nästa period öppnar.',
       applicationStart: '2026-08-10',
       applicationEnd: '2026-08-14',
       examWindowStart: '2026-09-14',
@@ -2578,10 +2585,13 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per prövning, avgiftsfritt vid styrkt tidigare F/IG i kursen/ämnesnivån',
     nextPeriod: {
-      label: 'Prövningsperiod 3, 2026',
-      applicationEnd: '2026-08-04',
-      examWindowStart: '2026-09-14',
-      examWindowEnd: '2026-10-04',
+      // Period 4 anges i veckonummer på Gävles sida: v. 45–47 är 2–22
+      // november 2026.
+      label:
+        'Prövningsperiod 4, 2026: prövningen genomförs vecka 45–47 och sista anmälningsdatum är 22 september.',
+      applicationEnd: '2026-09-22',
+      examWindowStart: '2026-11-02',
+      examWindowEnd: '2026-11-22',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -2828,11 +2838,12 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per kurs och prövningstillfälle, betalas via kort eller Swish vid anmälan',
     nextPeriod: {
-      label: 'Prövningsperiod 3: 7 september - 2 oktober 2026',
-      applicationStart: '2026-07-27',
-      applicationEnd: '2026-08-07',
-      examWindowStart: '2026-09-07',
-      examWindowEnd: '2026-10-02',
+      label:
+        'Prövningsperiod 4: 12 oktober – 6 november 2026. Anmälan öppnar 31 augusti och stänger 11 september. (Period 3 stängde 7 augusti.)',
+      applicationStart: '2026-08-31',
+      applicationEnd: '2026-09-11',
+      examWindowStart: '2026-10-12',
+      examWindowEnd: '2026-11-06',
       confirmed: true,
     },
     components: COMPONENTS_ENGELSKA,
