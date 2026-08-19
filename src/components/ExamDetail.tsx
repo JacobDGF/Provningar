@@ -153,10 +153,10 @@ export function ExamDetail() {
             {/* Round is full — said outright, because the dates below still
                 look like an open window and would otherwise mislead. */}
             {full && (
-              <div className="bg-sand border border-line rounded p-3 flex items-start gap-2">
-                <Ban size={18} className="text-ink-soft flex-shrink-0 mt-0.5" />
+              <div className="bg-red-50 border border-red-200 rounded p-3 flex items-start gap-2">
+                <Ban size={18} className="text-red-600 flex-shrink-0 mt-0.5" strokeWidth={2.5} />
                 <div>
-                  <p className="text-ink text-sm font-semibold">Den här omgången är fullbokad</p>
+                  <p className="text-red-700 text-sm font-bold">Den här omgången är fullbokad</p>
                   <p className="text-ink-soft text-xs mt-0.5 leading-relaxed">
                     {exam.provider} har meddelat att platserna är slut. Datumen nedan gäller
                     fortfarande — men du behöver vänta på nästa omgång.

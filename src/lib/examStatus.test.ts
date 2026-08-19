@@ -4,6 +4,7 @@ import {
   isFullyBooked,
   hasApplicationClosed,
   hasPeriodPassed,
+  applicationCell,
   compareByPeriod,
   daysUntil,
 } from './examStatus';
@@ -284,5 +285,71 @@ describe('compareByPeriod', () => {
   it('keeps dated rounds ahead of undated ones', () => {
     at('2026-09-01T12:00:00Z');
     expect([undated, soon].sort(compareByPeriod).map((e) => e.schoolName)).toEqual(['B', 'D']);
+  });
+});
+
+describe('applicationCell', () => {
+  // The bug: a provider that publishes an opening time but no closing date fell
+  // through to `nextPeriod.label`, and JENSEN's label is 230 characters. The
+  // card printed all of it, in bold, in a half-width column.
+  it('says "öppen" rather than reciting the label when no deadline is published', () => {
+    at('2026-08-19T12:00:00Z');
+    expect(
+      applicationCell(
+        examWith({
+          label:
+            'Anmälan öppnade 11 augusti 2026 kl. 11:00 och stänger så snart kursen är fullbokad — JENSEN har ingen reservlista.',
+          applicationStart: '2026-08-11',
+          confirmed: true,
+        }),
+      ),
+    ).toBe('open');
+  });
+
+  it('says when a dated window has yet to open', () => {
+    at('2026-08-01T12:00:00Z');
+    expect(
+      applicationCell(examWith({ label: '', applicationStart: '2026-08-11', confirmed: true })),
+    ).toBe('opens');
+  });
+
+  it('shows the deadline whenever there is one', () => {
+    at('2026-08-19T12:00:00Z');
+    expect(
+      applicationCell(examWith({ label: '', applicationEnd: '2026-09-27', confirmed: true })),
+    ).toBe('deadline');
+  });
+
+  // A full round with an open-looking window is exactly where a date misleads.
+  it('puts fullbokat ahead of the dates', () => {
+    at('2026-08-19T12:00:00Z');
+    expect(
+      applicationCell(
+        examWith({
+          label: '',
+          applicationStart: '2026-08-01',
+          applicationEnd: '2026-09-27',
+          confirmed: true,
+          full: true,
+        }),
+      ),
+    ).toBe('full');
+  });
+
+  it('sends an unconfirmed or undated period to the provider', () => {
+    at('2026-08-19T12:00:00Z');
+    expect(applicationCell(examWith({ label: 'nån gång i höst', confirmed: false }))).toBe(
+      'provider',
+    );
+    expect(
+      applicationCell(
+        examWith({
+          label: '',
+          examWindowStart: '2026-10-01',
+          examWindowEnd: '2026-10-30',
+          confirmed: true,
+        }),
+      ),
+    ).toBe('provider');
   });
 });
