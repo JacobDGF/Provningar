@@ -1,0 +1,1 @@
+function e(e,t=Date.now()){let n=new Date(e),r=t-n.getTime();if(r<0)return`Nyss`;let i=Math.floor(r/6e4),a=Math.floor(i/60),o=Math.floor(a/24);if(o>7){let e=n.getFullYear()===new Date(t).getFullYear();return n.toLocaleDateString(`sv-SE`,{day:`numeric`,month:`short`,...e?{}:{year:`numeric`}})}return o>0?`${o} d sedan`:a>0?`${a} h sedan`:i>0?`${i} min sedan`:`Nyss`}export{e as t};
