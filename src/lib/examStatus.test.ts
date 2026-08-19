@@ -1,5 +1,12 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { isOpenForRegistration, isFullyBooked, daysUntil } from './examStatus';
+import {
+  isOpenForRegistration,
+  isFullyBooked,
+  hasApplicationClosed,
+  hasPeriodPassed,
+  compareByPeriod,
+  daysUntil,
+} from './examStatus';
 import { Exam, NextPeriod } from '../types';
 
 function examWith(nextPeriod: NextPeriod): Exam {
@@ -179,5 +186,103 @@ describe('open-ended application windows', () => {
         }),
       ),
     ).toBe(false);
+  });
+});
+
+describe('hasApplicationClosed', () => {
+  it('is false while the deadline is still ahead', () => {
+    at('2026-09-20T12:00:00Z');
+    expect(
+      hasApplicationClosed(examWith({ label: '', applicationEnd: '2026-09-27', confirmed: true })),
+    ).toBe(false);
+  });
+
+  it('is false on the closing day itself, right up to midnight', () => {
+    at('2026-09-27T22:00:00Z');
+    expect(
+      hasApplicationClosed(examWith({ label: '', applicationEnd: '2026-09-27', confirmed: true })),
+    ).toBe(false);
+  });
+
+  it('is true the day after the deadline', () => {
+    at('2026-09-28T08:00:00Z');
+    expect(
+      hasApplicationClosed(examWith({ label: '', applicationEnd: '2026-09-27', confirmed: true })),
+    ).toBe(true);
+  });
+
+  // A round with no published deadline can't have missed one — the user is
+  // told to check with the provider, not that they are too late.
+  it('is false when no deadline is published', () => {
+    at('2027-01-01T08:00:00Z');
+    expect(
+      hasApplicationClosed(
+        examWith({ label: '', applicationStart: '2026-09-01', confirmed: true }),
+      ),
+    ).toBe(false);
+    expect(hasApplicationClosed(examWith({ label: '', confirmed: false }))).toBe(false);
+  });
+});
+
+describe('hasPeriodPassed', () => {
+  it('is false while the exam window is still ahead', () => {
+    at('2026-10-01T12:00:00Z');
+    expect(
+      hasPeriodPassed(
+        examWith({
+          label: '',
+          applicationEnd: '2026-09-27',
+          examWindowStart: '2026-10-26',
+          examWindowEnd: '2026-10-28',
+          confirmed: true,
+        }),
+      ),
+    ).toBe(false);
+  });
+
+  it('is true once the last exam day is behind us', () => {
+    at('2026-10-29T09:00:00Z');
+    expect(
+      hasPeriodPassed(
+        examWith({
+          label: '',
+          applicationEnd: '2026-09-27',
+          examWindowStart: '2026-10-26',
+          examWindowEnd: '2026-10-28',
+          confirmed: true,
+        }),
+      ),
+    ).toBe(true);
+  });
+});
+
+describe('compareByPeriod', () => {
+  const named = (schoolName: string, nextPeriod: NextPeriod) =>
+    ({ schoolName, nextPeriod }) as Exam;
+  const soon = named('B', { label: '', applicationEnd: '2026-09-27', confirmed: true });
+  const later = named('C', { label: '', applicationEnd: '2026-11-30', confirmed: true });
+  const undated = named('D', { label: '', confirmed: false });
+  const over = named('A', { label: '', applicationEnd: '2026-08-04', confirmed: true });
+
+  it('puts the nearest deadline still ahead of the user first', () => {
+    at('2026-09-01T12:00:00Z');
+    expect([later, soon].sort(compareByPeriod).map((e) => e.schoolName)).toEqual(['B', 'C']);
+  });
+
+  // The bug this exists for: a deadline in the past sorts smallest as a string,
+  // so "närmast i tiden" led with rounds that closed weeks ago.
+  it('sinks a round whose deadline has passed below one that has not', () => {
+    at('2026-09-01T12:00:00Z');
+    expect([over, soon].sort(compareByPeriod).map((e) => e.schoolName)).toEqual(['B', 'A']);
+  });
+
+  it('sinks it below an undated listing too — that one might still be bookable', () => {
+    at('2026-09-01T12:00:00Z');
+    expect([over, undated].sort(compareByPeriod).map((e) => e.schoolName)).toEqual(['D', 'A']);
+  });
+
+  it('keeps dated rounds ahead of undated ones', () => {
+    at('2026-09-01T12:00:00Z');
+    expect([undated, soon].sort(compareByPeriod).map((e) => e.schoolName)).toEqual(['B', 'D']);
   });
 });

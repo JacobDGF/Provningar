@@ -21,8 +21,9 @@ npm run build         # produktionsbygge till dist/
 Allt innehåll bor i [`src/data/exams.ts`](src/data/exams.ts). Varje listning är
 kontrollerad mot anordnarens egen webbplats, och `verifiedAt` säger när.
 
-Två regler styr datan, och båda testas i
-[`src/data/exams.test.ts`](src/data/exams.test.ts):
+Fyra regler styr datan, och de testas i
+[`src/data/exams.test.ts`](src/data/exams.test.ts) och
+[`src/lib/examStatus.test.ts`](src/lib/examStatus.test.ts):
 
 - **Inga gissade datum.** `nextPeriod.confirmed` är `false` när anordnaren inte
   har publicerat datum. Då visar appen ingen period alls, utan länkar vidare.
@@ -33,6 +34,14 @@ Två regler styr datan, och båda testas i
   anordnaren själv skrivit att omgången är fullbokad. Då är listningen stängd
   för anmälan även om datumen ser öppna ut, och nedräkningen tystnar — en
   röd "3 dagar kvar" på en omgång ingen kan söka till är bara press utan utväg.
+- **Ett datum som varit ska synas som ett datum som varit.** När sista
+  anmälningsdag passerat säger kortet "Anmälan stängde 4 aug.", datumet stryks
+  över, kalenderexporten försvinner och listningen sjunker under de odaterade i
+  "närmast i tiden" — en gången deadline sorterar annars först, eftersom ett
+  äldre datum är mindre som text.
+- **Samma skola och kurs listas en gång.** Datan växer en anordnare i taget, och
+  två omgångar hos samma skola hör hemma i samma listnings etikett. Två kort
+  läser som två skolor, där den ena råkar vara fullbokad.
 
 ### Två vägar ut ur varje listning
 
@@ -82,6 +91,26 @@ Priset för en rad i `BOT_BLOCKED` är att en länk som faktiskt dör där måst
 upptäckas för hand, så listan hålls så kort som bevisen tillåter. Alvis och
 `www.falun.se` låg där på en 503 som visade sig vara vår egen rate-limiting —
 de kontrolleras på riktigt igen sedan omförsöket kom på plats.
+
+### Kontrollera datumen
+
+```sh
+npm run check:dates                    # vad som gått ut idag
+npm run check:dates -- --soon          # visar även vad som stänger inom tre veckor
+npm run check:dates -- --on 2026-12-01 # låtsas att det är ett annat datum
+```
+
+Länksweepen hittar en länk som dör. Det här hittar den andra halvan av samma
+förfall, som är tystare: länken lever, sidan laddar, och datumen appen visar
+hör till en omgång som stängde för tre veckor sedan. En listning ser precis lika
+frisk ut dagen efter sista anmälningsdag som dagen före.
+
+Skriptet skiljer på en omgång som är _helt_ förbi och en där anmälan stängt men
+prövningen är kvar — den senare kan komma tillbaka med nya datum på samma sida.
+De listningar som bygger sin period i kod i stället för som ett objekt kan inte
+läsas ur källtexten, och rapporteras vid namn i stället för att tigande hoppas
+över. Skriptet ingår inte i `npm test`: det beror på dagens datum, och skulle
+göra `main` röd en tisdag morgon utan att någon commit orsakat det.
 
 Får du plötsligt fel på nästan alla länkar samtidigt är det nästan aldrig datan.
 Bakom en TLS-inspekterande proxy litar Node inte på proxyns certifikat och varje

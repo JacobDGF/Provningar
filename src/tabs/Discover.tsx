@@ -14,7 +14,7 @@ import { useStore } from '../store/useStore';
 import { ExamCard } from '../components/ExamCard';
 import { FilterSheet } from '../components/FilterSheet';
 import { haversineDistanceKm } from '../lib/distance';
-import { isOpenForRegistration } from '../lib/examStatus';
+import { isOpenForRegistration, compareByPeriod } from '../lib/examStatus';
 import { getRegistrationFlow } from '../lib/registrationFlow';
 import { useMinuteTick } from '../hooks/useMinuteTick';
 
@@ -104,20 +104,8 @@ export function Discover() {
       return matchesSearch && matchesSubject && matchesRegion && matchesDirect && matchesOpen;
     });
 
-    const periodDate = (e: (typeof result)[0]) =>
-      e.nextPeriod.confirmed
-        ? e.nextPeriod.applicationEnd || e.nextPeriod.examWindowStart
-        : undefined;
-
     if (filterSortBy === 'date') {
-      result.sort((a, b) => {
-        const da = periodDate(a);
-        const db = periodDate(b);
-        if (da && db) return da.localeCompare(db);
-        if (da) return -1;
-        if (db) return 1;
-        return a.schoolName.localeCompare(b.schoolName);
-      });
+      result.sort(compareByPeriod);
     } else if (filterSortBy === 'distance' && userLocation) {
       result.sort(
         (a, b) =>

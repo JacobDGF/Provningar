@@ -56,6 +56,36 @@ describe('EXAMS dataset', () => {
     expect([...seen].filter(([, n]) => n > 1)).toEqual([]);
   });
 
+  /**
+   * Two runs adding the same provider from two different pages is the failure
+   * this catches: the ids differ, so the id guard above is happy, and what
+   * ships is one school shown twice — once with the dates it publishes and
+   * once saying it publishes none. The dataset grows by hand, one provider at
+   * a time, and nobody re-reads 100 entries before adding the 101st.
+   */
+  it('lists each school-and-course once', () => {
+    const seen = new Map<string, string[]>();
+    for (const e of EXAMS) {
+      const key = [e.schoolName, e.city, e.course].join(' | ').toLowerCase();
+      seen.set(key, [...(seen.get(key) ?? []), e.id]);
+    }
+    expect([...seen].filter(([, ids]) => ids.length > 1)).toEqual([]);
+  });
+
+  /**
+   * The same school under two spellings is the same duplicate wearing a hat —
+   * "Jutus Vux" and "Jutus Vux Sollentuna" at one address in one city. Address
+   * and city are what a user actually recognises, so they are the key.
+   */
+  it('lists each address once per course', () => {
+    const seen = new Map<string, string[]>();
+    for (const e of EXAMS) {
+      const key = [e.address, e.city, e.course].join(' | ').toLowerCase().replace(/\s+/g, ' ');
+      seen.set(key, [...(seen.get(key) ?? []), e.id]);
+    }
+    expect([...seen].filter(([, ids]) => ids.length > 1)).toEqual([]);
+  });
+
   it.each(EXAMS.map((e) => [e.id, e] as const))('%s is well formed', (_id, exam) => {
     for (const field of [
       'schoolName',

@@ -4,6 +4,7 @@ import { useStore } from '../store/useStore';
 import { ExamCard } from '../components/ExamCard';
 import { CalendarView } from './CalendarTab';
 import { SavedExam } from '../types';
+import { compareByPeriod } from '../lib/examStatus';
 
 const STATUS_OPTIONS: { value: SavedExam['status']; label: string; color: string }[] = [
   { value: 'interested', label: 'Intresserad', color: 'bg-amber-accent-50 text-amber-accent' },
@@ -65,12 +66,8 @@ export function Exams() {
       .filter((x): x is { saved: SavedExam; exam: (typeof exams)[0] } => !!x.exam)
       .filter((x) => activeStatus === 'all' || x.saved.status === activeStatus)
       .sort((a, b) => {
-        const da = a.exam.nextPeriod.confirmed ? a.exam.nextPeriod.applicationEnd : undefined;
-        const db = b.exam.nextPeriod.confirmed ? b.exam.nextPeriod.applicationEnd : undefined;
-        if (da && db) return da.localeCompare(db);
-        if (da) return -1;
-        if (db) return 1;
-        return a.saved.savedAt.localeCompare(b.saved.savedAt);
+        const byPeriod = compareByPeriod(a.exam, b.exam);
+        return byPeriod !== 0 ? byPeriod : a.saved.savedAt.localeCompare(b.saved.savedAt);
       });
   }, [savedExams, exams, activeStatus]);
 

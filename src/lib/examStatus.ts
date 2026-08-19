@@ -29,6 +29,55 @@ export function isFullyBooked(exam: Exam): boolean {
   return exam.nextPeriod.full === true;
 }
 
+/** True when this round's published deadline is behind us.
+ *
+ * `isOpenForRegistration` returns false for three different situations, and
+ * they are not the same errand: a round that hasn't opened is worth a reminder,
+ * a full round is worth asking about a cancellation, and a round that closed
+ * last Tuesday is worth nothing at all — the only useful move is to look for
+ * the next one. Without this the card just shows a bold date that happens to be
+ * in the past, which reads as an upcoming deadline at a glance. */
+export function hasApplicationClosed(exam: Exam): boolean {
+  const { nextPeriod: p } = exam;
+  if (!p.confirmed || !p.applicationEnd) return false;
+  return Date.now() > endOfDay(p.applicationEnd);
+}
+
+/** True when nothing this round offers lies ahead any more — the application
+    closed *and* the exam window is over. */
+export function hasPeriodPassed(exam: Exam): boolean {
+  const { nextPeriod: p } = exam;
+  if (!p.confirmed) return false;
+  const last = p.examWindowEnd || p.examWindowStart || p.applicationEnd;
+  if (!last) return false;
+  return Date.now() > endOfDay(last);
+}
+
+/** Sort key for "närmast i tiden först".
+ *
+ * A deadline that has already passed is not the most urgent thing in the list,
+ * even though its date sorts first in a plain string compare — that put dead
+ * rounds at the top of the default view. Rounds still ahead of the user come
+ * first in date order, then rounds with no published date, and last the ones
+ * that are over. */
+export function periodSortRank(exam: Exam): [number, string] {
+  const { nextPeriod: p } = exam;
+  const date = p.confirmed ? p.applicationEnd || p.examWindowStart : undefined;
+  if (!date) return [1, ''];
+  if (hasPeriodPassed(exam) || hasApplicationClosed(exam)) return [2, date];
+  return [0, date];
+}
+
+/** Compares two exams by how soon the user has to act. Ties fall back to the
+    school's name so the order is stable between renders. */
+export function compareByPeriod(a: Exam, b: Exam): number {
+  const [rankA, dateA] = periodSortRank(a);
+  const [rankB, dateB] = periodSortRank(b);
+  if (rankA !== rankB) return rankA - rankB;
+  if (dateA && dateB && dateA !== dateB) return dateA.localeCompare(dateB);
+  return a.schoolName.localeCompare(b.schoolName, 'sv');
+}
+
 export function daysUntil(dateStr: string): number {
   const diff = new Date(dateStr).getTime() - Date.now();
   return Math.ceil(diff / (1000 * 60 * 60 * 24));
