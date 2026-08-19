@@ -250,3 +250,87 @@ describe('filterOpenOnly', () => {
     expect(useStore.getState().filterDirectOnly).toBe(false);
   });
 });
+
+describe('deleteReply', () => {
+  it('removes the user’s own reply from the thread', () => {
+    const post = useStore.getState().posts[0];
+    useStore.getState().addReply(post.id, 'Mitt svar');
+    const mine = useStore
+      .getState()
+      .posts.find((p) => p.id === post.id)!
+      .replies.find((r) => r.userId === 'me')!;
+    useStore.getState().deleteReply(post.id, mine.id);
+    expect(
+      useStore
+        .getState()
+        .posts.find((p) => p.id === post.id)!
+        .replies.some((r) => r.id === mine.id),
+    ).toBe(false);
+  });
+
+  it('refuses to delete somebody else’s reply', () => {
+    const post = useStore.getState().posts.find((p) => p.replies.some((r) => r.userId !== 'me'))!;
+    const theirs = post.replies.find((r) => r.userId !== 'me')!;
+    useStore.getState().deleteReply(post.id, theirs.id);
+    expect(
+      useStore
+        .getState()
+        .posts.find((p) => p.id === post.id)!
+        .replies.some((r) => r.id === theirs.id),
+    ).toBe(true);
+  });
+
+  it('leaves other threads alone', () => {
+    const [a, b] = useStore.getState().posts;
+    useStore.getState().addReply(a.id, 'Svar i A');
+    const before = useStore.getState().posts.find((p) => p.id === b.id)!.replies.length;
+    const mine = useStore
+      .getState()
+      .posts.find((p) => p.id === a.id)!
+      .replies.find((r) => r.userId === 'me')!;
+    useStore.getState().deleteReply(a.id, mine.id);
+    expect(useStore.getState().posts.find((p) => p.id === b.id)!.replies).toHaveLength(before);
+  });
+});
+
+describe('updateCompletedExam / removeCompletedExam', () => {
+  const log = [
+    {
+      examId: 'a',
+      schoolName: 'Eget',
+      subject: 'Matematik',
+      course: 'Ma 3b',
+      date: '2026-03-01',
+      grade: 'C',
+    },
+    {
+      examId: 'b',
+      schoolName: 'Eget',
+      subject: 'Engelska',
+      course: 'Eng 6',
+      date: '2026-04-01',
+      grade: 'A',
+    },
+  ];
+
+  it('corrects one row and leaves the rest untouched', () => {
+    useStore.getState().updateUser({ completedExams: log });
+    useStore.getState().updateCompletedExam(0, { grade: 'B' });
+    const { completedExams } = useStore.getState().currentUser;
+    expect(completedExams[0]).toMatchObject({ course: 'Ma 3b', grade: 'B' });
+    expect(completedExams[1]).toEqual(log[1]);
+  });
+
+  it('removes the row at the given index', () => {
+    useStore.getState().updateUser({ completedExams: log });
+    useStore.getState().removeCompletedExam(0);
+    expect(useStore.getState().currentUser.completedExams).toEqual([log[1]]);
+  });
+
+  it('ignores an index that is not in the log', () => {
+    useStore.getState().updateUser({ completedExams: log });
+    useStore.getState().updateCompletedExam(9, { grade: 'F' });
+    useStore.getState().removeCompletedExam(9);
+    expect(useStore.getState().currentUser.completedExams).toEqual(log);
+  });
+});

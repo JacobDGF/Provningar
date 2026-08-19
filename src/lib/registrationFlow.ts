@@ -121,7 +121,7 @@ const RULES: Array<{ kind: RegistrationKind; match: (url: URL) => boolean }> = [
   {
     kind: 'eservice',
     match: (u) =>
-      /^(sjalvservice|sjalvbetjaning|minasidor|e-tjanst|e-tjanster|etjanst|etjanster|eservice|e|ansokanvux|barnskolautbildning|webb)\./.test(
+      /^(sjalvservice|sjalvbetjaning|minasidor|e-tjanst|e-tjanster|etjanst|etjanster|eservice|service|e|ansokanvux|barnskolautbildning|webb)\./.test(
         u.hostname,
       ) ||
       u.hostname.endsWith('.enamnd.se') ||

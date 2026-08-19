@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Exam, SavedExam, ViewedExam, Post, User, TabId } from '../types';
+import { CompletedExam, Exam, SavedExam, ViewedExam, Post, User, TabId } from '../types';
 import { EXAMS } from '../data/exams';
 import { INITIAL_POSTS } from '../data/community';
 import { isOwnPhoto } from '../lib/avatar';
@@ -49,6 +49,8 @@ interface AppState {
   addReply: (postId: string, content: string) => void;
   /** Only ever called for the user's own posts — the UI hides it on everyone else's. */
   deletePost: (postId: string) => void;
+  /** Same rule as `deletePost`: only the user's own replies, and only from the UI that hides it elsewhere. */
+  deleteReply: (postId: string, replyId: string) => void;
   toggleLikePost: (postId: string) => void;
   toggleLikeReply: (postId: string, replyId: string) => void;
 
@@ -56,6 +58,16 @@ interface AppState {
   currentUser: User;
   updateUser: (updates: Partial<User>) => void;
   toggleFollow: (userId: string) => void;
+  /**
+   * Correct or remove a logged prövning, by its position in `completedExams`.
+   *
+   * The list was append-only, and it feeds the meritvärde average on the
+   * profile. A grade typed into the wrong row therefore skewed the one number
+   * the user came for, with no way back except wiping the whole app — so these
+   * two exist to make the log something you can keep honest.
+   */
+  updateCompletedExam: (index: number, updates: Partial<CompletedExam>) => void;
+  removeCompletedExam: (index: number) => void;
 
   // UI
   showingExamDetail: string | null;
@@ -203,6 +215,18 @@ export const useStore = create<AppState>()(
           posts: s.posts.filter((p) => !(p.id === postId && p.userId === 'me')),
         })),
 
+      deleteReply: (postId, replyId) =>
+        set((s) => ({
+          posts: s.posts.map((p) =>
+            p.id === postId
+              ? {
+                  ...p,
+                  replies: p.replies.filter((r) => !(r.id === replyId && r.userId === 'me')),
+                }
+              : p,
+          ),
+        })),
+
       toggleLikePost: (postId) =>
         set((s) => ({
           posts: s.posts.map((p) => {
@@ -237,6 +261,24 @@ export const useStore = create<AppState>()(
 
       currentUser: DEFAULT_USER,
       updateUser: (updates) => set((s) => ({ currentUser: { ...s.currentUser, ...updates } })),
+
+      updateCompletedExam: (index, updates) =>
+        set((s) => ({
+          currentUser: {
+            ...s.currentUser,
+            completedExams: s.currentUser.completedExams.map((ce, i) =>
+              i === index ? { ...ce, ...updates } : ce,
+            ),
+          },
+        })),
+
+      removeCompletedExam: (index) =>
+        set((s) => ({
+          currentUser: {
+            ...s.currentUser,
+            completedExams: s.currentUser.completedExams.filter((_, i) => i !== index),
+          },
+        })),
 
       toggleFollow: (userId) =>
         set((s) => {

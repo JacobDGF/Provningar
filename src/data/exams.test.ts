@@ -13,6 +13,38 @@ import { getRegistrationFlow } from '../lib/registrationFlow';
 /** Rough bounding box for Sweden, generous at the edges. */
 const SWEDEN = { minLat: 55.2, maxLat: 69.1, minLng: 10.8, maxLng: 24.2 };
 
+/**
+ * Sweden's 21 län, without the "-s län" suffix, exactly as `region` spells them.
+ *
+ * The filter is built from whatever `region` happens to contain, so a landscape
+ * slipped in there ("Småland" covered Jönköping, Kalmar and Kronoberg) doesn't
+ * look wrong in review — it just quietly removes three län from the filter and
+ * leaves someone in Växjö scrolling past their own county.
+ */
+const LAN = [
+  'Blekinge',
+  'Dalarna',
+  'Gotland',
+  'Gävleborg',
+  'Halland',
+  'Jämtland',
+  'Jönköping',
+  'Kalmar',
+  'Kronoberg',
+  'Norrbotten',
+  'Skåne',
+  'Stockholm',
+  'Södermanland',
+  'Uppsala',
+  'Värmland',
+  'Västerbotten',
+  'Västernorrland',
+  'Västmanland',
+  'Västra Götaland',
+  'Örebro',
+  'Östergötland',
+];
+
 describe('EXAMS dataset', () => {
   it('is non-empty', () => {
     expect(EXAMS.length).toBeGreaterThan(0);
@@ -125,6 +157,31 @@ describe('EXAMS dataset', () => {
           e.nextPeriod.examWindowStart),
     );
     expect(bad.map((e) => e.id)).toEqual([]);
+  });
+
+  it('files every listing under one of Sweden’s 21 län', () => {
+    const strays = [...new Set(EXAMS.map((e) => e.region))].filter((r) => !LAN.includes(r));
+    expect(strays).toEqual([]);
+  });
+
+  /**
+   * The one flow that leaves work on the user's desk.
+   *
+   * Every other kind lands somewhere that *is* the booking, or says plainly
+   * that it isn't (a blankett, an e-postadress, a form that goes up on a named
+   * date). A bare `page` says "leta upp anmälningslänken på sidan" and hopes.
+   * That is sometimes the truth — a few providers really do bury the link — but
+   * it is also what a listing looks like when nobody has checked it yet, and
+   * the two are indistinguishable from the outside.
+   *
+   * The list is empty: every listing either lands on the booking or carries a
+   * `registration` override saying what the user meets instead. Adding one that
+   * does neither is allowed — but it has to be written down here first, so it
+   * is a decision somebody made rather than a row nobody got to.
+   */
+  it('names every listing that only reaches an information page', () => {
+    const stranded = EXAMS.filter((e) => !e.registration && getRegistrationFlow(e).kind === 'page');
+    expect(stranded.map((e) => e.id).sort()).toEqual([]);
   });
 
   it('resolves a registration flow for every listing', () => {
