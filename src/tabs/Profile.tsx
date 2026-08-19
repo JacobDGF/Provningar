@@ -18,6 +18,7 @@ import {
   CalendarClock,
   TrendingUp,
   Download,
+  Activity,
 } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 import { useStore } from '../store/useStore';
@@ -28,6 +29,7 @@ import { fileToAvatarDataUrl } from '../lib/avatar';
 import { CompletedExamSheet, CompletedExamDraft } from '../components/CompletedExamSheet';
 import { summarizeGrades, gradeChipClass } from '../lib/grades';
 import { daysUntil, isFullyBooked } from '../lib/examStatus';
+import { STATUS_ORDER, STATUS_TONES, getExamStatus } from '../lib/examStatusColor';
 
 export function Profile() {
   const {
@@ -86,7 +88,27 @@ export function Profile() {
       (d) =>
         d.exam.nextPeriod.confirmed && !isFullyBooked(d.exam) && d.days !== null && d.days >= 0,
     )
-    .sort((a, b) => (a.days as number) - (b.days as number))[0];
+    .sort((a, b) => (a.days as number) - (b.days as number))
+    .map((d) => ({ ...d, urgent: (d.days as number) <= 7 }))[0];
+
+  /** The saved list broken down by colour, in the legend's own order. */
+  const savedStatus = (() => {
+    const keys = savedExams
+      .map((se) => exams.find((e) => e.id === se.examId))
+      .filter((e): e is NonNullable<typeof e> => Boolean(e))
+      .map((exam) => getExamStatus(exam).tone.key);
+    const segments = STATUS_ORDER.map((key) => ({
+      key,
+      count: keys.filter((k) => k === key).length,
+    })).filter((seg) => seg.count > 0);
+    return {
+      total: keys.length,
+      segments,
+      // Full and closed are the two you can do nothing about — worth counting
+      // out loud, because a saved prövning looks the same either way.
+      lost: keys.filter((k) => k === 'full' || k === 'closed').length,
+    };
+  })();
 
   const pickPhoto = async (file: File | undefined) => {
     if (!file) return;
@@ -315,24 +337,27 @@ export function Profile() {
 
       <div className="flex-1 overflow-y-auto pb-28 lg:pb-8 bg-cream">
         <div className="max-w-2xl mx-auto w-full">
-          {/* Next deadline — the one thing here that expires */}
+          {/* Next deadline — the one thing here that expires.
+              Amber inside the last week rather than red: red on this screen is
+              reserved for the two rounds you have lost (full, closed), so a
+              deadline you can still make must not wear it. */}
           {nextDeadline && (
             <button
               onClick={() => setShowingExamDetail(nextDeadline.exam.id)}
               className={`w-[calc(100%-2rem)] lg:w-full mx-4 lg:mx-0 mt-4 flex items-center gap-3 rounded-md p-4 text-left border transition-transform active:scale-98 ${
-                (nextDeadline.days as number) <= 7
-                  ? 'bg-red-50 border-red-200'
+                nextDeadline.urgent
+                  ? 'bg-orange-50 border-orange-200'
                   : 'bg-surface border-line hover:border-brand-200'
               }`}
             >
               <span
                 className={`w-11 h-11 rounded flex items-center justify-center flex-shrink-0 ${
-                  (nextDeadline.days as number) <= 7 ? 'bg-red-100' : 'bg-brand-100'
+                  nextDeadline.urgent ? 'bg-orange-100' : 'bg-brand-100'
                 }`}
               >
                 <CalendarClock
                   size={22}
-                  className={(nextDeadline.days as number) <= 7 ? 'text-red-600' : 'text-brand-600'}
+                  className={nextDeadline.urgent ? 'text-orange-600' : 'text-brand-600'}
                 />
               </span>
               <div className="flex-1 min-w-0">
@@ -340,7 +365,7 @@ export function Profile() {
                 <p className="font-bold text-ink truncate">{nextDeadline.exam.course}</p>
                 <p
                   className={`text-sm font-semibold ${
-                    (nextDeadline.days as number) <= 7 ? 'text-red-600' : 'text-ink-soft'
+                    nextDeadline.urgent ? 'text-orange-700' : 'text-ink-soft'
                   }`}
                 >
                   {nextDeadline.days === 0
@@ -350,6 +375,54 @@ export function Profile() {
               </div>
               <ChevronRight size={20} className="text-ink-faint" />
             </button>
+          )}
+
+          {/* Your saved rounds, as one bar of colour.
+              Five saved prövningar is five separate dates to keep in your head;
+              this answers the question underneath all of them — how many can I
+              still act on — before any of them are read. */}
+          {savedStatus.total > 0 && (
+            <div className="bg-surface mx-4 lg:mx-0 mt-3 rounded-md p-4 border border-line">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-bold text-ink flex items-center gap-2">
+                  <Activity size={16} className="text-brand-600" />
+                  Läget för dina sparade
+                </h3>
+                <button
+                  onClick={() => setActiveTab('exams')}
+                  className="text-brand-600 text-xs font-bold flex items-center gap-0.5"
+                >
+                  Visa alla <ChevronRight size={13} />
+                </button>
+              </div>
+              <div className="flex h-2.5 rounded-full overflow-hidden bg-sand mb-3">
+                {savedStatus.segments.map(({ key, count }) => (
+                  <div
+                    key={key}
+                    className={STATUS_TONES[key].rail}
+                    style={{ width: `${(count / savedStatus.total) * 100}%` }}
+                    title={`${count} ${STATUS_TONES[key].shortLabel.toLowerCase()}`}
+                  />
+                ))}
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {savedStatus.segments.map(({ key, count }) => (
+                  <span
+                    key={key}
+                    className={`text-xs font-semibold px-2.5 py-1 rounded-full ${STATUS_TONES[key].softChip}`}
+                  >
+                    {count} {STATUS_TONES[key].shortLabel.toLowerCase()}
+                  </span>
+                ))}
+              </div>
+              {savedStatus.lost > 0 && (
+                <p className="text-ink-soft text-xs mt-3 leading-relaxed">
+                  {savedStatus.lost === 1
+                    ? 'En av dina sparade går inte längre att anmäla sig till — anordnaren brukar lägga upp nästa omgång på samma sida.'
+                    : `${savedStatus.lost} av dina sparade går inte längre att anmäla sig till — anordnarna brukar lägga upp nästa omgång på samma sida.`}
+                </p>
+              )}
+            </div>
           )}
 
           {/* Bio */}
@@ -459,23 +532,29 @@ export function Profile() {
                 {savedExams.slice(0, 5).map((se) => {
                   const exam = exams.find((e) => e.id === se.examId);
                   if (!exam) return null;
+                  const status = getExamStatus(exam);
                   return (
                     <button
                       key={se.examId}
                       onClick={() => setShowingExamDetail(exam.id)}
                       className="flex items-center gap-3 w-full text-left"
                     >
+                      {/* The saved list is where a round quietly goes full or
+                          closes while you weren't looking, so each row carries
+                          its colour rather than a date that says nothing about
+                          whether you can still act on it. */}
+                      <span
+                        className={`w-1.5 self-stretch rounded-full flex-shrink-0 ${status.tone.rail}`}
+                        aria-hidden="true"
+                      />
                       <SchoolCover exam={exam} className="w-10 h-10 rounded flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-ink truncate">{exam.course}</p>
-                        <p className="text-xs text-ink-soft">
+                        <p className="text-xs text-ink-soft truncate">
                           {exam.city} ·{' '}
-                          {exam.nextPeriod.confirmed && exam.nextPeriod.examWindowStart
-                            ? new Date(exam.nextPeriod.examWindowStart).toLocaleDateString(
-                                'sv-SE',
-                                { day: 'numeric', month: 'short' },
-                              )
-                            : 'Datum ej fastställt'}
+                          <span className={`font-semibold ${status.tone.text}`}>
+                            {status.label}
+                          </span>
                         </p>
                       </div>
                       <ChevronRight size={16} className="text-ink-faint" />

@@ -4,6 +4,7 @@ import { CompletedExam, Exam, SavedExam, ViewedExam, Post, User, TabId } from '.
 import { EXAMS } from '../data/exams';
 import { INITIAL_POSTS } from '../data/community';
 import { isOwnPhoto } from '../lib/avatar';
+import { StatusKey } from '../lib/examStatusColor';
 
 interface AppState {
   // Navigation
@@ -34,9 +35,20 @@ interface AppState {
   /** Only listings whose link lands on the booking itself, not a page about it. */
   filterDirectOnly: boolean;
   setFilterDirectOnly: (v: boolean) => void;
-  /** Only listings whose application window is open today. */
+  /** Only listings whose application window is open today (green *and* amber —
+      "stänger om 3 dagar" is still something you can book). */
   filterOpenOnly: boolean;
   setFilterOpenOnly: (v: boolean) => void;
+  /**
+   * One colour from the status legend, or '' for all of them.
+   *
+   * Deliberately narrower than `filterOpenOnly`: this picks exactly one bucket
+   * of the palette, so the chip's count and the list it produces are the same
+   * number. Both can be set; a contradiction ("öppna" + "fullbokat") shows an
+   * empty list with the clear-filters button, which is the honest answer.
+   */
+  filterStatus: StatusKey | '';
+  setFilterStatus: (s: StatusKey | '') => void;
 
   // Location / GPS
   userLocation: { lat: number; lng: number } | null;
@@ -141,6 +153,8 @@ export const useStore = create<AppState>()(
       setFilterDirectOnly: (v) => set({ filterDirectOnly: v }),
       filterOpenOnly: false,
       setFilterOpenOnly: (v) => set({ filterOpenOnly: v }),
+      filterStatus: '',
+      setFilterStatus: (s) => set({ filterStatus: s }),
 
       userLocation: null,
       locationStatus: 'idle',

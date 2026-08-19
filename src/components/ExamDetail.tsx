@@ -15,25 +15,43 @@ import {
   Map,
   ListChecks,
   Globe,
-  Ban,
-  CalendarX,
   CalendarPlus,
 } from 'lucide-react';
 import { useCallback } from 'react';
+import { Exam } from '../types';
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
-import {
-  isOpenForRegistration,
-  isFullyBooked,
-  hasApplicationClosed,
-  hasPeriodPassed,
-  daysUntil,
-} from '../lib/examStatus';
+import { hasPeriodPassed } from '../lib/examStatus';
+import { StatusKey, getExamStatus } from '../lib/examStatusColor';
 import { getRegistrationFlow } from '../lib/registrationFlow';
 import { getProviderLinks } from '../lib/providerLinks';
 import { examCalendarEvents, downloadCalendar } from '../lib/calendarFile';
 import { useEscapeKey } from '../hooks/useEscapeKey';
 import { SchoolCover } from './SchoolCover';
+
+/**
+ * The sentence under the status banner.
+ *
+ * The colour says what state the round is in; this says what to do about it.
+ * Kept to one sentence each — a paragraph here is what pushed the dates,
+ * the price and the two buttons below the fold on a phone.
+ */
+function statusExplanation(exam: Exam, key: StatusKey): string {
+  switch (key) {
+    case 'full':
+      return `${exam.provider} har meddelat att platserna är slut. Datumen nedan gäller fortfarande — men du behöver vänta på nästa omgång.`;
+    case 'closed':
+      return `Datumen nedan är omgången som varit. ${exam.provider} publicerar nästa anmälningsperiod på sin egen sida — börja där.`;
+    case 'closing':
+      return 'Anmälan är fortfarande öppen, men stänger inom en vecka. Läs igenom stegen nedan innan du klickar vidare.';
+    case 'open':
+      return 'Anmälan är öppen i dag. Knapparna längst ned tar dig antingen rakt in i bokningen eller till skolans egen sida.';
+    case 'upcoming':
+      return 'Datumen är satta men anmälan har inte öppnat än — lägg in dem i kalendern så missar du inte dagen.';
+    default:
+      return `${exam.provider} har inte publicerat några datum för nästa omgång. Vi visar aldrig gissade datum — se deras egen sida innan du planerar.`;
+  }
+}
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('sv-SE', {
@@ -70,15 +88,12 @@ export function ExamDetail() {
 
   const saved = isExamSaved(exam.id);
   const { nextPeriod } = exam;
-  const deadlineDate = nextPeriod.confirmed ? nextPeriod.applicationEnd : undefined;
-  const deadlineDays = deadlineDate ? daysUntil(deadlineDate) : null;
-  const full = isFullyBooked(exam);
-  const closed = hasApplicationClosed(exam);
+  const status = getExamStatus(exam);
   // Nothing in a round that is over belongs in anyone's calendar.
   const passed = hasPeriodPassed(exam);
-  // A countdown on a round nobody can join is just pressure with no exit.
-  const urgent = deadlineDays !== null && deadlineDays <= 7 && deadlineDays >= 0 && !full;
-  const openNow = isOpenForRegistration(exam);
+  // Amber, not red: the dates are still worth acting on. Red in this sheet
+  // belongs to the banner above, and only when the round is closed to you.
+  const urgent = status.tone.key === 'closing';
   const flow = getRegistrationFlow(exam);
   const links = getProviderLinks(exam);
   const calendarEvents = examCalendarEvents(exam);
@@ -150,60 +165,24 @@ export function ExamDetail() {
               </p>
             </div>
 
-            {/* Round is full — said outright, because the dates below still
-                look like an open window and would otherwise mislead. */}
-            {full && (
-              <div className="bg-red-50 border border-red-200 rounded p-3 flex items-start gap-2">
-                <Ban size={18} className="text-red-600 flex-shrink-0 mt-0.5" strokeWidth={2.5} />
-                <div>
-                  <p className="text-red-700 text-sm font-bold">Den här omgången är fullbokad</p>
-                  <p className="text-ink-soft text-xs mt-0.5 leading-relaxed">
-                    {exam.provider} har meddelat att platserna är slut. Datumen nedan gäller
-                    fortfarande — men du behöver vänta på nästa omgång.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* The round's deadline has passed. Said before the dates, because
-                the dates below otherwise read as an upcoming window. */}
-            {closed && !full && (
-              <div className="bg-sand border border-line rounded p-3 flex items-start gap-2">
-                <CalendarX size={18} className="text-ink-soft flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-ink text-sm font-semibold">
-                    Anmälan till den här omgången stängde {formatDate(nextPeriod.applicationEnd!)}
-                  </p>
-                  <p className="text-ink-soft text-xs mt-0.5 leading-relaxed">
-                    Datumen nedan är omgången som varit. {exam.provider} publicerar nästa
-                    anmälningsperiod på sin egen sida — börja där.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Open for registration now */}
-            {openNow && (
-              <div className="bg-trust-50 border border-trust-100 rounded p-3 flex items-center gap-2">
-                <span className="relative flex h-2 w-2 flex-shrink-0">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-trust-500 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-trust-600" />
-                </span>
-                <p className="text-trust-700 text-sm font-semibold">Öppen för anmälan just nu</p>
-              </div>
-            )}
-
-            {/* Urgent warning */}
-            {urgent && (
-              <div className="bg-red-50 border border-red-200 rounded p-3 flex items-center gap-2">
-                <Clock size={18} className="text-red-500 flex-shrink-0" />
-                <p className="text-red-700 text-sm font-semibold">
-                  {deadlineDays === 0
-                    ? 'Sista anmälningsdagen idag!'
-                    : `Bara ${deadlineDays} dagar kvar att anmäla sig!`}
+            {/* One status banner, in the palette's own colour.
+                This was four separate blocks — full, closed, open, urgent —
+                which could stack two deep and repeat the same fact in two
+                voices. The colour comes from the same table the card's rail
+                and the map's pin read, so the sheet can never disagree with
+                the card the user tapped to get here. */}
+            <div className={`rounded p-3 flex items-start gap-2 ${status.tone.softChip}`}>
+              <span
+                className={`w-2.5 h-2.5 rounded-full flex-shrink-0 mt-1.5 ${status.tone.dot}`}
+                aria-hidden="true"
+              />
+              <div>
+                <p className="text-sm font-bold">{status.label}</p>
+                <p className="text-ink-soft text-xs mt-0.5 leading-relaxed">
+                  {statusExplanation(exam, status.tone.key)}
                 </p>
               </div>
-            )}
+            </div>
 
             {/* Description */}
             <div className="bg-surface rounded-md p-4 border border-line">
@@ -496,7 +475,9 @@ function InfoRow({
         {icon}
         {label}
       </span>
-      <span className={`text-sm font-semibold text-right ${urgent ? 'text-red-600' : 'text-ink'}`}>
+      <span
+        className={`text-sm font-semibold text-right ${urgent ? 'text-orange-700' : 'text-ink'}`}
+      >
         {value}
       </span>
     </div>

@@ -1,34 +1,32 @@
 import { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import iconUrl from 'leaflet/dist/images/marker-icon.png';
-import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
-import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
 import { Exam } from '../types';
 import { useStore } from '../store/useStore';
-import { isOpenForRegistration } from '../lib/examStatus';
+import { STATUS_TONES, StatusKey, getExamStatus } from '../lib/examStatusColor';
 
-// Leaflet's default marker icons resolve to relative paths that break under
-// a bundler — bundle the actual image assets via Vite instead so the map
-// works offline/self-contained with no external CDN dependency at runtime.
-
-const defaultIcon = L.icon({
-  iconUrl,
-  iconRetinaUrl,
-  shadowUrl,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
-
-const openIcon = L.divIcon({
-  className: '',
-  html: `<div style="width:26px;height:26px;border-radius:9999px;background:#2F8457;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.35);"></div>`,
-  iconSize: [26, 26],
-  iconAnchor: [13, 13],
-  popupAnchor: [0, -13],
-});
+/**
+ * One pin colour per status, from the same table the cards read.
+ *
+ * Every pin used to be Leaflet's blue teardrop except the open ones, so a map
+ * of forty listings answered "where" and nothing else — you had to open each
+ * one to find out whether it was bookable. Built once at module scope: a
+ * divIcon per status rather than per marker.
+ */
+const statusIcons: Record<StatusKey, L.DivIcon> = Object.fromEntries(
+  (Object.keys(STATUS_TONES) as StatusKey[]).map((key) => [
+    key,
+    L.divIcon({
+      className: '',
+      html:
+        `<div style="width:24px;height:24px;border-radius:9999px;background:${STATUS_TONES[key].pin};` +
+        `border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.35);"></div>`,
+      iconSize: [24, 24],
+      iconAnchor: [12, 12],
+      popupAnchor: [0, -12],
+    }),
+  ]),
+) as Record<StatusKey, L.DivIcon>;
 
 const userIcon = L.divIcon({
   className: '',
@@ -54,8 +52,11 @@ export function MapView({ exams, className }: MapViewProps) {
     const map = L.map(containerRef.current, {
       center: [62.0, 15.0],
       zoom: 5,
-      zoomControl: true,
+      // Bottom-right: the status legend floats along the top of this view, and
+      // top-left zoom buttons sat underneath it.
+      zoomControl: false,
     });
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap-bidragsgivare',
       maxZoom: 19,
@@ -79,13 +80,17 @@ export function MapView({ exams, className }: MapViewProps) {
     const points: L.LatLngExpression[] = [];
 
     exams.forEach((exam) => {
-      const icon = isOpenForRegistration(exam) ? openIcon : defaultIcon;
-      const marker = L.marker([exam.lat, exam.lng], { icon });
+      const status = getExamStatus(exam);
+      const marker = L.marker([exam.lat, exam.lng], {
+        icon: statusIcons[status.tone.key],
+        title: `${exam.course} — ${status.label}`,
+      });
       marker.bindPopup(`
         <div style="font-family: -apple-system, sans-serif; min-width: 180px;">
+          <p style="margin:0 0 4px; display:inline-block; background:${status.tone.pin}; color:white; font-size:11px; font-weight:700; padding:2px 8px; border-radius:9999px;">${escapeHtml(status.label)}</p>
           <p style="margin:0 0 2px; font-weight:700; font-size:13px;">${escapeHtml(exam.course)}</p>
           <p style="margin:0 0 8px; font-size:12px; color:#57544C;">${escapeHtml(exam.schoolName)} · ${escapeHtml(exam.city)}</p>
-          <button id="open-${exam.id}" style="background:#CC785C;color:white;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;width:100%;">Visa detaljer</button>
+          <button id="open-${exam.id}" style="background:#0088B0;color:white;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;width:100%;">Visa detaljer</button>
         </div>
       `);
       marker.on('popupopen', () => {

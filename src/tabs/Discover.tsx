@@ -15,6 +15,8 @@ import { ExamCard } from '../components/ExamCard';
 import { FilterSheet } from '../components/FilterSheet';
 import { haversineDistanceKm } from '../lib/distance';
 import { isOpenForRegistration, compareByPeriod } from '../lib/examStatus';
+import { getStatusKey } from '../lib/examStatusColor';
+import { StatusFilterBar } from '../components/StatusFilterBar';
 import { getRegistrationFlow } from '../lib/registrationFlow';
 import { useMinuteTick } from '../hooks/useMinuteTick';
 
@@ -64,6 +66,8 @@ export function Discover() {
     filterDirectOnly,
     filterOpenOnly,
     setFilterOpenOnly,
+    filterStatus,
+    setFilterStatus,
     setFilterSubject,
     setFilterRegion,
     setFilterDirectOnly,
@@ -76,13 +80,20 @@ export function Discover() {
   const [view, setView] = useState<'list' | 'map'>('list');
   const tick = useMinuteTick();
 
-  const hasActiveFilters = !!(filterSubject || filterRegion || filterDirectOnly || filterOpenOnly);
+  const hasActiveFilters = !!(
+    filterSubject ||
+    filterRegion ||
+    filterDirectOnly ||
+    filterOpenOnly ||
+    filterStatus
+  );
 
   const clearFilters = () => {
     setFilterSubject('');
     setFilterRegion('');
     setFilterDirectOnly(false);
     setFilterOpenOnly(false);
+    setFilterStatus('');
     setSearchQuery('');
   };
 
@@ -101,7 +112,15 @@ export function Discover() {
       const matchesRegion = !filterRegion || e.region === filterRegion;
       const matchesDirect = !filterDirectOnly || getRegistrationFlow(e).direct;
       const matchesOpen = !filterOpenOnly || isOpenForRegistration(e);
-      return matchesSearch && matchesSubject && matchesRegion && matchesDirect && matchesOpen;
+      const matchesStatus = !filterStatus || getStatusKey(e) === filterStatus;
+      return (
+        matchesSearch &&
+        matchesSubject &&
+        matchesRegion &&
+        matchesDirect &&
+        matchesOpen &&
+        matchesStatus
+      );
     });
 
     if (filterSortBy === 'date') {
@@ -126,7 +145,12 @@ export function Discover() {
     filterSortBy,
     filterDirectOnly,
     filterOpenOnly,
+    filterStatus,
+    // The status buckets are computed against the clock, so a listing that
+    // closes while the tab is open has to change colour without a reload.
+    tick,
     setFilterOpenOnly,
+    setFilterStatus,
     setFilterSubject,
     setFilterRegion,
     setFilterDirectOnly,
@@ -195,10 +219,17 @@ export function Discover() {
       </div>
 
       {view === 'map' ? (
-        <div className="flex-1 min-h-0" style={{ height: 'calc(100vh - 44px)' }}>
+        <div className="flex-1 min-h-0 relative" style={{ height: 'calc(100vh - 44px)' }}>
           <Suspense fallback={<MapFallback />}>
             <MapView exams={filtered} className="w-full h-full" />
           </Suspense>
+          {/* The same colour key as the list, floated over the map — without it
+              a wall of coloured pins is decoration rather than information.
+              z-20 clears Leaflet's own panes, which number in the 400s inside
+              the map's isolated stacking context. */}
+          <div className="absolute top-3 left-3 right-3 z-20 bg-cream/95 backdrop-blur-sm border border-line rounded-md px-3 py-2 shadow-md">
+            <StatusFilterBar exams={exams} />
+          </div>
         </div>
       ) : (
         <>
@@ -284,7 +315,7 @@ export function Discover() {
                         className={`relative inline-flex rounded-full h-1.5 w-1.5 ${filterOpenOnly ? 'bg-white' : 'bg-trust-600'}`}
                       />
                     </span>
-                    Öppna nu ({stats.openNow})
+                    Kan bokas nu ({stats.openNow})
                   </button>
                 )}
                 {FEATURED_SUBJECTS.map((s) => (
@@ -311,12 +342,16 @@ export function Discover() {
                     />
                   </Suspense>
                 </div>
-                <div className="absolute bottom-3 left-3 z-10 bg-cream border border-accent2-200 text-accent2-700 text-xs font-semibold px-2.5 py-1.5 rounded shadow-sm flex items-center gap-1.5">
-                  <span className="relative flex h-1.5 w-1.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent2-500 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-accent2-500" />
+                {/* The caption doubles as the map's key: the circles are green
+                    where something can be booked today and grey where nothing
+                    can, and this is the sentence that says so. */}
+                <div className="absolute bottom-3 left-3 right-3 z-10 bg-cream border border-line text-xs font-semibold px-2.5 py-1.5 rounded shadow-sm flex items-center gap-1.5">
+                  <span className="relative flex h-1.5 w-1.5 flex-shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-trust-500 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-trust-600" />
                   </span>
-                  {filtered.length} tillfällen live just nu
+                  <span className="text-trust-700">{stats.openNow} går att boka nu</span>
+                  <span className="text-ink-faint font-medium">· grå prick = inget öppet där</span>
                 </div>
               </div>
             </div>
@@ -426,6 +461,11 @@ export function Discover() {
                     </div>
                   </button>
                 )}
+
+                {/* The colour key, before the list it explains */}
+                <div className="mb-3">
+                  <StatusFilterBar exams={exams} />
+                </div>
 
                 <div className="flex items-center gap-2 text-sm text-ink-soft mb-4">
                   <TrendingUp size={15} className="text-brand-500" />
