@@ -18,6 +18,7 @@ import { useStore } from '../store/useStore';
 import { Avatar } from '../components/Avatar';
 import { useEscapeKey } from '../hooks/useEscapeKey';
 import { Post, PostKind } from '../types';
+import { timeAgo } from '../lib/relativeTime';
 
 const KINDS: { value: PostKind; label: string; emoji: string; color: string }[] = [
   { value: 'fråga', label: 'Fråga', emoji: '❓', color: 'bg-brand-100 text-brand-700' },
@@ -30,23 +31,13 @@ function kindMeta(kind?: PostKind) {
   return KINDS.find((k) => k.value === kind);
 }
 
-function timeAgo(dateStr: string) {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diff / 60000);
-  const hours = Math.floor(mins / 60);
-  const days = Math.floor(hours / 24);
-  if (days > 0) return `${days}d sedan`;
-  if (hours > 0) return `${hours}h sedan`;
-  if (mins > 0) return `${mins}m sedan`;
-  return 'Nu nyss';
-}
-
 function PostCard({ post }: { post: Post }) {
   const {
     toggleLikePost,
     toggleLikeReply,
     addReply,
     deletePost,
+    deleteReply,
     currentUser,
     toggleFollow,
     setActiveTab,
@@ -229,23 +220,43 @@ function PostCard({ post }: { post: Post }) {
                 <div className="flex-1">
                   <div className="bg-surface rounded px-3 py-2 border border-line">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs font-bold text-ink">{reply.userName}</span>
+                      <span className="text-xs font-bold text-ink">
+                        {reply.userName}
+                        {reply.userId === 'me' && (
+                          <span className="ml-1.5 font-semibold text-brand-600">· ditt svar</span>
+                        )}
+                      </span>
                       <span className="text-ink-faint text-xs">{timeAgo(reply.createdAt)}</span>
                     </div>
                     <p className="text-sm text-ink-soft leading-relaxed">{reply.content}</p>
                   </div>
-                  <button
-                    onClick={() => toggleLikeReply(post.id, reply.id)}
-                    className="flex items-center gap-1 mt-1 ml-2 text-xs"
-                  >
-                    <Heart
-                      size={13}
-                      className={replyLiked ? 'text-red-500 fill-red-500' : 'text-ink-faint'}
-                    />
-                    <span className={replyLiked ? 'text-red-500' : 'text-ink-faint'}>
-                      {reply.likes}
-                    </span>
-                  </button>
+                  <div className="flex items-center gap-3 mt-1 ml-2">
+                    <button
+                      onClick={() => toggleLikeReply(post.id, reply.id)}
+                      className="flex items-center gap-1 text-xs"
+                    >
+                      <Heart
+                        size={13}
+                        className={replyLiked ? 'text-red-500 fill-red-500' : 'text-ink-faint'}
+                      />
+                      <span className={replyLiked ? 'text-red-500' : 'text-ink-faint'}>
+                        {reply.likes}
+                      </span>
+                    </button>
+                    {/* You could delete your own post but never your own reply,
+                        so a reply written in haste was permanent. */}
+                    {reply.userId === 'me' && (
+                      <button
+                        onClick={() => {
+                          if (window.confirm('Ta bort ditt svar?')) deleteReply(post.id, reply.id);
+                        }}
+                        aria-label="Ta bort ditt svar"
+                        className="text-ink-faint hover:text-red-500 transition-colors"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             );

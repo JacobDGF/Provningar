@@ -6,32 +6,35 @@ import {
   Trash2,
   Compass,
   ChevronRight,
+  Edit3,
 } from 'lucide-react';
+import { useState } from 'react';
 import { useStore } from '../store/useStore';
 import { SchoolCover } from '../components/SchoolCover';
-
-function timeAgo(dateStr: string) {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diff / 60000);
-  const hours = Math.floor(mins / 60);
-  const days = Math.floor(hours / 24);
-  if (days > 7)
-    return new Date(dateStr).toLocaleDateString('sv-SE', { day: 'numeric', month: 'short' });
-  if (days > 0) return `${days} d sedan`;
-  if (hours > 0) return `${hours} h sedan`;
-  if (mins > 0) return `${mins} min sedan`;
-  return 'Nyss';
-}
+import { CompletedExamSheet } from '../components/CompletedExamSheet';
+import { gradeChipClass } from '../lib/grades';
+import { timeAgo } from '../lib/relativeTime';
 
 export function History() {
-  const { viewedExams, exams, currentUser, setShowingExamDetail, clearHistory, setActiveTab } =
-    useStore();
+  const {
+    viewedExams,
+    exams,
+    currentUser,
+    setShowingExamDetail,
+    clearHistory,
+    setActiveTab,
+    updateCompletedExam,
+    removeCompletedExam,
+  } = useStore();
+  /** Index into `completedExams` of the row being corrected, or null. */
+  const [editing, setEditing] = useState<number | null>(null);
 
   const viewed = viewedExams
     .map((v) => ({ v, exam: exams.find((e) => e.id === v.examId) }))
     .filter((x): x is { v: (typeof viewedExams)[0]; exam: (typeof exams)[0] } => !!x.exam);
 
-  const completed = [...currentUser.completedExams].reverse();
+  // Newest first, but each row carries the index the store writes back to.
+  const completed = currentUser.completedExams.map((ce, index) => ({ ce, index })).reverse();
 
   const isEmpty = viewed.length === 0 && completed.length === 0;
 
@@ -131,21 +134,15 @@ export function History() {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2">
-                    {completed.map((ce, i) => (
-                      <div
-                        key={i}
-                        className="bg-surface border border-line rounded-md p-3 flex items-center gap-3"
+                    {completed.map(({ ce, index }) => (
+                      <button
+                        key={index}
+                        onClick={() => setEditing(index)}
+                        aria-label={`Ändra ${ce.course}`}
+                        className="bg-surface border border-line rounded-md p-3 flex items-center gap-3 text-left hover:border-brand-200 active:scale-98 transition-all"
                       >
                         <div
-                          className={`w-12 h-12 rounded flex items-center justify-center font-bold text-xl flex-shrink-0 ${
-                            ce.grade === 'A'
-                              ? 'bg-trust-50 text-trust-700'
-                              : ce.grade === 'B' || ce.grade === 'C'
-                                ? 'bg-brand-100 text-brand-700'
-                                : ce.grade === 'D' || ce.grade === 'E'
-                                  ? 'bg-amber-accent-50 text-amber-accent'
-                                  : 'bg-red-100 text-red-700'
-                          }`}
+                          className={`w-12 h-12 rounded flex items-center justify-center font-bold text-xl flex-shrink-0 ${gradeChipClass(ce.grade)}`}
                         >
                           {ce.grade || '?'}
                         </div>
@@ -160,7 +157,8 @@ export function History() {
                             })}
                           </p>
                         </div>
-                      </div>
+                        <Edit3 size={15} className="text-ink-faint flex-shrink-0" />
+                      </button>
                     ))}
                   </div>
                 )}
@@ -169,6 +167,21 @@ export function History() {
           )}
         </div>
       </div>
+
+      {editing !== null && (
+        <CompletedExamSheet
+          initial={currentUser.completedExams[editing]}
+          onSave={(draft) => {
+            updateCompletedExam(editing, draft);
+            setEditing(null);
+          }}
+          onDelete={() => {
+            removeCompletedExam(editing);
+            setEditing(null);
+          }}
+          onClose={() => setEditing(null)}
+        />
+      )}
     </div>
   );
 }

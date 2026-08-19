@@ -27,6 +27,9 @@ const CASES: Array<[string, RegistrationKind]> = [
   ['https://sjalvservice.malmo.se/oversikt/overview/926', 'eservice'],
   ['https://boden.enamnd.se/oversikt/overview/3858', 'eservice'],
   ['https://etjanst.motala.se/provning', 'eservice'],
+  // Falkenberg's platform answers on `service.`, not `e-tjanst.` — same portal,
+  // different prefix, and without the rule it read as a page about the booking.
+  ['https://service.falkenberg.se/provning-ovriga-kurser', 'eservice'],
   ['https://www.uppsala.se/skola-forskola-och-komvux/komvux/studera-pa-komvux/provning/', 'page'],
 ];
 
