@@ -97,6 +97,26 @@ describe('EXAMS dataset', () => {
     expect(bad.map((e) => e.id)).toEqual([]);
   });
 
+  /**
+   * The one flow that leaves work on the user's desk.
+   *
+   * Every other kind lands somewhere that *is* the booking, or says plainly
+   * that it isn't (a blankett, an e-postadress, a form that goes up on a named
+   * date). A bare `page` says "leta upp anmälningslänken på sidan" and hopes.
+   * That is sometimes the truth — a few providers really do bury the link — but
+   * it is also what a listing looks like when nobody has checked it yet, and
+   * the two are indistinguishable from the outside.
+   *
+   * The list is empty: every listing either lands on the booking or carries a
+   * `registration` override saying what the user meets instead. Adding one that
+   * does neither is allowed — but it has to be written down here first, so it
+   * is a decision somebody made rather than a row nobody got to.
+   */
+  it('names every listing that only reaches an information page', () => {
+    const stranded = EXAMS.filter((e) => !e.registration && getRegistrationFlow(e).kind === 'page');
+    expect(stranded.map((e) => e.id).sort()).toEqual([]);
+  });
+
   it('resolves a registration flow for every listing', () => {
     for (const exam of EXAMS) {
       const flow = getRegistrationFlow(exam);

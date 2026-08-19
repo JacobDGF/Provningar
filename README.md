@@ -52,6 +52,14 @@ som återstår. Appen visar stegen innan användaren klickar vidare. En listning
 kan sätta `registration: { kind: … }` när en anordnare gör något som URL:en inte
 avslöjar (t.ex. anmälan per e-post).
 
+Ingen listning landar längre på en ren informationssida utan förklaring: när en
+anordnare publicerar sitt formulär på sin egen sida först när perioden öppnar
+säger `publishedOnPage` i [`src/data/exams.ts`](src/data/exams.ts) vilket datum
+det dyker upp, i stället för att be användaren leta efter en länk som inte finns
+där än. Testet _"names every listing that only reaches an information page"_ i
+[`src/data/exams.test.ts`](src/data/exams.test.ts) håller den listan tom — en ny
+listning utan kontrollerad väg vidare måste skrivas in där för hand.
+
 ### Kontrollera länkarna
 
 ```sh
@@ -60,12 +68,20 @@ npm run check:links -- --all # visar även omdirigeringar
 ```
 
 Skriptet ingår medvetet inte i `npm test` — det beror på att ~90 externa
-webbplatser svarar. Värdar som blockerar automatiserade anrop (Alvis, ett par
-kommunsajter) står i `BOT_BLOCKED` i skriptet och rapporteras separat som
-"kunde inte kontrolleras" i stället för som fel — annars drunknar en verklig
-död länk i röd text som alltid är röd. Priset är att en länk som faktiskt dör
-på en sådan värd måste upptäckas för hand, så listan gäller bara så länge den
-senaste manuella kontrollen håller.
+webbplatser svarar.
+
+En 503 betyder två helt olika saker, och sweepen skiljer dem åt i två steg.
+Åtta samtidiga anrop räcker för att trigga rate-limitern hos flera
+kommunplattformar, så allt som svarar 429/503/502/504 eller timeout frågas en
+gång till, en i taget — då svarar en överbelastad värd 200. Det som fortfarande
+vägrar är värdar som känner igen klienten, inte takten; de står i `BOT_BLOCKED`
+och rapporteras som "kunde inte kontrolleras" i stället för som fel, annars
+drunknar en verklig död länk i röd text som alltid är röd.
+
+Priset för en rad i `BOT_BLOCKED` är att en länk som faktiskt dör där måste
+upptäckas för hand, så listan hålls så kort som bevisen tillåter. Alvis och
+`www.falun.se` låg där på en 503 som visade sig vara vår egen rate-limiting —
+de kontrolleras på riktigt igen sedan omförsöket kom på plats.
 
 Får du plötsligt fel på nästan alla länkar samtidigt är det nästan aldrig datan.
 Bakom en TLS-inspekterande proxy litar Node inte på proxyns certifikat och varje
