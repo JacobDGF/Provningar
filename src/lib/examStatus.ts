@@ -43,6 +43,43 @@ export function hasApplicationClosed(exam: Exam): boolean {
   return Date.now() > endOfDay(p.applicationEnd);
 }
 
+/**
+ * What a card's narrow "Anmälan" cell should say.
+ *
+ * `nextPeriod.label` is a sentence, sometimes three — written for the detail
+ * sheet, where there is room for it. The card used it as a fallback whenever a
+ * provider published no closing date, which dropped 230 characters of bold text
+ * into a half-width column: fifteen lines tall, pushing pris and nivå off the
+ * card, and burying the one word that mattered ("fullbokad") in the middle of
+ * it. The cell gets the deadline, or the shortest true thing there is to say.
+ *
+ * The full sentence is not lost — it is one tap away, under Viktiga datum.
+ */
+export type ApplicationCell =
+  /** Show the published deadline. */
+  | 'deadline'
+  /** The provider has said the round is full; no date is worth showing. */
+  | 'full'
+  /** Open, but the provider published no closing date. */
+  | 'open'
+  /** Dated, and the window hasn't opened yet. */
+  | 'opens'
+  /** Nothing dated enough to say anything. */
+  | 'provider';
+
+export function applicationCell(exam: Exam): ApplicationCell {
+  const { nextPeriod: p } = exam;
+  if (!p.confirmed) return 'provider';
+  // Said before the dates, because a full round with an open-looking window is
+  // exactly the case where the dates mislead.
+  if (p.full) return 'full';
+  if (p.applicationEnd) return 'deadline';
+  if (p.applicationStart) {
+    return Date.now() < new Date(p.applicationStart).getTime() ? 'opens' : 'open';
+  }
+  return 'provider';
+}
+
 /** True when nothing this round offers lies ahead any more — the application
     closed *and* the exam window is over. */
 export function hasPeriodPassed(exam: Exam): boolean {

@@ -20,6 +20,7 @@ import {
   isOpenForRegistration,
   isFullyBooked,
   hasApplicationClosed,
+  applicationCell,
   daysUntil,
 } from '../lib/examStatus';
 import { getRegistrationFlow } from '../lib/registrationFlow';
@@ -63,6 +64,7 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
   const deadlineDays = deadlineDate ? daysUntil(deadlineDate) : null;
   const full = isFullyBooked(exam);
   const closed = hasApplicationClosed(exam);
+  const cell = applicationCell(exam);
   // A countdown on a round nobody can join is just pressure with no exit.
   const urgent = deadlineDays !== null && deadlineDays <= 7 && deadlineDays >= 0 && !full;
   const openNow = isOpenForRegistration(exam);
@@ -153,9 +155,13 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
       {/* Body */}
       <div className="p-4">
         <div className="flex flex-wrap items-center gap-1.5 empty:hidden mb-2.5">
+          {/* Red, and the only solid badge in this row. "Fullbokat" is the one
+              status that means you cannot book at all — a grey pill said it in
+              the same voice as the city name. `urgent` is false whenever `full`
+              is true, so this never competes with the red countdown. */}
           {full && (
-            <span className="inline-flex items-center gap-1 bg-sand text-ink-soft text-xs font-bold px-2.5 py-1 rounded-full">
-              <Ban size={11} />
+            <span className="inline-flex items-center gap-1 bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
+              <Ban size={11} strokeWidth={2.5} />
               Fullbokat
             </span>
           )}
@@ -199,14 +205,23 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <p className="text-ink-faint text-xs">Anmälan</p>
-            {nextPeriod.confirmed ? (
+            {cell === 'full' ? (
+              <p className="text-sm font-bold text-red-600 flex items-center gap-1">
+                <Ban size={13} strokeWidth={2.5} />
+                Fullbokat
+              </p>
+            ) : cell === 'deadline' ? (
               <p
                 className={`text-sm font-bold ${urgent ? 'text-red-600' : closed ? 'text-ink-faint line-through decoration-ink-faint/60' : 'text-ink'}`}
               >
-                {nextPeriod.applicationEnd
-                  ? formatDate(nextPeriod.applicationEnd)
-                  : nextPeriod.label}
+                {formatDate(nextPeriod.applicationEnd!)}
               </p>
+            ) : cell === 'opens' ? (
+              <p className="text-sm font-bold text-ink">
+                Öppnar {formatDate(nextPeriod.applicationStart!)}
+              </p>
+            ) : cell === 'open' ? (
+              <p className="text-sm font-bold text-trust-700">Öppen nu</p>
             ) : (
               <p className="text-sm font-semibold text-ink-faint">Se hos skolan</p>
             )}
