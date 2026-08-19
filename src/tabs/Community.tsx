@@ -20,11 +20,54 @@ import { useEscapeKey } from '../hooks/useEscapeKey';
 import { Post, PostKind } from '../types';
 import { timeAgo } from '../lib/relativeTime';
 
-const KINDS: { value: PostKind; label: string; emoji: string; color: string }[] = [
-  { value: 'fråga', label: 'Fråga', emoji: '❓', color: 'bg-brand-100 text-brand-700' },
-  { value: 'tips', label: 'Tips', emoji: '💡', color: 'bg-amber-accent-50 text-amber-accent' },
-  { value: 'diskussion', label: 'Diskussion', emoji: '💬', color: 'bg-sand text-ink-soft' },
-  { value: 'seger', label: 'Seger', emoji: '🎉', color: 'bg-trust-50 text-trust-700' },
+/**
+ * The four kinds of post, each with its own colour.
+ *
+ * `rail` is the edge down the left of a card, `active` is the filter chip when
+ * it is the one selected. The kind used to be an emoji and nothing else, and an
+ * emoji is the one thing on a card a reader scanning a feed does not resolve
+ * into a category — a question and a celebration looked identical until read.
+ */
+const KINDS: {
+  value: PostKind;
+  label: string;
+  emoji: string;
+  color: string;
+  rail: string;
+  active: string;
+}[] = [
+  {
+    value: 'fråga',
+    label: 'Fråga',
+    emoji: '❓',
+    color: 'bg-brand-100 text-brand-700',
+    rail: 'bg-brand-400',
+    active: 'bg-brand-600 text-white',
+  },
+  {
+    value: 'tips',
+    label: 'Tips',
+    emoji: '💡',
+    color: 'bg-amber-accent-50 text-amber-accent',
+    rail: 'bg-amber-accent',
+    active: 'bg-amber-accent text-white',
+  },
+  {
+    value: 'diskussion',
+    label: 'Diskussion',
+    emoji: '💬',
+    color: 'bg-sand text-ink-soft',
+    rail: 'bg-ink-faint',
+    active: 'bg-ink-soft text-white',
+  },
+  {
+    value: 'seger',
+    label: 'Seger',
+    emoji: '🎉',
+    color: 'bg-trust-50 text-trust-700',
+    rail: 'bg-trust-500',
+    active: 'bg-trust-600 text-white',
+  },
 ];
 
 function kindMeta(kind?: PostKind) {
@@ -70,199 +113,207 @@ function PostCard({ post }: { post: Post }) {
   };
 
   return (
-    <div className="bg-surface rounded-md overflow-hidden border border-line">
-      {/* Author */}
-      <div className="p-4 pb-3">
-        <div className="flex items-start gap-3">
-          <Avatar name={post.userName} src={post.userAvatar} seed={post.userId} size={40} />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-ink text-sm">{post.userName}</span>
-                {isMine && (
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-50 text-brand-700">
-                    Ditt inlägg
+    <div className="bg-surface rounded-md overflow-hidden border border-line flex">
+      {/* The kind, as a colour you read before the words */}
+      <div className={`w-1 flex-shrink-0 ${meta?.rail ?? 'bg-line'}`} aria-hidden="true" />
+      <div className="flex-1 min-w-0">
+        {/* Author */}
+        <div className="p-4 pb-3">
+          <div className="flex items-start gap-3">
+            <Avatar name={post.userName} src={post.userAvatar} seed={post.userId} size={40} />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-ink text-sm">{post.userName}</span>
+                  {isMine && (
+                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-50 text-brand-700">
+                      Ditt inlägg
+                    </span>
+                  )}
+                  {!isMine && (
+                    <button
+                      onClick={() => toggleFollow(post.userId)}
+                      className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                        isFollowing ? 'bg-sand text-ink-soft' : 'bg-brand-500 text-white'
+                      }`}
+                    >
+                      {isFollowing ? 'Följer' : '+ Följ'}
+                    </button>
+                  )}
+                </div>
+                <span className="text-ink-faint text-xs flex-shrink-0">
+                  {timeAgo(post.createdAt)}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 mt-1">
+                {meta && (
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${meta.color}`}>
+                    {meta.emoji} {meta.label}
                   </span>
                 )}
-                {!isMine && (
+                {subject && (
+                  // The tab's dead end used to be right here: you'd read that
+                  // someone passed Kemi 1 and then have to go hunt for kemi
+                  // prövningar by hand. The chip is the shortcut.
                   <button
-                    onClick={() => toggleFollow(post.userId)}
-                    className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                      isFollowing ? 'bg-sand text-ink-soft' : 'bg-brand-500 text-white'
-                    }`}
+                    onClick={() => showExamsForSubject(subject)}
+                    title={`Visa prövningar i ${subject}`}
+                    className="text-xs bg-brand-50 hover:bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full font-medium inline-flex items-center gap-1 transition-colors"
                   >
-                    {isFollowing ? 'Följer' : '+ Följ'}
+                    {subject}
+                    <ArrowRight size={10} />
                   </button>
                 )}
               </div>
-              <span className="text-ink-faint text-xs flex-shrink-0">
-                {timeAgo(post.createdAt)}
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5 mt-1">
-              {meta && (
-                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${meta.color}`}>
-                  {meta.emoji} {meta.label}
-                </span>
-              )}
-              {subject && (
-                // The tab's dead end used to be right here: you'd read that
-                // someone passed Kemi 1 and then have to go hunt for kemi
-                // prövningar by hand. The chip is the shortcut.
-                <button
-                  onClick={() => showExamsForSubject(subject)}
-                  title={`Visa prövningar i ${subject}`}
-                  className="text-xs bg-brand-50 hover:bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full font-medium inline-flex items-center gap-1 transition-colors"
-                >
-                  {subject}
-                  <ArrowRight size={10} />
-                </button>
-              )}
             </div>
           </div>
+
+          <p className="text-ink text-[15px] leading-relaxed mt-3">{post.content}</p>
+
+          {post.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-2">
+              {post.tags.map((t) => (
+                <span key={t} className="text-brand-500 text-xs">
+                  #{t}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
-        <p className="text-ink text-[15px] leading-relaxed mt-3">{post.content}</p>
+        {/* Actions */}
+        <div className="px-4 pb-3 flex items-center gap-4 border-t border-line pt-3">
+          <button
+            onClick={() => toggleLikePost(post.id)}
+            className="flex items-center gap-1.5 text-sm font-semibold active:scale-95 transition-transform"
+          >
+            <Heart size={19} className={isLiked ? 'text-red-500 fill-red-500' : 'text-ink-faint'} />
+            <span className={isLiked ? 'text-red-500' : 'text-ink-soft'}>{post.likes}</span>
+          </button>
+          <button
+            onClick={() => setShowReplies((v) => !v)}
+            className="flex items-center gap-1.5 text-sm font-semibold text-ink-soft"
+          >
+            <MessageCircle size={19} className="text-ink-faint" />
+            {post.replies.length > 0 ? post.replies.length : 'Svara'}
+          </button>
+          <button
+            onClick={() => setShowReplyInput((v) => !v)}
+            className="ml-auto text-brand-600 text-xs font-bold"
+          >
+            {showReplyInput ? 'Avbryt' : 'Skriv svar'}
+          </button>
+          {isMine && (
+            <button
+              onClick={() => {
+                if (window.confirm('Ta bort inlägget?')) deletePost(post.id);
+              }}
+              aria-label="Ta bort inlägget"
+              className="text-ink-faint hover:text-red-500 transition-colors"
+            >
+              <Trash2 size={16} />
+            </button>
+          )}
+        </div>
 
-        {post.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-2">
-            {post.tags.map((t) => (
-              <span key={t} className="text-brand-500 text-xs">
-                #{t}
-              </span>
-            ))}
+        {/* Reply input */}
+        {showReplyInput && (
+          <div className="px-4 pb-3 flex gap-2">
+            <Avatar name={currentUser.name} src={currentUser.avatar} seed="me" size={28} />
+            <div className="flex-1 flex gap-2 bg-sand rounded px-3 py-2">
+              <input
+                type="text"
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && submitReply()}
+                placeholder="Skriv ett svar..."
+                className="flex-1 bg-transparent text-sm outline-none"
+                // eslint-disable-next-line jsx-a11y/no-autofocus -- user just tapped "reply" to open this field
+                autoFocus
+              />
+              <button onClick={submitReply} disabled={!replyText.trim()}>
+                <Send
+                  size={16}
+                  className={replyText.trim() ? 'text-brand-600' : 'text-ink-faint'}
+                />
+              </button>
+            </div>
           </div>
         )}
-      </div>
 
-      {/* Actions */}
-      <div className="px-4 pb-3 flex items-center gap-4 border-t border-line pt-3">
-        <button
-          onClick={() => toggleLikePost(post.id)}
-          className="flex items-center gap-1.5 text-sm font-semibold active:scale-95 transition-transform"
-        >
-          <Heart size={19} className={isLiked ? 'text-red-500 fill-red-500' : 'text-ink-faint'} />
-          <span className={isLiked ? 'text-red-500' : 'text-ink-soft'}>{post.likes}</span>
-        </button>
-        <button
-          onClick={() => setShowReplies((v) => !v)}
-          className="flex items-center gap-1.5 text-sm font-semibold text-ink-soft"
-        >
-          <MessageCircle size={19} className="text-ink-faint" />
-          {post.replies.length > 0 ? post.replies.length : 'Svara'}
-        </button>
-        <button
-          onClick={() => setShowReplyInput((v) => !v)}
-          className="ml-auto text-brand-600 text-xs font-bold"
-        >
-          {showReplyInput ? 'Avbryt' : 'Skriv svar'}
-        </button>
-        {isMine && (
+        {/* Replies toggle */}
+        {post.replies.length > 0 && (
           <button
-            onClick={() => {
-              if (window.confirm('Ta bort inlägget?')) deletePost(post.id);
-            }}
-            aria-label="Ta bort inlägget"
-            className="text-ink-faint hover:text-red-500 transition-colors"
+            onClick={() => setShowReplies((v) => !v)}
+            className="w-full text-xs text-ink-soft font-semibold py-2 border-t border-line flex items-center justify-center gap-1"
           >
-            <Trash2 size={16} />
+            {showReplies ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            {showReplies ? 'Dölj svar' : `Visa ${post.replies.length} svar`}
           </button>
         )}
-      </div>
 
-      {/* Reply input */}
-      {showReplyInput && (
-        <div className="px-4 pb-3 flex gap-2">
-          <Avatar name={currentUser.name} src={currentUser.avatar} seed="me" size={28} />
-          <div className="flex-1 flex gap-2 bg-sand rounded px-3 py-2">
-            <input
-              type="text"
-              value={replyText}
-              onChange={(e) => setReplyText(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && submitReply()}
-              placeholder="Skriv ett svar..."
-              className="flex-1 bg-transparent text-sm outline-none"
-              // eslint-disable-next-line jsx-a11y/no-autofocus -- user just tapped "reply" to open this field
-              autoFocus
-            />
-            <button onClick={submitReply} disabled={!replyText.trim()}>
-              <Send size={16} className={replyText.trim() ? 'text-brand-600' : 'text-ink-faint'} />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Replies toggle */}
-      {post.replies.length > 0 && (
-        <button
-          onClick={() => setShowReplies((v) => !v)}
-          className="w-full text-xs text-ink-soft font-semibold py-2 border-t border-line flex items-center justify-center gap-1"
-        >
-          {showReplies ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-          {showReplies ? 'Dölj svar' : `Visa ${post.replies.length} svar`}
-        </button>
-      )}
-
-      {/* Replies */}
-      {showReplies && post.replies.length > 0 && (
-        <div className="border-t border-line bg-sand/60">
-          {post.replies.map((reply) => {
-            const replyLiked = reply.likedBy.includes('me');
-            return (
-              <div key={reply.id} className="px-4 py-3 flex gap-2.5">
-                <Avatar
-                  name={reply.userName}
-                  src={reply.userAvatar}
-                  seed={reply.userId}
-                  size={28}
-                  className="mt-0.5"
-                />
-                <div className="flex-1">
-                  <div className="bg-surface rounded px-3 py-2 border border-line">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs font-bold text-ink">
-                        {reply.userName}
-                        {reply.userId === 'me' && (
-                          <span className="ml-1.5 font-semibold text-brand-600">· ditt svar</span>
-                        )}
-                      </span>
-                      <span className="text-ink-faint text-xs">{timeAgo(reply.createdAt)}</span>
+        {/* Replies */}
+        {showReplies && post.replies.length > 0 && (
+          <div className="border-t border-line bg-sand/60">
+            {post.replies.map((reply) => {
+              const replyLiked = reply.likedBy.includes('me');
+              return (
+                <div key={reply.id} className="px-4 py-3 flex gap-2.5">
+                  <Avatar
+                    name={reply.userName}
+                    src={reply.userAvatar}
+                    seed={reply.userId}
+                    size={28}
+                    className="mt-0.5"
+                  />
+                  <div className="flex-1">
+                    <div className="bg-surface rounded px-3 py-2 border border-line">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-bold text-ink">
+                          {reply.userName}
+                          {reply.userId === 'me' && (
+                            <span className="ml-1.5 font-semibold text-brand-600">· ditt svar</span>
+                          )}
+                        </span>
+                        <span className="text-ink-faint text-xs">{timeAgo(reply.createdAt)}</span>
+                      </div>
+                      <p className="text-sm text-ink-soft leading-relaxed">{reply.content}</p>
                     </div>
-                    <p className="text-sm text-ink-soft leading-relaxed">{reply.content}</p>
-                  </div>
-                  <div className="flex items-center gap-3 mt-1 ml-2">
-                    <button
-                      onClick={() => toggleLikeReply(post.id, reply.id)}
-                      className="flex items-center gap-1 text-xs"
-                    >
-                      <Heart
-                        size={13}
-                        className={replyLiked ? 'text-red-500 fill-red-500' : 'text-ink-faint'}
-                      />
-                      <span className={replyLiked ? 'text-red-500' : 'text-ink-faint'}>
-                        {reply.likes}
-                      </span>
-                    </button>
-                    {/* You could delete your own post but never your own reply,
-                        so a reply written in haste was permanent. */}
-                    {reply.userId === 'me' && (
+                    <div className="flex items-center gap-3 mt-1 ml-2">
                       <button
-                        onClick={() => {
-                          if (window.confirm('Ta bort ditt svar?')) deleteReply(post.id, reply.id);
-                        }}
-                        aria-label="Ta bort ditt svar"
-                        className="text-ink-faint hover:text-red-500 transition-colors"
+                        onClick={() => toggleLikeReply(post.id, reply.id)}
+                        className="flex items-center gap-1 text-xs"
                       >
-                        <Trash2 size={13} />
+                        <Heart
+                          size={13}
+                          className={replyLiked ? 'text-red-500 fill-red-500' : 'text-ink-faint'}
+                        />
+                        <span className={replyLiked ? 'text-red-500' : 'text-ink-faint'}>
+                          {reply.likes}
+                        </span>
                       </button>
-                    )}
+                      {/* You could delete your own post but never your own reply,
+                        so a reply written in haste was permanent. */}
+                      {reply.userId === 'me' && (
+                        <button
+                          onClick={() => {
+                            if (window.confirm('Ta bort ditt svar?'))
+                              deleteReply(post.id, reply.id);
+                          }}
+                          aria-label="Ta bort ditt svar"
+                          className="text-ink-faint hover:text-red-500 transition-colors"
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -283,6 +334,14 @@ export function Community() {
   );
 
   const FILTERS = ['all', 'fråga', 'tips', 'diskussion', 'seger'];
+
+  /** How many posts each chip would show, so an empty filter is visible
+      before it is tapped rather than after. */
+  const kindCounts = useMemo(() => {
+    const counts = {} as Record<PostKind, number>;
+    for (const p of posts) if (p.kind) counts[p.kind] = (counts[p.kind] ?? 0) + 1;
+    return counts;
+  }, [posts]);
 
   // Searching the replies too, not just the post: the answer you're looking for
   // is usually in a thread whose opening question is worded nothing like it.
@@ -392,13 +451,15 @@ export function Community() {
               <button
                 key={f}
                 onClick={() => setActiveFilter(f)}
-                className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs lg:text-sm font-semibold transition-colors ${
-                  activeFilter === f ? 'bg-ink text-white' : 'bg-sand text-ink-soft hover:bg-line'
+                className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs lg:text-sm font-semibold transition-colors inline-flex items-center gap-1.5 ${
+                  activeFilter === f
+                    ? (kindMeta(f as PostKind)?.active ?? 'bg-ink text-white')
+                    : (kindMeta(f as PostKind)?.color ?? 'bg-sand text-ink-soft hover:bg-line')
                 }`}
               >
                 {f === 'all'
-                  ? 'Allt'
-                  : `${kindMeta(f as PostKind)?.emoji} ${kindMeta(f as PostKind)?.label}`}
+                  ? `Allt (${posts.length})`
+                  : `${kindMeta(f as PostKind)?.emoji} ${kindMeta(f as PostKind)?.label} (${kindCounts[f as PostKind] ?? 0})`}
               </button>
             ))}
           </div>

@@ -4,6 +4,10 @@ En app som hjälper folk hitta och anmäla sig till betygsprövningar i hela
 Sverige. Alla listningar länkar vidare till anordnarens egen anmälan — appen
 tar aldrig emot en anmälan själv.
 
+Två saker bär hela appen: [datan](#datan-är-produkten), som är kontrollerad mot
+anordnarens egen sida, och [färgen](#en-färg-per-listning), som säger om du kan
+boka omgången eller inte innan du läst ett enda ord.
+
 ## Kom igång
 
 ```sh
@@ -21,7 +25,7 @@ npm run build         # produktionsbygge till dist/
 Allt innehåll bor i [`src/data/exams.ts`](src/data/exams.ts). Varje listning är
 kontrollerad mot anordnarens egen webbplats, och `verifiedAt` säger när.
 
-Fyra regler styr datan, och de testas i
+Fem regler styr datan, och de testas i
 [`src/data/exams.test.ts`](src/data/exams.test.ts) och
 [`src/lib/examStatus.test.ts`](src/lib/examStatus.test.ts):
 
@@ -32,8 +36,8 @@ Fyra regler styr datan, och de testas i
   en informationssida, när ett djupare mål finns.
 - **Anordnarens ord gäller före kalendern.** `nextPeriod.full` sätts när
   anordnaren själv skrivit att omgången är fullbokad. Då är listningen stängd
-  för anmälan även om datumen ser öppna ut, och nedräkningen tystnar — en
-  röd "3 dagar kvar" på en omgång ingen kan söka till är bara press utan utväg.
+  för anmälan även om datumen ser öppna ut, och nedräkningen tystnar — ett
+  "3 dagar kvar" på en omgång ingen kan söka till är bara press utan utväg.
 - **Ett datum som varit ska synas som ett datum som varit.** När sista
   anmälningsdag passerat säger kortet "Anmälan stängde 4 aug.", datumet stryks
   över, kalenderexporten försvinner och listningen sjunker under de odaterade i
@@ -42,6 +46,33 @@ Fyra regler styr datan, och de testas i
 - **Samma skola och kurs listas en gång.** Datan växer en anordnare i taget, och
   två omgångar hos samma skola hör hemma i samma listnings etikett. Två kort
   läser som två skolor, där den ena råkar vara fullbokad.
+
+### En färg per listning
+
+[`src/lib/examStatusColor.ts`](src/lib/examStatusColor.ts) är den enda platsen
+som bestämmer vilken färg en listning har. Kortets kant, pillret över bilden,
+datumtexten, kartans nål och detaljvyns banner läser alla ur samma tabell, så de
+kan inte säga olika saker om samma omgång.
+
+| Färg       | Betyder                                               |
+| ---------- | ----------------------------------------------------- |
+| 🔴 Röd     | Fullbokat — anordnaren har sagt att platserna är slut |
+| ⚪ Grå     | Anmälan stängde (datumet står på kortet)              |
+| 🟠 Orange  | Öppen, men stänger inom en vecka                      |
+| 🟢 Grön    | Öppen för anmälan i dag                               |
+| 🔵 Blå     | Datum satt, anmälan har inte öppnat än                |
+| ⬜ Neutral | Anordnaren har inte publicerat några datum            |
+
+Rött betyder en enda sak, och det är den regel hela paletten vilar på. Tidigare
+sa rött både "fullbokat" (du kan inte boka) och "3 dagar kvar" (du kan boka,
+skynda dig) — de två motsatta svaren på den enda fråga en listning ska besvara.
+Nedräkningen är orange nu. `never spends red on a round the user can still book`
+i [`src/lib/examStatusColor.test.ts`](src/lib/examStatusColor.test.ts) håller
+gränsen.
+
+Färgnyckeln under hjältebilden är också filtret: tryck på "Fullbokat" för att se
+vad du missade, tryck igen för att få tillbaka allt. Färger utan innehåll visas
+inte alls — en tom "Fullbokat"-knapp är ett löfte om resultat som inte finns.
 
 ### Två vägar ut ur varje listning
 
@@ -59,7 +90,9 @@ bokningslänken, eftersom "skolans webbplats" inte betyder alvis.se.
 e-tjänst, webbshop, PDF-blankett, e-post eller informationssida — och vilka steg
 som återstår. Appen visar stegen innan användaren klickar vidare. En listning
 kan sätta `registration: { kind: … }` när en anordnare gör något som URL:en inte
-avslöjar (t.ex. anmälan per e-post).
+avslöjar (t.ex. anmälan per e-post, eller `inperson` för Nässjö, som tar anmälan
+över disk tre eftermiddagar i veckan — då är öppettiderna det enda användaren
+behöver innan hen lämnar appen).
 
 Ingen listning landar längre på en ren informationssida utan förklaring: när en
 anordnare publicerar sitt formulär på sin egen sida först när perioden öppnar
@@ -129,7 +162,20 @@ Jönköping, Kalmar och Kronoberg) tar tyst bort tre län ur filtret. Landskapet
 får däremot gärna ligga kvar som `tag` — då hittar en sökning på "småland"
 fortfarande fram.
 
-## Profilbilder och community
+## Profil och community
+
+Profilen svarar på en fråga innan alla andra: hur många av dina sparade
+prövningar kan du fortfarande göra något åt? "Läget för dina sparade" är en
+enda stapel i statusfärgerna, med en rad per färg under, och varje sparad rad
+bär sin egen färg i stället för ett datum som inte säger om omgången är kvar.
+Fem sparade prövningar är annars fem datum att hålla i huvudet.
+
+I communityn har varje inlägg en färgad kant efter sin sort — fråga, tips,
+diskussion, seger — och filterknapparna bär samma färg med antalet i. Sorten
+var tidigare en emoji och inget mer, och en emoji är det enda på ett kort som
+en läsare i ett flöde inte hinner läsa som en kategori.
+
+### Profilbilder
 
 Appen visar aldrig färdiga porträtt av påhittade personer. En profilbild är en
 bild användaren själv tar eller väljer, den skalas ned och sparas som `data:`-URL

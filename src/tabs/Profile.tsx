@@ -370,7 +370,7 @@ export function Profile() {
                 >
                   {nextDeadline.days === 0
                     ? 'Sista anmälningsdagen är idag'
-                    : `${nextDeadline.days} dagar kvar · ${nextDeadline.exam.city}`}
+                    : `${nextDeadline.days} ${nextDeadline.days === 1 ? 'dag' : 'dagar'} kvar · ${nextDeadline.exam.city}`}
                 </p>
               </div>
               <ChevronRight size={20} className="text-ink-faint" />
