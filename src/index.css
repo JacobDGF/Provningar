@@ -95,6 +95,18 @@ body {
   border-radius: 3px;
 }
 
+/* Where a wrapper draws the focus state for the control inside it.
+   The Discover search field is the case: its border goes brand-500 and gains a
+   4px ring on :focus-within, and the input's own outline then paints a second,
+   smaller rectangle inside the first. This moves the indicator out to the
+   wrapper — it never removes it, so a wrapper using this must show focus
+   itself. A Tailwind `focus-visible:outline-none` can't do this job: utilities
+   sit in a cascade layer, and the unlayered rule above wins over any layer
+   regardless of specificity. */
+.focus-ring-host :where(input, textarea):focus-visible {
+  outline: none;
+}
+
 /* On the brand-teal profile header, a teal ring would disappear into it. */
 .bg-gradient-to-b :where(a, button, input):focus-visible {
   outline-color: #ffffff;
