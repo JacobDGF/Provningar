@@ -234,59 +234,91 @@ export function Discover() {
       ) : (
         <>
           {/* HERO */}
-          {/* The type scale steps down on a phone rather than holding desktop
-              size: at text-4xl the headline set three lines and the standfirst
-              four, which between them filled a 390×844 screen edge to edge —
-              the search field, the filters and the first listing all began
-              below the fold. */}
+          {/* Sökfältet är det folk kommer hit för att göra, så det är det som
+              får plats och färg. Tidigare satt rubriken på tre rader och
+              ingressen på fem innan man ens såg fältet — på en 390×844-skärm
+              låg det under vikningen, under en text som ingen läser två
+              gånger. Ingressen är en rad nu, och fältet ligger mitt i bilden
+              med en egen ram i varumärkesfärgen. */}
           <section className="max-w-screen-xl mx-auto w-full px-4 lg:px-8 pt-5 sm:pt-8 lg:pt-12 pb-5 sm:pb-6 lg:pb-8 grid grid-cols-1 lg:grid-cols-[minmax(320px,5fr)_7fr] gap-8 lg:gap-10 items-center">
-            <div>
+            <div className="text-center lg:text-left">
               <h6 className="text-brand-700 text-xs font-semibold uppercase tracking-wider mb-2 sm:mb-3">
                 {eyebrow}
               </h6>
-              <h1 className="font-display text-3xl sm:text-4xl lg:text-6xl font-semibold text-ink leading-tight -ml-px mb-2.5 sm:mb-3 max-w-[14ch]">
+              <h1 className="font-display text-3xl sm:text-4xl lg:text-6xl font-semibold text-ink leading-tight -ml-px mb-2.5 sm:mb-3 text-balance lg:text-wrap lg:max-w-[14ch] mx-auto lg:mx-0">
                 Varje prövning i Sverige. På en karta.
               </h1>
-              <p className="text-sm sm:text-base lg:text-lg text-ink-soft max-w-[42ch] mb-4 sm:mb-6">
-                Sök, jämför och anmäl dig till {exams.length} verifierade prövningstillfällen i hela
-                landet. Varje listning länkar både till själva bokningen och till skolans egen sida
-                — du väljer om du vill gå den snabba vägen eller göra allt själv.
+              <p className="text-sm sm:text-base lg:text-lg text-ink-soft mb-5 sm:mb-6">
+                {exams.length} kontrollerade tillfällen ·{' '}
+                <span className="text-trust-700 font-semibold">
+                  {stats.openNow} går att boka nu
+                </span>
               </p>
-              <div className="flex items-center gap-2 max-w-[440px] mb-3">
-                <div className="flex-1 flex items-center gap-2 bg-sand rounded px-3 py-2.5 relative">
-                  <Search size={16} className="text-ink-faint flex-shrink-0" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Sök stad, ämne eller skola..."
-                    className="flex-1 bg-transparent text-sm text-ink placeholder-ink-faint outline-none"
-                  />
-                  {searchQuery && (
-                    <button onClick={() => setSearchQuery('')}>
-                      <X size={14} className="text-ink-faint" />
-                    </button>
-                  )}
+
+              {/* Sökfältet. Ramen är alltid synlig och skärps när fältet har
+                  fokus — en grå ruta i en grå spalt läser som en etikett, inte
+                  som något man skriver i. */}
+              <div className="max-w-[560px] mx-auto lg:mx-0">
+                <div className="flex items-center gap-2">
+                  <div className="focus-ring-host flex-1 flex items-center gap-3 bg-surface rounded-lg px-4 py-3.5 border-2 border-brand-200 shadow-lg shadow-brand-100/60 focus-within:border-brand-500 focus-within:ring-4 focus-within:ring-brand-100 focus-within:shadow-brand-200/70 transition-colors min-w-0">
+                    <Search size={20} className="text-brand-600 flex-shrink-0" strokeWidth={2.4} />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Sök stad, ämne eller skola"
+                      aria-label="Sök bland prövningar"
+                      enterKeyHint="search"
+                      autoComplete="off"
+                      spellCheck={false}
+                      className="flex-1 bg-transparent text-base text-ink placeholder-ink-faint outline-none min-w-0"
+                    />
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        aria-label="Rensa sökningen"
+                        className="flex-shrink-0 w-7 h-7 rounded-full bg-sand hover:bg-line flex items-center justify-center transition-colors"
+                      >
+                        <X size={15} className="text-ink-soft" />
+                      </button>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => setShowFilter(true)}
+                    aria-label="Filter"
+                    className={`relative flex-shrink-0 w-[58px] h-[58px] rounded-lg flex items-center justify-center transition-colors ${
+                      hasActiveFilters
+                        ? 'bg-brand-500 text-white shadow-lg shadow-brand-200'
+                        : 'bg-surface border-2 border-line text-ink-soft hover:border-brand-300 hover:text-brand-700'
+                    }`}
+                  >
+                    <SlidersHorizontal size={20} />
+                    {hasActiveFilters && (
+                      <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-accent2-500 border-2 border-cream" />
+                    )}
+                  </button>
                 </div>
-                <button
-                  onClick={() => setShowFilter(true)}
-                  className={`w-10 h-10 rounded flex items-center justify-center transition-colors flex-shrink-0 ${
-                    hasActiveFilters
-                      ? 'bg-brand-500 text-white'
-                      : 'bg-sand text-ink-soft hover:bg-line'
-                  }`}
-                >
-                  <SlidersHorizontal size={16} />
-                </button>
+                {/* Träffräknaren står bara när man sökt: den svarar på "gav det
+                    något?" utan att man behöver skrolla ner till listan. */}
+                {searchQuery && (
+                  <p className="text-sm text-ink-soft mt-2.5 text-center lg:text-left">
+                    {filtered.length === 0 ? (
+                      <span className="text-ink">
+                        Inga träffar för ”{searchQuery}” — prova ett kortare ord.
+                      </span>
+                    ) : (
+                      <>
+                        <span className="font-bold text-ink">{filtered.length}</span> träffar för ”
+                        {searchQuery}”
+                      </>
+                    )}
+                  </p>
+                )}
               </div>
-              <p className="text-xs text-ink-faint">
-                {stats.providers} verifierade anordnare · 500 kr lagstadgad avgift, gratis vid
-                tidigare F
-              </p>
             </div>
 
             <div>
-              <div className="flex flex-wrap gap-2 mb-3">
+              <div className="flex flex-wrap justify-center lg:justify-start gap-2 mb-3">
                 <button
                   onClick={() => setSearchQuery('')}
                   className={`text-xs px-2.5 py-1 rounded-sm border transition-colors ${
@@ -350,8 +382,8 @@ export function Discover() {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-trust-500 opacity-75" />
                     <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-trust-600" />
                   </span>
-                  <span className="text-trust-700">{stats.openNow} går att boka nu</span>
-                  <span className="text-ink-faint font-medium">· grå prick = inget öppet där</span>
+                  <span className="text-trust-700">Grön = går att boka nu</span>
+                  <span className="text-ink-faint font-medium">· grå = inget öppet där</span>
                 </div>
               </div>
             </div>
