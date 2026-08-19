@@ -1610,13 +1610,18 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote:
       '500 kr om godkänt betyg finns sedan tidigare eller om inget betyg finns; kostnadsfritt vid tidigare F/IG.',
+    // Datumsvepet 2026-08-19 fångade den här: ansökan till 7 oktober stängde
+    // 17 augusti, och kortet visade fortfarande den omgången. Mölndal har
+    // november-omgången utskriven på samma sida, så listningen flyttas dit.
     nextPeriod: {
       label:
-        'Prövningstillfällen 2026 via Hermods: 7 oktober (ansökan 3–18 augusti) och 11 november (ansökan 7–20 september)',
-      applicationStart: '2026-08-03',
-      applicationEnd: '2026-08-18',
-      examWindowStart: '2026-10-07',
-      examWindowEnd: '2026-10-07',
+        'Prövningstillfälle 11 november 2026 via Hermods, ansökan 7–20 september. ' +
+        'Höstens första tillfälle (7 oktober) stängde för ansökan den 17 augusti. ' +
+        'Du kan bara söka en prövningskurs per provdatum.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-20',
+      examWindowStart: '2026-11-11',
+      examWindowEnd: '2026-11-11',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -1627,7 +1632,7 @@ export const EXAMS: Exam[] = [
     description:
       'Campus Mölndal administrerar prövningar via Hermods med fasta provdatum per termin; provtillfällena genomförs på plats på Fabriksgatan 25 i Göteborg (IHM Business School).',
     tags: ['komvux', 'molndal', 'flera-amnen'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: THIN_LAN_2_VERIFIED,
   },
   {
     id: 'kompetenscentrum-kungsbacka-vuxenutbildningen-kungsbacka-fle',
@@ -3140,7 +3145,9 @@ export const EXAMS: Exam[] = [
       '500 kr per kurs/ämnesnivå och prövningstillfälle (gymnasienivå); kostnadsfritt vid tidigare IG/F eller på grundläggande nivå',
     nextPeriod: {
       label:
-        'Prövningsperiod 3 (gymnasial nivå): 26 oktober - 27 november 2026, anmälan 13 juli - 13 augusti',
+        'Prövningsperiod 3 (gymnasial nivå): 26 oktober – 27 november 2026, anmälan 13 juli – ' +
+        '13 augusti. Komvux skriver själva att anmälan till nästa period är stängd och att nya ' +
+        'datum läggs ut under hösten 2026 — håll koll på samma sida.',
       applicationStart: '2026-07-13',
       applicationEnd: '2026-08-13',
       examWindowStart: '2026-10-26',
