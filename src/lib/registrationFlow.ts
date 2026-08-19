@@ -77,6 +77,16 @@ const FLOWS: Record<RegistrationKind, Omit<RegistrationFlow, 'kind'>> = {
     ],
     direct: false,
   },
+  inperson: {
+    ctaLabel: 'Läs vad du tar med dig',
+    landing: 'Anmälan görs på plats hos anordnaren — länken går till sidan med tider och adress.',
+    steps: [
+      'Läs sidan: öppettider, adress och vad som ska med',
+      'Ta med legitimation och vidimerad betygskopia',
+      'Besök receptionen under anmälningsperioden och betala avgiften på plats',
+    ],
+    direct: false,
+  },
   page: {
     ctaLabel: 'Gå till anmälan',
     landing: 'Länken går till skolans prövningssida, där anmälan görs.',

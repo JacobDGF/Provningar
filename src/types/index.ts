@@ -19,7 +19,21 @@ export interface NextPeriod {
 
 /** What kind of system `registrationUrl` drops the user into. */
 export type RegistrationKind =
-  'form' | 'coursepicker' | 'eservice' | 'webshop' | 'pdf' | 'email' | 'page';
+  | 'form'
+  | 'coursepicker'
+  | 'eservice'
+  | 'webshop'
+  | 'pdf'
+  | 'email'
+  /**
+   * No system at all: the provider takes the anmälan over a counter, during
+   * opening hours, with papers in hand. Nässjö is the case in the dataset —
+   * reception, Swish, a vidimerad betygskopia. A link cannot be followed to
+   * the end here, and saying "gå till anmälan" would be a lie the user only
+   * discovers after planning a trip.
+   */
+  | 'inperson'
+  | 'page';
 
 export interface RegistrationFlow {
   kind: RegistrationKind;
