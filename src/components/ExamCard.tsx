@@ -5,24 +5,17 @@ import {
   Bookmark,
   BookmarkCheck,
   ExternalLink,
-  Clock,
   Navigation,
   ShieldCheck,
   MousePointerClick,
   Globe,
   Ban,
-  CalendarX,
 } from 'lucide-react';
 import { Exam } from '../types';
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
-import {
-  isOpenForRegistration,
-  isFullyBooked,
-  hasApplicationClosed,
-  applicationCell,
-  daysUntil,
-} from '../lib/examStatus';
+import { hasApplicationClosed, applicationCell } from '../lib/examStatus';
+import { getExamStatus } from '../lib/examStatusColor';
 import { getRegistrationFlow } from '../lib/registrationFlow';
 import { getProviderLinks } from '../lib/providerLinks';
 import { SchoolCover } from './SchoolCover';
@@ -60,14 +53,12 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
   const savedExam = savedExams.find((e) => e.examId === exam.id);
 
   const { nextPeriod } = exam;
-  const deadlineDate = nextPeriod.confirmed ? nextPeriod.applicationEnd : undefined;
-  const deadlineDays = deadlineDate ? daysUntil(deadlineDate) : null;
-  const full = isFullyBooked(exam);
+  // One call decides the card's colour, its badge and its deadline text, so the
+  // three can't disagree — the rail, the pill and the date are the same fact
+  // said three times, at three sizes.
+  const status = getExamStatus(exam);
   const closed = hasApplicationClosed(exam);
   const cell = applicationCell(exam);
-  // A countdown on a round nobody can join is just pressure with no exit.
-  const urgent = deadlineDays !== null && deadlineDays <= 7 && deadlineDays >= 0 && !full;
-  const openNow = isOpenForRegistration(exam);
   const flow = getRegistrationFlow(exam);
   const links = getProviderLinks(exam);
 
@@ -100,6 +91,11 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
       tabIndex={0}
       className="bg-surface rounded-md overflow-hidden shadow-sm border border-line active:scale-98 transition-transform cursor-pointer"
     >
+      {/* Status rail. Four pixels along the top edge, in the one colour that
+          answers "can I book this?" — the only part of the card that is legible
+          while scrolling a grid of twenty. */}
+      <div className={`h-1 w-full ${status.tone.rail}`} aria-hidden="true" />
+
       {/* Image */}
       <div className="relative">
         <SchoolCover exam={exam} className={`w-full ${compact ? 'h-36' : 'h-48'}`} />
@@ -118,23 +114,14 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
           )}
         </button>
 
-        {/* Urgent badge */}
-        {urgent && (
-          <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
-            <Clock size={11} />
-            {deadlineDays === 0 ? 'Sista dag!' : `${deadlineDays}d kvar`}
-          </div>
-        )}
-
-        {/* Distance badge */}
-        {distanceKm !== null && (
-          <div
-            className={`absolute top-3 ${urgent ? 'left-24' : 'left-3'} bg-surface/95 backdrop-blur-sm text-ink text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1 shadow-sm`}
-          >
-            <Navigation size={11} className="text-brand-600" />
-            {formatDistanceKm(distanceKm)}
-          </div>
-        )}
+        {/* Status pill over the photo, in the rail's own colour: the same
+            signal at reading size, so the colour never needs a caption. */}
+        <div
+          className={`absolute top-3 left-3 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm ${status.tone.chip}`}
+        >
+          {status.tone.key === 'full' && <Ban size={11} strokeWidth={2.5} />}
+          {status.label}
+        </div>
 
         {/* Status badge on saved exams */}
         {savedExam && (
@@ -155,31 +142,6 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
       {/* Body */}
       <div className="p-4">
         <div className="flex flex-wrap items-center gap-1.5 empty:hidden mb-2.5">
-          {/* Red, and the only solid badge in this row. "Fullbokat" is the one
-              status that means you cannot book at all — a grey pill said it in
-              the same voice as the city name. `urgent` is false whenever `full`
-              is true, so this never competes with the red countdown. */}
-          {full && (
-            <span className="inline-flex items-center gap-1 bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
-              <Ban size={11} strokeWidth={2.5} />
-              Fullbokat
-            </span>
-          )}
-          {closed && !full && (
-            <span className="inline-flex items-center gap-1 bg-sand text-ink-soft text-xs font-bold px-2.5 py-1 rounded-full">
-              <CalendarX size={11} />
-              Anmälan stängde {formatDate(nextPeriod.applicationEnd!)}
-            </span>
-          )}
-          {openNow && (
-            <span className="inline-flex items-center gap-1.5 bg-trust-50 text-trust-700 text-xs font-bold px-2.5 py-1 rounded-full">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-trust-500 opacity-75" />
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-trust-600" />
-              </span>
-              Öppen för anmälan just nu
-            </span>
-          )}
           {flow.direct && (
             <span className="inline-flex items-center gap-1 bg-brand-50 text-brand-700 text-xs font-bold px-2.5 py-1 rounded-full">
               <MousePointerClick size={11} />
@@ -195,6 +157,12 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
           <span className="bg-sand text-ink-soft text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
             <MapPin size={11} />
             {exam.city}
+            {distanceKm !== null && (
+              <>
+                <Navigation size={10} className="text-brand-600 ml-0.5" />
+                {formatDistanceKm(distanceKm)}
+              </>
+            )}
           </span>
           <span className="bg-trust-50 text-trust-700 text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
             <ShieldCheck size={11} />
@@ -212,12 +180,12 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
               </p>
             ) : cell === 'deadline' ? (
               <p
-                className={`text-sm font-bold ${urgent ? 'text-red-600' : closed ? 'text-ink-faint line-through decoration-ink-faint/60' : 'text-ink'}`}
+                className={`text-sm font-bold ${closed ? 'text-ink-faint line-through decoration-ink-faint/60' : status.tone.text}`}
               >
                 {formatDate(nextPeriod.applicationEnd!)}
               </p>
             ) : cell === 'opens' ? (
-              <p className="text-sm font-bold text-ink">
+              <p className={`text-sm font-bold ${status.tone.text}`}>
                 Öppnar {formatDate(nextPeriod.applicationStart!)}
               </p>
             ) : cell === 'open' ? (

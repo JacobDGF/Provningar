@@ -53,6 +53,21 @@ describe('getRegistrationFlow', () => {
     expect(flow.steps.join(' ')).toMatch(/[Mm]ejla/);
   });
 
+  it('never promises a click-through when the anmälan happens over a counter', () => {
+    // Nässjö takes the anmälan in a reception, three afternoons a week. The
+    // URL looks like any other kommun page, so only the override knows — and
+    // the one thing the user needs before leaving is the opening hours, not a
+    // "gå till anmälan" that ends on a page with no form on it.
+    const flow = getRegistrationFlow(
+      examWith('https://nassjo.se/barn-och-utbildning/vuxenutbildning/provning.html', {
+        kind: 'inperson',
+      }),
+    );
+    expect(flow.direct).toBe(false);
+    expect(flow.ctaLabel).not.toMatch(/anmäl dig|boka/i);
+    expect(flow.landing).toMatch(/på plats/i);
+  });
+
   it('falls back to the cautious flow on a malformed URL', () => {
     const flow = getRegistrationFlow(examWith('not a url'));
     expect(flow.kind).toBe('page');

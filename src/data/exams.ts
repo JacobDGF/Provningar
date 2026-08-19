@@ -202,6 +202,10 @@ const LINK_SWEEP_VERIFIED = '2026-08-13';
 const THIN_LAN_VERIFIED = '2026-08-15';
 // Checked 2026-08-18, against each provider's own page.
 const AUG_18_VERIFIED = '2026-08-18';
+// Second thin-län sweep (2026-08-19): Jämtland had one listing, Värmland,
+// Västmanland and Jönköping two apiece — a map with one dot on it reads as
+// "there is nothing here", which for these four län was never true.
+const THIN_LAN_2_VERIFIED = '2026-08-19';
 
 /**
  * For providers who put the anmälan on their own page — but only while the
@@ -1606,13 +1610,18 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote:
       '500 kr om godkänt betyg finns sedan tidigare eller om inget betyg finns; kostnadsfritt vid tidigare F/IG.',
+    // Datumsvepet 2026-08-19 fångade den här: ansökan till 7 oktober stängde
+    // 17 augusti, och kortet visade fortfarande den omgången. Mölndal har
+    // november-omgången utskriven på samma sida, så listningen flyttas dit.
     nextPeriod: {
       label:
-        'Prövningstillfällen 2026 via Hermods: 7 oktober (ansökan 3–18 augusti) och 11 november (ansökan 7–20 september)',
-      applicationStart: '2026-08-03',
-      applicationEnd: '2026-08-18',
-      examWindowStart: '2026-10-07',
-      examWindowEnd: '2026-10-07',
+        'Prövningstillfälle 11 november 2026 via Hermods, ansökan 7–20 september. ' +
+        'Höstens första tillfälle (7 oktober) stängde för ansökan den 17 augusti. ' +
+        'Du kan bara söka en prövningskurs per provdatum.',
+      applicationStart: '2026-09-07',
+      applicationEnd: '2026-09-20',
+      examWindowStart: '2026-11-11',
+      examWindowEnd: '2026-11-11',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -1623,7 +1632,7 @@ export const EXAMS: Exam[] = [
     description:
       'Campus Mölndal administrerar prövningar via Hermods med fasta provdatum per termin; provtillfällena genomförs på plats på Fabriksgatan 25 i Göteborg (IHM Business School).',
     tags: ['komvux', 'molndal', 'flera-amnen'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: THIN_LAN_2_VERIFIED,
   },
   {
     id: 'kompetenscentrum-kungsbacka-vuxenutbildningen-kungsbacka-fle',
@@ -3136,7 +3145,9 @@ export const EXAMS: Exam[] = [
       '500 kr per kurs/ämnesnivå och prövningstillfälle (gymnasienivå); kostnadsfritt vid tidigare IG/F eller på grundläggande nivå',
     nextPeriod: {
       label:
-        'Prövningsperiod 3 (gymnasial nivå): 26 oktober - 27 november 2026, anmälan 13 juli - 13 augusti',
+        'Prövningsperiod 3 (gymnasial nivå): 26 oktober – 27 november 2026, anmälan 13 juli – ' +
+        '13 augusti. Komvux skriver själva att anmälan till nästa period är stängd och att nya ' +
+        'datum läggs ut under hösten 2026 — håll koll på samma sida.',
       applicationStart: '2026-07-13',
       applicationEnd: '2026-08-13',
       examWindowStart: '2026-10-26',
@@ -4036,6 +4047,280 @@ export const EXAMS: Exam[] = [
       'Ljungby har två prövningstillfällen per termin och tar anmälan via blankett efter kontakt med vägledaren. Vuxenutbildningen nås på 0372-78 40 60 och vuxenutbildningen@skola.ljungby.se.',
     tags: ['komvux', 'ljungby', 'kronoberg', 'småland'],
     verifiedAt: THIN_LAN_VERIFIED,
+  },
+  {
+    id: 'ostersund-larcentrum-gymnasiala',
+    schoolName: 'Vuxenutbildningen Östersund (Hermods)',
+    provider: 'Östersunds kommun',
+    subject: 'Flera ämnen',
+    course: 'Flera gymnasiekurser (välj ämnesområde i anmälan)',
+    courseCode: 'Varierar',
+    level: 'Komvux',
+    city: 'Östersund',
+    region: 'Jämtland',
+    address: 'Östersund (provlokalen står i kallelsen, ca 3,5 veckor innan)',
+    lat: 63.1792,
+    lng: 14.6357,
+    price: 500,
+    priceNote:
+      'Betalas till bankgiro 991-1249 innan anmälan kan slutföras — daterat kvitto bifogas i ' +
+      'anmälan. Har du F i kursen laddar du upp en bild på betyget i stället för kvitto. ' +
+      'Inbetald avgift återbetalas inte.',
+    // Checked 2026-08-19 in Östersunds egen prövningsanmälan: fyra
+    // prövningsdatum för hösten med anmälningstiden i parentes. 11/8 och 29/9
+    // har redan stängt (8/7 respektive 17/8), så nästa omgång är 27/10.
+    nextPeriod: {
+      label:
+        'Prövningsdatum 27 oktober 2026, anmälan 26 augusti – 22 september. Därefter 3 november ' +
+        '(anmälan 1 september – 1 oktober). Max 30 platser per tillfälle — anmälan stänger när ' +
+        'det är fullsatt, och efteranmälan handläggs inte.',
+      applicationStart: '2026-08-26',
+      applicationEnd: '2026-09-22',
+      examWindowStart: '2026-10-27',
+      examWindowEnd: '2026-10-27',
+      confirmed: true,
+    },
+    components: COMPONENTS_FLERA,
+    studyTips: TIPS_FLERA,
+    registrationUrl: 'https://ostersund.alvis.se/provning/amnesomrade',
+    infoUrl: 'https://www.larcentrum.se/ostersund/provning/',
+    description:
+      'Östersunds kommun köper prövningarna av Hermods och genomför dem alltid på plats i skolan, ' +
+      'kl. 8.45–14.00. Du kan anmäla dig till en kurs per prövningstillfälle, och skolan hör av sig ' +
+      'ungefär 3,5 veckor innan. Vård- och omsorgskurser hanteras manuellt av KUI utan fasta datum.',
+    tags: ['komvux', 'östersund', 'jämtland', 'hermods'],
+    verifiedAt: THIN_LAN_2_VERIFIED,
+  },
+  {
+    id: 'ostersund-larcentrum-grundlaggande',
+    schoolName: 'Vuxenutbildningen Östersund (Folkuniversitetet)',
+    provider: 'Östersunds kommun',
+    subject: 'Flera ämnen',
+    course: 'Grundläggande delkurs D och SFI delkurs 1–3D',
+    courseCode: 'Varierar',
+    level: 'Komvux',
+    city: 'Östersund',
+    region: 'Jämtland',
+    address: 'Östersund (provlokalen står i kallelsen, ca 3,5 veckor innan)',
+    lat: 63.1786,
+    lng: 14.6389,
+    price: 500,
+    priceNote:
+      'Betalas till bankgiro 991-1249 innan anmälan kan slutföras. Har du F i kursen laddar du ' +
+      'upp en bild på betyget i stället för kvitto.',
+    // Checked 2026-08-19: Folkuniversitetets två höstdatum är 25/8 (anmälan
+    // 29/6–19/7, stängd) och 3/11.
+    nextPeriod: {
+      label:
+        'Prövningsdatum 3 november 2026, anmälan 1 september – 1 oktober. Höstens första ' +
+        'tillfälle (25 augusti) stängde för anmälan den 19 juli.',
+      applicationStart: '2026-09-01',
+      applicationEnd: '2026-10-01',
+      examWindowStart: '2026-11-03',
+      examWindowEnd: '2026-11-03',
+      confirmed: true,
+    },
+    components: COMPONENTS_FLERA,
+    studyTips: TIPS_FLERA,
+    registrationUrl: 'https://ostersund.alvis.se/provning/amnesomrade',
+    infoUrl: 'https://www.larcentrum.se/ostersund/provning/',
+    description:
+      'Folkuniversitetet genomför Östersunds prövningar på grundläggande nivå — svenska som ' +
+      'andraspråk, engelska och matematik delkurs D samt SFI — på plats i skolan. Samma ' +
+      'anmälan och samma avgift som de gymnasiala kurserna, men egna prövningsdatum.',
+    tags: ['komvux', 'grundläggande', 'sfi', 'östersund', 'jämtland'],
+    verifiedAt: THIN_LAN_2_VERIFIED,
+  },
+  {
+    id: 'nassjo-hoglandsvux-flera-kurser',
+    schoolName: 'Höglandsvux Nässjö',
+    provider: 'Nässjö kommun',
+    subject: 'Flera ämnen',
+    course: 'Flera kurser (en kurs per prövningsperiod)',
+    courseCode: 'Varierar',
+    level: 'Komvux',
+    city: 'Nässjö',
+    region: 'Jönköping',
+    address: 'Provet skrivs på Träcentrum, Framtidsvägen 1 — anmälan på Rådhusgatan 20, Nässjö',
+    lat: 57.6531,
+    lng: 14.6963,
+    price: 500,
+    priceNote:
+      'Betalas med Swish i receptionen i samband med anmälan. Kostnadsfritt vid första ' +
+      'tillfället om du redan har betyget F — ta med betygsdokumentet. Litteratur ingår inte, ' +
+      'och inbetald avgift återbetalas inte.',
+    // Checked 2026-08-19 mot kommunens egen prövningssida: ett datum för
+    // hösten 2026 med utskriven anmälningsperiod.
+    nextPeriod: {
+      label:
+        'Prövning 16 oktober 2026, anmälningsperiod 17 augusti – 18 september. Endast de 16 ' +
+        'första kompletta anmälningarna erbjuds plats.',
+      applicationStart: '2026-08-17',
+      applicationEnd: '2026-09-18',
+      examWindowStart: '2026-10-16',
+      examWindowEnd: '2026-10-16',
+      confirmed: true,
+    },
+    components: COMPONENTS_FLERA,
+    studyTips: TIPS_FLERA,
+    // Nässjö tar anmälan över disk: ingen e-tjänst, ingen blankett att ladda
+    // ner. Länken går till sidan som säger när receptionen är öppen, för det
+    // är den enda uppgiften som avgör om resan dit är lönlös.
+    registration: {
+      kind: 'inperson',
+      steps: [
+        'Besök Höglandsvux reception på Rådhusgatan 20 — måndag, tisdag eller torsdag kl. 13–15',
+        'Fyll i anmälan på plats och lämna en vidimerad betygskopia',
+        'Betala 500 kr med Swish i receptionen (gratis första gången om du har F i kursen)',
+      ],
+    },
+    registrationUrl: 'https://nassjo.se/barn-och-utbildning/vuxenutbildning/provning.html',
+    infoUrl: 'https://nassjo.se/barn-och-utbildning/vuxenutbildning/provning.html',
+    description:
+      'Höglandsvux i Nässjö köper prövningarna av Hermods: efter antagningen aktiverar du ett ' +
+      'elevkonto, gör inlämningarna på egen hand och avslutar med ett slutprov på Träcentrum. ' +
+      'Antagningsbesked kommer senast en vecka efter att anmälningsperioden stängt.',
+    tags: ['komvux', 'nässjö', 'jönköping', 'höglandet', 'småland'],
+    verifiedAt: THIN_LAN_2_VERIFIED,
+  },
+  {
+    id: 'vetlanda-larcentrum-flera-kurser',
+    schoolName: 'Vetlanda Lärcentrum',
+    provider: 'Vetlanda kommun',
+    subject: 'Flera ämnen',
+    course: 'Flera kurser (en kurs per termin)',
+    courseCode: 'Varierar',
+    level: 'Komvux',
+    city: 'Vetlanda',
+    region: 'Jönköping',
+    address: 'Kyrkogatan 54 A, A-huset våning 2, sal 223b, Vetlanda',
+    lat: 57.4283,
+    lng: 15.0772,
+    price: 500,
+    priceNote:
+      'Avgiften ska vara betald när du ansöker (Swish 123 650). Kostnadsfritt om du har F eller ' +
+      'IG i kursen — betygskopian bifogas då i e-tjänsten. Litteratur betalar du själv.',
+    // Checked 2026-08-19: sidan listar VT27, HT27 och VT28. Höstens 2026-omgång
+    // står inte längre kvar, så den närmaste publicerade omgången är våren 2027
+    // — och den är utskriven med både anmälningstid och prövningstid.
+    nextPeriod: {
+      label:
+        'Våren 2027: anmälan 4 januari – 19 februari kl. 24.00, prövningstid 15 mars – 9 april. ' +
+        'Totalt 20 platser per termin (10 per prövningsperiod), och anmälan stänger tidigare om ' +
+        'platserna tar slut.',
+      applicationStart: '2027-01-04',
+      applicationEnd: '2027-02-19',
+      examWindowStart: '2027-03-15',
+      examWindowEnd: '2027-04-09',
+      confirmed: true,
+    },
+    components: COMPONENTS_FLERA,
+    studyTips: TIPS_FLERA,
+    registrationUrl: 'https://sjalvservice.vetlanda.se/oversikt/overview/412',
+    infoUrl:
+      'https://vetlandalarcentrum.se/vetlanda-larcentrum/om-vetlanda-larcentrum/provning.html',
+    description:
+      'Vetlanda Lärcentrum kör prövningarna via NTI-skolan: du bokar tid själv efter att ' +
+      'anmälan gått igenom, och slutprovet skrivs på plats på Kyrkogatan 54 A. Betyget kommer ' +
+      'hem inom fyra veckor och skickas automatiskt vidare till antagningen (BEDA).',
+    tags: ['komvux', 'vetlanda', 'jönköping', 'småland', 'nti'],
+    verifiedAt: THIN_LAN_2_VERIFIED,
+  },
+  {
+    id: 'arvika-vagledningscentrum-flera-kurser',
+    schoolName: 'Vägledningscentrum Arvika',
+    provider: 'Arvika kommun',
+    subject: 'Flera ämnen',
+    course: 'Engelska, matematik, svenska och svenska som andraspråk',
+    courseCode: 'Varierar',
+    level: 'Komvux',
+    city: 'Arvika',
+    region: 'Värmland',
+    address: 'Arvika Näringslivscentrum (tid och sal kommer senast tre veckor innan prövningen)',
+    lat: 59.6547,
+    lng: 12.5906,
+    price: 500,
+    priceNote:
+      'Betalas med Swish 123-231 22 05 i samband med anmälan, märkt med ämnet. Har du F i ' +
+      'kursen har du rätt till en gratis prövning — det görs upp med studievägledaren och ' +
+      'skrivs in i studieplanen. Uteblir du räknas prövningen som genomförd.',
+    // Checked 2026-08-19 (sidan uppdaterad 15 april 2026): Arvika publicerar
+    // sina perioder i veckonummer, vilket är exakta datum — period 2 är v.47–51
+    // med anmälan måndag v.36 till fredag v.40.
+    nextPeriod: {
+      label:
+        'Period 2 hösten 2026: prövning vecka 47–51 (16 november – 18 december), anmälan öppen ' +
+        'måndag vecka 36 till fredag vecka 40 (31 augusti – 2 oktober). Period 1 våren 2027 är ' +
+        'vecka 18–23 med anmälan vecka 9–13.',
+      applicationStart: '2026-08-31',
+      applicationEnd: '2026-10-02',
+      examWindowStart: '2026-11-16',
+      examWindowEnd: '2026-12-18',
+      confirmed: true,
+    },
+    components: COMPONENTS_FLERA,
+    studyTips: TIPS_FLERA,
+    registrationUrl:
+      'https://education.service.tieto.com/AdultApplication.Student/#/search-offering/kv?domain=arvika',
+    infoUrl:
+      'https://www.arvika.se/utbildningochbarnomsorg/vuxenutbildning/provningochvalidering.8126.html',
+    description:
+      'Arvika erbjuder prövning på grundläggande och gymnasial nivå i engelska, matematik, ' +
+      'svenska och svenska som andraspråk, plus yrkeskurser inom vård och omsorg, industri och ' +
+      'kock. Planera prövningen med en studie- och yrkesvägledare först (vlc@arvika.se) — ' +
+      'utbudet på sidan är preliminärt, och webbansökan är den som gäller.',
+    tags: ['komvux', 'arvika', 'värmland', 'edlevo'],
+    verifiedAt: THIN_LAN_2_VERIFIED,
+  },
+  {
+    id: 'sala-vuxnas-larande-flera-kurser',
+    schoolName: 'Vuxnas lärande Sala',
+    provider: 'Sala kommun',
+    subject: 'Flera ämnen',
+    course: 'Flera kurser (kontakta skolan för kurskod)',
+    courseCode: 'Varierar',
+    level: 'Komvux',
+    city: 'Sala',
+    region: 'Västmanland',
+    address: 'Gymnasiegatan 1, 733 40 Sala (ingång reception Vuxnas lärande)',
+    lat: 59.9207,
+    lng: 16.6033,
+    price: 500,
+    priceNote:
+      'Anmälningsblankett och kvitto på betald avgift ska vara inne senast sista ansökningsdag. ' +
+      'Avgiften återbetalas inte utan läkarintyg, och litteraturen betalar du själv.',
+    // Checked 2026-08-19: Sala skriver ut veckorna och de två sista
+    // anmälningsdagarna, men aldrig något årtal, och sidan uppdaterades senast
+    // i maj 2025. Vecka 41 och "7 september" utan år är inte ett datum vi kan
+    // stå för — samma bedömning som för Köping.
+    nextPeriod: {
+      label:
+        'Två tillfällen per år: vecka 10 på våren med sista anmälningsdag 2 februari, och vecka ' +
+        '41 på hösten med sista anmälningsdag 7 september. Sala skriver inte ut årtalen — hör ' +
+        'med vägledaren vilken omgång som är öppen.',
+      confirmed: false,
+    },
+    components: COMPONENTS_FLERA,
+    studyTips: TIPS_FLERA,
+    registration: {
+      kind: 'page',
+      ctaLabel: 'Läs hur du anmäler dig',
+      landing:
+        'Länken går till kommunens självservicesida för prövning, där villkoren och kontakten till vägledarna står.',
+      steps: [
+        'Kontakta studie- och yrkesvägledaren på Vuxnas lärande (0224-74 88 92) — de lämnar ut anmälningsblanketten',
+        'Betala 500 kr per kurs och spara kvittot',
+        'Lämna in blankett och kvitto senast sista ansökningsdagen för perioden',
+      ],
+    },
+    registrationUrl: 'https://www.sala.se/selfservice/15229',
+    infoUrl: 'https://www.sala.se/selfservice/15229',
+    description:
+      'Sala kommun håller ett prövningstillfälle per termin, på plats på Gymnasiegatan 1. ' +
+      'Anmälan görs på blankett via studie- och yrkesvägledaren, som också hjälper till att ' +
+      'välja rätt kurs. Vuxnas lärande nås på vuxnaslarande@skola.sala.se.',
+    tags: ['komvux', 'sala', 'västmanland'],
+    verifiedAt: THIN_LAN_2_VERIFIED,
   },
 ];
 
