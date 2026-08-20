@@ -206,6 +206,9 @@ const AUG_18_VERIFIED = '2026-08-18';
 // Västmanland and Jönköping two apiece — a map with one dot on it reads as
 // "there is nothing here", which for these four län was never true.
 const THIN_LAN_2_VERIFIED = '2026-08-19';
+// Fullbokat-svep 2026-08-20: läste alla 95 nåbara anordnarsidor efter
+// anordnarens egna ord för "det finns inga platser kvar".
+const FULL_SWEEP_VERIFIED = '2026-08-20';
 
 /**
  * For providers who put the anmälan on their own page — but only while the
@@ -332,9 +335,16 @@ export const EXAMS: Exam[] = [
     lng: 18.0687,
     price: 500,
     priceNote: 'Begränsat antal platser, först till kvarn.',
+    // Checked 2026-08-20: samma upplägg som Iris — "Formuläret visas endast på
+    // den aktuella Anmälningsdagen för Prövning och avaktiveras när platserna
+    // är fullbokade", max 10 platser i Täby. Anmälningsfönstret är en förmiddag,
+    // inte en period.
     nextPeriod: {
-      label: 'Provtillfälle 25 september 2026',
+      label:
+        'Provtillfälle 25 september 2026. Anmälan öppnar torsdag 27 augusti kl. 9:00 och stänger ' +
+        'samma förmiddag — formuläret visas bara den dagen. Max 10 platser i Täby.',
       applicationStart: '2026-08-27',
+      applicationEnd: '2026-08-27',
       examWindowStart: '2026-09-25',
       examWindowEnd: '2026-09-25',
       confirmed: true,
@@ -346,7 +356,7 @@ export const EXAMS: Exam[] = [
     description:
       'Medlearn genomför betygsprövning för KCNO (Täby, Danderyd, Vallentuna, Vaxholm, Österåker) minst två gånger per termin. Matematik och svenska är vanliga ämnen, men kontakta skolan för exakt kurskod inför din anmälan.',
     tags: ['matematik', 'taby', 'kcno'],
-    verifiedAt: VERIFIED,
+    verifiedAt: FULL_SWEEP_VERIFIED,
   },
   {
     id: 'hermods-liljeholmen-ma2b',
@@ -583,12 +593,22 @@ export const EXAMS: Exam[] = [
     lng: 17.91,
     price: 500,
     priceNote: NON_REFUNDABLE,
+    // Checked 2026-08-20: Iris egen produktsida skriver i versaler "ALLA
+    // PRÖVNINGSPLATSER FÖR TISDAG DEN 8 SEPTEMBER I UPPLANDS VÄSBY ÄR
+    // BOKADE!" och webbshoppen står som "Slut i lager". Datumen såg öppna ut
+    // och kortet lyste grönt "Öppen nu" — vilket är exakt det `full` finns
+    // för: anordnarens ord slår kalendern.
     nextPeriod: {
-      label: 'Provtillfälle 8 september 2026',
+      label:
+        'Alla platser till provtillfället 8 september 2026 är bokade — Iris skriver "slut i lager". ' +
+        'Nästa tillfälle är tisdag 8 december kl. 9–12, med anmälan som öppnar torsdag 5 november ' +
+        'kl. 9:00 och stänger så snart platserna är fullbokade. Formuläret visas bara den dagen, ' +
+        'och platserna brukar gå åt på minuter.',
       applicationStart: '2026-08-06',
       examWindowStart: '2026-09-08',
       examWindowEnd: '2026-09-08',
       confirmed: true,
+      full: true,
     },
     components: COMPONENTS_FYSIK,
     studyTips: TIPS_FYSIK,
@@ -598,7 +618,7 @@ export const EXAMS: Exam[] = [
     description:
       'Iris Hadar genomför betygsprövning i naturvetenskapliga ämnen i Upplands Väsby ett par gånger per termin.',
     tags: ['fysik', 'upplands-vasby', 'iris'],
-    verifiedAt: VERIFIED,
+    verifiedAt: FULL_SWEEP_VERIFIED,
   },
   {
     id: 'iris-flemingsberg-ma',
@@ -615,9 +635,18 @@ export const EXAMS: Exam[] = [
     lng: 17.94,
     price: 500,
     priceNote: NON_REFUNDABLE,
+    // Checked 2026-08-20: "Anmälan: Öppnar torsdag 27 augusti, 2026, kl.
+    // 9:00-12:00 … Formuläret visas endast på den aktuella Anmälningsdagen och
+    // avaktiveras när platserna är fullbokade." Ett halvöppet fönster hade
+    // låtit kortet lysa grönt i veckor efter att formuläret försvann, så
+    // slutdagen är samma dag som öppningsdagen.
     nextPeriod: {
-      label: 'Provtillfälle 25 september 2026',
+      label:
+        'Provtillfälle 25 september 2026 kl. 8–17. Anmälan öppnar torsdag 27 augusti kl. 9:00 och ' +
+        'stänger samma förmiddag — formuläret visas bara den dagen och avaktiveras när platserna ' +
+        'är fullbokade.',
       applicationStart: '2026-08-27',
+      applicationEnd: '2026-08-27',
       examWindowStart: '2026-09-25',
       examWindowEnd: '2026-09-25',
       confirmed: true,
@@ -629,7 +658,7 @@ export const EXAMS: Exam[] = [
     description:
       'Iris Hadar genomför betygsprövning i Flemingsberg, bland annat i matematik. Ange exakt kurs och kurskod vid anmälan.',
     tags: ['matematik', 'flemingsberg', 'iris'],
-    verifiedAt: VERIFIED,
+    verifiedAt: FULL_SWEEP_VERIFIED,
   },
   {
     id: 'goteborg-ma2b',

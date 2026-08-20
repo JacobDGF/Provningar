@@ -10,6 +10,7 @@ import {
   MousePointerClick,
   Globe,
   Ban,
+  CalendarX,
 } from 'lucide-react';
 import { Exam } from '../types';
 import { useStore } from '../store/useStore';
@@ -17,7 +18,7 @@ import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
 import { hasApplicationClosed, applicationCell } from '../lib/examStatus';
 import { getExamStatus } from '../lib/examStatusColor';
 import { getRegistrationFlow } from '../lib/registrationFlow';
-import { getProviderLinks } from '../lib/providerLinks';
+import { getExamAction } from '../lib/examAction';
 import { SchoolCover } from './SchoolCover';
 
 interface ExamCardProps {
@@ -60,7 +61,10 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
   const closed = hasApplicationClosed(exam);
   const cell = applicationCell(exam);
   const flow = getRegistrationFlow(exam);
-  const links = getProviderLinks(exam);
+  // What the buttons may promise. A closed round gets no booking button —
+  // the colour at the top of the card and the button at the bottom have to
+  // agree, and the button is the half people act on.
+  const action = getExamAction(exam);
 
   const distanceKm = userLocation
     ? haversineDistanceKm(userLocation.lat, userLocation.lng, exam.lat, exam.lng)
@@ -142,7 +146,7 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
       {/* Body */}
       <div className="p-4">
         <div className="flex flex-wrap items-center gap-1.5 empty:hidden mb-2.5">
-          {flow.direct && (
+          {flow.direct && action.live && (
             <span className="inline-flex items-center gap-1 bg-brand-50 text-brand-700 text-xs font-bold px-2.5 py-1 rounded-full">
               <MousePointerClick size={11} />
               {flow.steps.length} steg till bokning
@@ -213,30 +217,46 @@ export function ExamCard({ exam, compact }: ExamCardProps) {
           </div>
         </div>
 
-        {/* Two destinations: the verified deep link, and the provider's own site
-            for anyone who'd rather navigate it themselves. */}
+        {/* Two destinations. On a live round the first is the booking and the
+            second the school's own site; on a full or closed one they swap
+            round — a red button saying why, pointing where the next omgång
+            gets announced, and the dead form demoted to the small one. */}
         <div className="mt-4 flex gap-2">
           <a
-            href={links.booking}
+            href={action.primary.href}
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="flex-1 flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold py-3 rounded transition-colors active:scale-98 shadow-sm shadow-brand-200"
+            title={action.primary.title}
+            className={`flex-1 flex items-center justify-center gap-2 text-sm font-bold py-3 rounded transition-colors active:scale-98 ${
+              action.variant === 'full'
+                ? 'bg-red-600 hover:bg-red-700 text-white shadow-sm shadow-red-200'
+                : action.variant === 'closed'
+                  ? 'bg-surface border border-line text-ink-soft hover:border-ink-faint'
+                  : 'bg-brand-500 hover:bg-brand-600 text-white shadow-sm shadow-brand-200'
+            }`}
           >
-            <ExternalLink size={15} />
-            {flow.ctaLabel}
+            {action.variant === 'full' ? (
+              <Ban size={15} strokeWidth={2.5} />
+            ) : action.variant === 'closed' ? (
+              <CalendarX size={15} />
+            ) : (
+              <ExternalLink size={15} />
+            )}
+            {action.primary.label}
           </a>
-          {links.hasAlternative && (
+          {action.secondary && (
             <a
-              href={links.site}
+              href={action.secondary.href}
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              title={`Öppna ${links.siteLabel}`}
+              title={action.secondary.title}
+              aria-label={action.secondary.title}
               className="flex items-center justify-center gap-1.5 bg-surface border border-line hover:border-brand-300 hover:bg-brand-50 text-ink-soft text-sm font-bold px-3 py-3 rounded transition-colors active:scale-98"
             >
               <Globe size={15} className="text-brand-600" />
-              <span className="hidden sm:inline">Skolans sida</span>
+              <span className="hidden sm:inline">{action.secondary.label}</span>
             </a>
           )}
         </div>

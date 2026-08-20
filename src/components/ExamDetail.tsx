@@ -15,6 +15,8 @@ import {
   Map,
   ListChecks,
   Globe,
+  Ban,
+  CalendarX,
   CalendarPlus,
 } from 'lucide-react';
 import { useCallback } from 'react';
@@ -25,6 +27,7 @@ import { hasPeriodPassed } from '../lib/examStatus';
 import { StatusKey, getExamStatus } from '../lib/examStatusColor';
 import { getRegistrationFlow } from '../lib/registrationFlow';
 import { getProviderLinks } from '../lib/providerLinks';
+import { getExamAction } from '../lib/examAction';
 import { examCalendarEvents, downloadCalendar } from '../lib/calendarFile';
 import { useEscapeKey } from '../hooks/useEscapeKey';
 import { SchoolCover } from './SchoolCover';
@@ -96,6 +99,7 @@ export function ExamDetail() {
   const urgent = status.tone.key === 'closing';
   const flow = getRegistrationFlow(exam);
   const links = getProviderLinks(exam);
+  const action = getExamAction(exam);
   const calendarEvents = examCalendarEvents(exam);
 
   const distanceKm = userLocation
@@ -272,23 +276,41 @@ export function ExamDetail() {
                 </h3>
                 <span
                   className={`text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${
-                    flow.direct ? 'bg-trust-50 text-trust-700' : 'bg-sand text-ink-soft'
+                    !action.live
+                      ? status.tone.softChip
+                      : flow.direct
+                        ? 'bg-trust-50 text-trust-700'
+                        : 'bg-sand text-ink-soft'
                   }`}
                 >
-                  {flow.steps.length} steg kvar
+                  {action.live ? `${flow.steps.length} steg kvar` : status.tone.shortLabel}
                 </span>
               </div>
-              <p className="text-ink-soft text-xs leading-relaxed mb-3">{flow.landing}</p>
-              <ol className="space-y-2">
-                {flow.steps.map((step, i) => (
-                  <li key={i} className="flex gap-2.5">
-                    <span className="w-5 h-5 bg-brand-50 text-brand-600 rounded-full text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
-                      {i + 1}
-                    </span>
-                    <p className="text-ink text-sm leading-relaxed">{step}</p>
-                  </li>
-                ))}
-              </ol>
+              {/* Steps are a promise about what happens after the button, and
+                  on a closed round that promise doesn't hold — the form on the
+                  other side opens with "anmälan är stängd". Say that instead of
+                  numbering three steps nobody can take. */}
+              {action.live ? (
+                <>
+                  <p className="text-ink-soft text-xs leading-relaxed mb-3">{flow.landing}</p>
+                  <ol className="space-y-2">
+                    {flow.steps.map((step, i) => (
+                      <li key={i} className="flex gap-2.5">
+                        <span className="w-5 h-5 bg-brand-50 text-brand-600 rounded-full text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                          {i + 1}
+                        </span>
+                        <p className="text-ink text-sm leading-relaxed">{step}</p>
+                      </li>
+                    ))}
+                  </ol>
+                </>
+              ) : (
+                <p className="text-ink-soft text-sm leading-relaxed">
+                  {action.variant === 'full'
+                    ? `Det går inte att anmäla sig till den här omgången — ${exam.provider} har meddelat att platserna är slut. Anmälningssidan finns kvar, men möter dig med en stängd blankett.`
+                    : `Anmälan till den här omgången är stängd. Anmälningssidan finns kvar, men tar inte emot fler anmälningar förrän ${exam.provider} öppnar nästa omgång.`}
+                </p>
+              )}
             </div>
 
             {/* Practical info */}
@@ -418,37 +440,56 @@ export function ExamDetail() {
         {/* CTA — a flex sibling, not absolutely positioned: an `absolute` bar
             here resolves against the fixed backdrop, not the sheet, and gets
             clipped away entirely by the sheet's overflow on desktop. */}
-        {/* Two ways out, both explicit. The first is the deep link we verified;
-            the second is for people who'd rather start at the provider's own
-            site and do it themselves. See lib/providerLinks.ts. */}
+        {/* Two ways out, both explicit — and which one leads is decided by the
+            round's state, not by the layout. On a live round it's the verified
+            deep link; on a full or closed one that link goes to a form nobody
+            can submit, so the red button takes the provider's own page and the
+            booking is demoted. See lib/examAction.ts. */}
         <div className="flex-shrink-0 bg-surface border-t border-line p-4 space-y-2 safe-bottom">
           <a
-            href={links.booking}
+            href={action.primary.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full flex items-center justify-center gap-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold py-4 px-4 rounded-md text-base leading-snug text-center shadow-lg shadow-brand-200 active:scale-98 transition-transform"
+            title={action.primary.title}
+            className={`w-full flex items-center justify-center gap-2.5 font-bold py-4 px-4 rounded-md text-base leading-snug text-center active:scale-98 transition-transform ${
+              action.variant === 'full'
+                ? 'bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-200'
+                : action.variant === 'closed'
+                  ? 'bg-ink-soft hover:bg-ink text-white shadow-lg'
+                  : 'bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-200'
+            }`}
           >
-            <ExternalLink size={18} className="flex-shrink-0" />
+            {action.variant === 'full' ? (
+              <Ban size={18} strokeWidth={2.5} className="flex-shrink-0" />
+            ) : action.variant === 'closed' ? (
+              <CalendarX size={18} className="flex-shrink-0" />
+            ) : (
+              <ExternalLink size={18} className="flex-shrink-0" />
+            )}
             <span>
-              {flow.ctaLabel} hos {exam.provider}
+              {action.live ? `${action.primary.label} hos ${exam.provider}` : action.primary.label}
             </span>
           </a>
-          {links.hasAlternative && (
+          {action.secondary && (
             <>
               <a
-                href={links.site}
+                href={action.secondary.href}
                 target="_blank"
                 rel="noopener noreferrer"
+                title={action.secondary.title}
                 className="w-full flex items-center justify-center gap-2 bg-surface border border-line hover:border-brand-300 hover:bg-brand-50 text-ink font-bold py-3.5 rounded-md text-sm active:scale-98 transition-all"
               >
                 <Globe size={16} className="text-brand-600" />
-                {links.siteIsHomepage
-                  ? `Gå till ${exam.provider}s webbplats`
-                  : 'Läs mer på skolans egen sida'}
+                {action.live
+                  ? links.siteIsHomepage
+                    ? `Gå till ${exam.provider}s webbplats`
+                    : 'Läs mer på skolans egen sida'
+                  : 'Öppna anmälningssidan ändå'}
               </a>
               <p className="text-ink-faint text-[11px] text-center leading-relaxed">
-                {flow.direct ? 'Direkt till bokningen' : 'Så nära anmälan vi kommer'} — eller{' '}
-                {links.siteLabel}, om du hellre gör allt själv.
+                {action.live
+                  ? `${flow.direct ? 'Direkt till bokningen' : 'Så nära anmälan vi kommer'} — eller ${links.siteLabel}, om du hellre gör allt själv.`
+                  : 'Avbokningar händer — men räkna inte med en plats den här omgången.'}
               </p>
             </>
           )}
