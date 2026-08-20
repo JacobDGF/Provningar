@@ -58,6 +58,13 @@
   --color-amber-accent-50: #fbf2e1;
 
   --font-display: 'Source Serif 4', 'Iowan Old Style', ui-serif, serif;
+  /* UI-typsnittet. Systemstacken är osynlig i god mening — den ser ut som
+     operativsystemet, inte som en produkt. Plus Jakarta Sans är tät och
+     självsäker i halvfeta vikter, vilket är precis där gränssnittstext lever:
+     knappar, flikar, etiketter. Rubrikerna behåller sin serif. */
+  --font-ui:
+    'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif;
 }
 
 * {
@@ -68,7 +75,7 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: var(--font-ui);
   background: #f3f2f2;
   color: #201e1d;
   overscroll-behavior: none;
