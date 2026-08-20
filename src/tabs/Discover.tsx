@@ -34,6 +34,23 @@ const SUBJECT_CHIPS = ['Alla ämnen', 'Matematik', 'Engelska', 'Svenska', 'Kemi'
     dataset, so a chip never filters to nothing. */
 const CITY_CHIPS = ['Hela Sverige', 'Stockholm', 'Göteborg', 'Malmö', 'Umeå'];
 
+const SORTS = [
+  { key: 'date', label: 'Närmast i tid' },
+  { key: 'distance', label: 'Närmast mig' },
+  { key: 'name', label: 'Skola A–Ö' },
+] as const;
+
+/** One heading per filter row, so the block under the map reads as a panel
+    rather than as four loose chip rows. */
+function FilterRow({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-2.5">
+      <p className="text-[11.5px] font-bold uppercase tracking-[.09em] text-ink-faint">{label}</p>
+      {children}
+    </div>
+  );
+}
+
 export function Discover() {
   const {
     exams,
@@ -167,10 +184,10 @@ export function Discover() {
       <div className="max-w-screen-xl mx-auto w-full px-4 lg:px-8 py-6 lg:py-8 flex flex-col gap-5 animate-rise-in pb-28 lg:pb-10">
         <div>
           <h1 className="font-hero-xl text-[38px] sm:text-[48px] lg:text-[56px] leading-none text-ink">
-            Vilket ämne ska upp?
+            Hitta prövning
           </h1>
           <p className="font-display italic text-[17px] sm:text-[20px] text-ink-soft mt-2">
-            {exams.length} prövningar i hela Sverige — välj ett ämne och se när nästa omgång öppnar.
+            {exams.length} prövningar · {openNow} öppna för anmälan just nu
           </p>
         </div>
 
@@ -198,46 +215,13 @@ export function Discover() {
               <X size={15} className="text-brand-700" />
             </button>
           )}
-          <button
-            onClick={() => setShowFilter(true)}
-            aria-label="Fler filter"
-            className={`w-10 h-10 rounded-[18px] flex items-center justify-center flex-shrink-0 transition-colors ${
-              hasActiveFilters ? 'bg-accent2-500 text-white' : 'text-brand-700 hover:bg-brand-100'
-            }`}
-          >
-            <SlidersHorizontal size={17} />
-          </button>
           <span className="bg-brand-500 text-white font-bold text-[13.5px] px-[18px] py-3 rounded-[20px] whitespace-nowrap tnum">
             {filtered.length} träffar
           </span>
         </div>
 
-        {/* Subject chips */}
-        <div className="flex gap-2.5 flex-wrap">
-          {SUBJECT_CHIPS.map((label) => {
-            const isAll = label === 'Alla ämnen';
-            const selected = isAll ? !filterSubject : filterSubject === label;
-            return (
-              <button
-                key={label}
-                onClick={() => setFilterSubject(isAll ? '' : label)}
-                aria-pressed={selected}
-                className={`rounded-full px-5 py-3 text-[14px] font-bold transition-transform hover:-translate-y-0.5 ${
-                  selected
-                    ? 'bg-ink text-cream'
-                    : 'bg-surface text-ink-soft border-[1.5px] border-line hover:border-ink'
-                }`}
-              >
-                {label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Colour key, doubling as the status filter */}
-        <StatusFilterBar exams={exams} />
-
-        {/* Map card */}
+        {/* Map — straight under the search field, so the first thing you see
+            after typing is where the hits actually are. */}
         <div className="bg-surface border-[1.5px] border-line rounded-[32px] overflow-hidden">
           <div className="flex items-center justify-between gap-3.5 px-[22px] py-[18px] flex-wrap">
             <div className="flex items-center gap-3">
@@ -245,42 +229,132 @@ export function Discover() {
                 <MapPin size={18} strokeWidth={2.1} className="text-brand-500" />
               </span>
               <div>
-                <p className="font-display font-semibold text-[19px] text-ink">Nära dig</p>
-                <p className="text-[13px] text-ink-soft">
+                <p className="font-display font-semibold text-[19px] text-ink">
+                  {city === 'Hela Sverige' ? 'Hela Sverige' : city}
+                </p>
+                <p className="text-[13px] text-ink-soft tnum">
                   {cityCount} {cityCount === 1 ? 'ort' : 'orter'} · {openNow} går att boka nu
                 </p>
               </div>
             </div>
-            <div className="flex gap-2 flex-wrap items-center">
-              <button
-                onClick={toggleNear}
-                disabled={locationStatus === 'pending'}
-                aria-pressed={near}
-                className={`inline-flex items-center gap-2 rounded-full px-[17px] py-2.5 text-[13px] font-bold transition-transform hover:-translate-y-0.5 disabled:opacity-60 ${
-                  near ? 'bg-trust-500 text-white' : 'bg-trust-50 text-trust-700'
-                }`}
-              >
-                <Navigation size={15} strokeWidth={2.2} />
-                Nära mig
-              </button>
+            <button
+              onClick={toggleNear}
+              disabled={locationStatus === 'pending'}
+              aria-pressed={near}
+              className={`inline-flex items-center gap-2 rounded-full px-[17px] py-2.5 text-[13px] font-bold transition-transform hover:-translate-y-0.5 disabled:opacity-60 ${
+                near ? 'bg-trust-500 text-white' : 'bg-trust-50 text-trust-700'
+              }`}
+            >
+              <Navigation size={15} strokeWidth={2.2} />
+              Nära mig
+            </button>
+          </div>
+          <div className="h-[300px] bg-sand">
+            <Suspense fallback={<MapFallback />}>
+              <MapView exams={filtered} className="w-full h-full" />
+            </Suspense>
+          </div>
+        </div>
+
+        {/* Every filter and sort in one panel, under the map. Splitting them
+            across the page meant hunting for the one you wanted. */}
+        <div className="bg-surface border-[1.5px] border-line rounded-[32px] px-[22px] py-[20px] flex flex-col gap-[18px]">
+          <FilterRow label="Ämne">
+            <div className="flex gap-2 flex-wrap">
+              {SUBJECT_CHIPS.map((label) => {
+                const isAll = label === 'Alla ämnen';
+                const selected = isAll ? !filterSubject : filterSubject === label;
+                return (
+                  <button
+                    key={label}
+                    onClick={() => setFilterSubject(isAll ? '' : label)}
+                    aria-pressed={selected}
+                    className={`rounded-full px-[18px] py-2.5 text-[13.5px] font-bold transition-transform hover:-translate-y-0.5 ${
+                      selected
+                        ? 'bg-ink text-cream'
+                        : 'bg-cream text-ink-soft border-[1.5px] border-line hover:border-ink'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          </FilterRow>
+
+          <FilterRow label="Ort">
+            <div className="flex gap-2 flex-wrap">
               {CITY_CHIPS.map((c) => (
                 <button
                   key={c}
                   onClick={() => setCity(c)}
                   aria-pressed={city === c}
-                  className={`rounded-full px-4 py-2.5 text-[13px] font-bold transition-transform hover:-translate-y-0.5 ${
-                    city === c ? 'bg-brand-500 text-white' : 'bg-cream text-ink-soft hover:bg-sand'
+                  className={`rounded-full px-[18px] py-2.5 text-[13.5px] font-bold transition-transform hover:-translate-y-0.5 ${
+                    city === c
+                      ? 'bg-brand-500 text-white'
+                      : 'bg-cream text-ink-soft border-[1.5px] border-line hover:border-ink'
                   }`}
                 >
                   {c}
                 </button>
               ))}
             </div>
-          </div>
-          <div className="h-[300px] bg-sand">
-            <Suspense fallback={<MapFallback />}>
-              <MapView exams={filtered} className="w-full h-full" />
-            </Suspense>
+          </FilterRow>
+
+          {/* Colour key, doubling as the status filter. Carries its own heading
+              because it hides itself when fewer than two colours are in play. */}
+          <StatusFilterBar exams={exams} label="Status" />
+
+          <FilterRow label="Sortera">
+            <div className="flex gap-2 flex-wrap">
+              {SORTS.map((s) => {
+                const active = filterSortBy === s.key;
+                return (
+                  <button
+                    key={s.key}
+                    onClick={() =>
+                      s.key === 'distance'
+                        ? userLocation
+                          ? setFilterSortBy('distance')
+                          : requestLocation()
+                        : setFilterSortBy(s.key)
+                    }
+                    disabled={s.key === 'distance' && locationStatus === 'pending'}
+                    aria-pressed={active}
+                    className={`rounded-full px-[18px] py-2.5 text-[13.5px] font-bold transition-transform hover:-translate-y-0.5 disabled:opacity-60 ${
+                      active
+                        ? 'bg-violet-ink text-white'
+                        : 'bg-cream text-ink-soft border-[1.5px] border-line hover:border-ink'
+                    }`}
+                  >
+                    {s.label}
+                  </button>
+                );
+              })}
+            </div>
+          </FilterRow>
+
+          <div className="flex gap-2 flex-wrap pt-1 border-t-[1.5px] border-sand mt-0.5">
+            <button
+              onClick={() => setShowFilter(true)}
+              className={`mt-[18px] inline-flex items-center gap-2 rounded-full px-[18px] py-2.5 text-[13.5px] font-bold transition-transform hover:-translate-y-0.5 ${
+                hasActiveFilters
+                  ? 'bg-accent2-500 text-white'
+                  : 'bg-cream text-ink-soft border-[1.5px] border-line hover:border-ink'
+              }`}
+            >
+              <SlidersHorizontal size={15} strokeWidth={2.2} />
+              Fler filter
+            </button>
+            {hasActiveFilters && (
+              <button
+                onClick={clearFilters}
+                className="mt-[18px] inline-flex items-center gap-2 rounded-full px-[18px] py-2.5 text-[13.5px] font-bold text-ink-soft hover:text-red-600 transition-colors"
+              >
+                <X size={15} strokeWidth={2.2} />
+                Rensa allt
+              </button>
+            )}
           </div>
         </div>
 
