@@ -1,616 +1,249 @@
-import {
-  Heart,
-  MessageCircle,
-  Send,
-  Plus,
-  X,
-  ChevronDown,
-  ChevronUp,
-  Users,
-  HelpCircle,
-  Trash2,
-  Search,
-  ArrowUpDown,
-  ArrowRight,
-} from 'lucide-react';
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { MessageSquare, MessageCircle, Trash2, Send } from 'lucide-react';
 import { useStore } from '../store/useStore';
-import { Avatar } from '../components/Avatar';
-import { useEscapeKey } from '../hooks/useEscapeKey';
-import { Post, PostKind } from '../types';
+import { Post } from '../types';
+import { initialsOf } from '../lib/avatar';
 import { timeAgo } from '../lib/relativeTime';
 
-/**
- * The four kinds of post, each with its own colour.
- *
- * `rail` is the edge down the left of a card, `active` is the filter chip when
- * it is the one selected. The kind used to be an emoji and nothing else, and an
- * emoji is the one thing on a card a reader scanning a feed does not resolve
- * into a category — a question and a celebration looked identical until read.
- */
-const KINDS: {
-  value: PostKind;
-  label: string;
-  emoji: string;
-  color: string;
-  rail: string;
-  active: string;
-}[] = [
-  {
-    value: 'fråga',
-    label: 'Fråga',
-    emoji: '❓',
-    color: 'bg-brand-100 text-brand-700',
-    rail: 'bg-brand-400',
-    active: 'bg-brand-600 text-white',
-  },
-  {
-    value: 'tips',
-    label: 'Tips',
-    emoji: '💡',
-    color: 'bg-amber-accent-50 text-amber-accent',
-    rail: 'bg-amber-accent',
-    active: 'bg-amber-accent text-white',
-  },
-  {
-    value: 'diskussion',
-    label: 'Diskussion',
-    emoji: '💬',
-    color: 'bg-sand text-ink-soft',
-    rail: 'bg-ink-faint',
-    active: 'bg-ink-soft text-white',
-  },
-  {
-    value: 'seger',
-    label: 'Seger',
-    emoji: '🎉',
-    color: 'bg-trust-50 text-trust-700',
-    rail: 'bg-trust-500',
-    active: 'bg-trust-600 text-white',
-  },
-];
+/** The rooms the design names, mapped onto what posts actually carry. */
+const ROOMS = ['Allt', 'Matematik', 'Engelska', 'Avgifter'] as const;
+type Room = (typeof ROOMS)[number];
 
-function kindMeta(kind?: PostKind) {
-  return KINDS.find((k) => k.value === kind);
+/** A room's colour, for its chip on a thread. */
+const ROOM_TONE: Record<string, string> = {
+  Matematik: 'bg-brand-50 text-brand-700',
+  Engelska: 'bg-accent2-50 text-accent2-700',
+  Svenska: 'bg-trust-50 text-trust-700',
+  Avgifter: 'bg-amber-accent-50 text-amber-accent',
+};
+
+/** Five stable avatar colours, picked from the author's id rather than at
+    random so the same person is the same colour on every thread. */
+const AVATAR_TONES = [
+  'bg-accent2-500',
+  'bg-brand-500',
+  'bg-trust-500',
+  'bg-violet-ink',
+  'bg-amber-accent',
+];
+function avatarTone(userId: string) {
+  let h = 0;
+  for (const c of userId) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return AVATAR_TONES[h % AVATAR_TONES.length];
 }
 
-function PostCard({ post }: { post: Post }) {
-  const {
-    toggleLikePost,
-    toggleLikeReply,
-    addReply,
-    deletePost,
-    deleteReply,
-    currentUser,
-    toggleFollow,
-    setActiveTab,
-    setFilterSubject,
-    setSearchQuery,
-  } = useStore();
-  const [showReplies, setShowReplies] = useState(false);
-  const [replyText, setReplyText] = useState('');
-  const [showReplyInput, setShowReplyInput] = useState(false);
-
-  const isLiked = post.likedBy.includes('me');
-  const isMine = post.userId === 'me';
-  const isFollowing = currentUser.following.includes(post.userId);
-  const meta = kindMeta(post.kind);
-  const subject = post.subject;
-
-  /** Jump from a post's subject to the listings in that subject. */
-  const showExamsForSubject = (subject: string) => {
-    setFilterSubject(subject);
-    setSearchQuery('');
-    setActiveTab('discover');
-  };
-
-  const submitReply = () => {
-    if (!replyText.trim()) return;
-    addReply(post.id, replyText.trim());
-    setReplyText('');
-    setShowReplies(true);
-    setShowReplyInput(false);
-  };
-
-  return (
-    <div className="bg-surface rounded-md overflow-hidden border border-line flex">
-      {/* The kind, as a colour you read before the words */}
-      <div className={`w-1 flex-shrink-0 ${meta?.rail ?? 'bg-line'}`} aria-hidden="true" />
-      <div className="flex-1 min-w-0">
-        {/* Author */}
-        <div className="p-4 pb-3">
-          <div className="flex items-start gap-3">
-            <Avatar name={post.userName} src={post.userAvatar} seed={post.userId} size={40} />
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-ink text-sm">{post.userName}</span>
-                  {isMine && (
-                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-50 text-brand-700">
-                      Ditt inlägg
-                    </span>
-                  )}
-                  {!isMine && (
-                    <button
-                      onClick={() => toggleFollow(post.userId)}
-                      className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                        isFollowing ? 'bg-sand text-ink-soft' : 'bg-brand-500 text-white'
-                      }`}
-                    >
-                      {isFollowing ? 'Följer' : '+ Följ'}
-                    </button>
-                  )}
-                </div>
-                <span className="text-ink-faint text-xs flex-shrink-0">
-                  {timeAgo(post.createdAt)}
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5 mt-1">
-                {meta && (
-                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${meta.color}`}>
-                    {meta.emoji} {meta.label}
-                  </span>
-                )}
-                {subject && (
-                  // The tab's dead end used to be right here: you'd read that
-                  // someone passed Kemi 1 and then have to go hunt for kemi
-                  // prövningar by hand. The chip is the shortcut.
-                  <button
-                    onClick={() => showExamsForSubject(subject)}
-                    title={`Visa prövningar i ${subject}`}
-                    className="text-xs bg-brand-50 hover:bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full font-medium inline-flex items-center gap-1 transition-colors"
-                  >
-                    {subject}
-                    <ArrowRight size={10} />
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <p className="text-ink text-[15px] leading-relaxed mt-3">{post.content}</p>
-
-          {post.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-2">
-              {post.tags.map((t) => (
-                <span key={t} className="text-brand-500 text-xs">
-                  #{t}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Actions */}
-        <div className="px-4 pb-3 flex items-center gap-4 border-t border-line pt-3">
-          <button
-            onClick={() => toggleLikePost(post.id)}
-            className="flex items-center gap-1.5 text-sm font-semibold active:scale-95 transition-transform"
-          >
-            <Heart size={19} className={isLiked ? 'text-red-500 fill-red-500' : 'text-ink-faint'} />
-            <span className={isLiked ? 'text-red-500' : 'text-ink-soft'}>{post.likes}</span>
-          </button>
-          <button
-            onClick={() => setShowReplies((v) => !v)}
-            className="flex items-center gap-1.5 text-sm font-semibold text-ink-soft"
-          >
-            <MessageCircle size={19} className="text-ink-faint" />
-            {post.replies.length > 0 ? post.replies.length : 'Svara'}
-          </button>
-          <button
-            onClick={() => setShowReplyInput((v) => !v)}
-            className="ml-auto text-brand-600 text-xs font-bold"
-          >
-            {showReplyInput ? 'Avbryt' : 'Skriv svar'}
-          </button>
-          {isMine && (
-            <button
-              onClick={() => {
-                if (window.confirm('Ta bort inlägget?')) deletePost(post.id);
-              }}
-              aria-label="Ta bort inlägget"
-              className="text-ink-faint hover:text-red-500 transition-colors"
-            >
-              <Trash2 size={16} />
-            </button>
-          )}
-        </div>
-
-        {/* Reply input */}
-        {showReplyInput && (
-          <div className="px-4 pb-3 flex gap-2">
-            <Avatar name={currentUser.name} src={currentUser.avatar} seed="me" size={28} />
-            <div className="flex-1 flex gap-2 bg-sand rounded px-3 py-2">
-              <input
-                type="text"
-                value={replyText}
-                onChange={(e) => setReplyText(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && submitReply()}
-                placeholder="Skriv ett svar..."
-                className="flex-1 bg-transparent text-sm outline-none"
-                // eslint-disable-next-line jsx-a11y/no-autofocus -- user just tapped "reply" to open this field
-                autoFocus
-              />
-              <button onClick={submitReply} disabled={!replyText.trim()}>
-                <Send
-                  size={16}
-                  className={replyText.trim() ? 'text-brand-600' : 'text-ink-faint'}
-                />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Replies toggle */}
-        {post.replies.length > 0 && (
-          <button
-            onClick={() => setShowReplies((v) => !v)}
-            className="w-full text-xs text-ink-soft font-semibold py-2 border-t border-line flex items-center justify-center gap-1"
-          >
-            {showReplies ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-            {showReplies ? 'Dölj svar' : `Visa ${post.replies.length} svar`}
-          </button>
-        )}
-
-        {/* Replies */}
-        {showReplies && post.replies.length > 0 && (
-          <div className="border-t border-line bg-sand/60">
-            {post.replies.map((reply) => {
-              const replyLiked = reply.likedBy.includes('me');
-              return (
-                <div key={reply.id} className="px-4 py-3 flex gap-2.5">
-                  <Avatar
-                    name={reply.userName}
-                    src={reply.userAvatar}
-                    seed={reply.userId}
-                    size={28}
-                    className="mt-0.5"
-                  />
-                  <div className="flex-1">
-                    <div className="bg-surface rounded px-3 py-2 border border-line">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-bold text-ink">
-                          {reply.userName}
-                          {reply.userId === 'me' && (
-                            <span className="ml-1.5 font-semibold text-brand-600">· ditt svar</span>
-                          )}
-                        </span>
-                        <span className="text-ink-faint text-xs">{timeAgo(reply.createdAt)}</span>
-                      </div>
-                      <p className="text-sm text-ink-soft leading-relaxed">{reply.content}</p>
-                    </div>
-                    <div className="flex items-center gap-3 mt-1 ml-2">
-                      <button
-                        onClick={() => toggleLikeReply(post.id, reply.id)}
-                        className="flex items-center gap-1 text-xs"
-                      >
-                        <Heart
-                          size={13}
-                          className={replyLiked ? 'text-red-500 fill-red-500' : 'text-ink-faint'}
-                        />
-                        <span className={replyLiked ? 'text-red-500' : 'text-ink-faint'}>
-                          {reply.likes}
-                        </span>
-                      </button>
-                      {/* You could delete your own post but never your own reply,
-                        so a reply written in haste was permanent. */}
-                      {reply.userId === 'me' && (
-                        <button
-                          onClick={() => {
-                            if (window.confirm('Ta bort ditt svar?'))
-                              deleteReply(post.id, reply.id);
-                          }}
-                          aria-label="Ta bort ditt svar"
-                          className="text-ink-faint hover:text-red-500 transition-colors"
-                        >
-                          <Trash2 size={13} />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-    </div>
-  );
+function matchesRoom(post: Post, room: Room) {
+  if (room === 'Allt') return true;
+  if (room === 'Avgifter')
+    return /avgift|kostnad|betal|pris|500 kr/i.test(post.content + ' ' + post.tags.join(' '));
+  return post.subject === room;
 }
 
 export function Community() {
-  const { posts, addPost, currentUser, setShowingFaq } = useStore();
-  const [showCompose, setShowCompose] = useState(false);
-  const [newPost, setNewPost] = useState('');
-  const [newSubject, setNewSubject] = useState('');
-  const [newKind, setNewKind] = useState<PostKind>('fråga');
-  const [activeFilter, setActiveFilter] = useState('all');
-  const [query, setQuery] = useState('');
-  const [sortBy, setSortBy] = useState<'new' | 'top'>('new');
+  const { posts, addPost, addReply, deletePost, deleteReply, currentUser } = useStore();
+  const [room, setRoom] = useState<Room>('Allt');
+  const [draft, setDraft] = useState('');
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [reply, setReply] = useState('');
 
-  useEscapeKey(
-    useCallback(() => setShowCompose(false), []),
-    showCompose,
-  );
+  const threads = useMemo(() => posts.filter((p) => matchesRoom(p, room)), [posts, room]);
 
-  const FILTERS = ['all', 'fråga', 'tips', 'diskussion', 'seger'];
+  const post = () => {
+    const text = draft.trim();
+    if (!text) return;
+    addPost(text, room === 'Allt' || room === 'Avgifter' ? undefined : room, 'fråga');
+    setDraft('');
+  };
 
-  /** How many posts each chip would show, so an empty filter is visible
-      before it is tapped rather than after. */
-  const kindCounts = useMemo(() => {
-    const counts = {} as Record<PostKind, number>;
-    for (const p of posts) if (p.kind) counts[p.kind] = (counts[p.kind] ?? 0) + 1;
-    return counts;
-  }, [posts]);
-
-  // Searching the replies too, not just the post: the answer you're looking for
-  // is usually in a thread whose opening question is worded nothing like it.
-  const filteredPosts = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    const matches = posts.filter((p) => {
-      if (activeFilter !== 'all' && p.kind !== activeFilter) return false;
-      if (!q) return true;
-      const haystack = [
-        p.content,
-        p.userName,
-        p.subject ?? '',
-        ...p.tags,
-        ...p.replies.map((r) => r.content),
-      ]
-        .join(' ')
-        .toLowerCase();
-      return haystack.includes(q);
-    });
-
-    return [...matches].sort((a, b) =>
-      sortBy === 'top'
-        ? b.likes + b.replies.length - (a.likes + a.replies.length)
-        : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    );
-  }, [posts, activeFilter, query, sortBy]);
-
-  const handlePost = () => {
-    if (!newPost.trim()) return;
-    addPost(newPost.trim(), newSubject || undefined, newKind);
-    setNewPost('');
-    setNewSubject('');
-    setNewKind('fråga');
-    setShowCompose(false);
+  const sendReply = (postId: string) => {
+    const text = reply.trim();
+    if (!text) return;
+    addReply(postId, text);
+    setReply('');
   };
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="bg-surface px-4 lg:px-8 pt-14 lg:pt-8 pb-4 sticky top-0 z-30 border-b border-line">
-        <div className="max-w-2xl mx-auto w-full">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 lg:w-14 lg:h-14 bg-brand-500 rounded-md flex items-center justify-center shadow-sm shadow-brand-200 flex-shrink-0">
-                <Users size={22} className="text-white lg:w-7 lg:h-7" strokeWidth={2.2} />
-              </div>
-              <div>
-                <h1 className="text-2xl lg:text-3xl font-bold text-ink font-display">Community</h1>
-                <p className="text-ink-soft text-sm lg:text-base">Fråga, dela tips & inspireras</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
+    <div className="flex flex-col h-full overflow-y-auto bg-cream">
+      <div className="max-w-screen-xl mx-auto w-full px-4 lg:px-8 py-6 lg:py-8 pt-14 lg:pt-8 flex flex-col gap-[18px] animate-rise-in pb-28 lg:pb-10">
+        <div className="flex items-end justify-between gap-5 flex-wrap">
+          <h1 className="font-hero-xl text-[38px] sm:text-[48px] lg:text-[56px] leading-none text-ink">
+            Forum
+          </h1>
+          <div className="flex gap-2 flex-wrap">
+            {ROOMS.map((r) => (
               <button
-                onClick={() => setShowingFaq(true)}
-                aria-label="Vanliga frågor"
-                className="w-10 h-10 bg-sand rounded-md flex items-center justify-center active:scale-90 hover:bg-line transition-colors lg:hidden"
-              >
-                <HelpCircle size={20} className="text-ink-soft" />
-              </button>
-              <button
-                onClick={() => setShowCompose(true)}
-                className="w-10 h-10 lg:w-12 lg:h-12 bg-brand-500 rounded-md flex items-center justify-center shadow-md shadow-brand-200 active:scale-90 hover:bg-brand-600 transition-colors"
-              >
-                <Plus size={20} className="text-white" />
-              </button>
-            </div>
-          </div>
-
-          {/* Search + sort. The sort control sits here rather than at the end of
-              the filter row: that row scrolls horizontally on a phone, and
-              anything past "Diskussion" is off-screen and undiscoverable. */}
-          <div className="flex items-center gap-2 mb-2.5">
-            <div className="flex-1 flex items-center gap-2 bg-sand rounded-md px-3 py-2.5 min-w-0">
-              <Search size={17} className="text-ink-faint flex-shrink-0" />
-              <input
-                type="search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Sök i inlägg och svar…"
-                aria-label="Sök i communityn"
-                className="flex-1 bg-transparent text-sm text-ink placeholder-ink-faint outline-none min-w-0"
-              />
-              {query && (
-                <button onClick={() => setQuery('')} aria-label="Rensa sökningen">
-                  <X size={15} className="text-ink-faint" />
-                </button>
-              )}
-            </div>
-            <button
-              onClick={() => setSortBy((s) => (s === 'new' ? 'top' : 'new'))}
-              title={sortBy === 'new' ? 'Visar senaste först' : 'Visar mest engagemang först'}
-              aria-label={
-                sortBy === 'new'
-                  ? 'Sortering: senaste först. Byt till mest engagemang.'
-                  : 'Sortering: mest engagemang först. Byt till senaste.'
-              }
-              className="flex-shrink-0 h-[42px] px-3 rounded-md bg-sand hover:bg-line text-ink-soft text-xs font-semibold transition-colors inline-flex items-center gap-1.5"
-            >
-              <ArrowUpDown size={14} />
-              {sortBy === 'new' ? 'Senaste' : 'Populärast'}
-            </button>
-          </div>
-
-          {/* Kind filter */}
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-            {FILTERS.map((f) => (
-              <button
-                key={f}
-                onClick={() => setActiveFilter(f)}
-                className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs lg:text-sm font-semibold transition-colors inline-flex items-center gap-1.5 ${
-                  activeFilter === f
-                    ? (kindMeta(f as PostKind)?.active ?? 'bg-ink text-white')
-                    : (kindMeta(f as PostKind)?.color ?? 'bg-sand text-ink-soft hover:bg-line')
+                key={r}
+                onClick={() => setRoom(r)}
+                aria-pressed={room === r}
+                className={`rounded-full px-[18px] py-2.5 text-[13.5px] font-bold transition-transform hover:-translate-y-0.5 ${
+                  room === r
+                    ? 'bg-accent2-500 text-white'
+                    : 'bg-surface text-ink-soft border-[1.5px] border-line hover:border-ink'
                 }`}
               >
-                {f === 'all'
-                  ? `Allt (${posts.length})`
-                  : `${kindMeta(f as PostKind)?.emoji} ${kindMeta(f as PostKind)?.label} (${kindCounts[f as PostKind] ?? 0})`}
+                {r}
               </button>
             ))}
           </div>
         </div>
-      </div>
 
-      <div className="flex-1 overflow-y-auto pb-28 lg:pb-8">
-        <div className="max-w-2xl mx-auto w-full px-4 py-4 space-y-4">
-          {filteredPosts.map((post) => (
-            <PostCard key={post.id} post={post} />
-          ))}
-          {filteredPosts.length === 0 &&
-            (query.trim() ? (
-              <div className="text-center py-12 px-6">
-                <p className="text-ink font-semibold">Inget inlägg matchar ”{query.trim()}”.</p>
-                <p className="text-ink-soft text-sm mt-1">
-                  Sökningen täcker både inlägg och svar. Prova ett kortare ord — eller ställ frågan
-                  själv.
-                </p>
-                <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
-                  <button
-                    onClick={() => setQuery('')}
-                    className="inline-flex items-center gap-1.5 bg-sand hover:bg-line text-ink-soft text-sm font-bold px-4 py-2.5 rounded transition-colors"
-                  >
-                    <X size={15} /> Rensa sökningen
-                  </button>
-                  <button
-                    onClick={() => setShowCompose(true)}
-                    className="inline-flex items-center gap-1.5 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold px-4 py-2.5 rounded transition-colors"
-                  >
-                    <Plus size={15} /> Ställ frågan
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-12 px-6">
-                <p className="text-ink font-semibold">Inga inlägg i den här kategorin än.</p>
-                <p className="text-ink-soft text-sm mt-1">
-                  Bli den första som skriver — det är ofta någon annan som undrar samma sak.
-                </p>
-                <button
-                  onClick={() => setShowCompose(true)}
-                  className="mt-4 inline-flex items-center gap-1.5 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold px-4 py-2.5 rounded transition-colors"
-                >
-                  <Plus size={15} /> Skriv ett inlägg
-                </button>
-              </div>
-            ))}
-        </div>
-      </div>
-
-      {/* Compose modal */}
-      {showCompose && (
-        // Backdrop closes on click as a mouse convenience; the sheet has its own
-        // keyboard-reachable close button below, so this isn't the only way out.
-        // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
-        <div
-          className="fixed inset-0 bg-black/50 z-50 flex items-end lg:items-center lg:justify-center"
-          onClick={() => setShowCompose(false)}
-        >
-          {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events -- stops the backdrop's close-on-click from firing when interacting with the sheet itself */}
-          <div
-            className="bg-cream w-full lg:max-w-lg rounded-t-lg lg:rounded-lg p-6 animate-sheet-up lg:max-h-[85vh] lg:overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
+        {/* Ask */}
+        <div className="focus-ring-host flex items-center gap-3 bg-accent2-50 border-2 border-accent2-500 rounded-[26px] pl-5 pr-2 py-1.5">
+          <MessageSquare size={19} strokeWidth={2.2} className="text-accent2-500 flex-shrink-0" />
+          <input
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && post()}
+            placeholder="Ställ en fråga till andra som prövar…"
+            aria-label="Ställ en fråga"
+            className="flex-1 min-w-0 bg-transparent border-0 outline-none text-[16px] font-semibold text-accent2-700 placeholder-accent2-300 py-3.5"
+          />
+          <button
+            onClick={post}
+            disabled={!draft.trim()}
+            className="bg-accent2-500 hover:bg-accent2-700 disabled:opacity-40 text-white font-bold text-[13.5px] px-5 py-3 rounded-[20px] whitespace-nowrap transition-transform hover:scale-105 disabled:hover:scale-100"
           >
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-ink font-display">Nytt inlägg</h2>
-              <button
-                onClick={() => setShowCompose(false)}
-                className="w-8 h-8 bg-sand rounded-full flex items-center justify-center"
-              >
-                <X size={16} className="text-ink-soft" />
-              </button>
-            </div>
-
-            {/* Kind picker */}
-            <div className="flex gap-2 mb-4">
-              {KINDS.map((k) => (
-                <button
-                  key={k.value}
-                  onClick={() => setNewKind(k.value)}
-                  className={`flex-1 py-2 rounded text-xs font-bold transition-colors ${
-                    newKind === k.value
-                      ? 'bg-brand-500 text-white'
-                      : 'bg-surface text-ink-soft border border-line'
-                  }`}
-                >
-                  {k.emoji} {k.label}
-                </button>
-              ))}
-            </div>
-
-            <div className="flex gap-3 mb-4">
-              <Avatar name={currentUser.name} src={currentUser.avatar} seed="me" size={40} />
-              <textarea
-                value={newPost}
-                onChange={(e) => setNewPost(e.target.value)}
-                placeholder="Dela tips, ställ frågor eller berätta om dina erfarenheter..."
-                className="flex-1 bg-surface border border-line rounded-md px-4 py-3 text-sm text-ink placeholder-ink-faint outline-none resize-none min-h-[100px]"
-                // eslint-disable-next-line jsx-a11y/no-autofocus -- user just tapped "compose" to open this modal
-                autoFocus
-              />
-            </div>
-
-            {!currentUser.avatar && (
-              <p className="text-ink-faint text-xs -mt-2 mb-4">
-                Du visas med dina initialer. Vill du ha en bild lägger du till en egen under Profil
-                — appen använder aldrig färdiga porträtt av andra.
-              </p>
-            )}
-
-            {/* Subject select */}
-            <div className="mb-4">
-              <p className="text-xs text-ink-soft font-semibold mb-2">Ämne (valfritt)</p>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  'Matematik',
-                  'Engelska',
-                  'Svenska',
-                  'Biologi',
-                  'Kemi',
-                  'Fysik',
-                  'Historia',
-                  'Samhällskunskap',
-                  'Psykologi',
-                ].map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => setNewSubject(newSubject === s ? '' : s)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                      newSubject === s
-                        ? 'bg-brand-500 text-white'
-                        : 'bg-surface text-ink-soft border border-line'
-                    }`}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <button
-              onClick={handlePost}
-              disabled={!newPost.trim()}
-              className="w-full bg-brand-500 disabled:bg-sand disabled:text-ink-faint text-white font-bold py-4 rounded-md text-base transition-colors active:scale-98"
-            >
-              Publicera
-            </button>
-          </div>
+            Posta
+          </button>
         </div>
-      )}
+
+        {/* Threads */}
+        <div className="flex flex-col gap-3">
+          {threads.length === 0 && (
+            <div className="bg-surface border-[1.5px] border-dashed border-line rounded-[26px] p-9 text-center font-display italic text-[18px] text-ink-soft">
+              Inga trådar i {room.toLowerCase()} än — ställ den första frågan.
+            </div>
+          )}
+          {threads.map((t) => {
+            const open = openId === t.id;
+            const mine = t.userId === 'me';
+            return (
+              <div
+                key={t.id}
+                className={`bg-surface border-[1.5px] rounded-[28px] overflow-hidden transition-[transform,border-color] duration-150 ${
+                  open ? 'border-ink' : 'border-line hover:-translate-y-0.5 hover:border-ink'
+                }`}
+              >
+                <button
+                  onClick={() => setOpenId(open ? null : t.id)}
+                  aria-expanded={open}
+                  className="flex gap-4 items-start px-[22px] py-5 w-full text-left"
+                >
+                  <span
+                    className={`w-11 h-11 rounded-[15px] flex items-center justify-center font-bold text-[14.5px] text-white flex-shrink-0 ${avatarTone(t.userId)}`}
+                  >
+                    {initialsOf(t.userName)}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-display font-semibold text-[18px] sm:text-[20px] leading-[1.25] text-ink">
+                      {t.content}
+                    </span>
+                    <span className="flex gap-2 flex-wrap mt-2.5">
+                      {t.subject && (
+                        <span
+                          className={`font-bold text-[12.5px] px-3.5 py-2 rounded-full ${ROOM_TONE[t.subject] ?? 'bg-cream text-ink-soft'}`}
+                        >
+                          {t.subject}
+                        </span>
+                      )}
+                      <span className="bg-cream text-ink-soft font-bold text-[12.5px] px-3.5 py-2 rounded-full">
+                        {mine ? 'Du' : t.userName}
+                      </span>
+                      <span className="bg-cream text-ink-soft font-bold text-[12.5px] px-3.5 py-2 rounded-full">
+                        {timeAgo(t.createdAt)}
+                      </span>
+                    </span>
+                  </span>
+                  <span className="flex items-center gap-1.5 bg-ink text-cream font-bold text-[13px] px-3.5 py-2.5 rounded-full flex-shrink-0 tnum">
+                    <MessageCircle size={14} />
+                    {t.replies.length}
+                  </span>
+                </button>
+
+                {open && (
+                  <div className="border-t-[1.5px] border-sand bg-cream px-[22px] py-[18px] flex flex-col gap-2.5">
+                    {t.replies.length === 0 && (
+                      <p className="font-display italic text-[15px] text-ink-soft">
+                        Inga svar än. Var först.
+                      </p>
+                    )}
+                    {t.replies.map((r, i) => {
+                      const own = r.userId === 'me';
+                      const right = own || i % 2 === 1;
+                      return (
+                        <div
+                          key={r.id}
+                          className={`max-w-[78%] rounded-[20px] px-[18px] py-3.5 ${
+                            right
+                              ? 'ml-auto bg-ink text-cream'
+                              : 'bg-surface border-[1.5px] border-line text-ink'
+                          }`}
+                        >
+                          <p className="text-[11.5px] font-bold uppercase tracking-[.06em] opacity-70">
+                            {own ? 'Du' : r.userName}
+                          </p>
+                          <p className="text-[15px] font-semibold leading-[1.4] mt-0.5">
+                            {r.content}
+                          </p>
+                          {own && (
+                            <button
+                              onClick={() => {
+                                if (window.confirm('Ta bort ditt svar?')) deleteReply(t.id, r.id);
+                              }}
+                              aria-label="Ta bort ditt svar"
+                              className="mt-1.5 inline-flex items-center gap-1 text-[11.5px] font-bold opacity-70 hover:opacity-100"
+                            >
+                              <Trash2 size={12} /> Ta bort
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+
+                    <div className="flex items-center gap-2 mt-1">
+                      <input
+                        value={reply}
+                        onChange={(e) => setReply(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && sendReply(t.id)}
+                        placeholder="Skriv ett svar…"
+                        aria-label="Skriv ett svar"
+                        className="flex-1 min-w-0 bg-surface border-[1.5px] border-line rounded-[20px] px-4 py-3 text-[14.5px] font-semibold text-ink outline-none focus:border-ink"
+                      />
+                      <button
+                        onClick={() => sendReply(t.id)}
+                        disabled={!reply.trim()}
+                        aria-label="Skicka svar"
+                        className="w-11 h-11 rounded-[16px] bg-ink text-cream flex items-center justify-center flex-shrink-0 disabled:opacity-40"
+                      >
+                        <Send size={16} />
+                      </button>
+                    </div>
+
+                    {mine && (
+                      <button
+                        onClick={() => {
+                          if (window.confirm('Ta bort ditt inlägg?')) {
+                            deletePost(t.id);
+                            setOpenId(null);
+                          }
+                        }}
+                        className="self-start inline-flex items-center gap-1.5 text-[12.5px] font-bold text-ink-soft hover:text-red-600 transition-colors"
+                      >
+                        <Trash2 size={13} /> Ta bort inlägget
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        <p className="text-[11.5px] text-ink-faint leading-relaxed">
+          Profilbilder i forumet är alltid ritade monogram — {currentUser.name} inkluderad. Appen
+          visar aldrig porträtt av påhittade personer.
+        </p>
+      </div>
     </div>
   );
 }

@@ -61,3 +61,27 @@ export function gradeChipClass(grade: string | undefined): string {
       return 'bg-sand text-ink-soft';
   }
 }
+
+/**
+ * Solid grade badge — white on the grade's own colour.
+ *
+ * `gradeChipClass` is the tinted version, for a chip sitting in a row of other
+ * chips. The profile's 46px badge is the loudest thing on its row and needs the
+ * saturated one, or an F reads as a decoration rather than a warning.
+ */
+export function gradeBadgeClass(grade: string | undefined): string {
+  switch (grade?.toUpperCase()) {
+    case 'A':
+    case 'B':
+      return 'bg-trust-500 text-white';
+    case 'C':
+    case 'D':
+      return 'bg-brand-500 text-white';
+    case 'E':
+      return 'bg-amber-accent text-white';
+    case 'F':
+      return 'bg-red-600 text-white';
+    default:
+      return 'bg-line text-ink-soft';
+  }
+}

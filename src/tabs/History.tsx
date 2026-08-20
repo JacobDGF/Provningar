@@ -1,187 +1,85 @@
-import {
-  History as HistoryIcon,
-  Clock,
-  GraduationCap,
-  MapPin,
-  Trash2,
-  Compass,
-  ChevronRight,
-  Edit3,
-} from 'lucide-react';
-import { useState } from 'react';
+import { Trash2, Compass } from 'lucide-react';
 import { useStore } from '../store/useStore';
-import { SchoolCover } from '../components/SchoolCover';
-import { CompletedExamSheet } from '../components/CompletedExamSheet';
-import { gradeChipClass } from '../lib/grades';
+import { getExamStatus } from '../lib/examStatusColor';
 import { timeAgo } from '../lib/relativeTime';
 
 export function History() {
-  const {
-    viewedExams,
-    exams,
-    currentUser,
-    setShowingExamDetail,
-    clearHistory,
-    setActiveTab,
-    updateCompletedExam,
-    removeCompletedExam,
-  } = useStore();
-  /** Index into `completedExams` of the row being corrected, or null. */
-  const [editing, setEditing] = useState<number | null>(null);
+  const { viewedExams, exams, clearHistory, removeViewed, setShowingExamDetail, setActiveTab } =
+    useStore();
 
-  const viewed = viewedExams
+  const rows = viewedExams
     .map((v) => ({ v, exam: exams.find((e) => e.id === v.examId) }))
-    .filter((x): x is { v: (typeof viewedExams)[0]; exam: (typeof exams)[0] } => !!x.exam);
-
-  // Newest first, but each row carries the index the store writes back to.
-  const completed = currentUser.completedExams.map((ce, index) => ({ ce, index })).reverse();
-
-  const isEmpty = viewed.length === 0 && completed.length === 0;
+    .filter((r): r is { v: (typeof viewedExams)[0]; exam: (typeof exams)[0] } => !!r.exam);
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="bg-surface px-4 lg:px-8 pt-14 lg:pt-8 pb-4 sticky top-0 z-30 border-b border-line">
-        <div className="max-w-screen-2xl mx-auto w-full flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 lg:w-14 lg:h-14 bg-brand-500 rounded-md flex items-center justify-center shadow-sm shadow-brand-200 flex-shrink-0">
-              <HistoryIcon size={22} className="text-white lg:w-7 lg:h-7" strokeWidth={2.2} />
-            </div>
-            <div>
-              <h1 className="text-2xl lg:text-4xl font-bold text-ink font-display">Historik</h1>
-              <p className="text-ink-soft text-sm lg:text-base">
-                Prövningar du tittat på & genomfört
-              </p>
-            </div>
-          </div>
-          {viewed.length > 0 && (
+    <div className="flex flex-col h-full overflow-y-auto bg-cream">
+      <div className="max-w-screen-xl mx-auto w-full px-4 lg:px-8 py-6 lg:py-8 pt-14 lg:pt-8 flex flex-col gap-5 animate-rise-in pb-28 lg:pb-10">
+        <div className="flex items-end justify-between gap-4 flex-wrap">
+          <h1 className="font-hero-xl text-[38px] sm:text-[48px] lg:text-[56px] leading-none text-ink">
+            Nyligen visade
+          </h1>
+          {rows.length > 0 && (
             <button
-              onClick={() => {
-                if (window.confirm('Rensa historiken över visade prövningar?')) clearHistory();
-              }}
-              className="flex items-center gap-1 text-ink-soft text-xs font-semibold bg-sand px-3 py-2 rounded-full active:scale-95 hover:bg-line transition-colors"
+              onClick={clearHistory}
+              className="text-[13.5px] font-bold text-ink-soft hover:text-red-600 transition-colors"
             >
-              <Trash2 size={13} /> Rensa
+              Rensa allt
             </button>
           )}
         </div>
-      </div>
 
-      <div className="flex-1 overflow-y-auto pb-28 lg:pb-8">
-        <div className="max-w-screen-2xl mx-auto w-full">
-          {isEmpty ? (
-            <div className="flex flex-col items-center justify-center py-20 px-8 text-center">
-              <div className="w-20 h-20 bg-brand-50 rounded-lg flex items-center justify-center mb-5">
-                <HistoryIcon size={34} className="text-brand-400" />
-              </div>
-              <h3 className="text-ink font-bold text-lg mb-2">Ingen historik än</h3>
-              <p className="text-ink-soft text-sm mb-6 max-w-xs">
-                Prövningar du öppnar dyker upp här så att du enkelt hittar tillbaka till dem.
-              </p>
-              <button
-                onClick={() => setActiveTab('discover')}
-                className="flex items-center gap-2 bg-brand-500 text-white text-base font-bold px-6 py-3.5 rounded-md shadow-md shadow-brand-200 active:scale-95 transition-transform"
-              >
-                <Compass size={18} />
-                Utforska prövningar
-              </button>
-            </div>
-          ) : (
-            <div className="px-4 lg:px-8 py-4 lg:py-6 space-y-6">
-              {/* Recently viewed */}
-              {viewed.length > 0 && (
-                <div>
-                  <h2 className="text-sm font-bold text-ink-soft uppercase tracking-wide mb-3 flex items-center gap-2">
-                    <Clock size={15} className="text-brand-500" />
-                    Nyligen visade
-                  </h2>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2">
-                    {viewed.map(({ v, exam }) => (
-                      <button
-                        key={v.examId}
-                        onClick={() => setShowingExamDetail(exam.id)}
-                        className="w-full bg-surface border border-line rounded-md p-3 flex items-center gap-3 text-left active:scale-98 transition-transform"
-                      >
-                        <SchoolCover exam={exam} className="w-14 h-14 rounded flex-shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <p className="font-bold text-ink text-sm truncate">{exam.course}</p>
-                          <p className="text-xs text-ink-soft truncate flex items-center gap-1">
-                            <MapPin size={11} /> {exam.schoolName} · {exam.city}
-                          </p>
-                          <p className="text-[11px] text-ink-faint mt-0.5">
-                            Visad {timeAgo(v.viewedAt)}
-                          </p>
-                        </div>
-                        <ChevronRight size={18} className="text-ink-faint flex-shrink-0" />
-                      </button>
-                    ))}
-                  </div>
+        {rows.length === 0 ? (
+          <div className="bg-surface border-[1.5px] border-dashed border-line rounded-[26px] p-9 text-center">
+            <p className="font-display italic text-[18px] text-ink-soft">
+              Inget kvar här — allt är rensat.
+            </p>
+            <button
+              onClick={() => setActiveTab('discover')}
+              className="mt-4 inline-flex items-center gap-2 bg-ink text-cream text-[14px] font-bold px-5 py-3 rounded-[20px]"
+            >
+              <Compass size={16} /> Upptäck prövningar
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {rows.map(({ v, exam }) => {
+              const status = getExamStatus(exam);
+              return (
+                <div
+                  key={v.examId}
+                  className="flex items-center gap-3 bg-surface border-[1.5px] border-line rounded-[26px] pl-[22px] pr-3.5 py-3"
+                >
+                  <button
+                    onClick={() => setShowingExamDetail(exam.id)}
+                    className="flex items-center gap-[18px] flex-1 min-w-0 py-1.5 text-left transition-transform hover:translate-x-1"
+                  >
+                    <span
+                      className={`w-3 h-3 rounded-full flex-shrink-0 ${status.tone.dot}`}
+                      title={status.label}
+                    />
+                    <span className="font-display font-semibold text-[19px] text-ink flex-1 min-w-0 truncate">
+                      {exam.course}
+                    </span>
+                    <span className="hidden sm:block text-[14px] text-ink-soft font-semibold flex-shrink-0">
+                      {exam.city}
+                    </span>
+                    <span className="text-[13px] text-ink-faint font-bold whitespace-nowrap flex-shrink-0">
+                      {timeAgo(v.viewedAt)}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => removeViewed(v.examId)}
+                    aria-label={`Ta bort ${exam.course} ur historiken`}
+                    className="w-10 h-10 border-[1.5px] border-line bg-cream rounded-[14px] flex items-center justify-center text-ink-soft flex-shrink-0 transition-colors hover:bg-red-600 hover:text-white hover:border-red-600"
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </div>
-              )}
-
-              {/* Completed exams */}
-              <div>
-                <h2 className="text-sm font-bold text-ink-soft uppercase tracking-wide mb-3 flex items-center gap-2">
-                  <GraduationCap size={16} className="text-trust-500" />
-                  Genomförda prövningar
-                </h2>
-                {completed.length === 0 ? (
-                  <div className="bg-sand rounded-md p-5 text-center">
-                    <p className="text-ink-soft text-sm">
-                      Inga genomförda prövningar registrerade än. Lägg till dem på din profil när du
-                      klarat en prövning.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2">
-                    {completed.map(({ ce, index }) => (
-                      <button
-                        key={index}
-                        onClick={() => setEditing(index)}
-                        aria-label={`Ändra ${ce.course}`}
-                        className="bg-surface border border-line rounded-md p-3 flex items-center gap-3 text-left hover:border-brand-200 active:scale-98 transition-all"
-                      >
-                        <div
-                          className={`w-12 h-12 rounded flex items-center justify-center font-bold text-xl flex-shrink-0 ${gradeChipClass(ce.grade)}`}
-                        >
-                          {ce.grade || '?'}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-bold text-ink text-sm truncate">{ce.course}</p>
-                          <p className="text-xs text-ink-soft">
-                            {ce.subject} ·{' '}
-                            {new Date(ce.date).toLocaleDateString('sv-SE', {
-                              day: 'numeric',
-                              month: 'short',
-                              year: 'numeric',
-                            })}
-                          </p>
-                        </div>
-                        <Edit3 size={15} className="text-ink-faint flex-shrink-0" />
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
-
-      {editing !== null && (
-        <CompletedExamSheet
-          initial={currentUser.completedExams[editing]}
-          onSave={(draft) => {
-            updateCompletedExam(editing, draft);
-            setEditing(null);
-          }}
-          onDelete={() => {
-            removeCompletedExam(editing);
-            setEditing(null);
-          }}
-          onClose={() => setEditing(null)}
-        />
-      )}
     </div>
   );
 }

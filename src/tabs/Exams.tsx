@@ -1,192 +1,304 @@
-import { BookMarked, ChevronDown, Compass, List, CalendarDays } from 'lucide-react';
 import { useState, useMemo } from 'react';
+import { LayoutGrid, CalendarDays, Compass, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { ExamCard } from '../components/ExamCard';
-import { CalendarView } from './CalendarTab';
-import { SavedExam } from '../types';
+import { Exam, SavedExam } from '../types';
 import { compareByPeriod } from '../lib/examStatus';
 
-const STATUS_OPTIONS: { value: SavedExam['status']; label: string; color: string }[] = [
-  { value: 'interested', label: 'Intresserad', color: 'bg-amber-accent-50 text-amber-accent' },
-  { value: 'registered', label: 'Anmäld', color: 'bg-brand-100 text-brand-700' },
-  { value: 'completed', label: 'Genomförd', color: 'bg-sand text-ink-soft' },
-  { value: 'passed', label: 'Godkänd', color: 'bg-trust-50 text-trust-700' },
-  { value: 'failed', label: 'Underkänd', color: 'bg-red-100 text-red-700' },
-];
+/** The three kinds of date a saved round can put in your calendar. */
+type EventKind = 'opens' | 'closes' | 'exam';
 
-function StatusPicker({ examId }: { examId: string }) {
-  const { savedExams, updateExamStatus } = useStore();
-  const saved = savedExams.find((e) => e.examId === examId);
-  const [open, setOpen] = useState(false);
-  const current = STATUS_OPTIONS.find((o) => o.value === saved?.status) || STATUS_OPTIONS[0];
+const EVENT_TONE: Record<EventKind, { label: string; dot: string; tint: string; ink: string }> = {
+  opens: {
+    label: 'Anmälan öppnar',
+    dot: 'bg-brand-500',
+    tint: 'bg-brand-50',
+    ink: 'text-brand-700',
+  },
+  closes: {
+    label: 'Anmälan stänger',
+    dot: 'bg-orange-600',
+    tint: 'bg-orange-50',
+    ink: 'text-orange-700',
+  },
+  exam: {
+    label: 'Prövningsperiod',
+    dot: 'bg-accent2-500',
+    tint: 'bg-accent2-50',
+    ink: 'text-accent2-700',
+  },
+};
+
+interface CalEvent {
+  date: string;
+  kind: EventKind;
+  title: string;
+  where: string;
+}
+
+function eventsFor(exams: Exam[]): CalEvent[] {
+  const out: CalEvent[] = [];
+  for (const e of exams) {
+    const p = e.nextPeriod;
+    if (!p.confirmed) continue;
+    const where = `${e.course} · ${e.schoolName}`;
+    if (p.applicationStart)
+      out.push({ date: p.applicationStart, kind: 'opens', title: 'Anmälan öppnar', where });
+    if (p.applicationEnd)
+      out.push({ date: p.applicationEnd, kind: 'closes', title: 'Sista anmälningsdag', where });
+    if (p.examWindowStart)
+      out.push({ date: p.examWindowStart, kind: 'exam', title: 'Prövningsperiod', where });
+  }
+  return out.sort((a, b) => a.date.localeCompare(b.date));
+}
+
+function monthLabel(y: number, m: number) {
+  return new Date(y, m, 1).toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' });
+}
+
+/** Monday-first grid offset for the 1st of the month. */
+function leadingBlanks(y: number, m: number) {
+  return (new Date(y, m, 1).getDay() + 6) % 7;
+}
+
+function Calendar({ events }: { events: CalEvent[] }) {
+  const today = new Date();
+  const [cursor, setCursor] = useState({ y: today.getFullYear(), m: today.getMonth() });
+  const days = new Date(cursor.y, cursor.m + 1, 0).getDate();
+  const blanks = leadingBlanks(cursor.y, cursor.m);
+  const iso = (d: number) =>
+    `${cursor.y}-${String(cursor.m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+  const todayIso = today.toISOString().slice(0, 10);
+
+  const byDay = new Map<string, EventKind>();
+  for (const ev of events) {
+    // First event of the day wins the colour; the list below shows them all.
+    if (!byDay.has(ev.date)) byDay.set(ev.date, ev.kind);
+  }
+
+  const step = (delta: number) =>
+    setCursor((c) => {
+      const d = new Date(c.y, c.m + delta, 1);
+      return { y: d.getFullYear(), m: d.getMonth() };
+    });
+
+  const monthEvents = events.filter((e) => e.date.startsWith(iso(1).slice(0, 7)));
 
   return (
-    <div className="relative">
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          setOpen((o) => !o);
-        }}
-        className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold ${current.color}`}
-      >
-        {current.label}
-        <ChevronDown size={12} />
-      </button>
-      {open && (
-        <div className="absolute left-0 bottom-full mb-1 bg-surface border border-line rounded shadow-lg z-10 overflow-hidden min-w-max">
-          {STATUS_OPTIONS.map((opt) => (
+    <div className="flex flex-col gap-4">
+      <div className="bg-surface border-[1.5px] border-line rounded-[32px] p-5 sm:p-6">
+        <div className="flex items-center justify-between gap-4 mb-[18px]">
+          <p className="font-hero text-[28px] sm:text-[34px] leading-none capitalize">
+            {monthLabel(cursor.y, cursor.m)}
+          </p>
+          <div className="flex gap-2">
             <button
-              key={opt.value}
-              onClick={(e) => {
-                e.stopPropagation();
-                updateExamStatus(examId, opt.value);
-                setOpen(false);
-              }}
-              className={`block w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-sand ${opt.value === saved?.status ? 'font-bold' : ''}`}
+              onClick={() => step(-1)}
+              aria-label="Föregående månad"
+              className="w-[42px] h-[42px] border-[1.5px] border-line bg-cream rounded-[15px] flex items-center justify-center text-ink-soft transition-transform hover:-translate-x-0.5"
             >
-              <span className={`inline-block px-2 py-0.5 rounded-full text-xs ${opt.color}`}>
-                {opt.label}
-              </span>
+              <ChevronLeft size={18} />
             </button>
+            <button
+              onClick={() => step(1)}
+              aria-label="Nästa månad"
+              className="w-[42px] h-[42px] border-[1.5px] border-line bg-cream rounded-[15px] flex items-center justify-center text-ink-soft transition-transform hover:translate-x-0.5"
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
+        </div>
+
+        <div className="flex gap-2.5 flex-wrap mb-4">
+          {(Object.keys(EVENT_TONE) as EventKind[]).map((k) => (
+            <span
+              key={k}
+              className={`inline-flex items-center gap-2 font-bold text-[12.5px] px-[15px] py-2.5 rounded-full ${EVENT_TONE[k].tint} ${EVENT_TONE[k].ink}`}
+            >
+              <span className={`w-2.5 h-2.5 rounded-full ${EVENT_TONE[k].dot}`} />
+              {EVENT_TONE[k].label}
+            </span>
           ))}
         </div>
-      )}
+
+        <div className="grid grid-cols-7 gap-2">
+          {['Mån', 'Tis', 'Ons', 'Tor', 'Fre', 'Lör', 'Sön'].map((d) => (
+            <div
+              key={d}
+              className="text-center text-[11px] font-bold uppercase tracking-[.08em] text-ink-faint pb-1"
+            >
+              {d}
+            </div>
+          ))}
+          {Array.from({ length: blanks }, (_, i) => (
+            <div key={`b${i}`} />
+          ))}
+          {Array.from({ length: days }, (_, i) => {
+            const d = i + 1;
+            const key = iso(d);
+            const kind = byDay.get(key);
+            const isToday = key === todayIso;
+            return (
+              <div
+                key={d}
+                className={`aspect-square rounded-[18px] flex flex-col items-center justify-center gap-1 text-[15px] font-bold tnum ${
+                  kind
+                    ? `${EVENT_TONE[kind].dot} text-white`
+                    : isToday
+                      ? 'bg-ink text-cream'
+                      : 'bg-cream text-ink-soft'
+                }`}
+              >
+                {d}
+                <span
+                  className={`w-[7px] h-[7px] rounded-full ${kind ? 'bg-white/60' : 'bg-transparent'}`}
+                />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        {monthEvents.length === 0 ? (
+          <div className="bg-surface border-[1.5px] border-dashed border-line rounded-[26px] p-8 text-center font-display italic text-[18px] text-ink-soft">
+            Inga datum den här månaden.
+          </div>
+        ) : (
+          monthEvents.map((ev, i) => {
+            const d = new Date(ev.date);
+            return (
+              <div
+                key={i}
+                className="flex items-center gap-[18px] bg-surface border-[1.5px] border-line rounded-[26px] px-[22px] py-[18px]"
+              >
+                <span
+                  className={`w-[52px] h-[52px] rounded-[18px] flex flex-col items-center justify-center text-white flex-shrink-0 leading-[1.05] ${EVENT_TONE[ev.kind].dot}`}
+                >
+                  <span className="font-hero text-[22px] tnum">{d.getDate()}</span>
+                  <span className="text-[9px] font-bold uppercase tracking-[.06em]">
+                    {d.toLocaleDateString('sv-SE', { month: 'short' }).replace('.', '')}
+                  </span>
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className="font-display font-semibold text-[19px]">{ev.title}</p>
+                  <p className="text-[13.5px] text-ink-soft mt-px truncate">{ev.where}</p>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
     </div>
   );
 }
 
 export function Exams() {
-  const { savedExams, exams, unsaveExam, setActiveTab } = useStore();
-  const [activeStatus, setActiveStatus] = useState<string>('all');
-  const [view, setView] = useState<'list' | 'calendar'>('list');
+  const { savedExams, exams, setActiveTab } = useStore();
+  const [view, setView] = useState<'list' | 'cal'>('list');
 
-  const savedWithData = useMemo(() => {
-    return savedExams
-      .map((se) => ({ saved: se, exam: exams.find((e) => e.id === se.examId) }))
-      .filter((x): x is { saved: SavedExam; exam: (typeof exams)[0] } => !!x.exam)
-      .filter((x) => activeStatus === 'all' || x.saved.status === activeStatus)
-      .sort((a, b) => {
-        const byPeriod = compareByPeriod(a.exam, b.exam);
-        return byPeriod !== 0 ? byPeriod : a.saved.savedAt.localeCompare(b.saved.savedAt);
-      });
-  }, [savedExams, exams, activeStatus]);
+  const saved = useMemo(
+    () =>
+      savedExams
+        .map((se) => ({ saved: se, exam: exams.find((e) => e.id === se.examId) }))
+        .filter((x): x is { saved: SavedExam; exam: Exam } => !!x.exam)
+        .sort((a, b) => compareByPeriod(a.exam, b.exam)),
+    [savedExams, exams],
+  );
 
-  const counts: Record<string, number> = { all: savedExams.length };
-  savedExams.forEach((se) => {
-    counts[se.status] = (counts[se.status] || 0) + 1;
-  });
+  const savedList = saved.map((s) => s.exam);
+  const events = useMemo(() => eventsFor(savedList), [savedList]);
+
+  /** The next application opening among the saved rounds. */
+  const nextOpen = useMemo(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    return events.filter((e) => e.kind === 'opens' && e.date >= today)[0];
+  }, [events]);
+
+  const toPay = savedList.reduce((sum, e) => sum + e.price, 0);
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="bg-surface px-4 lg:px-8 pt-14 lg:pt-8 pb-4 sticky top-0 z-30 border-b border-line">
-        <div className="max-w-screen-2xl mx-auto w-full">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-11 h-11 lg:w-14 lg:h-14 bg-brand-500 rounded-md flex items-center justify-center shadow-sm shadow-brand-200 flex-shrink-0">
-              <BookMarked size={22} className="text-white lg:w-7 lg:h-7" strokeWidth={2.2} />
-            </div>
-            <div>
-              <h1 className="text-2xl lg:text-4xl font-bold text-ink font-display">
-                Mina prövningar
-              </h1>
-              <p className="text-ink-soft text-sm lg:text-base">{savedExams.length} sparade</p>
-            </div>
-          </div>
+    <div className="flex flex-col h-full overflow-y-auto bg-cream">
+      <div className="max-w-screen-xl mx-auto w-full px-4 lg:px-8 py-6 lg:py-8 pt-14 lg:pt-8 flex flex-col gap-5 animate-rise-in pb-28 lg:pb-10">
+        <h1 className="font-hero-xl text-[38px] sm:text-[48px] lg:text-[56px] leading-none text-ink">
+          Mina prövningar
+        </h1>
 
-          {/* View toggle */}
-          <div className="flex bg-sand rounded-md p-1 mb-3 lg:max-w-sm">
+        <div className="flex gap-2 bg-surface border-[1.5px] border-line rounded-[24px] p-[7px] w-fit">
+          {(
+            [
+              ['list', 'Sparade prövningar', LayoutGrid],
+              ['cal', 'Kalender', CalendarDays],
+            ] as const
+          ).map(([id, label, Icon]) => (
             <button
-              onClick={() => setView('list')}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded text-sm font-semibold transition-all ${
-                view === 'list' ? 'bg-surface text-ink shadow-sm' : 'text-ink-soft'
+              key={id}
+              onClick={() => setView(id)}
+              aria-pressed={view === id}
+              className={`flex items-center gap-2.5 rounded-[18px] px-4 sm:px-6 py-3 text-[14.5px] font-bold transition-colors ${
+                view === id ? 'bg-ink text-cream' : 'text-ink-soft hover:bg-cream'
               }`}
             >
-              <List size={16} /> Lista
+              <Icon size={17} />
+              <span className="truncate">{label}</span>
             </button>
-            <button
-              onClick={() => setView('calendar')}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded text-sm font-semibold transition-all ${
-                view === 'calendar' ? 'bg-surface text-ink shadow-sm' : 'text-ink-soft'
-              }`}
-            >
-              <CalendarDays size={16} /> Kalender
-            </button>
-          </div>
-
-          {/* Status filter tabs (list view only) */}
-          {view === 'list' && (
-            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-              <button
-                onClick={() => setActiveStatus('all')}
-                className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
-                  activeStatus === 'all' ? 'bg-ink text-white' : 'bg-sand text-ink-soft'
-                }`}
-              >
-                Alla {counts.all > 0 && `(${counts.all})`}
-              </button>
-              {STATUS_OPTIONS.map(
-                (opt) =>
-                  (counts[opt.value] || 0) > 0 && (
-                    <button
-                      key={opt.value}
-                      onClick={() => setActiveStatus(opt.value)}
-                      className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
-                        activeStatus === opt.value ? opt.color : 'bg-sand text-ink-soft'
-                      }`}
-                    >
-                      {opt.label} ({counts[opt.value]})
-                    </button>
-                  ),
-              )}
-            </div>
-          )}
+          ))}
         </div>
-      </div>
 
-      <div className="flex-1 overflow-y-auto pb-28 lg:pb-8">
-        <div className="max-w-screen-2xl mx-auto w-full">
-          {view === 'calendar' ? (
-            <CalendarView />
-          ) : savedWithData.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 px-8 text-center">
-              <div className="w-20 h-20 bg-brand-50 rounded-lg flex items-center justify-center mb-5">
-                <BookMarked size={34} className="text-brand-400" />
+        {savedList.length === 0 ? (
+          <div className="bg-surface border-[1.5px] border-dashed border-line rounded-[26px] p-9 text-center">
+            <p className="font-display italic text-[18px] text-ink-soft">
+              Inget sparat än — tryck på bokmärket på en prövning så hamnar den här.
+            </p>
+            <button
+              onClick={() => setActiveTab('discover')}
+              className="mt-4 inline-flex items-center gap-2 bg-ink text-cream text-[14px] font-bold px-5 py-3 rounded-[20px]"
+            >
+              <Compass size={16} /> Upptäck prövningar
+            </button>
+          </div>
+        ) : view === 'cal' ? (
+          <Calendar events={events} />
+        ) : (
+          <div className="flex flex-col gap-5">
+            <div className="flex gap-3.5 flex-wrap">
+              <div className="flex-1 min-w-[200px] bg-trust-50 rounded-[28px] px-6 py-[22px]">
+                <p className="text-[10.5px] font-bold uppercase tracking-[.1em] text-trust-700">
+                  Sparade
+                </p>
+                <p className="font-hero text-[38px] sm:text-[46px] leading-none mt-1 text-trust-700 tnum">
+                  {savedList.length}
+                </p>
               </div>
-              <h3 className="text-ink font-bold text-lg mb-2">Inga sparade prövningar</h3>
-              <p className="text-ink-soft text-sm mb-6 max-w-xs">
-                {activeStatus === 'all'
-                  ? 'Tryck på bokmärket på en prövning för att spara den här och hålla koll på datum.'
-                  : `Inga prövningar med status "${STATUS_OPTIONS.find((o) => o.value === activeStatus)?.label}".`}
-              </p>
-              {activeStatus === 'all' && (
-                <button
-                  onClick={() => setActiveTab('discover')}
-                  className="flex items-center gap-2 bg-brand-500 text-white text-base font-bold px-6 py-3.5 rounded-md shadow-md shadow-brand-200 active:scale-95 transition-transform"
-                >
-                  <Compass size={18} />
-                  Upptäck prövningar
-                </button>
-              )}
+              <div className="flex-1 min-w-[200px] bg-brand-50 rounded-[28px] px-6 py-[22px]">
+                <p className="text-[10.5px] font-bold uppercase tracking-[.1em] text-brand-700">
+                  Anmälan öppnar
+                </p>
+                <p className="font-hero text-[38px] sm:text-[46px] leading-none mt-1 text-brand-700 tnum">
+                  {nextOpen
+                    ? new Date(nextOpen.date)
+                        .toLocaleDateString('sv-SE', { day: 'numeric', month: 'short' })
+                        .replace('.', '')
+                    : '—'}
+                </p>
+              </div>
+              <div className="flex-1 min-w-[200px] bg-amber-accent-50 rounded-[28px] px-6 py-[22px]">
+                <p className="text-[10.5px] font-bold uppercase tracking-[.1em] text-amber-accent">
+                  Att betala
+                </p>
+                <p className="font-hero text-[38px] sm:text-[46px] leading-none mt-1 text-amber-accent tnum">
+                  {toPay.toLocaleString('sv-SE')} kr
+                </p>
+              </div>
             </div>
-          ) : (
-            <div className="px-4 lg:px-8 py-4 lg:py-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {savedWithData.map(({ saved, exam }) => (
-                <div key={saved.examId}>
-                  <ExamCard exam={exam} />
-                  <div className="mt-2 flex items-center justify-between bg-surface border border-line rounded px-3 py-2">
-                    <StatusPicker examId={saved.examId} />
-                    <button
-                      onClick={() => unsaveExam(exam.id)}
-                      className="text-red-500 text-xs font-semibold px-2 py-1"
-                    >
-                      Ta bort
-                    </button>
-                  </div>
-                </div>
+
+            <div className="grid gap-3.5 [grid-template-columns:repeat(auto-fill,minmax(280px,1fr))]">
+              {savedList.map((exam) => (
+                <ExamCard key={exam.id} exam={exam} />
               ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

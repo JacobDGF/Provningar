@@ -53,6 +53,10 @@
   --color-trust-600: #256b46;
   --color-trust-700: #1d5537;
 
+  /* Violett — historik/nyligen visade. Härledd ur navItems violet-ton. */
+  --color-violet-ink: #7c5cd6;
+  --color-violet-tint: #efeafd;
+
   /* Warm amber — tips / highlights */
   --color-amber-accent: #b8860b;
   --color-amber-accent-50: #fbf2e1;
@@ -146,6 +150,27 @@ body {
    headings and body wrap rather than push a card into a horizontal scroll. */
 body {
   overflow-wrap: break-word;
+}
+
+/* Siffror i rutnät och statistik ska stå i kolumn — proportionella siffror
+   får en kalender att vingla och en statistikrad att hoppa när talet ändras. */
+.tnum {
+  font-feature-settings: 'tnum';
+}
+
+/* Designens entré: 18px upp, 450ms, samma kurva som arken. */
+@keyframes rise-in {
+  from {
+    transform: translateY(18px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.animate-rise-in {
+  animation: rise-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* Hide scrollbars but keep functionality */

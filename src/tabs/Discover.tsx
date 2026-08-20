@@ -1,31 +1,24 @@
 import { useState, useMemo, lazy, Suspense } from 'react';
 import {
   Search,
-  SlidersHorizontal,
-  X,
-  TrendingUp,
+  MapPin,
   Navigation,
   HelpCircle,
-  List,
-  Map as MapIcon,
+  SlidersHorizontal,
   Loader2,
+  X,
 } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { ExamCard } from '../components/ExamCard';
 import { FilterSheet } from '../components/FilterSheet';
+import { StatusFilterBar } from '../components/StatusFilterBar';
 import { haversineDistanceKm } from '../lib/distance';
 import { isOpenForRegistration, compareByPeriod } from '../lib/examStatus';
 import { getStatusKey } from '../lib/examStatusColor';
-import { StatusFilterBar } from '../components/StatusFilterBar';
 import { getRegistrationFlow } from '../lib/registrationFlow';
 import { useMinuteTick } from '../hooks/useMinuteTick';
 
-// Leaflet is the single largest dependency in the bundle; both maps are
-// code-split out of Discover's own chunk and fetched on first render
-// (in parallel with the app's ~2s loading screen, so this is normally
-// invisible) rather than shipped in the initial payload unconditionally.
 const MapView = lazy(() => import('../components/MapView').then((m) => ({ default: m.MapView })));
-const HeroMap = lazy(() => import('../components/HeroMap').then((m) => ({ default: m.HeroMap })));
 
 function MapFallback() {
   return (
@@ -35,25 +28,11 @@ function MapFallback() {
   );
 }
 
-const FEATURED_SUBJECTS = ['Matematik', 'Engelska', 'Svenska', 'Biologi', 'Kemi', 'Fysik'];
+const SUBJECT_CHIPS = ['Alla ämnen', 'Matematik', 'Engelska', 'Svenska', 'Kemi', 'Fysik'];
 
-const STEPS = [
-  {
-    n: '01',
-    title: 'Hitta på kartan',
-    body: 'Zooma in på din stad och se alla verifierade tillfällen nära dig.',
-  },
-  {
-    n: '02',
-    title: 'Jämför tillfällen',
-    body: 'Se riktiga datum, ämne och anordnare samlat på en plats — aldrig gissade.',
-  },
-  {
-    n: '03',
-    title: 'Anmäl dig',
-    body: 'Gå direkt till bokningen — eller till skolans egen sida, om du hellre gör allt själv.',
-  },
-];
+/** The four the design names, plus "Hela Sverige". Each is a real city in the
+    dataset, so a chip never filters to nothing. */
+const CITY_CHIPS = ['Hela Sverige', 'Stockholm', 'Göteborg', 'Malmö', 'Umeå'];
 
 export function Discover() {
   const {
@@ -63,6 +42,7 @@ export function Discover() {
     filterSubject,
     filterRegion,
     filterSortBy,
+    setFilterSortBy,
     filterDirectOnly,
     filterOpenOnly,
     setFilterOpenOnly,
@@ -77,15 +57,17 @@ export function Discover() {
     setShowingFaq,
   } = useStore();
   const [showFilter, setShowFilter] = useState(false);
-  const [view, setView] = useState<'list' | 'map'>('list');
+  const [city, setCity] = useState('Hela Sverige');
   const tick = useMinuteTick();
 
+  const near = filterSortBy === 'distance' && !!userLocation;
   const hasActiveFilters = !!(
     filterSubject ||
     filterRegion ||
     filterDirectOnly ||
     filterOpenOnly ||
-    filterStatus
+    filterStatus ||
+    city !== 'Hela Sverige'
   );
 
   const clearFilters = () => {
@@ -95,6 +77,7 @@ export function Discover() {
     setFilterOpenOnly(false);
     setFilterStatus('');
     setSearchQuery('');
+    setCity('Hela Sverige');
   };
 
   const filtered = useMemo(() => {
@@ -110,6 +93,7 @@ export function Discover() {
         e.provider.toLowerCase().includes(q);
       const matchesSubject = !filterSubject || e.subject === filterSubject;
       const matchesRegion = !filterRegion || e.region === filterRegion;
+      const matchesCity = city === 'Hela Sverige' || e.city === city;
       const matchesDirect = !filterDirectOnly || getRegistrationFlow(e).direct;
       const matchesOpen = !filterOpenOnly || isOpenForRegistration(e);
       const matchesStatus = !filterStatus || getStatusKey(e) === filterStatus;
@@ -117,24 +101,24 @@ export function Discover() {
         matchesSearch &&
         matchesSubject &&
         matchesRegion &&
+        matchesCity &&
         matchesDirect &&
         matchesOpen &&
         matchesStatus
       );
     });
 
-    if (filterSortBy === 'date') {
-      result.sort(compareByPeriod);
-    } else if (filterSortBy === 'distance' && userLocation) {
+    if (filterSortBy === 'distance' && userLocation) {
       result.sort(
         (a, b) =>
           haversineDistanceKm(userLocation.lat, userLocation.lng, a.lat, a.lng) -
           haversineDistanceKm(userLocation.lat, userLocation.lng, b.lat, b.lng),
       );
+    } else if (filterSortBy === 'name') {
+      result.sort((a, b) => a.schoolName.localeCompare(b.schoolName, 'sv'));
     } else {
-      result.sort((a, b) => a.schoolName.localeCompare(b.schoolName));
+      result.sort(compareByPeriod);
     }
-
     return result;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -142,358 +126,185 @@ export function Discover() {
     searchQuery,
     filterSubject,
     filterRegion,
+    city,
     filterSortBy,
     filterDirectOnly,
     filterOpenOnly,
     filterStatus,
-    // The status buckets are computed against the clock, so a listing that
-    // closes while the tab is open has to change colour without a reload.
+    // Status buckets are computed against the clock.
     tick,
-    setFilterOpenOnly,
-    setFilterStatus,
-    setFilterSubject,
-    setFilterRegion,
-    setFilterDirectOnly,
     userLocation,
   ]);
 
-  // tick isn't read below, it's a trigger so the live "öppna just nu" count
-  // recomputes each minute
-  const stats = useMemo(
-    () => ({
-      providers: new Set(exams.map((e) => e.provider)).size,
-      cities: new Set(exams.map((e) => e.city)).size,
-      openNow: exams.filter(isOpenForRegistration).length,
-    }),
+  const openNow = useMemo(
+    () => exams.filter(isOpenForRegistration).length,
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [exams, tick],
   );
 
-  const eyebrow = userLocation
-    ? `${userLocation.lat.toFixed(4)}° N · ${userLocation.lng.toFixed(4)}° Ö — din plats`
-    : 'Hela Sverige — börja där du står';
+  const cityCount = useMemo(() => new Set(filtered.map((e) => e.city)).size, [filtered]);
+
+  const toggleNear = () => {
+    if (near) setFilterSortBy('date');
+    else if (userLocation) setFilterSortBy('distance');
+    else requestLocation();
+  };
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto">
-      {/* Sticky utility bar: FAQ + view toggle, stays out of the editorial hero's way */}
-      <div className="sticky top-0 z-30 bg-cream/95 backdrop-blur-sm border-b border-line px-4 lg:px-8 py-2 flex items-center justify-between">
+    <div className="flex flex-col h-full overflow-y-auto bg-cream">
+      {/* Mobile utility bar — the sidebar carries this on desktop */}
+      <div className="lg:hidden sticky top-0 z-30 bg-cream/95 backdrop-blur-sm border-b border-line px-4 py-2 flex items-center justify-between">
         <span className="font-display text-lg font-semibold text-ink">Prövningar</span>
-        <div className="flex items-center gap-2">
-          <div className="flex bg-sand rounded p-0.5">
-            <button
-              onClick={() => setView('list')}
-              aria-label="Listvy"
-              className={`w-8 h-8 rounded flex items-center justify-center transition-colors ${
-                view === 'list' ? 'bg-surface shadow-sm text-ink' : 'text-ink-soft'
-              }`}
-            >
-              <List size={16} />
-            </button>
-            <button
-              onClick={() => setView('map')}
-              aria-label="Kartvy"
-              className={`w-8 h-8 rounded flex items-center justify-center transition-colors ${
-                view === 'map' ? 'bg-surface shadow-sm text-ink' : 'text-ink-soft'
-              }`}
-            >
-              <MapIcon size={16} />
-            </button>
-          </div>
-          <button
-            onClick={() => setShowingFaq(true)}
-            aria-label="Vanliga frågor"
-            className="w-8 h-8 rounded bg-sand flex items-center justify-center active:scale-90 hover:bg-line transition-colors"
-          >
-            <HelpCircle size={16} className="text-ink-soft" />
-          </button>
-        </div>
+        <button
+          onClick={() => setShowingFaq(true)}
+          aria-label="Vanliga frågor"
+          className="w-9 h-9 rounded-xl bg-violet-tint flex items-center justify-center"
+        >
+          <HelpCircle size={17} className="text-violet-ink" />
+        </button>
       </div>
 
-      {view === 'map' ? (
-        <div className="flex-1 min-h-0 relative" style={{ height: 'calc(100vh - 44px)' }}>
-          <Suspense fallback={<MapFallback />}>
-            <MapView exams={filtered} className="w-full h-full" />
-          </Suspense>
-          {/* The same colour key as the list, floated over the map — without it
-              a wall of coloured pins is decoration rather than information.
-              z-20 clears Leaflet's own panes, which number in the 400s inside
-              the map's isolated stacking context. */}
-          <div className="absolute top-3 left-3 right-3 z-20 bg-cream/95 backdrop-blur-sm border border-line rounded-md px-3 py-2 shadow-md">
-            <StatusFilterBar exams={exams} />
-          </div>
+      <div className="max-w-screen-xl mx-auto w-full px-4 lg:px-8 py-6 lg:py-8 flex flex-col gap-5 animate-rise-in pb-28 lg:pb-10">
+        <div>
+          <h1 className="font-hero-xl text-[38px] sm:text-[48px] lg:text-[56px] leading-none text-ink">
+            Vilket ämne ska upp?
+          </h1>
+          <p className="font-display italic text-[17px] sm:text-[20px] text-ink-soft mt-2">
+            {exams.length} prövningar i hela Sverige — välj ett ämne och se när nästa omgång öppnar.
+          </p>
         </div>
-      ) : (
-        <>
-          {/* HERO */}
-          {/* Sökfältet är det folk kommer hit för att göra, så det är det som
-              får plats och färg. Tidigare satt rubriken på tre rader och
-              ingressen på fem innan man ens såg fältet — på en 390×844-skärm
-              låg det under vikningen, under en text som ingen läser två
-              gånger. Ingressen är en rad nu, och fältet ligger mitt i bilden
-              med en egen ram i varumärkesfärgen. */}
-          <section className="max-w-screen-xl mx-auto w-full px-4 lg:px-8 pt-5 sm:pt-8 lg:pt-12 pb-5 sm:pb-6 lg:pb-8 grid grid-cols-1 lg:grid-cols-[minmax(320px,5fr)_7fr] gap-8 lg:gap-10 items-center">
-            <div className="text-center lg:text-left">
-              <h6 className="text-brand-700 text-xs font-semibold uppercase tracking-wider mb-2 sm:mb-3">
-                {eyebrow}
-              </h6>
-              <h1 className="font-display text-3xl sm:text-4xl lg:text-6xl font-semibold text-ink leading-tight -ml-px mb-2.5 sm:mb-3 text-balance lg:text-wrap lg:max-w-[14ch] mx-auto lg:mx-0">
-                Varje prövning i Sverige. På en karta.
-              </h1>
-              <p className="text-sm sm:text-base lg:text-lg text-ink-soft mb-5 sm:mb-6">
-                {exams.length} kontrollerade tillfällen ·{' '}
-                <span className="text-trust-700 font-semibold">
-                  {stats.openNow} går att boka nu
-                </span>
-              </p>
 
-              {/* Sökfältet. Ramen är alltid synlig och skärps när fältet har
-                  fokus — en grå ruta i en grå spalt läser som en etikett, inte
-                  som något man skriver i. */}
-              <div className="max-w-[560px] mx-auto lg:mx-0">
-                <div className="flex items-center gap-2">
-                  <div className="focus-ring-host flex-1 flex items-center gap-3 bg-surface rounded-lg px-4 py-3.5 border-2 border-brand-200 shadow-lg shadow-brand-100/60 focus-within:border-brand-500 focus-within:ring-4 focus-within:ring-brand-100 focus-within:shadow-brand-200/70 transition-colors min-w-0">
-                    <Search size={20} className="text-brand-600 flex-shrink-0" strokeWidth={2.4} />
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Sök stad, ämne eller skola"
-                      aria-label="Sök bland prövningar"
-                      enterKeyHint="search"
-                      autoComplete="off"
-                      spellCheck={false}
-                      className="flex-1 bg-transparent text-base text-ink placeholder-ink-faint outline-none min-w-0"
-                    />
-                    {searchQuery && (
-                      <button
-                        onClick={() => setSearchQuery('')}
-                        aria-label="Rensa sökningen"
-                        className="flex-shrink-0 w-7 h-7 rounded-full bg-sand hover:bg-line flex items-center justify-center transition-colors"
-                      >
-                        <X size={15} className="text-ink-soft" />
-                      </button>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => setShowFilter(true)}
-                    aria-label="Filter"
-                    className={`relative flex-shrink-0 w-[58px] h-[58px] rounded-lg flex items-center justify-center transition-colors ${
-                      hasActiveFilters
-                        ? 'bg-brand-500 text-white shadow-lg shadow-brand-200'
-                        : 'bg-surface border-2 border-line text-ink-soft hover:border-brand-300 hover:text-brand-700'
-                    }`}
-                  >
-                    <SlidersHorizontal size={20} />
-                    {hasActiveFilters && (
-                      <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-accent2-500 border-2 border-cream" />
-                    )}
-                  </button>
-                </div>
-                {/* Träffräknaren står bara när man sökt: den svarar på "gav det
-                    något?" utan att man behöver skrolla ner till listan. */}
-                {searchQuery && (
-                  <p className="text-sm text-ink-soft mt-2.5 text-center lg:text-left">
-                    {filtered.length === 0 ? (
-                      <span className="text-ink">
-                        Inga träffar för ”{searchQuery}” — prova ett kortare ord.
-                      </span>
-                    ) : (
-                      <>
-                        <span className="font-bold text-ink">{filtered.length}</span> träffar för ”
-                        {searchQuery}”
-                      </>
-                    )}
-                  </p>
-                )}
+        {/* Search. The teal frame is always on, not only at focus: a grey box
+            in a grey column reads as a label, not as something you type in. */}
+        <div className="focus-ring-host flex items-center gap-3 bg-brand-50 border-2 border-brand-500 rounded-[26px] pl-5 pr-2 py-1.5">
+          <Search size={19} strokeWidth={2.2} className="text-brand-500 flex-shrink-0" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Sök ämne, kurs eller stad"
+            aria-label="Sök bland prövningar"
+            enterKeyHint="search"
+            autoComplete="off"
+            spellCheck={false}
+            className="flex-1 min-w-0 bg-transparent border-0 outline-none text-[16.5px] font-semibold text-brand-700 placeholder-brand-400 py-3.5"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              aria-label="Rensa sökningen"
+              className="w-8 h-8 rounded-full hover:bg-brand-100 flex items-center justify-center flex-shrink-0"
+            >
+              <X size={15} className="text-brand-700" />
+            </button>
+          )}
+          <button
+            onClick={() => setShowFilter(true)}
+            aria-label="Fler filter"
+            className={`w-10 h-10 rounded-[18px] flex items-center justify-center flex-shrink-0 transition-colors ${
+              hasActiveFilters ? 'bg-accent2-500 text-white' : 'text-brand-700 hover:bg-brand-100'
+            }`}
+          >
+            <SlidersHorizontal size={17} />
+          </button>
+          <span className="bg-brand-500 text-white font-bold text-[13.5px] px-[18px] py-3 rounded-[20px] whitespace-nowrap tnum">
+            {filtered.length} träffar
+          </span>
+        </div>
+
+        {/* Subject chips */}
+        <div className="flex gap-2.5 flex-wrap">
+          {SUBJECT_CHIPS.map((label) => {
+            const isAll = label === 'Alla ämnen';
+            const selected = isAll ? !filterSubject : filterSubject === label;
+            return (
+              <button
+                key={label}
+                onClick={() => setFilterSubject(isAll ? '' : label)}
+                aria-pressed={selected}
+                className={`rounded-full px-5 py-3 text-[14px] font-bold transition-transform hover:-translate-y-0.5 ${
+                  selected
+                    ? 'bg-ink text-cream'
+                    : 'bg-surface text-ink-soft border-[1.5px] border-line hover:border-ink'
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Colour key, doubling as the status filter */}
+        <StatusFilterBar exams={exams} />
+
+        {/* Map card */}
+        <div className="bg-surface border-[1.5px] border-line rounded-[32px] overflow-hidden">
+          <div className="flex items-center justify-between gap-3.5 px-[22px] py-[18px] flex-wrap">
+            <div className="flex items-center gap-3">
+              <span className="w-[38px] h-[38px] rounded-[14px] bg-brand-50 flex items-center justify-center flex-shrink-0">
+                <MapPin size={18} strokeWidth={2.1} className="text-brand-500" />
+              </span>
+              <div>
+                <p className="font-display font-semibold text-[19px] text-ink">Nära dig</p>
+                <p className="text-[13px] text-ink-soft">
+                  {cityCount} {cityCount === 1 ? 'ort' : 'orter'} · {openNow} går att boka nu
+                </p>
               </div>
             </div>
-
-            <div>
-              <div className="flex flex-wrap justify-center lg:justify-start gap-2 mb-3">
+            <div className="flex gap-2 flex-wrap items-center">
+              <button
+                onClick={toggleNear}
+                disabled={locationStatus === 'pending'}
+                aria-pressed={near}
+                className={`inline-flex items-center gap-2 rounded-full px-[17px] py-2.5 text-[13px] font-bold transition-transform hover:-translate-y-0.5 disabled:opacity-60 ${
+                  near ? 'bg-trust-500 text-white' : 'bg-trust-50 text-trust-700'
+                }`}
+              >
+                <Navigation size={15} strokeWidth={2.2} />
+                Nära mig
+              </button>
+              {CITY_CHIPS.map((c) => (
                 <button
-                  onClick={() => setSearchQuery('')}
-                  className={`text-xs px-2.5 py-1 rounded-sm border transition-colors ${
-                    !searchQuery
-                      ? 'bg-brand-100 text-brand-800 border-brand-200'
-                      : 'border-line text-ink-soft hover:bg-sand'
+                  key={c}
+                  onClick={() => setCity(c)}
+                  aria-pressed={city === c}
+                  className={`rounded-full px-4 py-2.5 text-[13px] font-bold transition-transform hover:-translate-y-0.5 ${
+                    city === c ? 'bg-brand-500 text-white' : 'bg-cream text-ink-soft hover:bg-sand'
                   }`}
                 >
-                  Alla ämnen
+                  {c}
                 </button>
-                {stats.openNow > 0 && (
-                  <button
-                    onClick={() => setFilterOpenOnly(!filterOpenOnly)}
-                    aria-pressed={filterOpenOnly}
-                    className={`text-xs px-2.5 py-1 rounded-sm border transition-colors inline-flex items-center gap-1.5 ${
-                      filterOpenOnly
-                        ? 'bg-trust-500 text-white border-trust-500'
-                        : 'border-trust-100 bg-trust-50 text-trust-700 hover:bg-trust-100'
-                    }`}
-                  >
-                    <span className="relative flex h-1.5 w-1.5">
-                      <span
-                        className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${filterOpenOnly ? 'bg-white' : 'bg-trust-500'}`}
-                      />
-                      <span
-                        className={`relative inline-flex rounded-full h-1.5 w-1.5 ${filterOpenOnly ? 'bg-white' : 'bg-trust-600'}`}
-                      />
-                    </span>
-                    Kan bokas nu ({stats.openNow})
-                  </button>
-                )}
-                {FEATURED_SUBJECTS.map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => setSearchQuery(s)}
-                    className={`text-xs px-2.5 py-1 rounded-sm border transition-colors ${
-                      searchQuery === s
-                        ? 'bg-brand-100 text-brand-800 border-brand-200'
-                        : 'border-line text-ink-soft hover:bg-sand'
-                    }`}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-              <div className="relative">
-                <div className="h-[340px] lg:h-[420px] rounded shadow-lg overflow-hidden">
-                  <Suspense fallback={<MapFallback />}>
-                    <HeroMap
-                      exams={filtered}
-                      onCityClick={setSearchQuery}
-                      className="w-full h-full"
-                    />
-                  </Suspense>
-                </div>
-                {/* The caption doubles as the map's key: the circles are green
-                    where something can be booked today and grey where nothing
-                    can, and this is the sentence that says so. */}
-                <div className="absolute bottom-3 left-3 right-3 z-10 bg-cream border border-line text-xs font-semibold px-2.5 py-1.5 rounded shadow-sm flex items-center gap-1.5">
-                  <span className="relative flex h-1.5 w-1.5 flex-shrink-0">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-trust-500 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-trust-600" />
-                  </span>
-                  <span className="text-trust-700">Grön = går att boka nu</span>
-                  <span className="text-ink-faint font-medium">· grå = inget öppet där</span>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* STATS */}
-          <section className="max-w-screen-xl mx-auto w-full px-4 lg:px-8 py-6 flex gap-8 lg:gap-12 flex-wrap border-t border-line">
-            <div>
-              <h2 className="font-display text-3xl font-semibold text-brand-700 mb-0.5">
-                {stats.cities}+
-              </h2>
-              <p className="text-xs text-ink-faint">städer på kartan, från Kiruna till Ystad</p>
-            </div>
-            <div>
-              <h2 className="font-display text-3xl font-semibold text-brand-700 mb-0.5">
-                {exams.length}
-              </h2>
-              <p className="text-xs text-ink-faint">verifierade prövningstillfällen</p>
-            </div>
-            <div>
-              <h2 className="font-display text-3xl font-semibold text-brand-700 mb-0.5">Live</h2>
-              <p className="text-xs text-ink-faint">status uppdateras varje minut</p>
-            </div>
-          </section>
-
-          {/* HOW IT WORKS */}
-          <section className="max-w-screen-xl mx-auto w-full px-4 lg:px-8 py-8 border-t border-line">
-            <h6 className="text-brand-700 text-xs font-semibold uppercase tracking-wider mb-2">
-              Från karta till anmälan
-            </h6>
-            <h2 className="font-display text-2xl font-semibold text-ink mb-6">Hur det fungerar</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-10">
-              {STEPS.map((step) => (
-                <div key={step.n}>
-                  <div className="font-display text-5xl font-semibold text-brand-700 leading-none mb-2 opacity-90">
-                    {step.n}
-                  </div>
-                  <h4 className="font-display text-base font-semibold text-ink mb-1">
-                    {step.title}
-                  </h4>
-                  <p className="text-sm text-ink-soft">{step.body}</p>
-                </div>
               ))}
             </div>
-          </section>
+          </div>
+          <div className="h-[300px] bg-sand">
+            <Suspense fallback={<MapFallback />}>
+              <MapView exams={filtered} className="w-full h-full" />
+            </Suspense>
+          </div>
+        </div>
 
-          {/* RESULTS */}
-          <section className="max-w-screen-xl mx-auto w-full px-4 lg:px-8 py-8 border-t border-line pb-28 lg:pb-16">
-            {filtered.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-16 px-8 text-center">
-                <div className="w-16 h-16 bg-sand rounded flex items-center justify-center mb-4">
-                  <Search size={28} className="text-ink-faint" />
-                </div>
-                <h3 className="text-ink font-display font-semibold mb-1">
-                  Inga prövningar hittades
-                </h3>
-                <p className="text-ink-soft text-sm">
-                  Prova att ändra dina filter eller söka på något annat.
-                </p>
-                {(hasActiveFilters || searchQuery) && (
-                  <button
-                    onClick={clearFilters}
-                    className="mt-4 inline-flex items-center gap-1.5 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold px-4 py-2.5 rounded transition-colors"
-                  >
-                    <X size={15} /> Rensa alla filter
-                  </button>
-                )}
-              </div>
-            ) : (
-              <>
-                {!userLocation && locationStatus !== 'denied' && (
-                  <button
-                    onClick={requestLocation}
-                    disabled={locationStatus === 'pending'}
-                    className="w-full flex items-center gap-3 bg-brand-50 border border-brand-100 rounded p-4 text-left active:scale-98 transition-transform mb-4"
-                  >
-                    <div className="w-11 h-11 bg-brand-500 rounded flex items-center justify-center flex-shrink-0 shadow-sm">
-                      <Navigation size={20} className="text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-ink text-sm font-bold">Hitta prövningar nära dig</p>
-                      <p className="text-ink-soft text-xs">
-                        Aktivera plats för att se avstånd och sortera närmast först
-                      </p>
-                    </div>
-                  </button>
-                )}
-
-                {/* The colour key, before the list it explains */}
-                <div className="mb-3">
-                  <StatusFilterBar exams={exams} />
-                </div>
-
-                <div className="flex items-center gap-2 text-sm text-ink-soft mb-4">
-                  <TrendingUp size={15} className="text-brand-500" />
-                  <span className="font-medium">{filtered.length} prövningar</span>
-                  {hasActiveFilters && (
-                    <button
-                      onClick={clearFilters}
-                      className="text-brand-700 font-semibold hover:underline"
-                    >
-                      · Filter aktiva — rensa
-                    </button>
-                  )}
-                  {filterSortBy === 'distance' && userLocation && (
-                    <span className="text-brand-700 font-semibold">· Närmast först</span>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {filtered.map((exam) => (
-                    <ExamCard key={exam.id} exam={exam} />
-                  ))}
-                </div>
-              </>
-            )}
-          </section>
-        </>
-      )}
+        {/* Cards */}
+        {filtered.length === 0 ? (
+          <div className="bg-surface border-[1.5px] border-dashed border-line rounded-[26px] p-9 text-center">
+            <p className="font-display italic text-[18px] text-ink-soft">
+              Inga prövningar matchar det här.
+            </p>
+            <button
+              onClick={clearFilters}
+              className="mt-4 inline-flex items-center gap-2 bg-ink text-cream text-[14px] font-bold px-5 py-3 rounded-[20px]"
+            >
+              <X size={15} /> Rensa filtren
+            </button>
+          </div>
+        ) : (
+          <div className="grid gap-3.5 [grid-template-columns:repeat(auto-fill,minmax(280px,1fr))]">
+            {filtered.map((exam) => (
+              <ExamCard key={exam.id} exam={exam} showDistance={near} />
+            ))}
+          </div>
+        )}
+      </div>
 
       {showFilter && <FilterSheet onClose={() => setShowFilter(false)} />}
     </div>

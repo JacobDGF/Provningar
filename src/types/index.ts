@@ -143,6 +143,12 @@ export interface User {
   completedExams: CompletedExam[];
   joinedAt: string;
   location: string;
+  /**
+   * What the user is studying towards, in their own words ("Teknisk fysik,
+   * LTH"). Empty until they write one — the profile prompts rather than
+   * inventing a goal on their behalf.
+   */
+  goal?: string;
 }
 
 export interface CompletedExam {
