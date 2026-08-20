@@ -22,6 +22,9 @@ interface AppState {
   // View history
   viewedExams: ViewedExam[];
   clearHistory: () => void;
+  /** Drop one row from "Nyligen visade" — the list is a convenience, and a
+      convenience you can't tidy becomes a nag. */
+  removeViewed: (examId: string) => void;
 
   // Filters
   searchQuery: string;
@@ -140,6 +143,8 @@ export const useStore = create<AppState>()(
 
       viewedExams: [],
       clearHistory: () => set({ viewedExams: [] }),
+      removeViewed: (examId) =>
+        set((s) => ({ viewedExams: s.viewedExams.filter((v) => v.examId !== examId) })),
 
       searchQuery: '',
       setSearchQuery: (q) => set({ searchQuery: q }),
