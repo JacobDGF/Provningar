@@ -13,13 +13,15 @@ import {
   Pencil,
   Plus,
 } from 'lucide-react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useStore } from '../store/useStore';
 import { Avatar } from '../components/Avatar';
 import { useEscapeKey } from '../hooks/useEscapeKey';
 import { fileToAvatarDataUrl, initialsOf } from '../lib/avatar';
 import { CompletedExamSheet, CompletedExamDraft } from '../components/CompletedExamSheet';
 import { summarizeGrades, gradeBadgeClass } from '../lib/grades';
+import { summarizeSavedStatus } from '../lib/savedStatus';
+import { Exam } from '../types';
 
 function SettingRow({
   icon,
@@ -55,6 +57,7 @@ export function Profile() {
     currentUser,
     updateUser,
     savedExams,
+    exams,
     setActiveTab,
     setShowingFaq,
     updateCompletedExam,
@@ -76,6 +79,13 @@ export function Profile() {
 
   const grades = summarizeGrades(currentUser.completedExams);
   const completed = currentUser.completedExams;
+
+  const savedStatus = useMemo(() => {
+    const resolved = savedExams
+      .map((se) => exams.find((e) => e.id === se.examId))
+      .filter((e): e is Exam => !!e);
+    return summarizeSavedStatus(resolved);
+  }, [savedExams, exams]);
 
   const startEdit = (field: NonNullable<typeof editing>, value: string) => {
     setEditing(field);
@@ -238,6 +248,68 @@ export function Profile() {
             </button>
           </div>
         </div>
+
+        {/* Läget för dina sparade — the first question the profile answers:
+            of the rounds you saved, how many can you still act on? One bar in
+            the status colours, a row per colour, so five saved dates read as
+            one glance instead of five things to remember. */}
+        <button
+          onClick={() => setActiveTab('exams')}
+          className="bg-surface border-[1.5px] border-line rounded-[32px] p-6 text-left transition-[transform,border-color] duration-150 hover:border-ink hover:-translate-y-0.5"
+        >
+          <div className="flex items-baseline justify-between gap-4 flex-wrap">
+            <p className="text-[10.5px] font-bold uppercase tracking-[.1em] text-ink-soft">
+              Läget för dina sparade
+            </p>
+            <span className="text-[13px] font-bold text-ink-soft">{savedStatus.total} sparade</span>
+          </div>
+          {savedStatus.total === 0 ? (
+            <p className="font-display italic text-[18px] text-ink-soft mt-2">
+              Inget sparat än — bokmärk en prövning så syns läget här.
+            </p>
+          ) : (
+            <>
+              <p className="font-hero text-[30px] sm:text-[38px] leading-[1.05] mt-1 text-ink">
+                {savedStatus.actionable > 0 ? (
+                  <>
+                    <span className="text-trust-600 tnum">{savedStatus.actionable}</span> går
+                    fortfarande att boka
+                  </>
+                ) : (
+                  'Inga går att boka just nu'
+                )}
+              </p>
+              {/* The bar: each colour's width is its share of the saved list. */}
+              <div className="flex gap-1 mt-[18px] h-3 rounded-full overflow-hidden">
+                {savedStatus.buckets.map((b) => (
+                  <span
+                    key={b.tone.key}
+                    className={`${b.tone.rail} h-full`}
+                    style={{ flexGrow: b.count }}
+                    aria-hidden="true"
+                  />
+                ))}
+              </div>
+              <div className="flex flex-col gap-2 mt-4">
+                {savedStatus.buckets.map((b) => (
+                  <div key={b.tone.key} className="flex items-center gap-3">
+                    <span
+                      className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${b.tone.dot}`}
+                      aria-hidden="true"
+                    />
+                    <span className="text-[14px] font-bold text-ink">{b.tone.shortLabel}</span>
+                    <span className="text-[13px] text-ink-soft flex-1 min-w-0 truncate">
+                      {b.tone.meaning}
+                    </span>
+                    <span className="text-[14px] font-bold text-ink-soft tnum flex-shrink-0">
+                      {b.count}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </button>
 
         {/* Goal */}
         <div className="bg-surface border-[1.5px] border-line rounded-[32px] p-6">
