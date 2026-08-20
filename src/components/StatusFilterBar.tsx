@@ -6,6 +6,9 @@ interface StatusFilterBarProps {
   /** The listings the counts are drawn from — the unfiltered set, so the
       numbers stay put as the user clicks between colours. */
   exams: Exam[];
+  /** Row heading, rendered by the bar itself so it disappears along with the
+      chips when there is only one colour to show. */
+  label?: string;
 }
 
 /**
@@ -19,14 +22,14 @@ interface StatusFilterBarProps {
  * Colours with nothing in them are dropped rather than greyed: an empty
  * "Fullbokat" chip is a promise of results that aren't there.
  */
-export function StatusFilterBar({ exams }: StatusFilterBarProps) {
+export function StatusFilterBar({ exams, label }: StatusFilterBarProps) {
   const { filterStatus, setFilterStatus } = useStore();
   const counts = countByStatus(exams);
   const visible = STATUS_ORDER.filter((key) => counts[key] > 0);
 
   if (visible.length < 2) return null;
 
-  return (
+  const bar = (
     <div
       className="flex gap-2 overflow-x-auto scrollbar-hide pb-1"
       role="group"
@@ -35,10 +38,10 @@ export function StatusFilterBar({ exams }: StatusFilterBarProps) {
       <button
         onClick={() => setFilterStatus('')}
         aria-pressed={filterStatus === ''}
-        className={`flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors ${
+        className={`flex-shrink-0 text-[13.5px] font-bold px-[18px] py-2.5 rounded-full border-[1.5px] transition-transform hover:-translate-y-0.5 ${
           filterStatus === ''
-            ? 'bg-ink text-white border-ink'
-            : 'bg-surface text-ink-soft border-line hover:bg-sand'
+            ? 'bg-ink text-cream border-ink'
+            : 'bg-cream text-ink-soft border-line hover:border-ink'
         }`}
       >
         Alla ({exams.length})
@@ -52,7 +55,7 @@ export function StatusFilterBar({ exams }: StatusFilterBarProps) {
             onClick={() => setFilterStatus(active ? '' : key)}
             aria-pressed={active}
             title={tone.meaning}
-            className={`flex-shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full transition-colors ${
+            className={`flex-shrink-0 inline-flex items-center gap-1.5 text-[13.5px] font-bold px-[18px] py-2.5 rounded-full transition-transform hover:-translate-y-0.5 ${
               active ? tone.chip : tone.softChip
             }`}
           >
@@ -63,6 +66,15 @@ export function StatusFilterBar({ exams }: StatusFilterBarProps) {
           </button>
         );
       })}
+    </div>
+  );
+
+  if (!label) return bar;
+
+  return (
+    <div className="flex flex-col gap-2.5">
+      <p className="text-[11.5px] font-bold uppercase tracking-[.09em] text-ink-faint">{label}</p>
+      {bar}
     </div>
   );
 }
