@@ -144,20 +144,6 @@ export function ExamDetail() {
   const gmapsView = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
   const gmapsDir = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
 
-  /**
-   * The reminder is the .ics — the app has no server and cannot push.
-   *
-   * It has to name the next date that is still ahead. Taking applicationStart
-   * unconditionally offered "Påminn mig 10 aug." on a round that opened on the
-   * 10th and closes tonight, which is a reminder to do something yesterday.
-   */
-  const today = new Date().toISOString().slice(0, 10);
-  const reminderDate = nextPeriod.confirmed
-    ? [nextPeriod.applicationStart, nextPeriod.applicationEnd, nextPeriod.examWindowStart].find(
-        (d): d is string => Boolean(d) && d! >= today,
-      )
-    : undefined;
-
   const share = async () => {
     const payload = {
       title: `${exam.course} – ${exam.schoolName}`,
@@ -363,24 +349,11 @@ export function ExamDetail() {
               )}
             </div>
 
-            {/* Reminder + provenance */}
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              {calendarEvents.length > 0 && !passed && action.live && reminderDate ? (
-                <button
-                  onClick={() => downloadCalendar(exam)}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full border border-line bg-surface hover:bg-sand text-ink-soft text-[14px] font-bold transition-colors"
-                >
-                  <CalendarPlus size={16} />
-                  Påminn mig {formatShort(reminderDate)}
-                </button>
-              ) : (
-                <span />
-              )}
-              <span className="inline-flex items-center gap-1.5 text-trust-700 text-[12.5px] font-medium">
-                <ShieldCheck size={14} className="flex-shrink-0" />
-                Kontrollerat mot {exam.provider} {formatShort(exam.verifiedAt)}
-              </span>
-            </div>
+            {/* Where the facts came from */}
+            <p className="inline-flex items-center gap-1.5 text-trust-700 text-[12.5px] font-medium px-1">
+              <ShieldCheck size={14} className="flex-shrink-0" />
+              Kontrollerat mot {exam.provider} {formatShort(exam.verifiedAt)}
+            </p>
 
             {/* Tabs */}
             <div className="grid grid-cols-3 gap-2">

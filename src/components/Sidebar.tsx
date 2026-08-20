@@ -27,10 +27,6 @@ export function Sidebar() {
     [exams, tick],
   );
 
-  /** Saved prövningar the user has marked as anmäld, godkänd or genomförd —
-      the ones where they've actually done something. */
-  const registered = savedExams.filter((se) => se.status !== 'interested').length;
-
   /** What each tab has waiting, or null when a badge would just say "0". */
   const badgeFor = (id: string): number | null => {
     const n =
@@ -149,32 +145,6 @@ export function Sidebar() {
       </button>
 
       <div className="flex-1" />
-
-      {/* Din plan. Counts only what the user has actually told the app: how
-          many of the prövningar they saved they have marked as anmälda. An
-          invented "2 av 3" would be the one number here nobody could trust. */}
-      {savedExams.length > 0 && (
-        <button
-          onClick={() => setActiveTab('exams')}
-          className="w-full text-left rounded-2xl border border-line bg-cream p-3.5 hover:bg-sand transition-colors"
-        >
-          <p className="text-[10.5px] font-bold uppercase tracking-wider text-ink-soft">Din plan</p>
-          <p className="flex items-baseline gap-1.5 mt-1">
-            <span className="font-hero text-[34px] leading-none text-amber-accent">
-              {registered}
-            </span>
-            <span className="text-[13px] text-ink-soft">av {savedExams.length} anmälda</span>
-          </p>
-          <span className="flex gap-1 mt-2.5" aria-hidden="true">
-            {savedExams.map((se, i) => (
-              <span
-                key={se.examId}
-                className={`h-1.5 flex-1 rounded-full ${i < registered ? 'bg-trust-500' : 'bg-line'}`}
-              />
-            ))}
-          </span>
-        </button>
-      )}
 
       {/* FAQ */}
       <button
