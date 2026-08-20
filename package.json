@@ -15,7 +15,8 @@
     "test:watch": "vitest",
     "typecheck": "tsc -b",
     "check:links": "node scripts/check-links.mjs",
-    "check:dates": "node scripts/check-dates.mjs"
+    "check:dates": "node scripts/check-dates.mjs",
+    "check:forms": "node scripts/check-forms.mjs"
   },
   "repository": {
     "type": "git",

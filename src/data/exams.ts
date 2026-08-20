@@ -487,16 +487,21 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: FREE_IF_PRIOR_F,
     nextPeriod: {
-      // JENSEN publishes an opening time, not a closing date: the form shuts
-      // the moment the course fills, and there is no reserve list. Leaving
-      // applicationEnd unset is the honest encoding — see examStatus.ts, which
-      // treats a half-open window as open once the start has passed.
+      // Checked 2026-08-20: JENSEN's Typeform now answers with
+      // `"isFormClosed":true` and the close screen "Formuläret är just nu
+      // stängt … vi redan har fått in det maximala antalet ansökningar för
+      // denna prövningsperiod". Their own page states the rule — "formuläret
+      // kommer automatiskt att stängas när vi har uppnått max antal
+      // ansökningar", ingen reservlista — so the closed form *is* JENSEN
+      // saying fullbokat. Leaving this as a half-open window kept the card
+      // green for a booking that lasted five minutes on 11 August.
       label:
-        'Anmälan öppnade 11 augusti 2026 kl. 11:00 och stänger så snart kursen är fullbokad — JENSEN har ingen reservlista. Prövningen genomförs 7–18 september eller 12–23 oktober; exakt datum meddelas när anmälan är bekräftad.',
+        'Anmälan öppnade 11 augusti 2026 kl. 11:00 och är redan stängd — formuläret stänger automatiskt när max antal ansökningar nåtts, och JENSEN har ingen reservlista. Höstens prövningar genomförs 7–18 september eller 12–23 oktober för dem som kom in. Nästa möjlighet att anmäla sig är i början av 2027.',
       applicationStart: '2026-08-11',
       examWindowStart: '2026-09-07',
       examWindowEnd: '2026-10-23',
       confirmed: true,
+      full: true,
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
@@ -505,7 +510,7 @@ export const EXAMS: Exam[] = [
     description:
       'JENSEN vuxenutbildning erbjuder prövning i Matematik 2b i Stockholm. Missar du höstens omgång är nästa tillfälle i början av 2027.',
     tags: ['matematik', 'stockholm', 'jensen'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: FULL_SWEEP_VERIFIED,
   },
   {
     id: 'jensen-fysik1a',
@@ -523,16 +528,21 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: FREE_IF_PRIOR_F + ' Laborativa moment genomförs på plats, inte på distans.',
     nextPeriod: {
-      // JENSEN publishes an opening time, not a closing date: the form shuts
-      // the moment the course fills, and there is no reserve list. Leaving
-      // applicationEnd unset is the honest encoding — see examStatus.ts, which
-      // treats a half-open window as open once the start has passed.
+      // Checked 2026-08-20: JENSEN's Typeform now answers with
+      // `"isFormClosed":true` and the close screen "Formuläret är just nu
+      // stängt … vi redan har fått in det maximala antalet ansökningar för
+      // denna prövningsperiod". Their own page states the rule — "formuläret
+      // kommer automatiskt att stängas när vi har uppnått max antal
+      // ansökningar", ingen reservlista — so the closed form *is* JENSEN
+      // saying fullbokat. Leaving this as a half-open window kept the card
+      // green for a booking that lasted five minutes on 11 August.
       label:
-        'Anmälan öppnade 11 augusti 2026 kl. 11:00 och stänger så snart kursen är fullbokad — JENSEN har ingen reservlista. Prövningen genomförs 7–18 september eller 12–23 oktober; exakt datum meddelas när anmälan är bekräftad.',
+        'Anmälan öppnade 11 augusti 2026 kl. 11:00 och är redan stängd — formuläret stänger automatiskt när max antal ansökningar nåtts, och JENSEN har ingen reservlista. Höstens prövningar genomförs 7–18 september eller 12–23 oktober för dem som kom in. Nästa möjlighet att anmäla sig är i början av 2027.',
       applicationStart: '2026-08-11',
       examWindowStart: '2026-09-07',
       examWindowEnd: '2026-10-23',
       confirmed: true,
+      full: true,
     },
     components: COMPONENTS_FYSIK,
     studyTips: TIPS_FYSIK,
@@ -541,7 +551,7 @@ export const EXAMS: Exam[] = [
     description:
       'JENSEN vuxenutbildning erbjuder prövning i Fysik 1a i Stockholm, med laborativa moment på plats.',
     tags: ['fysik', 'stockholm', 'jensen'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: FULL_SWEEP_VERIFIED,
   },
   {
     id: 'jensen-kemi1',
@@ -559,16 +569,21 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: FREE_IF_PRIOR_F,
     nextPeriod: {
-      // JENSEN publishes an opening time, not a closing date: the form shuts
-      // the moment the course fills, and there is no reserve list. Leaving
-      // applicationEnd unset is the honest encoding — see examStatus.ts, which
-      // treats a half-open window as open once the start has passed.
+      // Checked 2026-08-20: JENSEN's Typeform now answers with
+      // `"isFormClosed":true` and the close screen "Formuläret är just nu
+      // stängt … vi redan har fått in det maximala antalet ansökningar för
+      // denna prövningsperiod". Their own page states the rule — "formuläret
+      // kommer automatiskt att stängas när vi har uppnått max antal
+      // ansökningar", ingen reservlista — so the closed form *is* JENSEN
+      // saying fullbokat. Leaving this as a half-open window kept the card
+      // green for a booking that lasted five minutes on 11 August.
       label:
-        'Anmälan öppnade 11 augusti 2026 kl. 11:00 och stänger så snart kursen är fullbokad — JENSEN har ingen reservlista. Prövningen genomförs 7–18 september eller 12–23 oktober; exakt datum meddelas när anmälan är bekräftad.',
+        'Anmälan öppnade 11 augusti 2026 kl. 11:00 och är redan stängd — formuläret stänger automatiskt när max antal ansökningar nåtts, och JENSEN har ingen reservlista. Höstens prövningar genomförs 7–18 september eller 12–23 oktober för dem som kom in. Nästa möjlighet att anmäla sig är i början av 2027.',
       applicationStart: '2026-08-11',
       examWindowStart: '2026-09-07',
       examWindowEnd: '2026-10-23',
       confirmed: true,
+      full: true,
     },
     components: COMPONENTS_KEMI,
     studyTips: TIPS_KEMI,
@@ -576,7 +591,7 @@ export const EXAMS: Exam[] = [
     infoUrl: 'https://www.jensenkomvux.se/provning',
     description: 'JENSEN vuxenutbildning erbjuder prövning i Kemi 1 i Stockholm.',
     tags: ['kemi', 'stockholm', 'jensen'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: FULL_SWEEP_VERIFIED,
   },
   {
     id: 'iris-upplandsvasby-fysik1a',

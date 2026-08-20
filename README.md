@@ -140,6 +140,36 @@ upptäckas för hand, så listan hålls så kort som bevisen tillåter. Alvis oc
 `www.falun.se` låg där på en 503 som visade sig vara vår egen rate-limiting —
 de kontrolleras på riktigt igen sedan omförsöket kom på plats.
 
+### Kontrollera formulären
+
+```sh
+npm run check:forms          # sonderar bokningslänkarna
+npm run check:forms -- --all # visar även de som svarade som öppna
+```
+
+Den tredje sortens förfall, efter döda länkar och gångna datum, och den
+svåraste att se utifrån: länken lever, datumen ligger framåt, kortet är grönt —
+och formuläret på andra sidan svarar _"Formuläret är just nu stängt. Antingen
+har det inte öppnat eller så har vi redan har fått in det maximala antalet
+ansökningar för denna prövningsperiod."_
+
+Det är inget undantagsfall. Flera anordnare kör först-till-kvarn där platserna
+går på minuter: JENSEN öppnar ett Typeform kl. 11:00 som stänger sig självt vid
+taket, Iris och Medlearn säljer platser som en webbshopsprodukt som slår om till
+"slut i lager". Ingenting på deras informationssidor ändras när det händer, så
+den enda plats där sanningen finns är bokningssidan — precis den sida datan
+aldrig läser om.
+
+Skriptet sonderar bara de listningar appen säger går att boka **i dag**. En
+omgång som ännu inte öppnat är den viktiga undantagsregeln: en webbshopsprodukt
+som släpps på anmälningsdagen står som "slut i lager" varje dag dessförinnan,
+och att flagga det vore att rapportera appens egen korrekta "Öppnar 27 aug." som
+ett fel.
+
+En träff betyder att listningen vill ha `full: true` — men sätt det från
+anordnarens egna ord, enligt regeln ovan. Skriptet hittar kandidater, det
+bestämmer inte datan.
+
 ### Kontrollera datumen
 
 ```sh
