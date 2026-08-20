@@ -1,13 +1,22 @@
 import { HelpCircle, ChevronRight, Sparkles } from 'lucide-react';
 import { useMemo } from 'react';
 import { useStore } from '../store/useStore';
+import { Avatar } from './Avatar';
 import { NAV_ITEMS } from '../lib/navItems';
 import { isOpenForRegistration } from '../lib/examStatus';
 import { useMinuteTick } from '../hooks/useMinuteTick';
 
 export function Sidebar() {
-  const { activeTab, setActiveTab, savedExams, viewedExams, posts, exams, setShowingFaq } =
-    useStore();
+  const {
+    activeTab,
+    setActiveTab,
+    savedExams,
+    viewedExams,
+    posts,
+    exams,
+    currentUser,
+    setShowingFaq,
+  } = useStore();
   const tick = useMinuteTick();
 
   // The one live number in the app, recomputed on the same minute tick the
@@ -17,6 +26,10 @@ export function Sidebar() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [exams, tick],
   );
+
+  /** Saved prövningar the user has marked as anmäld, godkänd or genomförd —
+      the ones where they've actually done something. */
+  const registered = savedExams.filter((se) => se.status !== 'interested').length;
 
   /** What each tab has waiting, or null when a badge would just say "0". */
   const badgeFor = (id: string): number | null => {
@@ -35,7 +48,11 @@ export function Sidebar() {
     <aside className="hidden lg:flex flex-col w-72 flex-shrink-0 h-screen bg-surface border-r border-line px-4 py-6">
       {/* Brand */}
       <div className="flex items-center gap-3 px-2 mb-7">
-        <div className="w-11 h-11 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-cyan-500/30">
+        <div className="relative w-11 h-11 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-cyan-500/30">
+          <span
+            className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-accent2-500 border-2 border-surface"
+            aria-hidden="true"
+          />
           <svg viewBox="0 0 40 40" className="w-6 h-6" fill="none" aria-hidden="true">
             <path
               d="M8 32L20 8L32 32"
@@ -48,10 +65,8 @@ export function Sidebar() {
           </svg>
         </div>
         <div className="min-w-0">
-          <p className="text-xl font-bold text-ink font-display leading-none">Prövningar</p>
-          <p className="text-[11px] text-ink-faint font-semibold tracking-wide mt-1">
-            {exams.length} tillfällen i hela Sverige
-          </p>
+          <p className="text-[18px] font-bold text-ink font-display leading-none">Prövningar</p>
+          <p className="text-[11.5px] text-ink-soft mt-1">läs upp betyget</p>
         </div>
       </div>
 
@@ -135,6 +150,32 @@ export function Sidebar() {
 
       <div className="flex-1" />
 
+      {/* Din plan. Counts only what the user has actually told the app: how
+          many of the prövningar they saved they have marked as anmälda. An
+          invented "2 av 3" would be the one number here nobody could trust. */}
+      {savedExams.length > 0 && (
+        <button
+          onClick={() => setActiveTab('exams')}
+          className="w-full text-left rounded-2xl border border-line bg-cream p-3.5 hover:bg-sand transition-colors"
+        >
+          <p className="text-[10.5px] font-bold uppercase tracking-wider text-ink-soft">Din plan</p>
+          <p className="flex items-baseline gap-1.5 mt-1">
+            <span className="font-hero text-[34px] leading-none text-amber-accent">
+              {registered}
+            </span>
+            <span className="text-[13px] text-ink-soft">av {savedExams.length} anmälda</span>
+          </p>
+          <span className="flex gap-1 mt-2.5" aria-hidden="true">
+            {savedExams.map((se, i) => (
+              <span
+                key={se.examId}
+                className={`h-1.5 flex-1 rounded-full ${i < registered ? 'bg-trust-500' : 'bg-line'}`}
+              />
+            ))}
+          </span>
+        </button>
+      )}
+
       {/* FAQ */}
       <button
         onClick={() => setShowingFaq(true)}
@@ -155,7 +196,19 @@ export function Sidebar() {
         />
       </button>
 
-      <p className="mt-3 px-2 text-[10.5px] text-ink-faint leading-relaxed flex items-start gap-1.5">
+      {/* Who you are, at the foot of the rail */}
+      <button
+        onClick={() => setActiveTab('profile')}
+        className="mt-2 w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl hover:bg-sand transition-colors text-left"
+      >
+        <Avatar name={currentUser.name} src={currentUser.avatar} seed="me" size={32} />
+        <span className="font-semibold text-ink text-[13px] truncate flex-1">
+          {currentUser.name}
+        </span>
+        <ChevronRight size={15} className="text-ink-faint flex-shrink-0" />
+      </button>
+
+      <p className="mt-2.5 px-2 text-[10.5px] text-ink-faint leading-relaxed flex items-start gap-1.5">
         <Sparkles size={12} className="text-amber-500 flex-shrink-0 mt-0.5" />
         Varje listning är kontrollerad mot skolans egen sida. Inga gissade datum.
       </p>

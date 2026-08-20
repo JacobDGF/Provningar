@@ -1,9 +1,7 @@
 import {
-  X,
+  ArrowLeft,
   MapPin,
   Calendar,
-  CreditCard,
-  Clock,
   BookOpen,
   Lightbulb,
   ExternalLink,
@@ -12,65 +10,92 @@ import {
   ShieldCheck,
   Navigation,
   Info,
-  Map,
-  ListChecks,
   Globe,
   Ban,
   CalendarX,
   CalendarPlus,
+  Share2,
+  Check,
+  Clock,
+  ListChecks,
 } from 'lucide-react';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { Exam } from '../types';
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
-import { hasPeriodPassed } from '../lib/examStatus';
-import { StatusKey, getExamStatus } from '../lib/examStatusColor';
+import { hasPeriodPassed, daysUntil } from '../lib/examStatus';
+import { getExamStatus } from '../lib/examStatusColor';
 import { getRegistrationFlow } from '../lib/registrationFlow';
-import { getProviderLinks } from '../lib/providerLinks';
 import { getExamAction } from '../lib/examAction';
 import { examCalendarEvents, downloadCalendar } from '../lib/calendarFile';
 import { useEscapeKey } from '../hooks/useEscapeKey';
-import { SchoolCover } from './SchoolCover';
 
 /**
- * The sentence under the status banner.
+ * The hero's own colour.
  *
- * The colour says what state the round is in; this says what to do about it.
- * Kept to one sentence each — a paragraph here is what pushed the dates,
- * the price and the two buttons below the fold on a phone.
+ * The design gives the panel one teal→magenta gradient. That reads beautifully
+ * for a round you can act on and wrongly for one you can't: a listing whose
+ * seats are gone should not open with the same celebratory wash as one that's
+ * booking today. So the two closed states take the gradient over — red for
+ * full, ink for a passed deadline — and everything bookable keeps the design's.
  */
-function statusExplanation(exam: Exam, key: StatusKey): string {
-  switch (key) {
+const HERO_GRADIENT: Record<string, string> = {
+  full: 'bg-gradient-to-br from-red-700 via-red-600 to-rose-600',
+  closed: 'bg-gradient-to-br from-ink via-[#3b3837] to-ink-soft',
+};
+const HERO_DEFAULT = 'bg-gradient-to-br from-brand-500 via-[#1186ac] to-accent2-500';
+
+function formatLong(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString('sv-SE', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+}
+function formatShort(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString('sv-SE', { day: 'numeric', month: 'short' });
+}
+/** "12" / "okt" for the timeline's date chip. */
+function chipParts(dateStr: string) {
+  const d = new Date(dateStr);
+  return {
+    day: d.toLocaleDateString('sv-SE', { day: 'numeric' }),
+    month: d.toLocaleDateString('sv-SE', { month: 'short' }).replace('.', ''),
+  };
+}
+
+/** The middle stat tile: the one number that changes meaning with the state. */
+function applicationStat(exam: Exam): { value: string; note: string } {
+  const { nextPeriod: p } = exam;
+  const status = getExamStatus(exam);
+  switch (status.tone.key) {
     case 'full':
-      return `${exam.provider} har meddelat att platserna är slut. Datumen nedan gäller fortfarande — men du behöver vänta på nästa omgång.`;
+      return { value: 'Slut', note: 'inga platser kvar' };
     case 'closed':
-      return `Datumen nedan är omgången som varit. ${exam.provider} publicerar nästa anmälningsperiod på sin egen sida — börja där.`;
+      return { value: 'Stängd', note: `stängde ${formatShort(p.applicationEnd!)}` };
+    case 'undated':
+      return { value: 'Ej satt', note: 'se skolans sida' };
     case 'closing':
-      return 'Anmälan är fortfarande öppen, men stänger inom en vecka. Läs igenom stegen nedan innan du klickar vidare.';
-    case 'open':
-      return 'Anmälan är öppen i dag. Knapparna längst ned tar dig antingen rakt in i bokningen eller till skolans egen sida.';
-    case 'upcoming':
-      return 'Datumen är satta men anmälan har inte öppnat än — lägg in dem i kalendern så missar du inte dagen.';
+    case 'open': {
+      if (p.applicationEnd) {
+        const d = daysUntil(p.applicationEnd);
+        return {
+          value: d <= 0 ? 'I dag' : `${d} dgr`,
+          note: `stänger ${formatShort(p.applicationEnd)}`,
+        };
+      }
+      return { value: 'Öppen', note: 'stänger när platserna är slut' };
+    }
+    case 'upcoming': {
+      const d = daysUntil(p.applicationStart!);
+      return { value: `${d} dgr`, note: `öppnar ${formatShort(p.applicationStart!)}` };
+    }
     default:
-      return `${exam.provider} har inte publicerat några datum för nästa omgång. Vi visar aldrig gissade datum — se deras egen sida innan du planerar.`;
+      return { value: 'Ej satt', note: 'se skolans egen sida' };
   }
 }
 
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('sv-SE', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
-}
-function formatDateShort(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('sv-SE', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
-}
+type DetailTab = 'dates' | 'parts' | 'tips';
 
 export function ExamDetail() {
   const {
@@ -82,6 +107,8 @@ export function ExamDetail() {
     unsaveExam,
     userLocation,
   } = useStore();
+  const [tab, setTab] = useState<DetailTab>('dates');
+  const [shared, setShared] = useState(false);
   const exam = exams.find((e) => e.id === showingExamDetail);
   // Before the early return: hooks can't run conditionally, and the sheet is
   // only mounted while an exam is showing anyway.
@@ -92,434 +119,498 @@ export function ExamDetail() {
   const saved = isExamSaved(exam.id);
   const { nextPeriod } = exam;
   const status = getExamStatus(exam);
-  // Nothing in a round that is over belongs in anyone's calendar.
   const passed = hasPeriodPassed(exam);
-  // Amber, not red: the dates are still worth acting on. Red in this sheet
-  // belongs to the banner above, and only when the round is closed to you.
-  const urgent = status.tone.key === 'closing';
   const flow = getRegistrationFlow(exam);
-  const links = getProviderLinks(exam);
   const action = getExamAction(exam);
   const calendarEvents = examCalendarEvents(exam);
+  const stat = applicationStat(exam);
+  const hero = HERO_GRADIENT[status.tone.key] ?? HERO_DEFAULT;
+  // The design was drawn around "Matematik 2b". A third of the dataset reads
+  // "Flera kurser (Ma 1a–5, kontakta skolan för kurskod)", which set five
+  // lines at 6xl and pushed the stat tiles off the panel.
+  const titleSize =
+    exam.course.length > 38
+      ? 'text-2xl sm:text-3xl lg:text-4xl'
+      : exam.course.length > 22
+        ? 'text-3xl sm:text-4xl lg:text-5xl'
+        : 'text-4xl sm:text-5xl lg:text-6xl';
 
   const distanceKm = userLocation
     ? haversineDistanceKm(userLocation.lat, userLocation.lng, exam.lat, exam.lng)
     : null;
 
   const { lat, lng } = exam;
-  // Keyless embedded map (OpenStreetMap). To use Google tiles instead, drop a
-  // Google Maps Embed API key in below and swap the iframe src.
   const osmSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${lng - 0.012},${lat - 0.007},${lng + 0.012},${lat + 0.007}&layer=mapnik&marker=${lat},${lng}`;
   const gmapsView = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
   const gmapsDir = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+
+  /**
+   * The reminder is the .ics — the app has no server and cannot push.
+   *
+   * It has to name the next date that is still ahead. Taking applicationStart
+   * unconditionally offered "Påminn mig 10 aug." on a round that opened on the
+   * 10th and closes tonight, which is a reminder to do something yesterday.
+   */
+  const today = new Date().toISOString().slice(0, 10);
+  const reminderDate = nextPeriod.confirmed
+    ? [nextPeriod.applicationStart, nextPeriod.applicationEnd, nextPeriod.examWindowStart].find(
+        (d): d is string => Boolean(d) && d! >= today,
+      )
+    : undefined;
+
+  const share = async () => {
+    const payload = {
+      title: `${exam.course} – ${exam.schoolName}`,
+      text: `Prövning i ${exam.course} hos ${exam.schoolName} i ${exam.city}.`,
+      url: exam.infoUrl,
+    };
+    try {
+      if (navigator.share) await navigator.share(payload);
+      else await navigator.clipboard.writeText(exam.infoUrl);
+      setShared(true);
+      setTimeout(() => setShared(false), 2000);
+    } catch {
+      // Cancelled the share sheet, or no clipboard permission. Nothing to say.
+    }
+  };
+
+  const TABS: { id: DetailTab; label: string; icon: typeof Calendar }[] = [
+    { id: 'dates', label: 'Datum', icon: Calendar },
+    { id: 'parts', label: 'Provmoment', icon: BookOpen },
+    { id: 'tips', label: 'Studietips', icon: Lightbulb },
+  ];
 
   return (
     // Backdrop closes on click as a mouse convenience; the sheet has its own
     // keyboard-reachable close button below, so this isn't the only way out.
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
     <div
-      className="fixed inset-0 bg-black/50 z-50 flex items-end lg:items-center lg:justify-center"
+      className="fixed inset-0 bg-black/50 z-50 flex items-end lg:items-center lg:justify-center lg:p-6"
       onClick={() => setShowingExamDetail(null)}
     >
       {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events -- stops the backdrop's close-on-click from firing when interacting with the sheet itself */}
       <div
-        className="bg-cream w-full lg:max-w-2xl max-h-[92vh] lg:max-h-[88vh] rounded-t-lg lg:rounded-lg overflow-hidden flex flex-col animate-sheet-up"
+        className="bg-cream w-full lg:max-w-4xl max-h-[94vh] lg:max-h-[92vh] rounded-t-3xl lg:rounded-3xl overflow-hidden flex flex-col animate-sheet-up"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Image header */}
-        <div className="relative flex-shrink-0">
-          <SchoolCover exam={exam} className="w-full h-52" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+        {/* Top bar */}
+        <div className="flex-shrink-0 flex items-center justify-between gap-2 px-4 lg:px-6 py-3 border-b border-line bg-cream">
           <button
             onClick={() => setShowingExamDetail(null)}
-            aria-label="Stäng"
-            className="absolute top-4 right-4 w-9 h-9 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center active:scale-90"
+            className="inline-flex items-center gap-2 pl-2.5 pr-4 py-2 rounded-full border border-line bg-surface hover:bg-sand text-ink-soft text-[13.5px] font-bold transition-colors"
           >
-            <X size={18} className="text-white" />
+            <ArrowLeft size={16} />
+            Alla prövningar
           </button>
-          <button
-            onClick={() => (saved ? unsaveExam(exam.id) : saveExam(exam.id))}
-            aria-label={saved ? 'Ta bort från sparade' : 'Spara prövning'}
-            className="absolute top-4 right-16 w-9 h-9 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center active:scale-90"
-          >
-            {saved ? (
-              <BookmarkCheck size={18} className="text-brand-300" />
-            ) : (
-              <Bookmark size={18} className="text-white" />
-            )}
-          </button>
-          <div className="absolute bottom-4 left-4 right-4">
-            <p className="text-white/80 text-sm">
-              {exam.schoolName} · {exam.provider}
-            </p>
-            <h2 className="text-white text-2xl font-bold font-display">{exam.course}</h2>
-            <p className="text-brand-200 text-sm">{exam.courseCode}</p>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => (saved ? unsaveExam(exam.id) : saveExam(exam.id))}
+              className={`inline-flex items-center gap-2 pl-3 pr-4 py-2 rounded-full border text-[13.5px] font-bold transition-colors ${
+                saved
+                  ? 'bg-brand-50 border-brand-200 text-brand-700'
+                  : 'bg-surface border-line text-ink-soft hover:bg-sand'
+              }`}
+            >
+              {saved ? <BookmarkCheck size={16} /> : <Bookmark size={16} />}
+              {saved ? 'Sparad' : 'Spara'}
+            </button>
+            <button
+              onClick={share}
+              aria-label="Dela prövningen"
+              className="w-10 h-10 rounded-full border border-line bg-surface hover:bg-sand flex items-center justify-center text-ink-soft transition-colors"
+            >
+              {shared ? <Check size={16} className="text-trust-600" /> : <Share2 size={16} />}
+            </button>
           </div>
         </div>
 
         {/* Scroll content */}
         <div className="overflow-y-auto flex-1">
-          <div className="p-4 space-y-4">
-            {/* Trust banner */}
-            <div className="bg-trust-50 border border-trust-100 rounded p-3 flex items-center gap-2">
-              <ShieldCheck size={18} className="text-trust-600 flex-shrink-0" />
-              <p className="text-trust-700 text-xs">
-                Uppgifterna kontrollerade mot {exam.provider}s webbplats{' '}
-                {formatDateShort(exam.verifiedAt)}.
-              </p>
-            </div>
-
-            {/* One status banner, in the palette's own colour.
-                This was four separate blocks — full, closed, open, urgent —
-                which could stack two deep and repeat the same fact in two
-                voices. The colour comes from the same table the card's rail
-                and the map's pin read, so the sheet can never disagree with
-                the card the user tapped to get here. */}
-            <div className={`rounded p-3 flex items-start gap-2 ${status.tone.softChip}`}>
-              <span
-                className={`w-2.5 h-2.5 rounded-full flex-shrink-0 mt-1.5 ${status.tone.dot}`}
+          <div className="p-4 lg:p-6 space-y-4">
+            {/* HERO */}
+            <div className={`relative overflow-hidden rounded-3xl p-6 lg:p-8 ${hero}`}>
+              {/* Soft light behind the stat tiles, the way the design carries
+                  its colour into the corner rather than as a flat sheet. */}
+              <div
+                className="absolute -top-24 -right-16 w-96 h-96 rounded-full bg-white/10 blur-2xl pointer-events-none"
                 aria-hidden="true"
               />
-              <div>
-                <p className="text-sm font-bold">{status.label}</p>
-                <p className="text-ink-soft text-xs mt-0.5 leading-relaxed">
-                  {statusExplanation(exam, status.tone.key)}
-                </p>
-              </div>
-            </div>
-
-            {/* Description */}
-            <div className="bg-surface rounded-md p-4 border border-line">
-              <p className="text-ink-soft text-sm leading-relaxed">{exam.description}</p>
-            </div>
-
-            {/* Dates */}
-            <div className="bg-surface rounded-md p-4 border border-line">
-              <h3 className="font-bold text-ink mb-3 flex items-center gap-2">
-                <Calendar size={16} className="text-brand-600" />
-                Viktiga datum
-              </h3>
-              {nextPeriod.confirmed ? (
-                <div className="space-y-2.5">
-                  {nextPeriod.applicationStart && nextPeriod.applicationEnd && (
-                    <InfoRow
-                      label="Ansökningsperiod"
-                      value={`${formatDate(nextPeriod.applicationStart)} – ${formatDate(nextPeriod.applicationEnd)}`}
-                      urgent={urgent}
-                    />
-                  )}
-                  {!nextPeriod.applicationStart && nextPeriod.applicationEnd && (
-                    <InfoRow
-                      label="Sista anmälningsdag"
-                      value={formatDate(nextPeriod.applicationEnd)}
-                      urgent={urgent}
-                    />
-                  )}
-                  {nextPeriod.examWindowStart && nextPeriod.examWindowEnd && (
-                    <InfoRow
-                      label="Provperiod"
-                      value={
-                        nextPeriod.examWindowStart === nextPeriod.examWindowEnd
-                          ? formatDate(nextPeriod.examWindowStart)
-                          : `${formatDate(nextPeriod.examWindowStart)} – ${formatDate(nextPeriod.examWindowEnd)}`
-                      }
-                    />
-                  )}
-                  {!nextPeriod.applicationEnd && !nextPeriod.examWindowStart && (
-                    <InfoRow label="Anmälan" value={nextPeriod.label} />
-                  )}
-                  {(nextPeriod.applicationEnd || nextPeriod.examWindowStart) && (
-                    <p className="text-ink-soft text-xs leading-relaxed pt-1 border-t border-line">
-                      {nextPeriod.label}
-                    </p>
-                  )}
-                  {/* The dates only help while the app is open. This puts them
-                      in the calendar the user already checks. */}
-                  {calendarEvents.length > 0 && !passed && (
-                    <button
-                      onClick={() => downloadCalendar(exam)}
-                      className="w-full mt-1 flex items-center justify-center gap-2 bg-brand-50 hover:bg-brand-100 text-brand-700 text-sm font-bold py-2.5 rounded transition-colors active:scale-98"
-                    >
-                      <CalendarPlus size={15} />
-                      Lägg till i min kalender
-                    </button>
-                  )}
-                </div>
-              ) : (
-                <div className="bg-brand-50 rounded p-3 flex items-start gap-2">
-                  <Info size={16} className="text-brand-600 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-ink text-sm font-semibold">{nextPeriod.label}</p>
-                    <p className="text-ink-soft text-xs mt-1">
-                      Vi visar aldrig gissade datum. Se aktuella anmälningstider hos {exam.provider}{' '}
-                      innan du planerar din prövning.
-                    </p>
-                    <a
-                      href={exam.infoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-brand-600 text-xs font-bold mt-2"
-                    >
-                      Se datum hos {exam.provider} <ExternalLink size={11} />
-                    </a>
+              <div className="relative lg:flex lg:items-start lg:gap-8">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2 mb-4">
+                    <span className="inline-flex items-center gap-1.5 bg-white text-[12.5px] font-bold px-3 py-1.5 rounded-full shadow-sm">
+                      {status.tone.key === 'full' ? (
+                        <Ban size={12} strokeWidth={2.6} className={status.tone.text} />
+                      ) : (
+                        <span className={`w-1.5 h-1.5 rounded-full ${status.tone.dot}`} />
+                      )}
+                      <span className={status.tone.text}>{status.label}</span>
+                    </span>
+                    <span className="bg-white/20 text-white text-[12.5px] font-semibold px-3 py-1.5 rounded-full">
+                      {exam.courseCode}
+                    </span>
+                    <span className="bg-white/20 text-white text-[12.5px] font-semibold px-3 py-1.5 rounded-full">
+                      {exam.level}
+                    </span>
                   </div>
+                  <h2 className={`font-hero-xl text-white leading-[1.05] ${titleSize}`}>
+                    {exam.course}
+                  </h2>
+                  <p className="font-display italic text-brand-100 text-lg lg:text-xl mt-2">
+                    {exam.schoolName} · {exam.city}, {exam.region}
+                  </p>
                 </div>
-              )}
-            </div>
 
-            {/* How you actually book — what's left after tapping the button */}
-            <div className="bg-surface rounded-md p-4 border border-line">
-              <div className="flex items-start justify-between gap-3 mb-3">
-                <h3 className="font-bold text-ink flex items-center gap-2">
-                  <ListChecks size={16} className="text-brand-600" />
-                  Så anmäler du dig
-                </h3>
-                <span
-                  className={`text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${
-                    !action.live
-                      ? status.tone.softChip
-                      : flow.direct
-                        ? 'bg-trust-50 text-trust-700'
-                        : 'bg-sand text-ink-soft'
-                  }`}
-                >
-                  {action.live ? `${flow.steps.length} steg kvar` : status.tone.shortLabel}
-                </span>
+                {/* Three numbers, the ones people compare listings on */}
+                <div className="grid grid-cols-3 gap-2 mt-6 lg:mt-0 lg:w-[380px] lg:flex-shrink-0">
+                  {[
+                    {
+                      k: 'Pris',
+                      v: `${exam.price} kr`,
+                      n: /kostnadsfri|gratis/i.test(exam.priceNote ?? '')
+                        ? 'gratis vid tidigare F'
+                        : 'se villkor nedan',
+                    },
+                    { k: 'Anmälan', v: stat.value, n: stat.note },
+                    {
+                      k: 'Prövning',
+                      v:
+                        nextPeriod.confirmed && nextPeriod.examWindowStart
+                          ? formatShort(nextPeriod.examWindowStart)
+                          : '—',
+                      n:
+                        nextPeriod.confirmed && nextPeriod.examWindowEnd
+                          ? nextPeriod.examWindowEnd === nextPeriod.examWindowStart
+                            ? 'ett tillfälle'
+                            : `till ${formatShort(nextPeriod.examWindowEnd)}`
+                          : 'datum ej satt',
+                    },
+                  ].map((s) => (
+                    <div key={s.k} className="bg-white/15 rounded-2xl p-3 backdrop-blur-sm min-w-0">
+                      <p className="text-brand-100 text-[10.5px] font-bold uppercase tracking-wider">
+                        {s.k}
+                      </p>
+                      <p
+                        className={`font-hero text-white leading-tight mt-0.5 ${
+                          s.v.length > 7 ? 'text-xl lg:text-2xl' : 'text-2xl lg:text-[32px]'
+                        }`}
+                      >
+                        {s.v}
+                      </p>
+                      <p className="text-brand-100 text-[11.5px] leading-snug mt-0.5">{s.n}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
-              {/* Steps are a promise about what happens after the button, and
-                  on a closed round that promise doesn't hold — the form on the
-                  other side opens with "anmälan är stängd". Say that instead of
-                  numbering three steps nobody can take. */}
-              {action.live ? (
-                <>
-                  <p className="text-ink-soft text-xs leading-relaxed mb-3">{flow.landing}</p>
-                  <ol className="space-y-2">
-                    {flow.steps.map((step, i) => (
-                      <li key={i} className="flex gap-2.5">
-                        <span className="w-5 h-5 bg-brand-50 text-brand-600 rounded-full text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
-                          {i + 1}
-                        </span>
-                        <p className="text-ink text-sm leading-relaxed">{step}</p>
-                      </li>
-                    ))}
-                  </ol>
-                </>
-              ) : (
-                <p className="text-ink-soft text-sm leading-relaxed">
-                  {action.variant === 'full'
-                    ? `Det går inte att anmäla sig till den här omgången — ${exam.provider} har meddelat att platserna är slut. Anmälningssidan finns kvar, men möter dig med en stängd blankett.`
-                    : `Anmälan till den här omgången är stängd. Anmälningssidan finns kvar, men tar inte emot fler anmälningar förrän ${exam.provider} öppnar nästa omgång.`}
-                </p>
-              )}
             </div>
 
-            {/* Practical info */}
-            <div className="bg-surface rounded-md p-4 border border-line">
-              <h3 className="font-bold text-ink mb-3 flex items-center gap-2">
-                <CreditCard size={16} className="text-brand-600" />
-                Praktisk info
-              </h3>
-              <div className="space-y-2.5">
-                <InfoRow
-                  label="Pris"
-                  value={
-                    exam.priceNote ? `${exam.price} kr · ${exam.priceNote}` : `${exam.price} kr`
-                  }
-                />
-                <InfoRow
-                  label="Anordnare"
-                  value={exam.provider}
-                  icon={<ShieldCheck size={14} className="text-ink-faint" />}
-                />
-                <InfoRow
-                  label="Ort"
-                  value={exam.city}
-                  icon={<MapPin size={14} className="text-ink-faint" />}
-                />
-                <InfoRow label="Adress" value={exam.address} />
-                {distanceKm !== null && (
-                  <InfoRow
-                    label="Avstånd från dig"
-                    value={formatDistanceKm(distanceKm)}
-                    icon={<Navigation size={14} className="text-ink-faint" />}
+            {/* The two ways out. Which one leads is decided by the round's
+                state — see lib/examAction.ts. */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <a
+                href={action.primary.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={action.primary.title}
+                className={`group rounded-2xl p-5 flex items-start justify-between gap-3 transition-transform active:scale-98 ${
+                  action.variant === 'full'
+                    ? 'bg-red-600 hover:bg-red-700 shadow-lg shadow-red-500/25'
+                    : action.variant === 'closed'
+                      ? 'bg-ink-soft hover:bg-ink shadow-lg'
+                      : 'bg-brand-500 hover:bg-brand-600 shadow-lg shadow-brand-200'
+                }`}
+              >
+                <span className="min-w-0">
+                  <span className="block font-hero text-white text-2xl lg:text-[30px] leading-tight">
+                    {action.live ? 'Till anmälan' : action.primary.label}
+                  </span>
+                  <span className="block text-brand-100 text-[13.5px] font-semibold mt-1">
+                    {action.live
+                      ? `${flow.ctaLabel} · ${exam.price} kr`
+                      : `${exam.provider} publicerar nästa omgång`}
+                  </span>
+                </span>
+                {action.variant === 'full' ? (
+                  <Ban size={22} strokeWidth={2.5} className="text-white flex-shrink-0 mt-1" />
+                ) : action.variant === 'closed' ? (
+                  <CalendarX size={22} className="text-white flex-shrink-0 mt-1" />
+                ) : (
+                  <ExternalLink
+                    size={22}
+                    className="text-white flex-shrink-0 mt-1 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
                   />
                 )}
-                <InfoRow label="Region" value={exam.region} />
-                <InfoRow label="Nivå" value={exam.level} />
-              </div>
+              </a>
+
+              {action.secondary && (
+                <a
+                  href={action.secondary.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={action.secondary.title}
+                  className="group rounded-2xl p-5 flex items-start justify-between gap-3 bg-surface border-2 border-ink shadow-[4px_4px_0_0_var(--color-ink)] hover:shadow-[2px_2px_0_0_var(--color-ink)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
+                >
+                  <span className="min-w-0">
+                    <span className="block font-hero text-ink text-2xl lg:text-[30px] leading-tight">
+                      {action.live ? 'Skolans sida' : 'Anmälningssidan'}
+                    </span>
+                    <span className="block text-ink-soft text-[13.5px] font-semibold mt-1 truncate">
+                      {action.live ? `${exam.provider} · datum och villkor` : 'öppna den ändå'}
+                    </span>
+                  </span>
+                  <Globe size={22} className="text-ink flex-shrink-0 mt-1" />
+                </a>
+              )}
             </div>
 
-            {/* Map — "Hitta hit" */}
-            <div className="bg-surface rounded-md overflow-hidden border border-line">
-              <h3 className="font-bold text-ink text-base px-4 pt-4 pb-3 flex items-center gap-2.5">
-                <span className="w-8 h-8 bg-brand-100 rounded flex items-center justify-center flex-shrink-0">
-                  <Map size={18} className="text-brand-600" />
+            {/* Reminder + provenance */}
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              {calendarEvents.length > 0 && !passed && action.live && reminderDate ? (
+                <button
+                  onClick={() => downloadCalendar(exam)}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full border border-line bg-surface hover:bg-sand text-ink-soft text-[14px] font-bold transition-colors"
+                >
+                  <CalendarPlus size={16} />
+                  Påminn mig {formatShort(reminderDate)}
+                </button>
+              ) : (
+                <span />
+              )}
+              <span className="inline-flex items-center gap-1.5 text-trust-700 text-[12.5px] font-medium">
+                <ShieldCheck size={14} className="flex-shrink-0" />
+                Kontrollerat mot {exam.provider} {formatShort(exam.verifiedAt)}
+              </span>
+            </div>
+
+            {/* Tabs */}
+            <div className="grid grid-cols-3 gap-2">
+              {TABS.map(({ id, label, icon: Icon }) => (
+                <button
+                  key={id}
+                  onClick={() => setTab(id)}
+                  aria-pressed={tab === id}
+                  className={`flex items-center justify-center gap-2 py-3 rounded-full text-[14px] font-bold transition-colors ${
+                    tab === id
+                      ? 'bg-ink text-cream'
+                      : 'bg-surface border border-line text-ink-soft hover:bg-sand'
+                  }`}
+                >
+                  <Icon size={16} />
+                  <span className="truncate">{label}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Panel */}
+            <div className="bg-surface rounded-3xl border border-line p-4 lg:p-5">
+              {tab === 'dates' &&
+                (nextPeriod.confirmed ? (
+                  <div className="space-y-2.5">
+                    {nextPeriod.applicationStart && (
+                      <TimelineRow
+                        date={nextPeriod.applicationStart}
+                        tint="bg-brand-50"
+                        chip="bg-brand-500"
+                        title="Anmälan öppnar"
+                        sub={
+                          !nextPeriod.applicationEnd
+                            ? 'Stänger när platserna är slut'
+                            : nextPeriod.applicationEnd === nextPeriod.applicationStart
+                              ? 'Öppnar och stänger samma dag'
+                              : `Stänger ${formatShort(nextPeriod.applicationEnd)}`
+                        }
+                      />
+                    )}
+                    {!nextPeriod.applicationStart && nextPeriod.applicationEnd && (
+                      <TimelineRow
+                        date={nextPeriod.applicationEnd}
+                        tint="bg-brand-50"
+                        chip="bg-brand-500"
+                        title="Sista anmälningsdag"
+                        sub={status.label}
+                      />
+                    )}
+                    {nextPeriod.examWindowStart && (
+                      <TimelineRow
+                        date={nextPeriod.examWindowStart}
+                        tint="bg-accent2-50"
+                        chip="bg-accent2-500"
+                        title="Prövningsperiod"
+                        sub={
+                          nextPeriod.examWindowEnd &&
+                          nextPeriod.examWindowEnd !== nextPeriod.examWindowStart
+                            ? `${formatLong(nextPeriod.examWindowStart)} – ${formatLong(nextPeriod.examWindowEnd)}`
+                            : formatLong(nextPeriod.examWindowStart)
+                        }
+                      />
+                    )}
+                    {/* The provider's own sentence. It is long, and this is the
+                        one place with room for it. */}
+                    <p className="flex items-start gap-2.5 bg-cream rounded-2xl px-4 py-3 text-ink-soft text-[13.5px] leading-relaxed">
+                      <Info size={15} className="text-ink-faint flex-shrink-0 mt-0.5" />
+                      {nextPeriod.label}
+                    </p>
+                    {calendarEvents.length > 0 && !passed && action.live && (
+                      <button
+                        onClick={() => downloadCalendar(exam)}
+                        className="w-full flex items-center justify-center gap-2 bg-ink hover:bg-black text-cream text-[15px] font-bold py-3.5 rounded-2xl transition-colors active:scale-98"
+                      >
+                        <CalendarPlus size={17} />
+                        Lägg till {calendarEvents.length} datum i kalendern
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex items-start gap-2.5">
+                    <Info size={16} className="text-brand-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-ink text-[15px] font-semibold">{nextPeriod.label}</p>
+                      <p className="text-ink-soft text-[13px] mt-1 leading-relaxed">
+                        Vi visar aldrig gissade datum. Se aktuella anmälningstider hos{' '}
+                        {exam.provider} innan du planerar din prövning.
+                      </p>
+                    </div>
+                  </div>
+                ))}
+
+              {tab === 'parts' && (
+                <div className="space-y-3">
+                  {exam.components.map((c) => (
+                    <div key={c.name} className="border-l-[3px] border-brand-200 pl-3.5">
+                      <div className="flex items-start justify-between gap-3">
+                        <p className="font-display font-semibold text-ink text-[17px]">{c.name}</p>
+                        <span className="inline-flex items-center gap-1 bg-brand-50 text-brand-700 text-[11.5px] font-bold px-2.5 py-1 rounded-full flex-shrink-0">
+                          <Clock size={11} />
+                          {c.duration}
+                        </span>
+                      </div>
+                      <p className="text-ink-soft text-[13.5px] leading-relaxed mt-1">
+                        {c.description}
+                      </p>
+                    </div>
+                  ))}
+                  {/* What still has to happen after the button — the steps only
+                      hold while the round is open. */}
+                  {action.live && (
+                    <div className="pt-1">
+                      <p className="flex items-center gap-2 font-display font-semibold text-ink text-[17px] mb-2">
+                        <ListChecks size={16} className="text-brand-600" />
+                        Så anmäler du dig
+                      </p>
+                      <ol className="space-y-2">
+                        {flow.steps.map((step, i) => (
+                          <li key={i} className="flex gap-2.5">
+                            <span className="w-5 h-5 bg-brand-50 text-brand-600 rounded-full text-[11px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                              {i + 1}
+                            </span>
+                            <p className="text-ink text-[13.5px] leading-relaxed">{step}</p>
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {tab === 'tips' && (
+                <ul className="space-y-2.5">
+                  {exam.studyTips.map((t, i) => (
+                    <li key={i} className="flex gap-2.5">
+                      <span className="w-6 h-6 bg-amber-accent-50 text-amber-accent rounded-full text-[12px] font-bold flex items-center justify-center flex-shrink-0">
+                        {i + 1}
+                      </span>
+                      <p className="text-ink text-[14px] leading-relaxed">{t}</p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            {/* Hitta hit */}
+            <div className="bg-surface rounded-3xl border border-line overflow-hidden">
+              <div className="flex items-start gap-3 p-4 lg:p-5">
+                <span className="w-9 h-9 bg-brand-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <MapPin size={18} className="text-brand-600" />
                 </span>
-                Hitta hit
-              </h3>
-              <div className="relative h-52 lg:h-80 bg-sand">
-                <iframe
-                  title={`Karta – ${exam.schoolName}`}
-                  src={osmSrc}
-                  className="absolute inset-0 w-full h-full border-0"
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                />
+                <div className="min-w-0 flex-1">
+                  <p className="font-display font-semibold text-ink text-[19px] leading-tight">
+                    Hitta hit
+                  </p>
+                  <p className="text-ink-soft text-[13px] mt-0.5">{exam.address}</p>
+                </div>
+                {distanceKm !== null && (
+                  <span className="inline-flex items-center gap-1 bg-brand-50 text-brand-700 text-[12px] font-bold px-2.5 py-1 rounded-full flex-shrink-0">
+                    <Navigation size={11} />
+                    {formatDistanceKm(distanceKm)}
+                  </span>
+                )}
               </div>
-              <div className="p-3 grid grid-cols-2 gap-2">
+              <iframe
+                title={`Karta över ${exam.schoolName}`}
+                src={osmSrc}
+                className="w-full h-52 border-0"
+                loading="lazy"
+              />
+              <div className="grid grid-cols-2 gap-2 p-3">
                 <a
                   href={gmapsDir}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-1.5 bg-brand-500 text-white text-sm font-bold py-3 rounded active:scale-98 transition-transform hover:bg-brand-600"
+                  className="flex items-center justify-center gap-2 bg-ink hover:bg-black text-cream text-[14.5px] font-bold py-3 rounded-2xl transition-colors"
                 >
-                  <Navigation size={15} /> Vägbeskrivning
+                  <Navigation size={16} />
+                  Vägbeskrivning
                 </a>
                 <a
                   href={gmapsView}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-1.5 bg-sand text-ink text-sm font-bold py-3 rounded active:scale-98 transition-transform hover:bg-line"
+                  className="flex items-center justify-center gap-2 bg-cream hover:bg-sand text-ink text-[14.5px] font-bold py-3 rounded-2xl transition-colors"
                 >
-                  <Map size={15} /> Google Maps
+                  Google Maps
                 </a>
               </div>
             </div>
 
-            {/* Exam components */}
-            <div className="bg-surface rounded-md p-4 border border-line">
-              <h3 className="font-bold text-ink mb-3 flex items-center gap-2">
-                <BookOpen size={16} className="text-brand-600" />
-                Provmoment
-              </h3>
-              <div className="space-y-3">
-                {exam.components.map((c, i) => (
-                  <div key={i} className="border-l-2 border-brand-200 pl-3">
-                    <div className="flex items-center justify-between">
-                      <p className="font-semibold text-sm text-ink">{c.name}</p>
-                      <span className="bg-brand-50 text-brand-600 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
-                        <Clock size={11} />
-                        {c.duration}
-                      </span>
-                    </div>
-                    <p className="text-ink-soft text-xs mt-0.5 leading-relaxed">{c.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Study tips */}
-            <div className="bg-surface rounded-md p-4 border border-line">
-              <h3 className="font-bold text-ink mb-3 flex items-center gap-2">
-                <Lightbulb size={16} className="text-amber-accent" />
-                Studietips
-              </h3>
-              <div className="space-y-2">
-                {exam.studyTips.map((tip, i) => (
-                  <div key={i} className="flex gap-2.5">
-                    <span className="w-5 h-5 bg-amber-accent-50 text-amber-accent rounded-full text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
-                      {i + 1}
-                    </span>
-                    <p className="text-ink-soft text-sm leading-relaxed">{tip}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Tags */}
-            <div className="flex flex-wrap gap-2">
-              {exam.tags.map((tag) => (
-                <span key={tag} className="bg-sand text-ink-soft text-xs px-3 py-1 rounded-full">
-                  #{tag}
-                </span>
-              ))}
-            </div>
+            <p className="text-ink-soft text-[13.5px] leading-relaxed px-1 pb-2">
+              {exam.description}
+            </p>
           </div>
-        </div>
-
-        {/* CTA — a flex sibling, not absolutely positioned: an `absolute` bar
-            here resolves against the fixed backdrop, not the sheet, and gets
-            clipped away entirely by the sheet's overflow on desktop. */}
-        {/* Two ways out, both explicit — and which one leads is decided by the
-            round's state, not by the layout. On a live round it's the verified
-            deep link; on a full or closed one that link goes to a form nobody
-            can submit, so the red button takes the provider's own page and the
-            booking is demoted. See lib/examAction.ts. */}
-        <div className="flex-shrink-0 bg-surface border-t border-line p-4 space-y-2 safe-bottom">
-          <a
-            href={action.primary.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            title={action.primary.title}
-            className={`w-full flex items-center justify-center gap-2.5 font-bold py-4 px-4 rounded-md text-base leading-snug text-center active:scale-98 transition-transform ${
-              action.variant === 'full'
-                ? 'bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-200'
-                : action.variant === 'closed'
-                  ? 'bg-ink-soft hover:bg-ink text-white shadow-lg'
-                  : 'bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-200'
-            }`}
-          >
-            {action.variant === 'full' ? (
-              <Ban size={18} strokeWidth={2.5} className="flex-shrink-0" />
-            ) : action.variant === 'closed' ? (
-              <CalendarX size={18} className="flex-shrink-0" />
-            ) : (
-              <ExternalLink size={18} className="flex-shrink-0" />
-            )}
-            <span>
-              {action.live ? `${action.primary.label} hos ${exam.provider}` : action.primary.label}
-            </span>
-          </a>
-          {action.secondary && (
-            <>
-              <a
-                href={action.secondary.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                title={action.secondary.title}
-                className="w-full flex items-center justify-center gap-2 bg-surface border border-line hover:border-brand-300 hover:bg-brand-50 text-ink font-bold py-3.5 rounded-md text-sm active:scale-98 transition-all"
-              >
-                <Globe size={16} className="text-brand-600" />
-                {action.live
-                  ? links.siteIsHomepage
-                    ? `Gå till ${exam.provider}s webbplats`
-                    : 'Läs mer på skolans egen sida'
-                  : 'Öppna anmälningssidan ändå'}
-              </a>
-              <p className="text-ink-faint text-[11px] text-center leading-relaxed">
-                {action.live
-                  ? `${flow.direct ? 'Direkt till bokningen' : 'Så nära anmälan vi kommer'} — eller ${links.siteLabel}, om du hellre gör allt själv.`
-                  : 'Avbokningar händer — men räkna inte med en plats den här omgången.'}
-              </p>
-            </>
-          )}
         </div>
       </div>
     </div>
   );
 }
 
-function InfoRow({
-  label,
-  value,
-  urgent,
-  icon,
+function TimelineRow({
+  date,
+  tint,
+  chip,
+  title,
+  sub,
 }: {
-  label: string;
-  value: string;
-  urgent?: boolean;
-  icon?: React.ReactNode;
+  date: string;
+  tint: string;
+  chip: string;
+  title: string;
+  sub: string;
 }) {
+  const { day, month } = chipParts(date);
   return (
-    <div className="flex items-center justify-between gap-3">
-      <span className="text-ink-soft text-sm flex items-center gap-1.5 flex-shrink-0">
-        {icon}
-        {label}
-      </span>
+    <div className={`flex items-center gap-3.5 rounded-2xl p-3 ${tint}`}>
       <span
-        className={`text-sm font-semibold text-right ${urgent ? 'text-orange-700' : 'text-ink'}`}
+        className={`w-14 h-14 rounded-2xl flex flex-col items-center justify-center flex-shrink-0 ${chip}`}
       >
-        {value}
+        <span className="font-hero text-white text-[22px] leading-none">{day}</span>
+        <span className="text-white text-[9.5px] font-bold uppercase tracking-wider mt-0.5">
+          {month}
+        </span>
+      </span>
+      <span className="min-w-0">
+        <span className="block font-display font-semibold text-ink text-[19px] leading-tight">
+          {title}
+        </span>
+        <span className="block text-ink-soft text-[13.5px] mt-0.5">{sub}</span>
       </span>
     </div>
   );
