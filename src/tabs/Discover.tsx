@@ -169,15 +169,6 @@ export function Discover() {
     [exams, tick],
   );
 
-  const topCities = useMemo(() => {
-    const counts = new Map<string, number>();
-    exams.forEach((e) => counts.set(e.city, (counts.get(e.city) || 0) + 1));
-    return [...counts.entries()]
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 8)
-      .map(([city, count]) => ({ city, count }));
-  }, [exams]);
-
   const eyebrow = userLocation
     ? `${userLocation.lat.toFixed(4)}° N · ${userLocation.lng.toFixed(4)}° Ö — din plats`
     : 'Hela Sverige — börja där du står';
@@ -429,28 +420,6 @@ export function Discover() {
               ))}
             </div>
           </section>
-
-          {/* CITIES */}
-          {topCities.length > 0 && (
-            <section className="max-w-screen-xl mx-auto w-full px-4 lg:px-8 py-8 border-t border-line">
-              <h6 className="text-brand-700 text-xs font-semibold uppercase tracking-wider mb-2">
-                Flest tillfällen just nu
-              </h6>
-              <h2 className="font-display text-2xl font-semibold text-ink mb-4">Populära städer</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {topCities.map(({ city, count }) => (
-                  <button
-                    key={city}
-                    onClick={() => setSearchQuery(city)}
-                    className="text-left bg-surface rounded p-3 hover:shadow-md hover:-translate-y-0.5 transition-all"
-                  >
-                    <p className="font-display font-semibold text-ink text-sm">{city}</p>
-                    <p className="text-xs text-ink-faint mt-0.5">{count} tillfällen</p>
-                  </button>
-                ))}
-              </div>
-            </section>
-          )}
 
           {/* RESULTS */}
           <section className="max-w-screen-xl mx-auto w-full px-4 lg:px-8 py-8 border-t border-line pb-28 lg:pb-16">

@@ -74,6 +74,21 @@ Färgnyckeln under hjältebilden är också filtret: tryck på "Fullbokat" för 
 vad du missade, tryck igen för att få tillbaka allt. Färger utan innehåll visas
 inte alls — en tom "Fullbokat"-knapp är ett löfte om resultat som inte finns.
 
+### Knappen får aldrig lova mer än färgen
+
+[`src/lib/examAction.ts`](src/lib/examAction.ts) bestämmer vad knapparna längst
+ned får lova. Kortet visade tidigare samma blå "Anmäl dig" på varje listning,
+oavsett omgångens tillstånd — inklusive på en omgång anordnaren redan hade
+markerat som fullbokad. Färgen sa "stängd" högst upp på kortet och knappen sa
+"boka" längst ned, och knappen är den halvan folk trycker på.
+
+En stängd omgång får därför ingen bokningsknapp alls. Den får en röd som säger
+varför, och som pekar på anordnarens egen sida — det är där ett återbud eller
+nästa omgång faktiskt annonseras. Den döda bokningslänken finns kvar som den
+lilla knappen, för den som vill se det stängda formuläret med egna ögon.
+Stegen under "Så anmäler du dig" försvinner samtidigt: tre numrerade steg är ett
+löfte om vad som händer efter knappen, och på en stängd omgång håller det inte.
+
 ### Två vägar ut ur varje listning
 
 [`src/lib/providerLinks.ts`](src/lib/providerLinks.ts) ger varje listning två mål,
