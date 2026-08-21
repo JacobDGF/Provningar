@@ -74,6 +74,26 @@ Färgnyckeln under hjältebilden är också filtret: tryck på "Fullbokat" för 
 vad du missade, tryck igen för att få tillbaka allt. Färger utan innehåll visas
 inte alls — en tom "Fullbokat"-knapp är ett löfte om resultat som inte finns.
 
+### Ett filter har också en färg
+
+[`src/lib/groupStatus.ts`](src/lib/groupStatus.ts) ger en grupp listningar — ett
+län, ett ämne, en ort — färgen från den bästa listningen i den, och
+[`src/components/GroupChip.tsx`](src/components/GroupChip.tsx) sätter den på
+filterknappen tillsammans med antalet. Grönt på Skåne betyder att något i Skåne
+går att boka i dag, inte att allt gör det; det är rätt löfte för ett filter,
+eftersom listan bakom knappen sedan säger exakt vilken listning som var skälet.
+
+Utan det var regionfiltret 21 likadana gråa knappar, och enda sättet att få veta
+vad som fanns bakom en av dem var att trycka. Ordningen är inte legendens:
+[`ACTIONABILITY`](src/lib/groupStatus.ts) räknar bäst först, och lägger `undated`
+före `closed` — "skolan har inte publicerat datum" är en sida värd att öppna,
+"du missade det i juli" är det inte. Rött når bara en grupp där varenda listning
+är fullbokad, vilket är samma löfte som ett enskilt korts färg ger.
+
+Markeringen bärs av tyngd, inte av kulör: en vald knapp går solid i sin egen
+färg i stället för att bli varumärkesblå. Två betydelser i samma färgkanal är
+hur "Skåne, vald" och "Skåne, öppen för anmälan" blir samma pixel.
+
 ### Knappen får aldrig lova mer än färgen
 
 [`src/lib/examAction.ts`](src/lib/examAction.ts) bestämmer vad knapparna längst

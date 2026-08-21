@@ -15,6 +15,8 @@ import { StatusFilterBar } from '../components/StatusFilterBar';
 import { haversineDistanceKm } from '../lib/distance';
 import { isOpenForRegistration, compareByPeriod } from '../lib/examStatus';
 import { getStatusKey } from '../lib/examStatusColor';
+import { summarizeBy } from '../lib/groupStatus';
+import { GroupChip } from '../components/GroupChip';
 import { getRegistrationFlow } from '../lib/registrationFlow';
 import { useMinuteTick } from '../hooks/useMinuteTick';
 
@@ -161,6 +163,13 @@ export function Discover() {
 
   const cityCount = useMemo(() => new Set(filtered.map((e) => e.city)).size, [filtered]);
 
+  // Colour and count for the chip rows, over the whole dataset — the numbers
+  // describe where a click leads, so they must not move as you click.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const bySubject = useMemo(() => summarizeBy(exams, 'subject'), [exams, tick]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const byCity = useMemo(() => summarizeBy(exams, 'city'), [exams, tick]);
+
   const toggleNear = () => {
     if (near) setFilterSortBy('date');
     else if (userLocation) setFilterSortBy('distance');
@@ -259,24 +268,39 @@ export function Discover() {
         {/* Every filter and sort in one panel, under the map. Splitting them
             across the page meant hunting for the one you wanted. */}
         <div className="bg-surface border-[1.5px] border-line rounded-[32px] px-[22px] py-[20px] flex flex-col gap-[18px]">
+          {/* Ämne and Ort carry their group's colour and count, so the row
+              answers "is there anything for me here" before the tap does. The
+              "alla"-chips stay neutral: they stand for the whole list, whose
+              colours are already spelled out in the Status row below. */}
           <FilterRow label="Ämne">
             <div className="flex gap-2 flex-wrap">
               {SUBJECT_CHIPS.map((label) => {
                 const isAll = label === 'Alla ämnen';
                 const selected = isAll ? !filterSubject : filterSubject === label;
+                if (isAll) {
+                  return (
+                    <button
+                      key={label}
+                      onClick={() => setFilterSubject('')}
+                      aria-pressed={selected}
+                      className={`rounded-full px-[18px] py-2.5 text-[13.5px] font-bold transition-transform hover:-translate-y-0.5 ${
+                        selected
+                          ? 'bg-ink text-cream'
+                          : 'bg-cream text-ink-soft border-[1.5px] border-line hover:border-ink'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
+                }
                 return (
-                  <button
+                  <GroupChip
                     key={label}
-                    onClick={() => setFilterSubject(isAll ? '' : label)}
-                    aria-pressed={selected}
-                    className={`rounded-full px-[18px] py-2.5 text-[13.5px] font-bold transition-transform hover:-translate-y-0.5 ${
-                      selected
-                        ? 'bg-ink text-cream'
-                        : 'bg-cream text-ink-soft border-[1.5px] border-line hover:border-ink'
-                    }`}
-                  >
-                    {label}
-                  </button>
+                    label={label}
+                    status={bySubject.get(label)}
+                    active={selected}
+                    onClick={() => setFilterSubject(selected ? '' : label)}
+                  />
                 );
               })}
             </div>
@@ -284,20 +308,34 @@ export function Discover() {
 
           <FilterRow label="Ort">
             <div className="flex gap-2 flex-wrap">
-              {CITY_CHIPS.map((c) => (
-                <button
-                  key={c}
-                  onClick={() => setCity(c)}
-                  aria-pressed={city === c}
-                  className={`rounded-full px-[18px] py-2.5 text-[13.5px] font-bold transition-transform hover:-translate-y-0.5 ${
-                    city === c
-                      ? 'bg-brand-500 text-white'
-                      : 'bg-cream text-ink-soft border-[1.5px] border-line hover:border-ink'
-                  }`}
-                >
-                  {c}
-                </button>
-              ))}
+              {CITY_CHIPS.map((c) => {
+                const isAll = c === 'Hela Sverige';
+                if (isAll) {
+                  return (
+                    <button
+                      key={c}
+                      onClick={() => setCity(c)}
+                      aria-pressed={city === c}
+                      className={`rounded-full px-[18px] py-2.5 text-[13.5px] font-bold transition-transform hover:-translate-y-0.5 ${
+                        city === c
+                          ? 'bg-ink text-cream'
+                          : 'bg-cream text-ink-soft border-[1.5px] border-line hover:border-ink'
+                      }`}
+                    >
+                      {c}
+                    </button>
+                  );
+                }
+                return (
+                  <GroupChip
+                    key={c}
+                    label={c}
+                    status={byCity.get(c)}
+                    active={city === c}
+                    onClick={() => setCity(city === c ? 'Hela Sverige' : c)}
+                  />
+                );
+              })}
             </div>
           </FilterRow>
 

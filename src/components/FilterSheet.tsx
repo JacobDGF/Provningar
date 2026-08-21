@@ -1,8 +1,11 @@
 import { X, SlidersHorizontal, Navigation, Loader2, ShieldCheck } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useStore } from '../store/useStore';
 import { SUBJECTS, REGIONS } from '../data/exams';
 import { useEscapeKey } from '../hooks/useEscapeKey';
+import { summarizeBy } from '../lib/groupStatus';
+import { useMinuteTick } from '../hooks/useMinuteTick';
+import { GroupChip } from './GroupChip';
 
 interface FilterSheetProps {
   onClose: () => void;
@@ -11,6 +14,7 @@ interface FilterSheetProps {
 export function FilterSheet({ onClose }: FilterSheetProps) {
   useEscapeKey(onClose);
   const {
+    exams,
     filterSubject,
     setFilterSubject,
     filterRegion,
@@ -25,6 +29,14 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
     locationStatus,
     requestLocation,
   } = useStore();
+  const tick = useMinuteTick();
+
+  // Counted over the whole dataset rather than the current selection, so a
+  // number doesn't move while you are reading the chip next to it.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const byRegion = useMemo(() => summarizeBy(exams, 'region'), [exams, tick]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const bySubject = useMemo(() => summarizeBy(exams, 'subject'), [exams, tick]);
 
   const [localSubject, setLocalSubject] = useState(filterSubject);
   const [localRegion, setLocalRegion] = useState(filterRegion);
@@ -191,18 +203,22 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
               Alla ämnen
             </button>
             {SUBJECTS.map((s) => (
-              <button
+              <GroupChip
                 key={s}
+                label={s}
+                status={bySubject.get(s)}
+                active={localSubject === s}
                 onClick={() => setLocalSubject(s === localSubject ? '' : s)}
-                className={chip(localSubject === s)}
-              >
-                {s}
-              </button>
+                variant="block"
+              />
             ))}
           </div>
         </div>
 
-        {/* Region */}
+        {/* Region. Twenty-one identical grey chips used to make the map's
+            question — where can I actually book something? — cost twenty-one
+            clicks to answer. Each chip now carries its län's best colour and
+            its count. */}
         <div className="mb-6">
           <span id="filter-region-label" className="text-sm font-semibold text-ink block mb-2">
             Region
@@ -216,13 +232,14 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
               Alla regioner
             </button>
             {REGIONS.map((r) => (
-              <button
+              <GroupChip
                 key={r}
+                label={r}
+                status={byRegion.get(r)}
+                active={localRegion === r}
                 onClick={() => setLocalRegion(r === localRegion ? '' : r)}
-                className={chip(localRegion === r)}
-              >
-                {r}
-              </button>
+                variant="block"
+              />
             ))}
           </div>
         </div>
