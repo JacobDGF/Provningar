@@ -4430,6 +4430,134 @@ export const EXAMS: Exam[] = [
     tags: ['komvux', 'sala', 'västmanland'],
     verifiedAt: THIN_LAN_2_VERIFIED,
   },
+  // Kalmar och Kronoberg hade två listningar var, båda i länets största stad.
+  // Ett län med två prickar på kartan läser som ett län utan prövningar, och
+  // för de här två var det aldrig sant: både Oskarshamn och Älmhult tar emot
+  // anmälningar den här veckan.
+  {
+    id: 'komvux-oskarshamn-flera-kurser',
+    schoolName: 'Komvux Oskarshamn',
+    provider: 'Oskarshamns kommun',
+    subject: 'Flera ämnen',
+    course: 'Flera kurser (kontakta skolan för kurskod)',
+    courseCode: 'Varierar',
+    level: 'Komvux',
+    city: 'Oskarshamn',
+    region: 'Kalmar',
+    address: 'Stadshuset, Varvsgatan 8, 572 28 Oskarshamn',
+    lat: 57.2645,
+    lng: 16.4487,
+    price: 500,
+    priceNote:
+      '500 kr per kurs. Avgiften betalas först efter beslut, under vecka 38 — inte vid anmälan.',
+    nextPeriod: {
+      // Oskarshamn publicerar hela läsåret som en tidsplan, båda terminerna,
+      // med varje steg daterat: när anmälan öppnar och stänger, vilken vecka
+      // beslutet kommer och när betyget senast ska vara satt.
+      label:
+        'Anmälan till höstens prövning stänger 28 augusti 2026. Beslut och betalning sker under ' +
+        'vecka 38, och prövningsperioden är 28 september – 6 november. Vårens omgång anmäls ' +
+        '8 februari – 1 mars 2027, med prövning 5 april – 14 maj. Du får anmäla högst två ' +
+        'prövningar per period, och en beviljad prövning som inte hunnit genomföras är förbrukad.',
+      applicationStart: '2026-08-10',
+      applicationEnd: '2026-08-28',
+      examWindowStart: '2026-09-28',
+      examWindowEnd: '2026-11-06',
+      confirmed: true,
+    },
+    components: COMPONENTS_FLERA,
+    studyTips: TIPS_FLERA,
+    // Kontrollerat 2026-08-21: kommunen har ingen e-tjänst för prövning —
+    // "Kontakta våra studievägledare för att göra en ansökan". Adresserna står
+    // på prövningssidan, som därför är målet för anmälningsknappen.
+    registration: { kind: 'email' },
+    registrationUrl:
+      'https://www.oskarshamn.se/forskola-och-utbildning/utbildning-for-vuxna/komvux-komvux-som-anpassad-utbildning-och-sfi/komvux/provning/',
+    infoUrl:
+      'https://www.oskarshamn.se/forskola-och-utbildning/utbildning-for-vuxna/komvux-komvux-som-anpassad-utbildning-och-sfi/komvux/',
+    description:
+      'Oskarshamns kommun håller två prövningsperioder per läsår, en på hösten och en på våren. Anmälan görs genom studie- och yrkesvägledarna på komvux@oskarshamn.se, och prövningen kostar 500 kr per kurs. Studiemedel går inte att få för att läsa inför en prövning.',
+    tags: ['komvux', 'oskarshamn', 'kalmar', 'flera-amnen'],
+    verifiedAt: PERIOD_SWEEP_VERIFIED,
+  },
+  {
+    id: 'komvux-haganas-almhult-flera-kurser',
+    schoolName: 'Komvux Haganäs',
+    provider: 'Älmhults kommun',
+    subject: 'Flera ämnen',
+    course: 'Flera kurser (kontakta skolan för kurskod)',
+    courseCode: 'Varierar',
+    level: 'Komvux',
+    city: 'Älmhult',
+    region: 'Kronoberg',
+    address: 'Komvux Haganäs, Älmhult (adress bekräftas vid anmälan)',
+    lat: 56.5514,
+    lng: 14.1358,
+    price: 500,
+    priceNote:
+      '500 kr per kurs, och avgiften ska vara betald senast sista anmälningsdag — anmälan räknas inte som komplett förrän dess.',
+    nextPeriod: {
+      // Älmhult daterar bara ena änden: 1 september respektive 1 februari är
+      // sista dag för både anmälan och betalning. Själva prövningsdatumen
+      // sätts efteråt, och står inte på sidan — så listningen får deadlinen
+      // och ingenting mer.
+      label:
+        'Sista dag för anmälan och betalning till höstens ordinarie prövningstillfälle är ' +
+        '1 september 2026; för våren är det 1 februari. Komvux Haganäs erbjuder prövning ' +
+        'endast i de kurser som finns i skolans eget kursutbud, och du kan söka högst två ' +
+        'prövningar samtidigt. Prövningsdatumen sätts efter anmälan.',
+      applicationEnd: '2026-09-01',
+      confirmed: true,
+    },
+    components: COMPONENTS_FLERA,
+    studyTips: TIPS_FLERA,
+    registrationUrl: 'https://etjanst.almhult.se/oversikt/overview/354',
+    infoUrl: 'https://www.almhult.se/vuxenutbildning/utbildningar/sarskildprovning.5829.html',
+    description:
+      'Älmhults kommun tar emot prövningsanmälan i sin egen e-tjänst, med ett ordinarie tillfälle per termin. Studie- och yrkesvägledaren på Komvux Haganäs hjälper till att välja rätt kurs innan du anmäler dig.',
+    tags: ['komvux', 'älmhult', 'kronoberg', 'flera-amnen'],
+    verifiedAt: PERIOD_SWEEP_VERIFIED,
+  },
+  {
+    id: 'allbo-larcenter-alvesta-flera-kurser',
+    schoolName: 'Allbo Lärcenter',
+    provider: 'Alvesta kommun',
+    subject: 'Flera ämnen',
+    course: 'Flera kurser (kontakta skolan för kurskod)',
+    courseCode: 'Varierar',
+    level: 'Komvux',
+    city: 'Alvesta',
+    region: 'Kronoberg',
+    address: 'Allbo Lärcenter, Alvesta (adress bekräftas vid anmälan)',
+    lat: 56.899,
+    lng: 14.556,
+    price: 500,
+    priceNote:
+      '500 kr per kurs, kostnadsfritt om du har betyget F/IG i kursen. Avgiften återbetalas inte om du inte påbörjar prövningen eller avbryter den.',
+    nextPeriod: {
+      // Alvesta anger ett veckonummer och ingen årtalsangivelse — "öppen under
+      // vecka 7" är ett mönster, inte ett publicerat datum, och att räkna om
+      // det till 15 februari 2027 vore att hitta på ett datum åt anordnaren.
+      label:
+        'Anmälan är öppen under vecka 7, en gång om året. Planeringssamtal hålls vecka 8–9 och ' +
+        'prövningarna börjar normalt vecka 12. Allbo Lärcenter har inte publicerat något datum ' +
+        'för nästa omgång — mejla allbolarcenter@alvesta.se för att få veta när fönstret öppnar.',
+      confirmed: false,
+    },
+    components: COMPONENTS_FLERA,
+    studyTips: TIPS_FLERA,
+    registration: { kind: 'email' },
+    // Alvesta har ingen egen prövningssida och ingen ansökningssida att länka
+    // vidare till: allt om prövning står på kommunens vuxenutbildningssida, och
+    // anmälan är ett mejl. Samma URL i båda fälten är därför sanningen, inte
+    // en lucka — den alternativa knappen faller tillbaka på alvesta.se.
+    registrationUrl: 'https://www.alvesta.se/forskola-och-utbildning/vuxenutbildning/',
+    infoUrl: 'https://www.alvesta.se/forskola-och-utbildning/vuxenutbildning/',
+    description:
+      'Allbo Lärcenter i Alvesta tar emot prövningsanmälan per e-post till allbolarcenter@alvesta.se, med högst två prövningar per period. Anmälningsfönstret är en vecka långt och ligger i februari.',
+    tags: ['komvux', 'alvesta', 'kronoberg', 'flera-amnen'],
+    verifiedAt: PERIOD_SWEEP_VERIFIED,
+  },
 ];
 
 export const SUBJECTS = [...new Set(EXAMS.map((e) => e.subject))].sort();
