@@ -78,6 +78,13 @@ jobs:
       # Checked out as a worktree from the existing gh-pages branch (not
       # created fresh) so this continues its commit history rather than
       # replacing it with an orphan branch.
+      #
+      # The custom domain lives in public/CNAME, which Vite copies into dist/,
+      # so it is republished by every deploy. Setting the domain only in
+      # Settings -> Pages does NOT survive: GitHub writes its CNAME straight
+      # to the gh-pages branch, and the --delete below removes anything not
+      # present in dist/ — the domain would work until the next push to main
+      # and then 404 with no obvious cause.
       - name: Publish to gh-pages
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
