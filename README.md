@@ -198,6 +198,12 @@ En träff betyder att listningen vill ha `full: true` — men sätt det från
 anordnarens egna ord, enligt regeln ovan. Skriptet hittar kandidater, det
 bestämmer inte datan.
 
+En bokningssida som svarar 500 eller 503 säger ingenting om formuläret bakom
+den, och "kunde inte läsas" är den minst användbara rad rapporten kan skriva.
+Därför frågas bara de oåtkomliga om igen, i två omgångar med 5 s och 30 s paus
+— samma skäl som i länksweepen. De som ändå står kvar svarar 200 i en
+webbläsare men 500 på ett `fetch()`, alltså känner de igen klienten.
+
 ### Kontrollera datumen
 
 ```sh

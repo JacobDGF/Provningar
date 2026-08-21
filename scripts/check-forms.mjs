@@ -166,7 +166,45 @@ if (unreadable.length) {
 }
 console.log('');
 
+/**
+ * Same backoff the link sweep uses, and for the same reason.
+ *
+ * A booking page that answers 503 or 500 tells us nothing about whether the
+ * form behind it is open, and "kunde inte läsas" is the least useful line this
+ * report can print. Several of these hosts rate-limit over a window rather than
+ * per request, so the answer is to wait rather than to give up: on 2026-08-21
+ * five URLs came back unreachable here and every one of them served 200 by hand
+ * a minute later.
+ *
+ * Only the unreachable ones are re-asked. A page that answered is a page we
+ * have read, and asking it twice would just be two chances to be throttled.
+ */
+const RETRY_ROUNDS = [
+  { before: 5_000, between: 2_000 },
+  { before: 30_000, between: 3_000 },
+];
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const results = await mapLimit(urls, CONCURRENCY, probe);
+
+let stragglers = urls.filter((_, i) => results[i].unreachable);
+for (const [round, { before, between }] of RETRY_ROUNDS.entries()) {
+  if (!stragglers.length) break;
+  console.log(
+    `↻ ${stragglers.length} svarade inte — väntar ${before / 1000} s och frågar igen ` +
+      `(omgång ${round + 1} av ${RETRY_ROUNDS.length})…\n`,
+  );
+  await sleep(before);
+  const next = [];
+  for (const url of stragglers) {
+    const again = await probe(url);
+    if (again.unreachable) next.push(url);
+    else results[urls.indexOf(url)] = again;
+    await sleep(between);
+  }
+  stragglers = next;
+}
 
 const closed = [];
 const unreached = [];
