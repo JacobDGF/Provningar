@@ -127,13 +127,21 @@ npm run check:links -- --all # visar även omdirigeringar
 Skriptet ingår medvetet inte i `npm test` — det beror på att ~90 externa
 webbplatser svarar.
 
-En 503 betyder två helt olika saker, och sweepen skiljer dem åt i två steg.
-Åtta samtidiga anrop räcker för att trigga rate-limitern hos flera
-kommunplattformar, så allt som svarar 429/503/502/504 eller timeout frågas en
-gång till, en i taget — då svarar en överbelastad värd 200. Det som fortfarande
-vägrar är värdar som känner igen klienten, inte takten; de står i `BOT_BLOCKED`
-och rapporteras som "kunde inte kontrolleras" i stället för som fel, annars
-drunknar en verklig död länk i röd text som alltid är röd.
+En 503 betyder två helt olika saker, och sweepen skiljer dem åt genom att
+vänta. Åtta samtidiga anrop räcker för att trigga rate-limitern hos flera
+kommunplattformar, så allt som svarar 429/503/502/504 eller timeout frågas om,
+en i taget, i tre omgångar med växande paus före sig (1,5 s, 15 s, 45 s) — då
+svarar en överbelastad värd 200. Det som fortfarande vägrar är värdar som känner
+igen klienten, inte takten; de står i `BOT_BLOCKED` och rapporteras som "kunde
+inte kontrolleras" i stället för som fel, annars drunknar en verklig död länk i
+röd text som alltid är röd.
+
+En enda omgång räckte inte. Flera kommunplattformar rate-limitar över ett
+fönster och inte per anrop: efter 91 anrop åtta i bredd svarar de 503 på allt en
+stund framåt, också på en artig omfrågning 1,5 sekunder senare. Sex värdar föll
+så 2026-08-21 och varenda en svarade 200 för hand några minuter efteråt. Att
+skriva in dem i `BOT_BLOCKED` hade varit den billiga lösningen och fel lösning —
+en permanent blind fläck köpt för att tysta ett tillfälligt brus.
 
 Priset för en rad i `BOT_BLOCKED` är att en länk som faktiskt dör där måste
 upptäckas för hand, så listan hålls så kort som bevisen tillåter. Alvis och

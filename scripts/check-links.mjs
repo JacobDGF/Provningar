@@ -151,17 +151,56 @@ console.log(`Kontrollerar ${urls.length} unika länkar från ${SOURCE.replace(RO
 
 const results = await mapPool(urls, check, CONCURRENCY);
 
-/** Re-ask the ones that may only have been throttled, one at a time. */
+/**
+ * How long to pause before each successive round of re-asking, and how long
+ * to leave between the requests inside it.
+ *
+ * One serial round used to be the whole retry, and it was too soon. Several
+ * kommun platforms rate-limit over a window rather than per request: after 91
+ * requests at eight wide they answer 503 to everything for a while, including
+ * to a polite one-at-a-time retry that starts 1.5 seconds later. Six hosts
+ * failed that way on 2026-08-21 and every one of them served 200 by hand a few
+ * minutes afterwards.
+ *
+ * Waiving them in `BOT_BLOCKED` would have been the cheap fix and the wrong
+ * one — it is a permanent blind spot bought to silence a temporary noise. The
+ * window just has to be waited out, so the rounds back off until it is.
+ */
+const RETRY_ROUNDS = [
+  { before: 1_500, between: 1_500 },
+  { before: 15_000, between: 3_000 },
+  { before: 45_000, between: 3_000 },
+];
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/** Re-ask the ones that may only have been throttled, one at a time, backing
+    off between rounds until the host's rate-limit window has passed. */
 async function recheck(all) {
-  const retry = all.filter((r) => !r.ok && RETRYABLE.includes(r.status));
-  if (!retry.length) return all;
-  console.log(`↻ ${retry.length} svarade trögt — kontrollerar dem en i taget…\n`);
+  let pending = all.filter((r) => !r.ok && RETRYABLE.includes(r.status));
+  if (!pending.length) return all;
+  console.log(`↻ ${pending.length} svarade trögt — kontrollerar dem en i taget…\n`);
+
   const fixed = new Map();
-  for (const r of retry) {
-    await new Promise((resolve) => setTimeout(resolve, 1_500));
-    const second = await check(r);
-    if (second.ok) fixed.set(r.url, second);
+  for (const [i, round] of RETRY_ROUNDS.entries()) {
+    if (i > 0) {
+      console.log(
+        `↻ ${pending.length} svarar fortfarande trögt — väntar ${round.before / 1000} s ` +
+          `och försöker igen (omgång ${i + 1} av ${RETRY_ROUNDS.length})…\n`,
+      );
+    }
+    await sleep(round.before);
+    const stillFailing = [];
+    for (const r of pending) {
+      const again = await check(r);
+      if (again.ok) fixed.set(r.url, again);
+      else stillFailing.push(r);
+      await sleep(round.between);
+    }
+    pending = stillFailing;
+    if (!pending.length) break;
   }
+
   return all.map((r) => fixed.get(r.url) ?? r);
 }
 
