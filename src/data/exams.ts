@@ -209,6 +209,10 @@ const THIN_LAN_2_VERIFIED = '2026-08-19';
 // Fullbokat-svep 2026-08-20: läste alla 95 nåbara anordnarsidor efter
 // anordnarens egna ord för "det finns inga platser kvar".
 const FULL_SWEEP_VERIFIED = '2026-08-20';
+// Periodsvep 2026-08-21 (#24): läste om de listningar som stod utan period,
+// och de vars anmälan hunnit stänga. Tre anordnare — Lund, Borås och Kalmar —
+// hade publicerat höstens datum sedan förra läsningen.
+const PERIOD_SWEEP_VERIFIED = '2026-08-21';
 
 /**
  * For providers who put the anmälan on their own page — but only while the
@@ -916,18 +920,32 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Avgift varierar beroende på din situation — skolan bekräftar vid ansökan. Anmälningstider är fasta och bindande.',
     nextPeriod: {
-      label: 'Anmälningstider fastställs av skolan — se Lunds kommuns sida.',
-      confirmed: false,
+      // Kontrollerat 2026-08-21: Lund publicerar hela årets tidplan som en
+      // tabell ("När och var sker prövningar 2026"), där varje prövningsperiod
+      // har sin egen fasta ansökningstid ungefär sex veckor innan. Höstens
+      // andra omgång är den som går att söka härnäst.
+      label:
+        'Ansökan 24 augusti – 6 september 2026 för prövning 19 oktober – 4 november. ' +
+        'Ansökningstiderna är fasta och ansökan är bindande — du kan söka högst två kurser ' +
+        'per period och en kurs per prövningsdatum.',
+      applicationStart: '2026-08-24',
+      applicationEnd: '2026-09-06',
+      examWindowStart: '2026-10-19',
+      examWindowEnd: '2026-11-04',
+      confirmed: true,
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
+    // Kontrollerat 2026-08-21: knappen "Ansök om prövning" på kommunens sida
+    // pekar hit — ansökningswebben med e-legitimation. Den gamla
+    // ApplicantHome.aspx-adressen var portalens äldre ingång.
     registrationUrl:
-      'https://barnskolautbildning.lund.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+      'https://barnskolautbildning.lund.se/HCW.Welfare.Common.DesktopWeb?actor=Actor_Client&idpmethod=SAML&domain=Lund_BOU',
     infoUrl: 'https://lund.se/forskola-och-skola/kommunal-vuxenutbildning/provning',
     description:
-      'Lunds kommun erbjuder betygsprövning i bland annat matematik, engelska och svenska, med skriftlig del på Höstbruksvägen 10.',
+      'Lunds kommun erbjuder betygsprövning i bland annat matematik, engelska och svenska. Hermods sköter prövningarna och den skriftliga delen skrivs kl. 15.45 på Höstbruksvägen 10 i Lund.',
     tags: ['matematik', 'lund'],
-    verifiedAt: VERIFIED,
+    verifiedAt: PERIOD_SWEEP_VERIFIED,
   },
   {
     id: 'umea-ma2b',
@@ -1030,7 +1048,7 @@ export const EXAMS: Exam[] = [
     description:
       'Vuxenutbildningen i Luleå erbjuder betygsprövning i bland annat Kemi 1, gymnasiekurser, grundläggande kurser och SFI (B–D).',
     tags: ['kemi', 'lulea'],
-    verifiedAt: VERIFIED,
+    verifiedAt: PERIOD_SWEEP_VERIFIED,
   },
   {
     id: 'vuxenutbildningen-sundsvall-sundsvall-flera-kurser-kontakta-',
@@ -1130,7 +1148,15 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr om kursen inte lästs tidigare eller redan har godkänt betyg; kostnadsfritt om F/IG satts i kursen tidigare (styrks med betygskopia).',
     nextPeriod: {
-      label: 'Provperiod 2026-09-21 – 2026-09-27',
+      // Omläst 2026-08-21: Härnösands egen tabell "Prövningstillfällen och
+      // sista ansökningsdag för prövningar 2026" listar ett enda tillfälle för
+      // hela året — vecka 39, sista ansökningsdag 5 augusti. Inget för 2027 är
+      // publicerat, så listningen står kvar med gången deadline i stället för
+      // att låtsas att en ny period finns.
+      label:
+        'Vecka 39 (21–27 september 2026) var Härnösands enda prövningstillfälle i år, och ' +
+        'sista ansökningsdag var 5 augusti. Kommunen har ännu inte publicerat några datum ' +
+        'för 2027 — hör av dig till vux@harnosand.se om du vill veta när de kommer.',
       applicationEnd: '2026-08-05',
       examWindowStart: '2026-09-21',
       examWindowEnd: '2026-09-27',
@@ -1143,12 +1169,15 @@ export const EXAMS: Exam[] = [
     // page also offers a PDF blankett as an alternative route.
     registrationUrl:
       'https://education.service.tieto.com/AdultApplication.Student/#/search-offering/kv?domain=harnosandedu',
+    // Bytt 2026-08-21: e-tjänstsidan beskriver bara hur man ansöker. Tabellen
+    // med prövningstillfällen och sista ansökningsdag står på komvux egen
+    // prövningssida, och det är den sidan "skolans webbplats" ska leda till.
     infoUrl:
-      'https://harnosand.se/e-tjanster-och-blanketter/utbildning-och-forskola/vuxenutbildning/ansokan-om-sarskild-provning-inom-kommunal-vuxenutbildning.html',
+      'https://harnosand.se/barn--utbildning/vuxenutbildning/att-studera-pa-komvux/provning.html',
     description:
-      'Nästa prövningstillfälle startar vecka 39 2026 (21-27 september), med sista ansökningsdag 5 augusti 2026. Legitimationskontroll måste göras på plats hos studerandeservice under vecka 34 efter antagningsbesked.',
+      'Härnösands enda prövningstillfälle 2026 är vecka 39 (21–27 september), med sista ansökningsdag 5 augusti. Prövningen är kostnadsfri om du läst kursen men inte fått godkänt; annars 500 kr. Legitimationskontroll görs på plats hos studerandeservice under vecka 34 efter antagningsbesked, och du kan bara söka en kurs per tillfälle.',
     tags: ['kommun', 'gymnasial', 'flera-amnen'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: PERIOD_SWEEP_VERIFIED,
   },
   {
     id: 'jamtlands-gymnasium-provning-for-vuxenstuderande-ostersund-f',
@@ -1341,7 +1370,7 @@ export const EXAMS: Exam[] = [
     description:
       'Anmälan till prövning i grundläggande, gymnasiala och SFI-kurser sker via e-tjänst med BankID; max två kurser per prövningsperiod. Kopia av gymnasiebetyg måste bifogas om man inte tidigare studerat hos vuxenutbildningen i Boden.',
     tags: ['kommun', 'gymnasial', 'flera-amnen'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: PERIOD_SWEEP_VERIFIED,
   },
   {
     id: 'lapplands-larcentra-kiruna-kiruna-flera-kurser-kontakta-skol',
@@ -1371,7 +1400,7 @@ export const EXAMS: Exam[] = [
     description:
       'Lapplands Lärcentra (Gällivare, Jokkmokk, Kiruna, Pajala) erbjuder prövning där ämnet läses in på egen hand utifrån gällande ämnesplan utan lärarstöd. Ansökan görs på pappersblankett till SYV med önskad kurskod och prövningsperiod.',
     tags: ['kommunalförbund', 'gymnasial', 'flera-amnen'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: PERIOD_SWEEP_VERIFIED,
   },
   {
     id: 'lapplands-larcentra-gallivare-gallivare-flera-kurser-kontakt',
@@ -1401,7 +1430,7 @@ export const EXAMS: Exam[] = [
     description:
       'Lapplands Lärcentra (Gällivare, Jokkmokk, Kiruna, Pajala) erbjuder prövning där ämnet läses in på egen hand utifrån gällande ämnesplan utan lärarstöd. Ansökan görs på pappersblankett till SYV med önskad kurskod och prövningsperiod.',
     tags: ['kommunalförbund', 'gymnasial', 'flera-amnen'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: PERIOD_SWEEP_VERIFIED,
   },
   {
     id: 'vuxenutbildningen-boras-stad-boras-flera-kurser-kontakta-sko',
@@ -1420,18 +1449,30 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per prövning. Gratis om du har betyget F/IG i kursen sedan tidigare (betygskopia bifogas).',
     nextPeriod: {
+      // Kontrollerat 2026-08-21: anmälan är inte löpande, vilket den gamla
+      // etiketten sa. Borås öppnar ett fyra dagar långt fönster per omgång, och
+      // publicerar hela hösten som en tabell på boras.se. Fönstret 24–27
+      // augusti gäller Gy11-kurser; nästa (14–17 september) gäller Gy25.
       label:
-        'Anmälan sker löpande via Alvis-portalen; se aktuella prövnings- och anmälningsdatum under "Viktiga datum" på boras.alvis.se',
-      confirmed: false,
+        'Anmälan 24–27 augusti 2026 för prövning tisdag 29 september (språk och övriga) ' +
+        'eller torsdag 1 oktober (matematik och naturvetenskap). Antalet platser är begränsat ' +
+        'och kan ta slut innan anmälningsperioden är över — anmäl dig tidigt. Nästa omgång ' +
+        'anmäls 14–17 september, för prövning 3–6 november.',
+      applicationStart: '2026-08-24',
+      applicationEnd: '2026-08-27',
+      examWindowStart: '2026-09-29',
+      examWindowEnd: '2026-10-01',
+      confirmed: true,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://boras.alvis.se/provning/amnesomrade',
-    infoUrl: 'https://boras.alvis.se/provning/amnesomrade',
+    infoUrl:
+      'https://www.boras.se/utbildningochforskola/komvux/ansokanochantagning/provning.4.40b9a18a198c092ed9d4ab1.html',
     description:
       'Vuxenutbildningen i Borås erbjuder prövning i ett stort urval kurser inom matematik, naturvetenskap, samhällsvetenskap, språk samt vård och omsorg. Anmälan görs i skolans e-tjänst Alvis och endast en kurs kan prövas per tillfälle.',
     tags: ['komvux', 'boras', 'flera-amnen'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: PERIOD_SWEEP_VERIFIED,
   },
   {
     id: 'kunskapsforbundet-vast-vuxenutbildningen-vanersborg-flera-ku',
@@ -2065,7 +2106,7 @@ export const EXAMS: Exam[] = [
     description:
       'Uppsala kommun låter NTI-skolan ansvara för prövning i teoretiska kurser för kommunens invånare; man kan bara anmäla sig till en kurs/ämnesnivå per prövningsperiod. Prövning i yrkeskurser hanteras separat via ujc.provning@uppsala.se.',
     tags: ['komvux', 'flera ämnen', 'uppsala'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: PERIOD_SWEEP_VERIFIED,
   },
   {
     id: 'vux-huddinge-huddinge-svenska-som-andrasprak-3',
@@ -2207,7 +2248,7 @@ export const EXAMS: Exam[] = [
     description:
       'Centrum Vux Haninge erbjuder prövning för den som saknar eller vill höja betyg; skriftlig och muntlig examination, betalning via Swish. Senaste omgången (våren 2026) hade ansökan 9-16 april och prövningsperiod veckorna 22-23.',
     tags: ['komvux', 'flera ämnen', 'haninge'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: PERIOD_SWEEP_VERIFIED,
   },
   {
     id: 'komvux-enkoping-provning-via-nti-skolan-enkoping-flera-kurse',
@@ -2514,7 +2555,7 @@ export const EXAMS: Exam[] = [
     description:
       'Campus Nyköping genomför prövningar vecka 13–15 på våren och vecka 43–45 på hösten; aktuella ansökningsperioder publiceras löpande i kurskatalogen.',
     tags: ['flera ämnen', 'gymnasial', 'södermanland'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: PERIOD_SWEEP_VERIFIED,
   },
   {
     id: 'vuxenutbildningscentrum-vasteras-edstromska-m-fl-vasteras-fl',
@@ -2607,7 +2648,14 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per kurs, oavsett tidigare betyg',
     nextPeriod: {
-      label: 'Prövning hösten 2026',
+      // Omläst 2026-08-21. Karlskoga skriver nu själva på sidan: "Det är inte
+      // tillåtet att göra anmälningar längre. Sista anmälningsdag var den 20
+      // augusti klockan 23.59." Prövningsveckorna ligger kvar, men de går inte
+      // att söka till — och våren 2027 är inte publicerad.
+      label:
+        'Prövning hösten 2026 i veckorna 38–39 och 43. Karlskoga skriver själva att ' +
+        'anmälan är stängd: sista anmälningsdag var 20 augusti kl. 23.59. Vårens datum ' +
+        'är ännu inte publicerade.',
       applicationStart: '2026-08-10',
       applicationEnd: '2026-08-20',
       examWindowStart: '2026-09-14',
@@ -2624,7 +2672,7 @@ export const EXAMS: Exam[] = [
     description:
       'Karlskoga erbjuder prövning i Engelska 6 med obligatoriska prövningsveckor 38–39 och 43; ansökan är öppen 10–20 augusti 2026 och prövningen sker på Vuxnas lärande i Karlskoga.',
     tags: ['engelska', 'gymnasial', 'örebro'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: PERIOD_SWEEP_VERIFIED,
   },
   {
     id: 'vuxnas-larande-karlskoga-karlskoga-matematik-3b-3c',
@@ -2642,7 +2690,12 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per kurs, oavsett tidigare betyg',
     nextPeriod: {
-      label: 'Prövning hösten 2026',
+      // Omläst 2026-08-21, samma sida och samma besked som Engelska 6 ovan:
+      // "Det är inte tillåtet att göra anmälningar längre."
+      label:
+        'Prövning hösten 2026 i veckorna 41–43. Karlskoga skriver själva att anmälan är ' +
+        'stängd: sista anmälningsdag var 20 augusti kl. 23.59. Vårens datum är ännu inte ' +
+        'publicerade.',
       applicationStart: '2026-08-10',
       applicationEnd: '2026-08-20',
       examWindowStart: '2026-10-05',
@@ -2659,7 +2712,7 @@ export const EXAMS: Exam[] = [
     description:
       'Prövning i Matematik 3b/3c på Vuxnas lärande Karlskoga har obligatoriska prövningsveckor 41–43 hösten 2026; ansökan öppen 10–20 augusti 2026, avgift 500 kr.',
     tags: ['matematik', 'gymnasial', 'örebro'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: PERIOD_SWEEP_VERIFIED,
   },
   {
     id: 'vuxenutbildningen-falun-falu-larcentrum-falun-flera-kurser-k',
@@ -3223,7 +3276,7 @@ export const EXAMS: Exam[] = [
     description:
       'Komvux i Jönköping erbjuder prövning i alla kurser/ämnesnivåer i sitt utbud och publicerar en tabell med tre prövningsperioder för 2026. Gymnasiala kurser anmäls i kommunens e-tjänst; för sfi och grundläggande kurser gör du anmälan på plats hos studie- och yrkesvägledare på Lärcentrum, Barnarpsgatan 40.',
     tags: ['komvux', 'jönköping', 'småland'],
-    verifiedAt: LINK_SWEEP_VERIFIED,
+    verifiedAt: PERIOD_SWEEP_VERIFIED,
   },
   {
     id: 'komvux-vaxjo-vaxjo-flera-kurser-kontakta-skolan-for-kurskod',
@@ -3273,9 +3326,20 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per kurs; kostnadsfritt vid tidigare Icke Godkänd/F',
     nextPeriod: {
+      // Kontrollerat 2026-08-21 mot gymnasieförbundets egen tidplan ("GYF
+      // Prövning – tidplan och anordnare vux", PDF på infoUrl). Den räknar i
+      // veckonummer, inte datum: prövning v. 38–40 med sista ansökningsdag
+      // måndag i v. 36 — 2026 blir det 31 augusti respektive 14 september–4
+      // oktober. Perioden efter är v. 42–44, sista ansökan måndag v. 40.
       label:
-        'Tidplan för prövning på gymnasial vux publiceras separat; max två kurser per prövningsperiod',
-      confirmed: false,
+        'Prövning vecka 38–40 (14 september – 4 oktober 2026) i engelska, matematik, religion ' +
+        'och samhällskunskap. Sista ansökningsdag är måndag i vecka 36, alltså 31 augusti. ' +
+        'Nästa omgång är vecka 42–44 (historia, matematik 2, naturkunskap, svenska och ' +
+        'svenska som andraspråk), med sista ansökningsdag måndag i vecka 40.',
+      applicationEnd: '2026-08-31',
+      examWindowStart: '2026-09-14',
+      examWindowEnd: '2026-10-04',
+      confirmed: true,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
@@ -3284,9 +3348,9 @@ export const EXAMS: Exam[] = [
     infoUrl:
       'https://gyf.se/vara-skolor/axel-weudelskolan/utbildningar/gymnasial-vuxenutbildning/provning-gymnasial-vux',
     description:
-      'Axel Weüdelskolan inom Kalmarsunds gymnasieförbund ansvarar för alla prövningar inom vuxenutbildningen i Kalmar, Mörbylånga och Torsås; ansökan sker via webbansökan och betalning via Swish.',
+      'Axel Weüdelskolan inom Kalmarsunds gymnasieförbund ansvarar för alla prövningar inom vuxenutbildningen i Kalmar, Mörbylånga och Torsås. Andra skolor i förbundet tar emot anmälan på blankett, men Axel Weüdelskolan tar bara emot den via webbansökan.',
     tags: ['komvux', 'kalmar', 'småland'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: PERIOD_SWEEP_VERIFIED,
   },
   {
     id: 'komvux-vastervik-vastervik-flera-kurser-kontakta-skolan-for-',
@@ -3568,7 +3632,7 @@ export const EXAMS: Exam[] = [
     description:
       'Arena Utbildning anordnar prövning för Solna vuxenutbildning. Anmälan görs per e-post med personnummer, kontaktuppgifter och vilken kurs prövningen gäller — glöm inte ange om kursen följer GY11 eller GY25.',
     tags: ['komvux', 'solna', 'stockholm'],
-    verifiedAt: STHLM_LAN_VERIFIED,
+    verifiedAt: PERIOD_SWEEP_VERIFIED,
   },
   // Mora vuxenutbildning — verified against moragymnasium.se 2026-08-11 (their
   // page was itself updated 7 August). Two fixed periods a year, both timed so
