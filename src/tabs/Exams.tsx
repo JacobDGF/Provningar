@@ -11,6 +11,7 @@ import { useStore } from '../store/useStore';
 import { ExamCard } from '../components/ExamCard';
 import { CompareTable } from '../components/CompareTable';
 import { WatchList } from '../components/WatchList';
+import { ClashNotice } from '../components/ClashNotice';
 import { Exam, SavedExam } from '../types';
 import { compareByPeriod } from '../lib/examStatus';
 
@@ -259,6 +260,11 @@ export function Exams() {
             saved in September is a dead card in November, while "Matematik i
             Stockholm" is still the errand. */}
         {view === 'list' && <WatchList />}
+
+        {/* Before the cards, and before the "Att betala"-summan: två prov samma
+            dag är det enda på den här sidan som gör en av de sparade
+            prövningarna omöjlig, och avgiften är betald i förskott. */}
+        {view === 'list' && <ClashNotice exams={savedList} />}
 
         {savedList.length === 0 ? (
           <div className="bg-surface border-[1.5px] border-dashed border-line rounded-[26px] p-9 text-center">

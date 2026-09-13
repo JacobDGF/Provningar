@@ -314,6 +314,45 @@ skulle annars dra ut sin egen kolumn till dubbla bredden, och en rad man inte
 kan läsa tvärs över är ingen jämförelse. Tabellen är bredare än en telefon med
 flit och rullar i sin egen ruta, aldrig sidan.
 
+## Två prov samma dag
+
+En prövningsperiod är en månad. Ett skrivpass är en eftermiddag. De anordnare
+som publicerar ett skrivschema låser varje kurs till en bestämd dag inne i
+perioden — Komvux Malmö skriver ut dag, incheckningstid och provstart per kurs,
+Prövningsenheten Göteborg daterar varje kurs till en enda kväll — och då kan två
+sparade prövningar ha identiska perioder, se oproblematiska ut på varsitt kort,
+och ändå vara omöjliga att göra båda två.
+
+Malmö säger det rakt ut: _"Du kan anmäla dig till max två kurser/period, men
+endast skriva ett kursprov per skrivdag. Om kurserna krockar kan vi inte
+behandla din ansökan."_ Avgiften är betald i förskott, den flyttas inte till
+nästa period, och det enda stället krocken gick att se var i löptexten på två
+olika kort.
+
+[`src/lib/examClash.ts`](src/lib/examClash.ts) läser dagarna ur datan och Mina
+prövningar visar dem som en enda rad ovanför korten: _"Engelska 5 och Historia
+1b — skrivs måndag 26 oktober hos Komvux Malmö. Du hinner bara det ena."_
+
+Tre saker håller regeln ärlig:
+
+- **Dagen kommer ur anordnarens eget schema**, aldrig ur perioden. `writingDays`
+  i [`src/types/index.ts`](src/types/index.ts) sätts bara där ett skrivschema är
+  publicerat; en omgång vars fönster är en enda dag bär redan sin dag i
+  `examWindowStart`/`examWindowEnd` och läses därifrån. En månadslång period
+  säger ingenting om vilken dag, och då säger appen ingenting.
+- **Krocken är den fysiska, inte anordnarens regel.** Samma dag betyder att du
+  bara hinner det ena, oavsett vem som håller i provet — därför gäller varningen
+  också två skolor i två kommuner. Att det är _samma_ anordnare säger raden bara
+  när det är sant.
+- **Panelen finns bara när krocken finns.** En ruta som säger "inga krockar" är
+  en varning om ingenting, varje gång.
+
+Ett test i [`src/data/exams.test.ts`](src/data/exams.test.ts) håller ihop de två
+halvorna av samma fakta: varje `writingDay` måste ligga inne i listningens egen
+prövningsperiod. Dagen står nämligen två gånger i datan — som löptext i
+etiketten för kortet, och som datum för krockkollen — och den tysta halvan är
+den användaren agerar på.
+
 ## AI-prövning
 
 Sökrutan i Upptäck tar ett ord. Det folk kommer med är en mening — _"jag bor i
@@ -402,7 +441,10 @@ Därför två utvägar, båda helt lokala:
   sista anmälningsdag och provperiod (heldagshändelser, påminnelse dagen före)
   som användaren lägger i telefonens egen kalender. Ingen händelse skapas för en
   period som inte är bekräftad — ett gissat datum i någons kalender är sämre än
-  inget datum.
+  inget datum. Har anordnaren publicerat ett skrivschema exporteras skrivpassen
+  i stället för perioden: en händelse per dag, med incheckningstiden i
+  beskrivningen, eftersom en fyra veckor lång heldagshändelse i oktober inte
+  säger när du ska vara i salen.
 - Profilfliken exporterar allt appen vet om användaren som JSON. Allt ligger i
   en enda webbläsares `localStorage`, så exporten är den enda säkerhetskopia som
   finns — den ligger direkt ovanför knappen som raderar originalet.

@@ -159,6 +159,22 @@ describe('EXAMS dataset', () => {
     expect(bad.map((e) => e.id)).toEqual([]);
   });
 
+  /**
+   * `writingDays` is the same fact as the label's "Skrivpass torsdag 29
+   * oktober", written twice — once as prose for the card and once as dates for
+   * the clash check. A day outside the provider's own prövningsperiod means the
+   * two have drifted apart, and the silent half is the one the user acts on.
+   */
+  it('keeps every writing day inside its own prövningsperiod', () => {
+    const strays = EXAMS.filter((e) => {
+      const p = e.nextPeriod;
+      if (!p.writingDays?.length) return false;
+      if (!p.confirmed || !p.examWindowStart || !p.examWindowEnd) return true;
+      return p.writingDays.some((d) => d < p.examWindowStart! || d > p.examWindowEnd!);
+    });
+    expect(strays.map((e) => e.id)).toEqual([]);
+  });
+
   it('files every listing under one of Sweden’s 21 län', () => {
     const strays = [...new Set(EXAMS.map((e) => e.region))].filter((r) => !LAN.includes(r));
     expect(strays).toEqual([]);

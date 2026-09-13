@@ -131,6 +131,56 @@ describe('examCalendarEvents', () => {
     expect(onlyExam[0].end).toBe('2026-10-07');
   });
 
+  /**
+   * The window is a month; the skrivpass is an afternoon. A provider who
+   * publishes both should put the afternoon in the calendar — a four-week
+   * all-day block says nothing about when to be in the room.
+   */
+  it('exports one event per skrivpass when the provider publishes a schema', () => {
+    const exam = {
+      ...examWith({
+        label: 'Period 4 2026',
+        applicationEnd: '2026-09-18',
+        examWindowStart: '2026-10-26',
+        examWindowEnd: '2026-11-25',
+        writingDays: ['2026-10-27', '2026-10-30'],
+        confirmed: true,
+      }),
+      components: [
+        { name: 'Delprov 1', duration: '4 timmar', description: 'Tisdag 27 oktober 2026.' },
+        { name: 'Delprov 2', duration: '4 timmar', description: 'Fredag 30 oktober 2026.' },
+      ],
+    } as Exam;
+
+    const events = examCalendarEvents(exam);
+    expect(events.map((e) => e.start)).toEqual(['2026-09-18', '2026-10-27', '2026-10-30']);
+    expect(events[1].summary).toBe('Prövning: Matematik 3c (delprov 1 av 2)');
+    expect(events[1].description).toContain('Tisdag 27 oktober 2026.');
+    // Each pass is its own day, never the window it sits in.
+    expect(events[2].end).toBeUndefined();
+  });
+
+  it('leaves the components out when they do not line up with the days', () => {
+    const exam = {
+      ...examWith({
+        label: 'Period 4 2026',
+        examWindowStart: '2026-10-26',
+        examWindowEnd: '2026-11-25',
+        writingDays: ['2026-10-27'],
+        confirmed: true,
+      }),
+      components: [
+        { name: 'Skriftligt prov', duration: '4 timmar', description: 'Skrivpasset.' },
+        { name: 'Muntligt prov', duration: '30 min', description: 'Bokas med läraren.' },
+      ],
+    } as Exam;
+
+    const events = examCalendarEvents(exam);
+    expect(events).toHaveLength(1);
+    expect(events[0].summary).toBe('Prövning: Matematik 3c');
+    expect(events[0].description).not.toContain('Bokas med läraren');
+  });
+
   it('gives every event a UID unique to the listing', () => {
     const uids = EXAMS.flatMap(examCalendarEvents).map((e) => e.uid);
     expect(new Set(uids).size).toBe(uids.length);

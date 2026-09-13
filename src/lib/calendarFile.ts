@@ -151,7 +151,31 @@ export function examCalendarEvents(exam: Exam): CalendarEventInput[] {
     });
   }
 
-  if (p.examWindowStart) {
+  // A published skrivschema beats the window it sits inside: the useful entry
+  // is the afternoon you have to be in the room, not a month-long block that
+  // greys out every other plan you make in October. Providers who date each
+  // course to one evening already store that day as a one-day window, and fall
+  // through to the branch below unchanged.
+  const days = p.writingDays ?? [];
+  if (days.length > 0) {
+    // Only when the two line up one-to-one does component `i` describe day `i`;
+    // otherwise the times belong to some other part of the prövning.
+    const perDay = exam.components.length === days.length;
+    days.forEach((day, i) => {
+      const part = days.length > 1 ? ` (delprov ${i + 1} av ${days.length})` : '';
+      events.push({
+        uid: `${exam.id}-skrivpass-${i + 1}@provningar`,
+        summary: `Prövning: ${exam.course}${part}`,
+        description:
+          `Prövning i ${exam.course} hos ${exam.schoolName} (${exam.provider}).` +
+          (perDay ? ` ${exam.components[i].description}` : '') +
+          ` ${p.label}`,
+        location: where,
+        start: day,
+        url: exam.infoUrl,
+      });
+    });
+  } else if (p.examWindowStart) {
     events.push({
       uid: `${exam.id}-exam@provningar`,
       summary: `Prövning: ${exam.course}`,

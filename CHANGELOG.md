@@ -4,6 +4,61 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-09-13
+
+**Data: +76 prövningar.** Hela Komvux Malmös skrivschema och utbud för period 4
+2026, läst rad för rad — både Gy11-kurserna och Gy25-ämnena. Datasetet går från
+588 till 664 listningar.
+
+| Kommun | Listningar | Källa                                                            |
+| ------ | ---------- | ---------------------------------------------------------------- |
+| Malmö  | 28 → 104   | Komvux Malmös skrivschema och utbud, gymnasiala kurser/ämnen, P4 |
+
+Malmö stod på 28 kort trots att kommunen är trea i prioritetsordningen, och
+skälet var att augustisvepet läste schemat som en lista över kurser. Det är i
+själva verket två parallella utbud: 49 Gy11-kurser och 55 Gy25-ämnesnivåer, var
+och en med sin egen skrivdag inne i samma period.
+
+- **Kurskoderna kommer ur Skolverkets syllabus-API**
+  (`api.skolverket.se/syllabus/v1/subjects?schooltype=VUXGY`), inte ur ett
+  mönster. Malmö publicerar kursnamnen men aldrig koderna, och en Gy25-kod går
+  inte att gissa fram ur sitt Gy11-namn: `Redovisning 1` är `FÖRRED01` under
+  Företagsekonomi, medan `Redovisning nivå 1` är `REDO1000X` och ett eget ämne.
+  API:t bekräftar också de 36 koder Örebrotabellen gav i förra svepet, `SAMH1B00X`
+  inräknad.
+- **Varje kurs bär sin egen skrivdag**, som datum och inte bara som löptext:
+  måndag 26 oktober till fredag 30 oktober, med incheckning och provstart som
+  anordnaren skriver dem. Engelska, svenska och svenska som andraspråk har två
+  delprov på två olika dagar, och det andra kan bara skrivas av den som gjort det
+  första.
+- **Två kort där kursen har två namn**, som README kräver: `Matematik 3b`
+  (MATMAT03b) och `Matematik – fortsättning Nivå 1b` (MATO1B00X) är två
+  anmälningar med var sitt förberedelsedokument hos Malmö, och Gy25-kortet säger i
+  klartext vilken av dem som är din.
+- **De två äldsta Malmökorten är omlästa, inte dubblerade.** `malmo-svenska3` och
+  `malmo-eng6` låg kvar från junisvepet med en period utan skrivdag och en
+  `infoUrl` som pekade på översiktssidan i stället för på schemat där datumen
+  står. Deras id är kvar, så en sparad prövning hittar hem.
+- Kvar att bekräfta: Malmö listar en Gy11-kurs som bara heter "Artificiell
+  Intelligens", och Skolverket har två (`ARTART01`, `ARTART02`). Anordnarens egen
+  anvisningssida saknar kursen helt, så den är inte inlagd — Gy25-ämnet
+  (`ARTI1000X`, nivå 1) är entydigt och finns med. `check:dates` pekar nu ut tolv
+  listningar vars omgång helt har passerat (Växjö, Värnamo, Kunskapsförbundet
+  Väst, Kristinehamn, Katrineholm, Trollhättan, ABF Stockholm ×2, Iris Upplands
+  Väsby, Uddevalla, Göteborgs moderna språk). De behöver läsas om mot anordnarens
+  sida, inte skrivas om på gissning.
+
+**Produkt: två prov samma dag.** Mina prövningar säger nu ifrån när två sparade
+prövningar skrivs samma dag — _"Engelska 5 och Historia 1b · skrivs måndag 26
+oktober hos Komvux Malmö. Du hinner bara det ena."_ Malmö tar inte ens emot en
+sådan anmälan, avgiften betalas i förskott och flyttas inte, och krocken gick
+tidigare bara att se genom att läsa löptexten på två kort. Regeln appen använder
+är den fysiska, inte anordnarens: samma dag gäller också två skolor i två
+kommuner. Samma dagar gör `.ics`-exporten dagsexakt — ett skrivpass per händelse
+med incheckningstiden i beskrivningen, i stället för en fyra veckor lång
+heldagshändelse. Verifierat i Chromium mot ett riktigt bygge. Se
+[README](README.md#två-prov-samma-dag).
+
 ## 2026-09-11 (räknaren i drift)
 
 Räknaren står nu hos Cloudflare och appen är byggd mot den. Kedjan är

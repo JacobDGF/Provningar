@@ -7,6 +7,20 @@ export interface NextPeriod {
   /** True when we have a real confirmed date for this period. When false, the UI must not present a fabricated date — link out instead. */
   confirmed: boolean;
   /**
+   * The provider's fixed writing days for *this* course, as ISO dates.
+   *
+   * A prövningsperiod is a window; a skrivpass is an afternoon. Providers who
+   * publish a skrivschema (Komvux Malmö is the clearest case) give each course
+   * its own obligatory day inside the window, and you may sit at most one
+   * kursprov per day — so two saved rounds on the same afternoon is a clash the
+   * user has to discover *before* paying, not at the door.
+   *
+   * Only set from a published schema. A round whose window is one single day
+   * carries that day in `examWindowStart`/`examWindowEnd` already and needs
+   * nothing here — see `lib/examClash.ts`, which reads both.
+   */
+  writingDays?: string[];
+  /**
    * True when the provider has published this round as fully booked.
    *
    * A dated window that is already full is the one case where "öppen för
