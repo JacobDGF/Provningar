@@ -314,6 +314,39 @@ skulle annars dra ut sin egen kolumn till dubbla bredden, och en rad man inte
 kan läsa tvärs över är ingen jämförelse. Tabellen är bredare än en telefon med
 flit och rullar i sin egen ruta, aldrig sidan.
 
+### Två prov samma dag
+
+Kalendern i Mina prövningar visar varje sparad omgång som en period, och det är
+så anordnarna skriver dem: fyra Malmökurser ligger alla "26 oktober –
+25 november". Det ser ut som fyra prövningar man hinner med. Det gör man inte.
+Komvux Malmö publicerar ett skrivschema där varje kurs har sin egen
+eftermiddag, och skriver ut regeln själv: _"Du kan anmäla dig till max två
+kurser/period, men endast skriva ett kursprov per skrivdag. … Om kurserna
+krockar kan vi inte behandla din ansökan."_ En krock är alltså inte ett val man
+gör på plats — det är en anmälan som inte behandlas alls, för en avgift som inte
+betalas tillbaka.
+
+[`src/lib/examClash.ts`](src/lib/examClash.ts) hittar dem, och panelen står
+överst bland de sparade eftersom den är det enda där som måste vara avgjort
+_före_ betalningen. Tre regler håller den ärlig.
+
+- **Bara publicerade skrivdagar räknas.** `nextPeriod.examDays` sätts när
+  anordnaren skrivit ut vilken dag kursen skrivs, och lämnas tom annars. Att
+  läsa prövningsperioden som en provdag vore att kalla varje par av sparade
+  höstprövningar en krock, och en varning som alltid syns är ingen varning.
+- **Krocken är per anordnare.** Två skolor kan skriva samma torsdag — då väljer
+  man skola, inte dag. Två omgångar hos samma skola samma dag är däremot två
+  prov som börjar 15.15 i samma sal.
+- **Panelen finns bara när den har något att säga**, säger aldrig "inga
+  krockar", och har ingen egen knapp: enda vägen vidare är listningen, där
+  datumen och anmälan redan bor. Den lånar heller inte statusfärgerna — rött
+  betyder fullbokat i hela appen, och en krock är tvärtom två omgångar du
+  fortfarande kan boka, men bara en av dem.
+
+Det fall datan gör mest sannolikt är Gy11/Gy25-tvillingarna: den som inte vet
+vilket system hens betyg hör till sparar båda, och Komvux Malmö skriver
+Matematik 2b och Matematik Nivå 2b samma eftermiddag.
+
 ## AI-prövning
 
 Sökrutan i Upptäck tar ett ord. Det folk kommer med är en mening — _"jag bor i

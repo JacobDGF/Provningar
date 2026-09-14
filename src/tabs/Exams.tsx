@@ -10,6 +10,7 @@ import {
 import { useStore } from '../store/useStore';
 import { ExamCard } from '../components/ExamCard';
 import { CompareTable } from '../components/CompareTable';
+import { ClashNotice } from '../components/ClashNotice';
 import { WatchList } from '../components/WatchList';
 import { Exam, SavedExam } from '../types';
 import { compareByPeriod } from '../lib/examStatus';
@@ -278,6 +279,11 @@ export function Exams() {
           <CompareTable exams={savedList} />
         ) : (
           <div className="flex flex-col gap-5">
+            {/* Before the counts, because it is the only thing here that is
+                time-critical: two prov on one afternoon has to be settled
+                before the anmälan is paid, not after. */}
+            <ClashNotice exams={savedList} />
+
             <div className="flex gap-3.5 flex-wrap">
               <div className="flex-1 min-w-[200px] bg-trust-50 rounded-[28px] px-6 py-[22px]">
                 <p className="text-[10.5px] font-bold uppercase tracking-[.1em] text-trust-700">

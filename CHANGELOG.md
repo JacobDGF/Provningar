@@ -4,6 +4,85 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-09-14
+
+**Data: +76 prövningar.** Resten av Komvux Malmös utbud för period 4 2026, läst
+kurs för kurs ur stadens skrivschema och ur anordnarens egna
+prövningsanvisningar. Datasetet går från 588 till 664 listningar, och Malmö från
+28 till 104.
+
+| Kommun | Listningar | Källa                                                          |
+| ------ | ---------- | -------------------------------------------------------------- |
+| Malmö  | 28 → 104   | Skrivschema och utbud – gymnasiala kurser/ämnen, period 4 2026 |
+
+Malmö står näst efter Stockholm och Göteborg i prioritetsordningen, och var den
+enda av de tre som hade ett halvläst utbud: de 28 korten täckte kärnämnena —
+matematik, svenska, engelska, naturvetenskap — men varken de samhälls- och
+ekonomikurser Malmö prövar i samma perioder eller något alls av Gy25-utbudet.
+
+- **Anmälan är öppen nu**, 7–18 september, prövningsperiod 26 oktober –
+  25 november med betygsdatum den 25:e. Avgiften är 500 kr, eller ingenting om
+  du redan har F eller streck i kursen.
+- **Skrivdagen är det som skiljer korten åt.** Malmö publicerar vilken
+  eftermiddag varje kurs skrivs, med incheckningstid, och det står nu på varje
+  listning: måndag 26 (engelska och naturvetenskap), tisdag 27 (svenska,
+  samhälle), onsdag 28 (ekonomi, humaniora), torsdag 29 (matematik), fredag 30
+  (delprov 2). Svenska, svenska som andraspråk och engelska har två obligatoriska
+  pass, där delprov 2 bara kan skrivas av den som gjort delprov 1.
+- **Gy25-ämnena är hela halvan som saknades**: 55 av de 76 nya korten. Malmö
+  prövar samma innehåll under båda läroplanerna under övergångsperioden
+  2026–2030, med ett eget förberedelsedokument per kod, så de är två kort precis
+  som README kräver.
+- **Kurskoderna är lästa, inte härledda.** Varken skrivschemat eller kursutbudet
+  skriver ut någon kod — men varje prövningsanvisning gör det, på första raden.
+  Alla 107 anvisningar är hämtade och koden läst ur var och en. De bekräftar
+  samtidigt de Gy25-koder som hittills bara vilat på Örebros tabell och
+  Göteborgs kurslista.
+- **Fyra av anordnarens egna koder är skrivfel**, och datan tar den rättade
+  formen: anvisningen för Samhällskunskap 1a2 säger `SAMSAM01A1` (kursen ovanför
+  den), Kemi nivå 2 säger `KEM12000X` med siffran ett, Företagsekonomi 2 säger
+  `FÖRFÖR2` och Entreprenörskap `Entenro`. Juridik nivå 1 är den enda där två
+  källor säger olika: Malmö skriver `JURO1000X`, Göteborgs Alvis-katalog
+  `JURI1000X` — och `JURI2000X`/`JURI3000X` i samma familj. Datan följer
+  Göteborg, eftersom en kod i ett anmälningssystem som tar emot anmälningar är
+  hårdare bevis än en rad i ett Google-dokument som stavat fel tre gånger till.
+- **Två gamla Malmökort är uppdaterade i stället för dubblerade.**
+  `malmo-svenska3` och `malmo-eng6` låg kvar från junisvepet med generiska
+  provmoment och en infoUrl utan datum; de har nu samma skrivschema, samma
+  period och samma taggar som resten av Malmö.
+- **Kvar hos Malmö:** Artificiell Intelligens enligt Gy11 står i kursutbudet men
+  har ingen publicerad anvisning, alltså ingen kurskod någonstans på Malmös
+  sidor — det kortet väntar hellre än gissar. Moderna språk (franska, spanska,
+  tyska) och Marknadsföring ges bara i period 1 och 3 och hör inte hemma i den
+  här omgången.
+- **Kvar sedan tidigare:** `check:dates` pekar ut 12 listningar vars omgång helt
+  har passerat (Växjö, Värnamo, Kunskapsförbundet Väst, Kristinehamn,
+  Katrineholm, Trollhättan, ABF Stockholm ×2, Iris Upplands Väsby, Uddevalla,
+  Göteborg ×2). De behöver läsas om mot anordnarens sida, inte skrivas om på
+  gissning.
+
+**Produkt: två prov samma dag.** Mina prövningar säger nu ifrån när två sparade
+omgångar skrivs samma dag hos samma anordnare. Komvux Malmö skriver ut regeln
+själv — _"endast skriva ett kursprov per skrivdag … Om kurserna krockar kan vi
+inte behandla din ansökan"_ — så en krock är inte ett val man gör på plats, utan
+en anmälan som inte behandlas alls, för en avgift som inte betalas tillbaka.
+
+- **Bara publicerade skrivdagar räknas.** `nextPeriod.examDays` är nytt och sätts
+  bara där anordnaren skrivit ut dagen. Att läsa prövningsperioden som en provdag
+  vore att kalla varje par av sparade höstprövningar en krock, och en varning som
+  alltid syns är ingen varning.
+- **Panelen finns bara när den har något att säga**, säger aldrig "inga krockar",
+  och har ingen egen knapp: enda vägen vidare är listningen. Den lånar inte
+  statusfärgerna heller — rött betyder fullbokat i hela appen, och en krock är
+  tvärtom två omgångar du fortfarande kan boka, men bara en av dem.
+- **Verifierat i Chromium mot ett riktigt bygge**, 400 px brett: tre sparade
+  Malmökurser, panelen namnger torsdag 29 oktober och Komvux Malmö, listar
+  Matematik 2b och Matematik Nivå 2b, lämnar Biologi 1 i fred, och ett tryck på
+  ett kursnamn öppnar den listningen.
+- Det fall datan gör mest sannolikt är just den: den som inte vet om hens betyg
+  är Gy11 eller Gy25 sparar båda, och Malmö skriver dem samma eftermiddag. Se
+  [README](README.md#två-prov-samma-dag).
+
 ## 2026-09-11 (räknaren i drift)
 
 Räknaren står nu hos Cloudflare och appen är byggd mot den. Kedjan är

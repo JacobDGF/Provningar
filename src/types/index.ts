@@ -7,6 +7,20 @@ export interface NextPeriod {
   /** True when we have a real confirmed date for this period. When false, the UI must not present a fabricated date — link out instead. */
   confirmed: boolean;
   /**
+   * The days this listing's obligatory writing passes fall on, as ISO dates.
+   *
+   * Almost every provider dates the round and nothing finer — "prövningsperiod
+   * 26 oktober – 25 november", with the day for your course decided later by an
+   * examinator. A few publish the whole skrivschema in advance, and then the
+   * date is a fact about *this* course rather than about the round, which is
+   * what makes two saved rounds comparable: two prov on the same afternoon is a
+   * choice the user has to make before paying, not after.
+   *
+   * Leave it unset when the provider hasn't published the day. An empty or
+   * missing list means "not published", never "no exam".
+   */
+  examDays?: string[];
+  /**
    * True when the provider has published this round as fully booked.
    *
    * A dated window that is already full is the one case where "öppen för
