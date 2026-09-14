@@ -8,16 +8,17 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 **Filen är genererad.** Ändringar här skrivs över vid nästa körning; räkningen ändras i
 `collector/worker.js` och i `src/lib/analytics.ts`.
 
-## Senaste 30 dygnen (t.o.m. 2026-09-13)
+## Senaste 30 dygnen (t.o.m. 2026-09-14)
 
 | Besök | Sidvisningar | Till anmälan |
 | ----- | ------------ | ------------ |
-| 8 | 15 | 2 |
+| 12 | 19 | 2 |
 
 ### Per dygn
 
 | Dygn | Besök | Sidvisningar | Till anmälan |
 | ---- | ----- | ------------ | ------------ |
+| 2026-09-14 | 4 | 4 | 0 |
 | 2026-09-13 | 4 | 12 | 1 |
 | 2026-09-11 | 4 | 3 | 1 |
 
@@ -25,7 +26,7 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Upptäck | 11 |
+| Upptäck | 15 |
 | Community | 2 |
 | Mina prövningar | 2 |
 
@@ -33,16 +34,16 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Prövning öppnad | 14 |
+| Prövning öppnad | 18 |
 | Till anmälan | 2 |
 
 ### Kommuner i öppnade prövningar
 
 | Namn | Antal |
 | ---- | ----- |
-| Örebro | 8 |
+| Örebro | 11 |
+| Malmö | 3 |
 | Linköping | 2 |
-| Malmö | 2 |
 | Norrköping | 1 |
 | Södertälje | 1 |
 | Sollentuna | 1 |
@@ -52,8 +53,8 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Engelska | 9 |
-| Kemi | 4 |
+| Engelska | 12 |
+| Kemi | 5 |
 | Fysik | 1 |
 
 ## Vad som inte står här
@@ -64,4 +65,4 @@ besök går inte att skilja åt ens i råtabellen, och "besök" räknas en gång
 webbläsarsession utan något som följer med till nästa. Statistiken finns bara för dem som
 sagt ja i appens samtyckesruta.
 
-<sub>Uppdaterad 2026-09-13T07:30:39.486Z.</sub>
+<sub>Uppdaterad 2026-09-14T07:57:16.977Z.</sub>

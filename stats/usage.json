@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-09-13T07:30:39.486Z",
+  "uppdaterad": "2026-09-14T07:57:16.977Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -55,6 +55,28 @@
         "ENGENG07": 2,
         "ENGENG05 / ENGENG06 / ENGENG07 (nivå 1–3 enligt": 1,
         "KEMI1000X": 2
+      }
+    },
+    "2026-09-14": {
+      "besök": 4,
+      "sidvisningar": {
+        "/discover": 4
+      },
+      "händelser": {
+        "Prövning öppnad": 4
+      },
+      "kommuner": {
+        "Malmö": 1,
+        "Örebro": 3
+      },
+      "ämnen": {
+        "Engelska": 3,
+        "Kemi": 1
+      },
+      "kurser": {
+        "ENGENG07": 2,
+        "ENGE3000X": 1,
+        "KEMKEM01": 1
       }
     }
   }
