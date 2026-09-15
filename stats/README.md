@@ -8,17 +8,18 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 **Filen är genererad.** Ändringar här skrivs över vid nästa körning; räkningen ändras i
 `collector/worker.js` och i `src/lib/analytics.ts`.
 
-## Senaste 30 dygnen (t.o.m. 2026-09-14)
+## Senaste 30 dygnen (t.o.m. 2026-09-15)
 
 | Besök | Sidvisningar | Till anmälan |
 | ----- | ------------ | ------------ |
-| 12 | 19 | 2 |
+| 22 | 51 | 9 |
 
 ### Per dygn
 
 | Dygn | Besök | Sidvisningar | Till anmälan |
 | ---- | ----- | ------------ | ------------ |
-| 2026-09-14 | 4 | 4 | 0 |
+| 2026-09-15 | 1 | 15 | 0 |
+| 2026-09-14 | 13 | 21 | 7 |
 | 2026-09-13 | 4 | 12 | 1 |
 | 2026-09-11 | 4 | 3 | 1 |
 
@@ -26,27 +27,31 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Upptäck | 15 |
-| Community | 2 |
+| Upptäck | 42 |
+| Community | 4 |
 | Mina prövningar | 2 |
+| Historik | 2 |
+| Profil | 1 |
 
 ### Händelser
 
 | Namn | Antal |
 | ---- | ----- |
-| Prövning öppnad | 18 |
-| Till anmälan | 2 |
+| Prövning öppnad | 32 |
+| Till anmälan | 9 |
 
 ### Kommuner i öppnade prövningar
 
 | Namn | Antal |
 | ---- | ----- |
-| Örebro | 11 |
-| Malmö | 3 |
+| Örebro | 21 |
+| Malmö | 7 |
+| Sollentuna | 3 |
 | Linköping | 2 |
-| Norrköping | 1 |
+| Mora | 2 |
+| Norrköping | 2 |
+| Skellefteå | 2 |
 | Södertälje | 1 |
-| Sollentuna | 1 |
 | Stockholm | 1 |
 
 ### Ämnen
@@ -54,8 +59,9 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | Namn | Antal |
 | ---- | ----- |
 | Engelska | 12 |
-| Kemi | 5 |
-| Fysik | 1 |
+| Kemi | 12 |
+| Svenska | 6 |
+| Fysik | 2 |
 
 ## Vad som inte står här
 
@@ -65,4 +71,4 @@ besök går inte att skilja åt ens i råtabellen, och "besök" räknas en gång
 webbläsarsession utan något som följer med till nästa. Statistiken finns bara för dem som
 sagt ja i appens samtyckesruta.
 
-<sub>Uppdaterad 2026-09-14T07:57:16.977Z.</sub>
+<sub>Uppdaterad 2026-09-15T07:50:49.103Z.</sub>

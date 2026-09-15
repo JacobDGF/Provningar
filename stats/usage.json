@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-09-14T07:57:16.977Z",
+  "uppdaterad": "2026-09-15T07:50:49.103Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -58,25 +58,56 @@
       }
     },
     "2026-09-14": {
-      "besök": 4,
+      "besök": 13,
       "sidvisningar": {
-        "/discover": 4
+        "/community": 2,
+        "/discover": 16,
+        "/history": 2,
+        "/profile": 1
       },
       "händelser": {
-        "Prövning öppnad": 4
+        "Prövning öppnad": 17,
+        "Till anmälan": 7
       },
       "kommuner": {
-        "Malmö": 1,
-        "Örebro": 3
+        "Malmö": 4,
+        "Örebro": 13,
+        "Skellefteå": 2,
+        "Sollentuna": 2,
+        "Mora": 2,
+        "Norrköping": 1
       },
       "ämnen": {
         "Engelska": 3,
-        "Kemi": 1
+        "Kemi": 8,
+        "Svenska": 6
       },
       "kurser": {
         "ENGENG07": 2,
         "ENGE3000X": 1,
-        "KEMKEM01": 1
+        "KEMKEM01": 10,
+        "KEMI1000X": 1,
+        "SVESVE03": 7,
+        "SVESVE01": 1,
+        "SVESVE01 / SVESVE02 / SVESVE03 (nivå 1–3 enligt": 2
+      }
+    },
+    "2026-09-15": {
+      "besök": 1,
+      "sidvisningar": {
+        "/discover": 15
+      },
+      "händelser": {
+        "Prövning öppnad": 1
+      },
+      "kommuner": {
+        "Malmö": 1
+      },
+      "ämnen": {
+        "Fysik": 1
+      },
+      "kurser": {
+        "FYSFYS02": 1
       }
     }
   }
