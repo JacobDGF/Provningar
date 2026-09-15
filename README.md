@@ -99,6 +99,38 @@ lilla knappen, för den som vill se det stängda formuläret med egna ögon.
 Stegen under "Så anmäler du dig" försvinner samtidigt: tre numrerade steg är ett
 löfte om vad som händer efter knappen, och på en stängd omgång håller det inte.
 
+### Nästa chans
+
+Grått är appens enda återvändsgränd. "Anmälan stängde 11 sep." är sant, det är
+tydligt, och sedan tar svaret slut mitt i frågan — för det användaren står med
+är _när då i stället_. Anordnaren har ofta redan svarat: Komvux Norrköping
+publicerar alla fyra ansökningsperioder på samma sida, ett halvår framåt, och
+Helsingborg hela sitt årsschema.
+
+`laterRound` i [`src/types/index.ts`](src/types/index.ts) är den meningen, och
+`nextChance` i [`src/lib/examStatus.ts`](src/lib/examStatus.ts) bestämmer när den
+får synas. Tre villkor, och alla tre är designen:
+
+- **Bara när den här omgången är stängd eller fullbokad.** Så länge anmälan är
+  öppen är nästa omgång brus bredvid den knapp som gäller, och ett andra datum
+  intill en deadline är precis det som får folk att skjuta upp.
+- **Bara när nästa omgång själv ligger framåt.** En "nästa chans" som också
+  varit är samma återvändsgränd en gång till, fast med fler ord.
+- **Aldrig härledd.** Fältet fylls ur datum anordnaren skrivit ut, aldrig ur ett
+  mönster — "de brukar öppna i november" är en gissning någon planerar sitt
+  halvår efter. Bara `applicationStart` är obligatorisk, eftersom det är den dag
+  som är svaret.
+
+**Färgen flyttar sig inte.** Färgen svarar på "kan jag boka det här i dag", och
+det svaret är fortfarande nej — kortet är kvar i grått eller rött. Det som byts
+ut är orden: i stället för datumet som varit står datumet som inte varit,
+"Öppnar igen 16 nov." Ett piller, ett budskap, och färgen fortsätter betyda en
+enda sak. I detaljvyn får omgången dessutom en egen rad sist i tidslinjen, där
+den hör hemma både kronologiskt och i läsordning.
+
+Modellen bakom AI-prövning ser samma fält som `nasta_anmalan_oppnar`, med
+samma regel som allt annat den får: står det `null` finns inget datum att säga.
+
 ### Två vägar ut ur varje listning
 
 [`src/lib/providerLinks.ts`](src/lib/providerLinks.ts) ger varje listning två mål,
@@ -240,10 +272,17 @@ läser dem: träffar frågan kursens andra namn eller andra kurskod är listning
 en träff. Två saker håller det ärligt.
 
 - **Paren är lästa, inte härledda.** `MATMAT03b → MATO1B00X` går inte att gissa
-  fram ur koden. Paren kommer ur Komvux Örebros prövningstabell, som är den
-  källa i datan som skriver ut båda systemen på samma rad. Kurser som bara finns
-  i ett system — Fysik 1a, Fysik nivå 1b — står inte där, och då säger appen
-  ingenting om övergången.
+  fram ur koden. Paren kommer ur två anordnares egna tabeller — Komvux Örebros
+  prövningstabell och Helsingborgs jämförelselista — som båda skriver ut de två
+  systemen på samma rad. Där de överlappar säger de samma sak, trettiosex par
+  utan en enda motsägelse, vilket är skälet att våga lita på de fyrtionio som
+  bara den ena har. Fysik 1a stod länge oparad här av just den anledningen:
+  Örebro listar Fysik 1a och Fysik nivå 1b på skilda rader, och paret skrevs in
+  först den dag Helsingborgs lista satte dem på samma.
+- **Det som inte går att läsa åt båda hållen skrivs inte alls.** Datorteknik 1a
+  och 1b blir en enda ämnesnivå, Matematik specialisering blir två, och tio
+  rader i Helsingborgs lista bär en feltryckt kurskod. En felstavad kod går att
+  se — att rätta den är att gissa, så de raderna blir listningar men inte par.
 - **Namnen är datans egen stavning.** Ett test i
   [`src/lib/courseSystems.test.ts`](src/lib/courseSystems.test.ts) jämför varje
   par mot `EXAMS`, så en omdöpt kurs inte kan lämna sökningen med ett namn inget

@@ -19,14 +19,27 @@ describe('courseCounterpart', () => {
   });
 
   /**
-   * Silence is the answer for a course only one system has. Fysik 1a and Fysik
-   * nivå 1b sit on separate rows in the source table, and pairing them here
-   * because the names look adjacent would tell somebody to sit the wrong prov.
+   * Silence is the answer until a source writes the pair out. Fysik 1a sat here
+   * unpaired for as long as Örebro's table was the only source — it lists Fysik
+   * 1a and Fysik nivå 1b on separate rows — and moved into the table the day
+   * Helsingborg's jämförelselista put the two in the same row. The rest still
+   * stand: a transition nobody has published stays unsaid.
    */
   it('says nothing about a course no source has paired', () => {
-    expect(courseCounterpart('FYSFYS01a')).toBeUndefined();
-    expect(courseCounterpart('FYSK1B00X')).toBeUndefined();
+    // One Gy25 ämnesnivå for Datorteknik 1a *and* 1b — no one-to-one pair.
+    expect(courseCounterpart('DAODAT01a')).toBeUndefined();
+    expect(courseCounterpart('DATR1000X')).toBeUndefined();
+    // Two Gy25 ämnesnivåer for one Gy11 kurskod, the other way round.
+    expect(courseCounterpart('MASB1000X')).toBeUndefined();
     expect(courseCounterpart('SFIKUB92')).toBeUndefined();
+  });
+
+  /** A pair only earns its place once a source prints both codes on one row. */
+  it('pairs Fysik 1a with Fysik Nivå 1b, which Helsingborgs table writes out', () => {
+    expect(courseCounterpart('FYSFYS01a')?.other).toEqual({
+      code: 'FYSK1B00X',
+      name: 'Fysik Nivå 1b',
+    });
   });
 
   it('pairs each code exactly once, and never with itself', () => {

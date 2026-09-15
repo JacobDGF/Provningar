@@ -4,6 +4,75 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-09-15
+
+**Data: +189 prövningar.** Helsingborgs och Norrköpings hela gymnasiala utbud,
+läst ur anordnarnas egna publicerade listor. Datasetet går från 588 till 777
+listningar.
+
+| Kommun      | Listningar | Källa                                                                    |
+| ----------- | ---------- | ------------------------------------------------------------------------ |
+| Helsingborg | 1 → 99     | Stadens jämförelselista "Gymnasiala kurser distans" (Arena Utbildning)   |
+| Norrköping  | 2 → 93     | Komvux Norrköpings prövningskatalog i Alvis, ämnesområde för ämnesområde |
+| Uppsala     | 1 → 1      | Kommunens egen prövningssida, omläst                                     |
+| Västerås    | 1 → 1      | Vuxenutbildningscentrums prövningsinformation i Alvis, omläst            |
+
+Prioritetsordningen säger Uppsala och Västerås före båda, och båda lästes om
+först. Uppsala publicerar fortfarande ingen kurslista — NTI-skolan sköter
+kommunens teoretiska prövningar — men har hunnit skriva ut hela upplägget, så
+kortet fick riktiga provmoment i stället för "beror på kursen". Västerås årliga
+omgång är fortsatt fullbokad, och dess anmälningslänk hade slutat svara (se
+nedan).
+
+- **Två anordnare, två sätt att publicera.** Helsingborg lägger sina gymnasiala
+  prövningar hos Arena Utbildning och publicerar utbudet som en
+  jämförelselista, Gy11-kurs mot Gy25-ämnesnivå på samma rad. Norrköping lägger
+  hela katalogen i Alvis, där varje ämnesnivå själv säger om den går att söka
+  just nu. Det är de två första kommunerna i datan där kurslistan kommer med
+  kurskoden utskriven i båda systemen.
+- **Alvis säger vad som _inte_ går att söka, och datan sa det inte.** Alla
+  Gy11-kurser i Norrköpings katalog står som "Inga aktuella prövningstillfällen"
+  — höstens omgång prövar ämnesnivåerna. De två Norrköpingslistningar datan haft
+  sedan det första svepet räknade därför ned mot 20 september på en anmälan som
+  inte finns. Båda är nu `confirmed: false` med en etikett som säger vad som
+  gäller i stället, vilket är det enda ärliga när kursen finns men omgången inte.
+- **Helsingborgs Gy11-väg är ett mejl.** Webbansökan söker man till Gy25; vill
+  man pröva Gy11-kursen mejlar man betygsprövning efteråt, och bara den som
+  redan har ett betyg i kursen får göra det. Det stod ingenstans på kortet
+  förut, och det är skillnaden mellan en anmälan som går igenom och en som inte
+  gör det.
+- **Paren i `courseSystems` gick från 36 till 85.** Helsingborgs lista är den
+  andra publicerade källan som skriver ut båda systemen på samma rad, och där de
+  två överlappar säger de samma sak — 36 par, noll motsägelser. Fysik 1a ↔ Fysik
+  Nivå 1b fick sitt par den här omgången, efter att ha stått oparat så länge
+  Örebro var enda källan. Tio rader lämnades utanför för att kurskoden är
+  feltryckt i källan, och en felstavad kod får inte rättas på känsla.
+- **Rättat:** Västerås anmälningslänk pekade på Alvis prövningsmodul
+  (`/provning/amnesomrade`), som svarar 404 — den verkar bara ligga uppe medan
+  en omgång tar emot anmälningar. Listningen pekar nu på kurskatalogen, med
+  Swish-numret och kvittoregeln utskrivna i stegen.
+- Kvar: 16 listningar i andra kommuner visar en omgång som är helt förbi, och
+  Göteborgs 215 listningar har en per-kurs-kalender i Alvis som datan ännu inte
+  läst.
+
+**Produkt: nästa chans.** En stängd listning var appens enda återvändsgränd —
+"Anmälan stängde 11 sep." är sant och sedan tar svaret slut mitt i frågan, för
+den som läser undrar _när då i stället_. Anordnaren har ofta redan svarat:
+Norrköping publicerar alla fyra ansökningsperioder på samma sida.
+
+- **Färgen flyttar sig inte, orden gör det.** Grått och rött svarar på "kan jag
+  boka i dag", och svaret är fortfarande nej. Pillret byter bara ut datumet som
+  varit mot datumet som inte varit: "Öppnar igen 16 nov." Ett piller, ett
+  budskap.
+- **Bara när den här omgången är slut.** Så länge anmälan är öppen visas
+  ingenting — ett andra datum intill en deadline är precis det som får folk att
+  skjuta upp. Och en nästa omgång som också hunnit gå är samma återvändsgränd en
+  gång till, så den försvinner med sitt eget datum.
+- **Aldrig härledd.** `laterRound` fylls ur datum anordnaren skrivit ut, aldrig
+  ur ett mönster. Den bärs i dag av Norrköpings 93 listningar, som stänger 20
+  september och öppnar igen 16 november. Se
+  [README](README.md#nästa-chans).
+
 ## 2026-09-11 (räknaren i drift)
 
 Räknaren står nu hos Cloudflare och appen är byggd mot den. Kedjan är

@@ -7,8 +7,9 @@ import {
   applicationCell,
   compareByPeriod,
   daysUntil,
+  nextChance,
 } from './examStatus';
-import { Exam, NextPeriod } from '../types';
+import { Exam, LaterRound, NextPeriod } from '../types';
 
 function examWith(nextPeriod: NextPeriod): Exam {
   return { nextPeriod } as Exam;
@@ -351,5 +352,58 @@ describe('applicationCell', () => {
         }),
       ),
     ).toBe('provider');
+  });
+});
+
+describe('nextChance', () => {
+  const LATER: LaterRound = {
+    label: 'Vecka 47–48.',
+    applicationStart: '2026-11-16',
+    applicationEnd: '2026-11-29',
+  };
+  const closed: NextPeriod = {
+    label: '',
+    applicationStart: '2026-08-24',
+    applicationEnd: '2026-09-20',
+    confirmed: true,
+  };
+
+  function examLater(nextPeriod: NextPeriod, laterRound: LaterRound = LATER): Exam {
+    return { nextPeriod, laterRound } as Exam;
+  }
+
+  it('says nothing while the round in front of the user is still open', () => {
+    at('2026-09-15T12:00:00Z');
+    expect(nextChance(examLater(closed))).toBeUndefined();
+  });
+
+  /** The whole point: the day after the deadline, the card stops being a dead end. */
+  it('answers the day the deadline passes', () => {
+    at('2026-09-21T09:00:00Z');
+    expect(nextChance(examLater(closed))).toEqual(LATER);
+  });
+
+  it('answers for a full round too, whose dates never close on their own', () => {
+    at('2026-09-15T12:00:00Z');
+    expect(nextChance(examLater({ ...closed, applicationEnd: '2026-12-01', full: true }))).toEqual(
+      LATER,
+    );
+  });
+
+  it('stops once the next round has been and gone', () => {
+    at('2026-11-30T09:00:00Z');
+    expect(nextChance(examLater(closed))).toBeUndefined();
+  });
+
+  /** Without a closing date the opening day is what has to still lie ahead. */
+  it('falls back to the opening day when the next round has no published deadline', () => {
+    at('2026-11-17T09:00:00Z');
+    const open = { label: 'Öppnar 16 november.', applicationStart: '2026-11-16' };
+    expect(nextChance(examLater(closed, open))).toBeUndefined();
+  });
+
+  it('says nothing at all for the listings that carry no next round', () => {
+    at('2026-09-21T09:00:00Z');
+    expect(nextChance(examWith(closed))).toBeUndefined();
   });
 });

@@ -23,7 +23,7 @@ import { useCallback, useState } from 'react';
 import { Exam } from '../types';
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
-import { hasPeriodPassed, daysUntil } from '../lib/examStatus';
+import { hasPeriodPassed, daysUntil, nextChance } from '../lib/examStatus';
 import { getExamStatus } from '../lib/examStatusColor';
 import { getRegistrationFlow } from '../lib/registrationFlow';
 import { getExamAction } from '../lib/examAction';
@@ -125,6 +125,7 @@ export function ExamDetail() {
   const flow = getRegistrationFlow(exam);
   const action = getExamAction(exam);
   const calendarEvents = examCalendarEvents(exam);
+  const later = nextChance(exam);
   const stat = applicationStat(exam);
   const hero = HERO_GRADIENT[status.tone.key] ?? HERO_DEFAULT;
   // The design was drawn around "Matematik 2b". A third of the dataset reads
@@ -439,11 +440,27 @@ export function ExamDetail() {
                         }
                       />
                     )}
+                    {/* Last in the timeline because it is last in time, and
+                        because it only appears once the rows above have stopped
+                        being something to act on. */}
+                    {later && (
+                      <TimelineRow
+                        date={later.applicationStart}
+                        tint="bg-brand-50"
+                        chip="bg-brand-500"
+                        title="Nästa chans"
+                        sub={
+                          later.applicationEnd
+                            ? `Anmälan öppnar igen och stänger ${formatShort(later.applicationEnd)}`
+                            : 'Anmälan öppnar igen'
+                        }
+                      />
+                    )}
                     {/* The provider's own sentence. It is long, and this is the
                         one place with room for it. */}
                     <p className="flex items-start gap-2.5 bg-cream rounded-2xl px-4 py-3 text-ink-soft text-[13.5px] leading-relaxed">
                       <Info size={15} className="text-ink-faint flex-shrink-0 mt-0.5" />
-                      {nextPeriod.label}
+                      {later ? `${nextPeriod.label} ${later.label}` : nextPeriod.label}
                     </p>
                     {calendarEvents.length > 0 && !passed && action.live && (
                       <button

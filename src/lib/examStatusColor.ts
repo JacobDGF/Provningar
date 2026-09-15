@@ -4,6 +4,7 @@ import {
   hasApplicationClosed,
   isFullyBooked,
   isOpenForRegistration,
+  nextChance,
 } from './examStatus';
 
 /**
@@ -151,14 +152,26 @@ export interface ExamStatus {
 export function getExamStatus(exam: Exam): ExamStatus {
   const { nextPeriod: p } = exam;
 
+  // The one thing a shut round can still say. The colour does not move: grey
+  // and red answer "can I book this today", and the answer is still no. The
+  // words are what change, because the question after that no is "then when",
+  // and for these listings the provider has already written the date down.
+  const later = nextChance(exam);
+
   if (isFullyBooked(exam)) {
-    return { tone: STATUS_TONES.full, label: 'Fullbokat', daysLeft: null };
+    return {
+      tone: STATUS_TONES.full,
+      label: later ? `Öppnar igen ${formatShort(later.applicationStart)}` : 'Fullbokat',
+      daysLeft: null,
+    };
   }
 
   if (hasApplicationClosed(exam)) {
     return {
       tone: STATUS_TONES.closed,
-      label: `Stängde ${formatShort(p.applicationEnd!)}`,
+      label: later
+        ? `Öppnar igen ${formatShort(later.applicationStart)}`
+        : `Stängde ${formatShort(p.applicationEnd!)}`,
       daysLeft: null,
     };
   }

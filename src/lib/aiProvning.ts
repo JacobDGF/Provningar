@@ -42,6 +42,9 @@ const SYSTEM = [
   '  anordnarens egen sida (fältet kalla_url).',
   '- En prövning där "datum_bekraftat" är false har inga publicerade datum.',
   '  Påstå aldrig när den går att söka — länka vidare i stället.',
+  '- Är omgången stängd och "nasta_anmalan_oppnar" ifyllt är det anordnarens',
+  '  egen nästa omgång. Säg den dagen. Är fältet null: säg att nästa datum inte',
+  '  är publicerat ännu.',
   '- Svara på svenska, i högst fem meningar, utan rubriker och punktlistor.',
   '- Eleven ser korten med prövningarna under ditt svar. Räkna inte upp dem —',
   '  säg vad som skiljer dem åt och vilken deadline som är närmast.',
@@ -66,6 +69,9 @@ function forModel(exam: Exam) {
     provperiod_slut: p.examWindowEnd ?? null,
     fullbokat: p.full === true,
     period: p.label,
+    // Den fråga en stängd omgång lämnar efter sig, när anordnaren själv
+    // besvarat den. Inget härlett: fältet finns bara där datumet är publicerat.
+    nasta_anmalan_oppnar: exam.laterRound?.applicationStart ?? null,
     kalla_url: exam.infoUrl,
     anmalan_url: exam.registrationUrl,
   };

@@ -17,6 +17,27 @@ export interface NextPeriod {
   full?: boolean;
 }
 
+/**
+ * Nästa omgång efter den i `nextPeriod` — anordnarens egen, publicerade.
+ *
+ * En stängd omgång är appens enda återvändsgränd. Kortet säger sant ("Anmälan
+ * stängde 11 sep.") och sedan ingenting, fast frågan användaren står med är
+ * *när då i stället* — och flera anordnare har redan svarat: Norrköping
+ * publicerar alla fyra ansökningsperioder på samma sida, ett halvår framåt.
+ *
+ * Bara `applicationStart` är obligatorisk, eftersom det är den dag som är
+ * svaret. Fältet sätts aldrig från ett mönster ("de brukar öppna i november"),
+ * bara från datum anordnaren skrivit ut — samma regel som `nextPeriod`.
+ */
+export interface LaterRound {
+  /** En mening om nästa omgång, med anordnarens egna ord. */
+  label: string;
+  /** Dagen nästa anmälan öppnar. Utan den finns ingen nästa chans att visa. */
+  applicationStart: string;
+  /** Sista anmälningsdag, när anordnaren publicerat en. */
+  applicationEnd?: string;
+}
+
 /** What kind of system `registrationUrl` drops the user into. */
 export type RegistrationKind =
   | 'form'
@@ -63,6 +84,12 @@ export interface Exam {
   price: number;
   priceNote?: string;
   nextPeriod: NextPeriod;
+  /**
+   * Omgången efter `nextPeriod`, när anordnaren publicerat den. Visas först när
+   * den här omgången är stängd eller full — så länge man kan anmäla sig nu är
+   * nästa omgång bara brus bredvid knappen som gäller.
+   */
+  laterRound?: LaterRound;
   components: ExamComponent[];
   studyTips: string[];
   registrationUrl: string;

@@ -1,4 +1,4 @@
-import { Exam } from '../types';
+import { Exam, LaterRound } from '../types';
 
 /** Whether an exam's application window is open right now, computed live
     against today's date. Only ever true for exams with confirmed, real
@@ -46,6 +46,34 @@ export function hasApplicationClosed(exam: Exam, now: Date = new Date()): boolea
   const { nextPeriod: p } = exam;
   if (!p.confirmed || !p.applicationEnd) return false;
   return now.getTime() > endOfDay(p.applicationEnd);
+}
+
+/**
+ * Nästa chans — men bara när den här omgången inte går att söka längre.
+ *
+ * En stängd listning är appens enda återvändsgränd: färgen och datumet säger
+ * sant, och sedan tar svaret slut mitt i frågan. Flera anordnare har redan
+ * skrivit fortsättningen — Norrköping publicerar alla fyra ansökningsperioder
+ * på samma sida — och `laterRound` är den meningen, flyttad dit någon läser
+ * den.
+ *
+ * Tre villkor, och alla tre är designen:
+ *
+ * - **Bara när den här omgången är stängd eller full.** Så länge anmälan är
+ *   öppen är nästa omgång brus bredvid den knapp som gäller, och ett andra
+ *   datum intill deadline är precis det som får folk att skjuta upp.
+ * - **Bara när nästa omgång själv ligger framåt.** En "nästa chans" som också
+ *   varit är samma återvändsgränd en gång till, bara med fler ord.
+ * - **Aldrig härledd.** Fältet fylls ur anordnarens publicerade datum, aldrig
+ *   ur ett mönster — "de brukar öppna i november" är en gissning någon planerar
+ *   sitt halvår efter.
+ */
+export function nextChance(exam: Exam, now: Date = new Date()): LaterRound | undefined {
+  const later = exam.laterRound;
+  if (!later) return undefined;
+  if (!isFullyBooked(exam) && !hasApplicationClosed(exam, now)) return undefined;
+  if (now.getTime() > endOfDay(later.applicationEnd ?? later.applicationStart)) return undefined;
+  return later;
 }
 
 /**

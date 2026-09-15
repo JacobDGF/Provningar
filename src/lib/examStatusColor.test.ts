@@ -204,3 +204,52 @@ describe('countByStatus', () => {
     }
   });
 });
+
+describe('a closed round that has a next one', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(TODAY));
+  });
+  afterEach(() => vi.useRealTimers());
+
+  const later = {
+    label: 'Nästa omgång går att söka vecka 47–48.',
+    applicationStart: '2026-11-16',
+    applicationEnd: '2026-11-29',
+  };
+  const shut: NextPeriod = {
+    label: '',
+    applicationStart: '2026-08-24',
+    applicationEnd: '2026-09-11',
+    confirmed: true,
+  };
+
+  /**
+   * The colour is the answer to "can I book this today", and that answer has
+   * not changed — so the tone must not. Only the words move, from a date that
+   * has been to the one that hasn't.
+   */
+  it('keeps the closed colour and swaps the dead date for the live one', () => {
+    const status = getExamStatus({ ...exam(shut), laterRound: later });
+    expect(status.tone.key).toBe('closed');
+    expect(status.label).toBe('Öppnar igen 16 nov.');
+  });
+
+  it('still says "Stängde" when no next round is published', () => {
+    expect(getExamStatus(exam(shut)).label).toBe('Stängde 11 sep.');
+  });
+
+  it('does the same for a full round, which no date would ever close', () => {
+    const full = { ...shut, applicationEnd: '2026-12-20', full: true };
+    const status = getExamStatus({ ...exam(full), laterRound: later });
+    expect(status.tone.key).toBe('full');
+    expect(status.label).toBe('Öppnar igen 16 nov.');
+  });
+
+  it('leaves an open round alone — the next one is noise beside the deadline', () => {
+    const open = { ...shut, applicationEnd: '2026-10-30' };
+    const status = getExamStatus({ ...exam(open), laterRound: later });
+    expect(status.tone.key).toBe('open');
+    expect(status.label).toContain('dagar kvar');
+  });
+});

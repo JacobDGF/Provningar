@@ -1,4 +1,4 @@
-import { Exam, ExamComponent, NextPeriod } from '../types';
+import { Exam, ExamComponent, LaterRound, NextPeriod } from '../types';
 
 // Date this dataset's facts (providers, prices, URLs, periods) were checked against
 // each provider's own website / official municipal source.
@@ -214,6 +214,22 @@ const COMPONENTS_FLERA: ExamComponent[] = [
     description:
       'Provets upplägg (skriftligt/muntligt/praktiskt) beror på vilken kurs som prövas — kontrollera med skolan.',
   },
+];
+
+/**
+ * Råd som gäller vilken ämnesnivå som helst, och bara därför.
+ *
+ * `TIPS_FLERA` ser ut att duga för en kurs utan egna tips, men dess första rad
+ * är "kontakta skolan för att få exakt kurskod" — sant för ett kort som står
+ * för en hel katalog, fel för ett kort som har koden utskriven i rubriken. Med
+ * hundratals ämnesnivåer i datan behövs en uppsättning som är ärlig i båda
+ * fallen: det som gäller för att läsa in en kurs på egen hand, oavsett ämne.
+ */
+const TIPS_INLASNING = [
+  'Läs Skolverkets betygskriterier för ämnesnivån först — det är dem du bedöms mot.',
+  'Lägg en läsplan med datum så att hela det centrala innehållet hinns med före första provet.',
+  'Be anordnaren om kurslitteraturlista och exempel på hur examinationen brukar se ut.',
+  'Öva på att skriva sammanhängande svar under tidspress — en prövning ger ingen handledning.',
 ];
 
 // Second research pass covering providers outside the initial 23 (nationwide sweep).
@@ -494,6 +510,242 @@ const COMPONENTS_OREBRO_TALENTI_LAB: ExamComponent[] = [
   COMPONENTS_OREBRO_TALENTI[1],
   COMPONENTS_OREBRO_TALENTI[2],
 ];
+
+// Svepet 2026-09-15: Helsingborg och Norrköping, de två kommuner som står näst
+// på tur efter Örebro och som båda publicerar hela sitt prövningsutbud —
+// Helsingborg som en jämförelselista i PDF, Norrköping som en sökbar katalog i
+// Alvis. Samma dag lästes Uppsalas sida om, eftersom Uppsala står före båda:
+// kommunen publicerar fortfarande ingen kurslista (NTI-skolan tar de teoretiska
+// prövningarna) men har hunnit skriva ut höstens prövningsperiod.
+const SEP_15_VERIFIED = '2026-09-15';
+
+/**
+ * Uppsala publicerar ingen kurslista, men numera hela upplägget: NTI tilldelar
+ * en prövningsperiod, bokar ett slutprov på plats i Uppsala och avslutar med en
+ * muntlig examination. `COMPONENTS_FLERA` sa bara "beror på kursen — kontrollera
+ * med skolan", vilket var sant innan sidan skrev ut det här.
+ */
+const COMPONENTS_UPPSALA_NTI: ExamComponent[] = [
+  {
+    name: 'Inlämningsuppgifter',
+    duration: '1–5 uppgifter med deadline',
+    description: 'Görs hemifrån inom den prövningsperiod NTI tilldelar dig efter antagningen.',
+  },
+  {
+    name: 'Slutprov på plats i Uppsala',
+    duration: 'Fast datum och tid',
+    description:
+      'NTI bestämmer datum och lokal och meddelar dem i god tid. Tiden går inte att byta.',
+  },
+  {
+    name: 'Muntlig examination',
+    duration: 'Obligatorisk',
+    description: 'Avslutande samtal med läraren, med legitimationskontroll och kunskapskontroll.',
+  },
+];
+
+const HELSINGBORG_PRICE_NOTE =
+  '500 kr per ämnesnivå och prövningstillfälle, betalt senast sista anmälningsdag till ' +
+  'plusgiro 918192-6 med referensen 5060/4760/26075 och ditt namn. Har du betyget F i kursen ' +
+  'sedan tidigare är prövningen kostnadsfri. Avgiften betalas inte tillbaka, och du får göra ' +
+  'högst två prövningar per period.';
+
+/**
+ * Komvux Helsingborgs prövningsperiod 4 2026.
+ *
+ * Staden publicerar hela årets schema — fyra perioder med anmälningsvecka,
+ * sista betalningsdag och prövningsperiod utskrivna. Period 4 är den sista som
+ * är daterad med årtal på sidan, och dess anmälan stängde 11 september. Vårens
+ * perioder står också där, men utan årtal och med datum som redan passerat när
+ * sidan senast uppdaterades, så de går inte att stå för som 2027 — och en
+ * gissning här vore ett datum någon planerar efter.
+ */
+const HELSINGBORG_PERIOD_4: NextPeriod = {
+  label:
+    'Prövningsperiod 4 2026: anmälan var öppen 7–11 september och avgiften skulle vara betald ' +
+    'senast 11 september. Proven görs 12 oktober–6 november, och du ska kunna genomföra prov ' +
+    'under hela perioden — du får ett fast provdatum som inte går att byta.',
+  applicationStart: '2026-09-07',
+  applicationEnd: '2026-09-11',
+  examWindowStart: '2026-10-12',
+  examWindowEnd: '2026-11-06',
+  confirmed: true,
+};
+
+const COMPONENTS_HELSINGBORG: ExamComponent[] = [
+  {
+    name: 'Inlämningsuppgifter',
+    duration: 'Inom prövningsperioden',
+    description:
+      'Görs på distans i lärplattformen Exlearn, som du får inloggning till när anmälan gått igenom.',
+  },
+  {
+    name: 'Skriftligt prov',
+    duration: 'Fast tid, på plats',
+    description:
+      'Skrivs på plats i Helsingborg på ett datum du tilldelas och inte kan byta. Ta med legitimation.',
+  },
+  {
+    name: 'Muntligt prov',
+    duration: 'Bokas med läraren',
+    description: 'Tiden bokar du själv med läraren i Exlearn, inom prövningsperioden.',
+  },
+];
+
+const COMPONENTS_HELSINGBORG_LAB: ExamComponent[] = [
+  COMPONENTS_HELSINGBORG[0],
+  {
+    name: 'Laboration',
+    duration: 'Fast tid, på plats',
+    description: 'Laborationer har fasta tider och görs på plats, precis som de skriftliga proven.',
+  },
+  COMPONENTS_HELSINGBORG[1],
+  COMPONENTS_HELSINGBORG[2],
+];
+
+/**
+ * Helsingborgs anmälan är en webbansökan man loggar in i, och prövningen ligger
+ * bakom en egen flik i den. Den härledda e-tjänststexten säger "fyll i kurs,
+ * kurskod och personuppgifter", vilket är ett annat formulär än det som finns:
+ * här väljer man period och ämne ur listor, och betalningen sker utanför
+ * systemet, till ett plusgiro, samma dag som anmälan stänger.
+ */
+const REGISTRATION_HELSINGBORG: Exam['registration'] = {
+  kind: 'eservice',
+  ctaLabel: 'Öppna webbansökan',
+  landing: 'Länken går till Helsingborgs webbansökan för vuxenutbildning, där prövningar anmäls.',
+  steps: [
+    'Logga in och välj Prövning, sedan prövningsperiod',
+    'Välj de ämnen du vill pröva och bifoga dina tidigare betyg',
+    'Betala 500 kr per ämne senast sista anmälningsdag och mejla kvittot till betygsprovning@helsingborg.se',
+  ],
+  direct: true,
+};
+
+/**
+ * Samma webbansökan, ett steg till: Gy11-prövningen finns inte i listan man
+ * väljer ur, utan ordnas per mejl efteråt — och bara för den som redan har ett
+ * betyg i kursen. Utan det steget skickas någon till ett formulär där kursen
+ * hen letar efter inte står.
+ */
+const REGISTRATION_HELSINGBORG_GY11: Exam['registration'] = {
+  ...REGISTRATION_HELSINGBORG,
+  steps: [
+    'Logga in, välj Prövning och anmäl dig till prövningsperioden',
+    'Mejla betygsprovning@helsingborg.se att det gäller en Gy11-kurs, och bifoga ditt betyg i den',
+    'Betala 500 kr senast sista anmälningsdag och mejla kvittot till samma adress',
+  ],
+  direct: false,
+};
+
+const NORRKOPING_PRICE_NOTE =
+  '500 kr per prövning, fakturerat efter antagningsbeskedet. Har du läst kursen på Komvux ' +
+  'Norrköping föregående år och fått F är prövningen kostnadsfri. Avgiften betalas inte ' +
+  'tillbaka om du uteblir eller avbryter, och folkbokförda i Norrköpings kommun har förtur ' +
+  'när platserna inte räcker.';
+
+/**
+ * Komvux Norrköpings tredje ansökningsomgång 2026.
+ *
+ * Kommunen skriver sina fyra omgångar i veckonummer ("Ämnen att söka vecka
+ * 35-38", "Första provdatum: torsdag vecka 43") utan årtal. Veckorna är räknade
+ * till datum här, vilket är en mekanisk omräkning och inte en gissning: det är
+ * innevarande års veckor, och Alvis bekräftar avläsningen genom att just nu ha
+ * de här ämnesnivåerna sökbara. Datumen är desamma som listningarna från det
+ * första svepet redan bär.
+ */
+const NORRKOPING_PERIOD_3: NextPeriod = {
+  label:
+    'Ämnen att söka vecka 35–38, alltså 24 augusti–20 september 2026. Första provdatum är ' +
+    'torsdag vecka 43 (22 oktober) klockan 14–17 på Källvindsskolan; hos Talenti löper ' +
+    'prövningen över tre veckor inom perioden och läraren sätter dagen. Sista betygsdatum är ' +
+    'vecka 51. Antagningsbesked kommer via Alvis när ansökningsperioden stängt.',
+  applicationStart: '2026-08-24',
+  applicationEnd: '2026-09-20',
+  examWindowStart: '2026-10-19',
+  examWindowEnd: '2026-12-20',
+  confirmed: true,
+};
+
+/**
+ * Kursen finns i utbudet, men inte i den här omgången.
+ *
+ * Alvis skriver ut skillnaden per kurs: en ämnesnivå som går att söka har en
+ * knapp, en Gy11-kurs har texten "Inga aktuella prövningstillfällen". Datan
+ * hade ingen plats för den skillnaden, och de två Gy11-listningar Norrköping
+ * haft sedan det första svepet räknade därför ned mot 20 september på en
+ * anmälan som inte finns — det värsta en prövningsapp kan göra. `confirmed:
+ * false` är det ärliga: inga datum, ingen nedräkning, en etikett som säger vad
+ * som gäller i stället och en länk vidare.
+ */
+const NORRKOPING_GY11_CLOSED: NextPeriod = {
+  label:
+    'Kursen står kvar i Komvux Norrköpings utbud, men Alvis säger "Inga aktuella ' +
+    'prövningstillfällen" för den: höstens omgång prövar Gy25-ämnesnivån i stället. Nästa ' +
+    'ansökan går vecka 47–48 (16–29 november 2026), och vilka kurser som går att söka då ' +
+    'framgår av katalogen när den öppnar.',
+  confirmed: false,
+};
+
+/**
+ * Norrköpings fjärde omgång, som står publicerad bredvid den tredje.
+ *
+ * Det här är vad `laterRound` finns för: den som missar 20 september möts
+ * annars av ett grått "Anmälan stängde" och får leta själv, trots att kommunen
+ * redan skrivit ut när nästa ansökan öppnar.
+ */
+const NORRKOPING_LATER: LaterRound = {
+  label:
+    'Nästa omgång går att söka vecka 47–48, alltså 16–29 november 2026, med första provdatum ' +
+    'torsdag vecka 4 (28 januari 2027) klockan 14–17 på Källvindsskolan.',
+  applicationStart: '2026-11-16',
+  applicationEnd: '2026-11-29',
+};
+
+/**
+ * Norrköping delar prövningarna mellan Källvindsskolan och Talenti, och vilken
+ * av dem som tar en viss ämnesnivå avgörs per omgång: kommunens sida räknar upp
+ * vad som prövas på plats den här perioden, Talenti tar resten på distans. Det
+ * är ett val man gör i anmälan, inte två listningar — så momenten beskriver
+ * båda vägarna i stället för att gissa vilken som blir din.
+ */
+const COMPONENTS_NORRKOPING: ExamComponent[] = [
+  {
+    name: 'Inlämningsuppgifter',
+    duration: 'Före salsprovet',
+    description:
+      'Ingår i Talentis upplägg och kan inte kompletteras i efterhand. Ingen handledning ges.',
+  },
+  {
+    name: 'Prov på plats',
+    duration: 'Fast tid',
+    description:
+      'På Källvindsskolan skrivs första provet torsdag 22 oktober klockan 14–17, och du måste nå betyg E där för att prövningen ska fortsätta. Hos Talenti ligger salsprovet oftast i period ens andra vecka, också det i Norrköping.',
+  },
+  {
+    name: 'Muntlig examination',
+    duration: 'Varierar',
+    description:
+      'Bokas med ansvarig lärare. Legitimation ska kunna visas, även vid digitala moment.',
+  },
+];
+
+/**
+ * Alvis kurskatalog är anmälan, men betalningen är det inte: Norrköping
+ * fakturerar först efter antagningsbeskedet, vilket är motsatsen till vad den
+ * härledda kurspickartexten lovar ("bekräfta anmälan och betala avgiften").
+ */
+const REGISTRATION_NORRKOPING: Exam['registration'] = {
+  kind: 'coursepicker',
+  ctaLabel: 'Välj ämnesnivå och anmäl dig',
+  landing: 'Länken går till Komvux Norrköpings prövningskatalog i Alvis, steg ett av tre.',
+  steps: [
+    'Välj ämnesområde och din ämnesnivå i listan',
+    'Logga in och skicka anmälan — en prövning per period och skola',
+    'Vänta på antagningsbeskedet i Alvis; betalningen kommer först efter det',
+  ],
+  direct: true,
+};
 
 export const EXAMS: Exam[] = [
   {
@@ -4282,25 +4534,22 @@ export const EXAMS: Exam[] = [
     lat: 56.0465,
     lng: 12.6945,
     price: 500,
-    priceNote: FREE_IF_PRIOR_F,
-    nextPeriod: {
-      label:
-        'Anmälan 7–11 september 2026 (avgiften ska vara betald senast 11/9), prövningsperiod 12 oktober – 6 november. Du kan göra högst två prövningar per period.',
-      applicationStart: '2026-09-07',
-      applicationEnd: '2026-09-11',
-      examWindowStart: '2026-10-12',
-      examWindowEnd: '2026-11-06',
-      confirmed: true,
-    },
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
     registrationUrl:
       'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG_GY11,
     infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
     description:
-      'Komvux Helsingborg erbjuder betygsprövning i gymnasiekurser, bland annat matematik.',
-    tags: ['matematik', 'helsingborg'],
-    verifiedAt: AUG_18_VERIFIED,
+      'Betygsprövning i Matematik 2b (MATMAT02b) hos Komvux Helsingborg. Webbansökan söker du ' +
+      'till Gy25, så en Gy11-kurs kräver ett extra steg: du mejlar betygsprovning@helsingborg.se ' +
+      'efter att du anmält dig, och staden prövar bara Gy11-kurser för den som redan har ett ' +
+      'betyg i kursen. Saknar du betyg är det ämnesnivån Matematik Nivå 2b (MATE2B00X) som ' +
+      'gäller, och den söker du direkt i webbansökan.',
+    tags: ['matematik', 'helsingborg', 'skåne', 'gy11'],
+    verifiedAt: SEP_15_VERIFIED,
   },
   {
     id: 'lund-ma',
@@ -5464,7 +5713,7 @@ export const EXAMS: Exam[] = [
       examWindowEnd: '2026-10-30',
       confirmed: true,
     },
-    components: COMPONENTS_FLERA,
+    components: COMPONENTS_UPPSALA_NTI,
     studyTips: TIPS_FLERA,
     // "Under anmälningsperioderna finns en länk till ett anmälningsformulär
     // tillgängligt på den här sidan" — this is that form, live during the
@@ -5473,9 +5722,13 @@ export const EXAMS: Exam[] = [
     registrationUrl: 'https://forms.office.com/e/MyAN26nW6M',
     infoUrl: 'https://www.uppsala.se/skola-forskola-och-komvux/komvux/studera-pa-komvux/provning/',
     description:
-      'Uppsala kommun låter NTI-skolan ansvara för prövning i teoretiska kurser för kommunens invånare; man kan bara anmäla sig till en kurs/ämnesnivå per prövningsperiod. Prövning i yrkeskurser hanteras separat via ujc.provning@uppsala.se.',
+      'Uppsala kommun låter NTI-skolan ansvara för prövning i teoretiska kurser, och publicerar ' +
+      'ingen egen kurslista — du kan pröva de kurser som ingår i kommunens utbud, en per ' +
+      'prövningsperiod. Efter att ansökan stängt tilldelas du en prövningsperiod med start- och ' +
+      'slutdatum och ett slutprov på plats i Uppsala. Prövning i yrkeskurser går vid sidan om, ' +
+      'till ujc.provning@uppsala.se.',
     tags: ['komvux', 'flera ämnen', 'uppsala'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: SEP_15_VERIFIED,
   },
   {
     id: 'vux-huddinge-huddinge-svenska-som-andrasprak-3',
@@ -5849,23 +6102,20 @@ export const EXAMS: Exam[] = [
     lat: 58.5877,
     lng: 16.1924,
     price: 500,
-    priceNote: '500 kr per prövning; folkbokförda i Norrköpings kommun prioriteras vid platsbrist',
-    nextPeriod: {
-      label: 'Ansökan vecka 35–38, 2026',
-      applicationStart: '2026-08-24',
-      applicationEnd: '2026-09-20',
-      examWindowStart: '2026-10-19',
-      examWindowEnd: '2026-12-20',
-      confirmed: true,
-    },
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_GY11_CLOSED,
     components: COMPONENTS_KEMI,
     studyTips: TIPS_KEMI,
-    registrationUrl: 'https://norrkoping.alvis.se/login',
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
     infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
     description:
-      'Komvux Norrköping erbjuder prövning i Kemi 1 på Källvindsskolan; ansökan sker vecka 35–38, första provdatum torsdag vecka 43, sista betygsdatum vecka 51 (2026).',
-    tags: ['kemi', 'gymnasial', 'östergötland'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+      'Komvux Norrköping har Kemi 1 kvar i sitt prövningsutbud, men hösten 2026 prövas kursen ' +
+      'som Gy25-ämnesnivån Kemi Nivå 1 (KEMI1000X) — det är den som går att söka i Alvis just ' +
+      'nu. Läste du kursen före juli 2025 är Gy11-kursen ändå din; hör av dig till Komvux om ' +
+      'du behöver pröva just den.',
+    tags: ['kemi', 'gymnasial', 'östergötland', 'gy11'],
+    verifiedAt: SEP_15_VERIFIED,
   },
   {
     id: 'kallvindsskolan-komvux-norrkoping-norrkoping-matematik-forts',
@@ -5881,23 +6131,20 @@ export const EXAMS: Exam[] = [
     lat: 58.5877,
     lng: 16.1924,
     price: 500,
-    priceNote: '500 kr per prövning; kostnadsfritt vid tidigare F/IG i kursen på Komvux Norrköping',
-    nextPeriod: {
-      label: 'Ansökan vecka 35–38, 2026',
-      applicationStart: '2026-08-24',
-      applicationEnd: '2026-09-20',
-      examWindowStart: '2026-10-19',
-      examWindowEnd: '2026-12-20',
-      confirmed: true,
-    },
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_GY11_CLOSED,
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
-    registrationUrl: 'https://norrkoping.alvis.se/login',
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
     infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
     description:
-      'Prövning i matematik fortsättningsnivå (motsvarande Matematik 3) ges på Källvindsskolan, med ansökan vecka 35–38 och provstart vecka 43 hösten 2026.',
-    tags: ['matematik', 'gymnasial', 'östergötland'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+      'Komvux Norrköping har Matematik 3b kvar i sitt prövningsutbud, men hösten 2026 prövas ' +
+      'kursen som Gy25-ämnesnivån Matematik – fortsättning Nivå 1b (MATO1B00X) — det är den ' +
+      'som går att söka i Alvis just nu. Läste du kursen före juli 2025 är Gy11-kursen ändå ' +
+      'din; hör av dig till Komvux om du behöver pröva just den.',
+    tags: ['matematik', 'gymnasial', 'östergötland', 'gy11'],
+    verifiedAt: SEP_15_VERIFIED,
   },
   {
     id: 'vuxenutbildningen-motala-carlsund-utbildningscentrum-motala-',
@@ -6015,8 +6262,10 @@ export const EXAMS: Exam[] = [
     lng: 16.5448,
     price: 500,
     priceNote:
-      '500 kr per kurs, betalas med Swish och kvittot bifogas anmälan; högst två ämnen per ' +
-      'period. Avgiften återbetalas bara mot läkarintyg.',
+      '500 kr per kurs, swishat till 123 184 43 72 med "VUX, förnamn, efternamn, födelsedatum, ' +
+      'kurs" i meddelandet, och kvittot bifogas anmälan. Har du F, IG eller streck i kursen är ' +
+      'prövningen gratis mot betygskopia — har du läst den i Västerås behövs ingen kopia. Två ' +
+      'ämnen är två swishar, och avgiften återbetalas bara mot läkarintyg.',
     // Läst 2026-09-10: kommunen skriver rakt ut "Prövningsperioden för 2026 är
     // fullbokad". Datumen nedan står kvar, eftersom de säger vilken omgång som
     // tog slut, men `full` stänger nedräkningen och bokningsknappen — annars
@@ -6034,9 +6283,24 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
-    // "Kurskatalog Vuxenutbildningscentrum" on the kommun page — the Alvis
-    // prövningskatalog, which is where the anmälan is actually made.
-    registrationUrl: 'https://vasteras.alvis.se/provning/amnesomrade',
+    // Prövningsmodulen i Alvis (/provning/amnesomrade) svarade 404 den
+    // 2026-09-15 — den verkar bara ligga uppe medan en omgång tar emot
+    // anmälningar, och årets är fullbokad. Katalogen står kvar, och det är den
+    // som är vägen in när nästa period öppnar.
+    registrationUrl: 'https://vasteras.alvis.se/hittakurser',
+    registration: {
+      kind: 'coursepicker',
+      ctaLabel: 'Öppna kurskatalogen',
+      landing:
+        'Länken går till Vuxenutbildningscentrums kurskatalog i Alvis. Prövningsanmälan ligger ' +
+        'i katalogen när en period tar emot anmälningar — årets är fullbokad.',
+      steps: [
+        'Sök fram kursen eller ämnesnivån i katalogen',
+        'Swisha 500 kr till 123 184 43 72 med VUX, namn och födelsedatum i meddelandet',
+        'Bifoga kvittot — eller betygskopian på ditt F — senast sista anmälningsdag',
+      ],
+      direct: false,
+    },
     infoUrl:
       'https://www.vasteras.se/barn-och-utbildning/vuxenutbildning/nivatest-och-provning-infor-vuxenutbildning.html',
     description:
@@ -6045,7 +6309,7 @@ export const EXAMS: Exam[] = [
       'KUI, Nercia, NTI och Vuxenutbildningscentrum (endast sfi D). Anmälan görs i ' +
       'kurskatalogen, och årets prövningsperiod är fullbokad; sfi B och C anmäls i receptionen.',
     tags: ['flera ämnen', 'gymnasial', 'västmanland'],
-    verifiedAt: SEP_10_VERIFIED,
+    verifiedAt: SEP_15_VERIFIED,
   },
   {
     id: 'komvux-orebro-campus-risbergska-orebro-flera-kurser-kontakta',
@@ -20047,6 +20311,6201 @@ export const EXAMS: Exam[] = [
       '26 oktober–13 november; ditt eget datum inom perioden bestäms av ansvarig lärare.',
     tags: ['svenska för invandrare', 'sfi', 'örebro'],
     verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'helsingborg-admi1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Administration',
+    course: 'Administration Nivå 1',
+    courseCode: 'ADMI1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Administration Nivå 1 (ADMI1000X) hos Komvux Helsingborg, som lägger ' +
+      'sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Administration 1 (ADMADM01) kan du pröva den i stället — anmäl dig som vanligt och ' +
+      'mejla sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en ' +
+      'Gy11-prövning här.',
+    tags: ['administration', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-admi2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Administration',
+    course: 'Administration Nivå 2',
+    courseCode: 'ADMI2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Administration Nivå 2 (ADMI2000X) hos Komvux Helsingborg, som lägger ' +
+      'sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Administration 2 (ADMADM02) kan du pröva den i stället — anmäl dig som vanligt och ' +
+      'mejla sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en ' +
+      'Gy11-prövning här.',
+    tags: ['administration', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-arki1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Arkitektur',
+    course: 'Arkitektur Nivå 1',
+    courseCode: 'ARKI1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Arkitektur Nivå 1 (ARKI1000X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Arkitektur – hus (ARKARK0) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['arkitektur', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-biog1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Biologi',
+    course: 'Biologi Nivå 1',
+    courseCode: 'BIOG1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG_LAB,
+    studyTips: TIPS_BIOLOGI,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Biologi Nivå 1 (BIOG1000X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Biologi 1 (BIOBIO01) kan du pröva den i stället — anmäl dig som vanligt och mejla sedan ' +
+      'betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning här.',
+    tags: ['biologi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-biog2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Biologi',
+    course: 'Biologi Nivå 2',
+    courseCode: 'BIOG2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG_LAB,
+    studyTips: TIPS_BIOLOGI,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Biologi Nivå 2 (BIOG2000X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Biologi 2 (BIOBIO02) kan du pröva den i stället — anmäl dig som vanligt och mejla sedan ' +
+      'betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning här.',
+    tags: ['biologi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-datr1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Dator- och kommunikationsteknik',
+    course: 'Dator- och kommunikationsteknik Nivå 1',
+    courseCode: 'DATR1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Dator- och kommunikationsteknik Nivå 1 (DATR1000X) hos Komvux ' +
+      'Helsingborg, som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ' +
+      'ämnesnivån på egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. ' +
+      'Höstens andra omgång hade sista anmälnings- och betalningsdag 11 september 2026 och ' +
+      'prövas 12 oktober–6 november; du får göra högst två prövningar per period.',
+    tags: ['dator- och kommunikationsteknik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-diga1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Digitalt skapande',
+    course: 'Digitalt skapande Nivå 1',
+    courseCode: 'DIGA1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Digitalt skapande Nivå 1 (DIGA1000X) hos Komvux Helsingborg, som ' +
+      'lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen ' +
+      'hand i lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra ' +
+      'omgång hade sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 ' +
+      'oktober–6 november; du får göra högst två prövningar per period. Har du redan betyg i ' +
+      'motsvarande Gy11-kurs Digitalt skapande 1 (DIGDIG01) kan du pröva den i stället — anmäl ' +
+      'dig som vanligt och mejla sedan betygsprovning@helsingborg.se, vilket är den enda vägen ' +
+      'till en Gy11-prövning här.',
+    tags: ['digitalt skapande', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-diga2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Digitalt skapande',
+    course: 'Digitalt skapande Nivå 2',
+    courseCode: 'DIGA2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Digitalt skapande Nivå 2 (DIGA2000X) hos Komvux Helsingborg, som ' +
+      'lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen ' +
+      'hand i lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra ' +
+      'omgång hade sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 ' +
+      'oktober–6 november; du får göra högst två prövningar per period. Har du redan betyg i ' +
+      'motsvarande Gy11-kurs Digitalt skapande 2 (DIGDIG02) kan du pröva den i stället — anmäl ' +
+      'dig som vanligt och mejla sedan betygsprovning@helsingborg.se, vilket är den enda vägen ' +
+      'till en Gy11-prövning här.',
+    tags: ['digitalt skapande', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-enge1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Engelska',
+    course: 'Engelska Nivå 1',
+    courseCode: 'ENGE1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Engelska Nivå 1 (ENGE1000X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Engelska 5 (ENGENG05) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['engelska', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-enge2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Engelska',
+    course: 'Engelska Nivå 2',
+    courseCode: 'ENGE2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Engelska Nivå 2 (ENGE2000X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Engelska 6 (ENGENG06) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['engelska', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-enge3000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Engelska',
+    course: 'Engelska Nivå 3',
+    courseCode: 'ENGE3000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Engelska Nivå 3 (ENGE3000X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Engelska 7 (ENGENG07) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['engelska', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-entr1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Entreprenörskap',
+    course: 'Entreprenörskap Nivå 1',
+    courseCode: 'ENTR1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Entreprenörskap Nivå 1 (ENTR1000X) hos Komvux Helsingborg, som lägger ' +
+      'sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Entreprenörskap (ENTENR0) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['entreprenörskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-entp1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Entreprenörskap',
+    course: 'Entreprenörskap och företagande Nivå 1',
+    courseCode: 'ENTP1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Entreprenörskap och företagande Nivå 1 (ENTP1000X) hos Komvux ' +
+      'Helsingborg, som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ' +
+      'ämnesnivån på egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. ' +
+      'Höstens andra omgång hade sista anmälnings- och betalningsdag 11 september 2026 och ' +
+      'prövas 12 oktober–6 november; du får göra högst två prövningar per period. Har du redan ' +
+      'betyg i motsvarande Gy11-kurs Entreprenörskap och företagande (FÖRENT0) kan du pröva ' +
+      'den i stället — anmäl dig som vanligt och mejla sedan betygsprovning@helsingborg.se, ' +
+      'vilket är den enda vägen till en Gy11-prövning här.',
+    tags: ['entreprenörskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-film1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Filmkunskap',
+    course: 'Filmkunskap Nivå 1',
+    courseCode: 'FILM1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Filmkunskap Nivå 1 (FILM1000X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Film- och TV-kunskap (KOSFIL0) kan du pröva den i stället — anmäl dig som vanligt och ' +
+      'mejla sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en ' +
+      'Gy11-prövning här.',
+    tags: ['filmkunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-fils1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Filosofi',
+    course: 'Filosofi Nivå 1',
+    courseCode: 'FILS1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Filosofi Nivå 1 (FILS1000X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Filosofi 1 (FIOFIO01) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['filosofi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-fils2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Filosofi',
+    course: 'Filosofi Nivå 2',
+    courseCode: 'FILS2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Filosofi Nivå 2 (FILS2000X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Filosofi 2 (FIOFIO02) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['filosofi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-fysk1b00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Fysik',
+    course: 'Fysik Nivå 1b',
+    courseCode: 'FYSK1B00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG_LAB,
+    studyTips: TIPS_FYSIK,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Fysik Nivå 1b (FYSK1B00X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Fysik 1a (FYSFYS01a) kan du pröva den i stället — anmäl dig som vanligt och mejla sedan ' +
+      'betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning här.',
+    tags: ['fysik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-fysk1a10x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Fysik',
+    course: 'Fysik Nivå 1a1',
+    courseCode: 'FYSK1A10X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG_LAB,
+    studyTips: TIPS_FYSIK,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Fysik Nivå 1a1 (FYSK1A10X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Fysik 1b1 (FYSFYS01b1) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['fysik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-fysk1a20x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Fysik',
+    course: 'Fysik Nivå 1a2',
+    courseCode: 'FYSK1A20X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG_LAB,
+    studyTips: TIPS_FYSIK,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Fysik Nivå 1a2 (FYSK1A20X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Fysik 1b2 (FYSFYS01b2) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['fysik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-fysk2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Fysik',
+    course: 'Fysik Nivå 2',
+    courseCode: 'FYSK2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG_LAB,
+    studyTips: TIPS_FYSIK,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Fysik Nivå 2 (FYSK2000X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Fysik 2 (FYSFYS02) kan du pröva den i stället — anmäl dig som vanligt och mejla sedan ' +
+      'betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning här.',
+    tags: ['fysik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-foet1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Företagsekonomi',
+    course: 'Företagsekonomi Nivå 1',
+    courseCode: 'FOET1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Företagsekonomi Nivå 1 (FOET1000X) hos Komvux Helsingborg, som lägger ' +
+      'sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Företagsekonomi 1 (FÖRFÖR01) kan du pröva den i stället — anmäl dig som vanligt och ' +
+      'mejla sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en ' +
+      'Gy11-prövning här.',
+    tags: ['företagsekonomi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-foet2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Företagsekonomi',
+    course: 'Företagsekonomi Nivå 2',
+    courseCode: 'FOET2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Företagsekonomi Nivå 2 (FOET2000X) hos Komvux Helsingborg, som lägger ' +
+      'sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Företagsekonomi 2 (FÖRFÖR02) kan du pröva den i stället — anmäl dig som vanligt och ' +
+      'mejla sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en ' +
+      'Gy11-prövning här.',
+    tags: ['företagsekonomi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-geog1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Geografi',
+    course: 'Geografi Nivå 1',
+    courseCode: 'GEOG1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Geografi Nivå 1 (GEOG1000X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Geografi 1 (GEOGEO01) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['geografi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-geog2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Geografi',
+    course: 'Geografi Nivå 2',
+    courseCode: 'GEOG2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Geografi Nivå 2 (GEOG2000X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Geografi 2 (GEOGEO02) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['geografi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-hist1a10x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Historia',
+    course: 'Historia Nivå 1a1',
+    courseCode: 'HIST1A10X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Historia Nivå 1a1 (HIST1A10X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Historia 1a1 (HISHIS01a1) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['historia', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-hist1a20x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Historia',
+    course: 'Historia Nivå 1a2',
+    courseCode: 'HIST1A20X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Historia Nivå 1a2 (HIST1A20X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Historia 1a2 (HISHIS01a2) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['historia', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-hist1b00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Historia',
+    course: 'Historia Nivå 1b',
+    courseCode: 'HIST1B00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Historia Nivå 1b (HIST1B00X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Historia 1b (HISHIS01b) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['historia', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-hist2a00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Historia',
+    course: 'Historia Nivå 2a',
+    courseCode: 'HIST2A00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Historia Nivå 2a (HIST2A00X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Historia 2a (HISHIS02a) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['historia', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-hist2b00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Historia',
+    course: 'Historia Nivå 2b',
+    courseCode: 'HIST2B00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Historia Nivå 2b (HIST2B00X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Historia 2b – kultur (HISHIS02b) kan du pröva den i stället — anmäl dig som vanligt och ' +
+      'mejla sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en ' +
+      'Gy11-prövning här.',
+    tags: ['historia', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-hals1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Vård och omsorg',
+    course: 'Hälsopedagogik Nivå 1',
+    courseCode: 'HALS1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_VARD,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Hälsopedagogik Nivå 1 (HALS1000X) hos Komvux Helsingborg, som lägger ' +
+      'sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Hälsopedagogik (HALAHL0) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['vård och omsorg', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-inte1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Internationell ekonomi',
+    course: 'Internationell ekonomi Nivå 1',
+    courseCode: 'INTE1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Internationell ekonomi Nivå 1 (INTE1000X) hos Komvux Helsingborg, som ' +
+      'lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen ' +
+      'hand i lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra ' +
+      'omgång hade sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 ' +
+      'oktober–6 november; du får göra högst två prövningar per period. Har du redan betyg i ' +
+      'motsvarande Gy11-kurs Internationell ekonomi (SAMINE0) kan du pröva den i stället — ' +
+      'anmäl dig som vanligt och mejla sedan betygsprovning@helsingborg.se, vilket är den enda ' +
+      'vägen till en Gy11-prövning här.',
+    tags: ['internationell ekonomi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-intr1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Internationella relationer',
+    course: 'Internationella relationer Nivå 1',
+    courseCode: 'INTR1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Internationella relationer Nivå 1 (INTR1000X) hos Komvux Helsingborg, ' +
+      'som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på ' +
+      'egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra ' +
+      'omgång hade sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 ' +
+      'oktober–6 november; du får göra högst två prövningar per period. Har du redan betyg i ' +
+      'motsvarande Gy11-kurs Internationella relationer (SAMINR0) kan du pröva den i stället — ' +
+      'anmäl dig som vanligt och mejla sedan betygsprovning@helsingborg.se, vilket är den enda ' +
+      'vägen till en Gy11-prövning här.',
+    tags: ['internationella relationer', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-kemi1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Kemi',
+    course: 'Kemi Nivå 1',
+    courseCode: 'KEMI1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG_LAB,
+    studyTips: TIPS_KEMI,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Kemi Nivå 1 (KEMI1000X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Kemi 1 (KEMKEM01) kan du pröva den i stället — anmäl dig som vanligt och mejla sedan ' +
+      'betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning här.',
+    tags: ['kemi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-kemi2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Kemi',
+    course: 'Kemi Nivå 2',
+    courseCode: 'KEMI2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG_LAB,
+    studyTips: TIPS_KEMI,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Kemi Nivå 2 (KEMI2000X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Kemi 2 (KEMKEM02) kan du pröva den i stället — anmäl dig som vanligt och mejla sedan ' +
+      'betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning här.',
+    tags: ['kemi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-lati1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Latin',
+    course: 'Latin – språk och kultur Nivå 1',
+    courseCode: 'LATI1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Latin – språk och kultur Nivå 1 (LATI1000X) hos Komvux Helsingborg, ' +
+      'som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på ' +
+      'egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra ' +
+      'omgång hade sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 ' +
+      'oktober–6 november; du får göra högst två prövningar per period. Har du redan betyg i ' +
+      'motsvarande Gy11-kurs Latin – språk och kultur (LATLAT01) kan du pröva den i stället — ' +
+      'anmäl dig som vanligt och mejla sedan betygsprovning@helsingborg.se, vilket är den enda ' +
+      'vägen till en Gy11-prövning här.',
+    tags: ['latin', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-leda1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Ledarskap och organisation',
+    course: 'Ledarskap och organisation Nivå 1',
+    courseCode: 'LEDA1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Ledarskap och organisation Nivå 1 (LEDA1000X) hos Komvux Helsingborg, ' +
+      'som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på ' +
+      'egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra ' +
+      'omgång hade sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 ' +
+      'oktober–6 november; du får göra högst två prövningar per period. Har du redan betyg i ' +
+      'motsvarande Gy11-kurs Ledarskap och organisation (LEDLED0) kan du pröva den i stället — ' +
+      'anmäl dig som vanligt och mejla sedan betygsprovning@helsingborg.se, vilket är den enda ' +
+      'vägen till en Gy11-prövning här.',
+    tags: ['ledarskap och organisation', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-logs1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Logistik',
+    course: 'Logistik Nivå 1',
+    courseCode: 'LOGS1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Logistik Nivå 1 (LOGS1000X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Logistik 1 (INKLOG01) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['logistik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mark1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Marknadsföring',
+    course: 'Marknadsföring Nivå 1',
+    courseCode: 'MARK1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Marknadsföring Nivå 1 (MARK1000X) hos Komvux Helsingborg, som lägger ' +
+      'sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Marknadsföring (FÖRMAD0) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['marknadsföring', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mate1a00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 1a',
+    courseCode: 'MATE1A00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Matematik Nivå 1a (MATE1A00X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Matematik 1a (MATMAT01a) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['matematik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mate1b00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 1b',
+    courseCode: 'MATE1B00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Matematik Nivå 1b (MATE1B00X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Matematik 1b (MATMAT01b) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['matematik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mate1c00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 1c',
+    courseCode: 'MATE1C00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Matematik Nivå 1c (MATE1C00X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Matematik 1c (MATMAT01c) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['matematik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mate2a00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 2a',
+    courseCode: 'MATE2A00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Matematik Nivå 2a (MATE2A00X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Matematik 2a (MATMAT02a) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['matematik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mate2b00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 2b',
+    courseCode: 'MATE2B00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Matematik Nivå 2b (MATE2B00X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Matematik 2b (MATMAT02b) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['matematik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mate2c00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 2c',
+    courseCode: 'MATE2C00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Matematik Nivå 2c (MATE2C00X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Matematik 2c (MATMAT02c) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['matematik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mato1b00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik – fortsättning Nivå 1b',
+    courseCode: 'MATO1B00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Matematik – fortsättning Nivå 1b (MATO1B00X) hos Komvux Helsingborg, ' +
+      'som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på ' +
+      'egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra ' +
+      'omgång hade sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 ' +
+      'oktober–6 november; du får göra högst två prövningar per period. Har du redan betyg i ' +
+      'motsvarande Gy11-kurs Matematik 3b (MATMAT03b) kan du pröva den i stället — anmäl dig ' +
+      'som vanligt och mejla sedan betygsprovning@helsingborg.se, vilket är den enda vägen ' +
+      'till en Gy11-prövning här.',
+    tags: ['matematik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mato1c00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik – fortsättning Nivå 1c',
+    courseCode: 'MATO1C00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Matematik – fortsättning Nivå 1c (MATO1C00X) hos Komvux Helsingborg, ' +
+      'som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på ' +
+      'egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra ' +
+      'omgång hade sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 ' +
+      'oktober–6 november; du får göra högst två prövningar per period. Har du redan betyg i ' +
+      'motsvarande Gy11-kurs Matematik 3c (MATMAT03c) kan du pröva den i stället — anmäl dig ' +
+      'som vanligt och mejla sedan betygsprovning@helsingborg.se, vilket är den enda vägen ' +
+      'till en Gy11-prövning här.',
+    tags: ['matematik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mato2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik – fortsättning Nivå 2',
+    courseCode: 'MATO2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Matematik – fortsättning Nivå 2 (MATO2000X) hos Komvux Helsingborg, ' +
+      'som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på ' +
+      'egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra ' +
+      'omgång hade sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 ' +
+      'oktober–6 november; du får göra högst två prövningar per period. Har du redan betyg i ' +
+      'motsvarande Gy11-kurs Matematik 4 (MATMAT04) kan du pröva den i stället — anmäl dig som ' +
+      'vanligt och mejla sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en ' +
+      'Gy11-prövning här.',
+    tags: ['matematik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-matf1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik – fördjupning Nivå 1',
+    courseCode: 'MATF1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Matematik – fördjupning Nivå 1 (MATF1000X) hos Komvux Helsingborg, som ' +
+      'lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen ' +
+      'hand i lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra ' +
+      'omgång hade sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 ' +
+      'oktober–6 november; du får göra högst två prövningar per period. Har du redan betyg i ' +
+      'motsvarande Gy11-kurs Matematik 5 (MATMAT05) kan du pröva den i stället — anmäl dig som ' +
+      'vanligt och mejla sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en ' +
+      'Gy11-prövning här.',
+    tags: ['matematik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-masb1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik – specialisering B Nivå 1',
+    courseCode: 'MASB1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Matematik – specialisering B Nivå 1 (MASB1000X) hos Komvux ' +
+      'Helsingborg, som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ' +
+      'ämnesnivån på egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. ' +
+      'Höstens andra omgång hade sista anmälnings- och betalningsdag 11 september 2026 och ' +
+      'prövas 12 oktober–6 november; du får göra högst två prövningar per period.',
+    tags: ['matematik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-masc1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Matematik',
+    course: 'Matematik – specialisering C Nivå 1',
+    courseCode: 'MASC1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Matematik – specialisering C Nivå 1 (MASC1000X) hos Komvux ' +
+      'Helsingborg, som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ' +
+      'ämnesnivån på egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. ' +
+      'Höstens andra omgång hade sista anmälnings- och betalningsdag 11 september 2026 och ' +
+      'prövas 12 oktober–6 november; du får göra högst två prövningar per period.',
+    tags: ['matematik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-medp1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Medieproduktion',
+    course: 'Medieproduktion Nivå 1',
+    courseCode: 'MEDP1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Medieproduktion Nivå 1 (MEDP1000X) hos Komvux Helsingborg, som lägger ' +
+      'sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Medieproduktion 1 (MEPMEI01) kan du pröva den i stället — anmäl dig som vanligt och ' +
+      'mejla sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en ' +
+      'Gy11-prövning här.',
+    tags: ['medieproduktion', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-natu1a10x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 1a1',
+    courseCode: 'NATU1A10X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Naturkunskap Nivå 1a1 (NATU1A10X) hos Komvux Helsingborg, som lägger ' +
+      'sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Naturkunskap 1a1 (NAKNAK01a1) kan du pröva den i stället — anmäl dig som vanligt och ' +
+      'mejla sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en ' +
+      'Gy11-prövning här.',
+    tags: ['naturkunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-natu1a20x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 1a2',
+    courseCode: 'NATU1A20X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Naturkunskap Nivå 1a2 (NATU1A20X) hos Komvux Helsingborg, som lägger ' +
+      'sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Naturkunskap 1a2 (NAKNAK01a2) kan du pröva den i stället — anmäl dig som vanligt och ' +
+      'mejla sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en ' +
+      'Gy11-prövning här.',
+    tags: ['naturkunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-natu1b00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 1b',
+    courseCode: 'NATU1B00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Naturkunskap Nivå 1b (NATU1B00X) hos Komvux Helsingborg, som lägger ' +
+      'sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Naturkunskap 1b (NAKNAK01b) kan du pröva den i stället — anmäl dig som vanligt och ' +
+      'mejla sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en ' +
+      'Gy11-prövning här.',
+    tags: ['naturkunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-natu2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 2',
+    courseCode: 'NATU2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Naturkunskap Nivå 2 (NATU2000X) hos Komvux Helsingborg, som lägger ' +
+      'sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Naturkunskap 2 (NAKNAK02) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['naturkunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-prog1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Programmering',
+    course: 'Programmering Nivå 1',
+    courseCode: 'PROG1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_PROGRAMMERING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Programmering Nivå 1 (PROG1000X) hos Komvux Helsingborg, som lägger ' +
+      'sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Programmering 1 (PRRPRR01) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['programmering', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-prog2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Programmering',
+    course: 'Programmering Nivå 2',
+    courseCode: 'PROG2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_PROGRAMMERING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Programmering Nivå 2 (PROG2000X) hos Komvux Helsingborg, som lägger ' +
+      'sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Programmering 2 (PRRPRR02) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['programmering', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-psyk1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Vård och omsorg',
+    course: 'Psykiatri Nivå 1',
+    courseCode: 'PSYK1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_VARD,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Psykiatri Nivå 1 (PSYK1000X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Psykiatri 1 (PSYPSY01) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['vård och omsorg', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-psyl1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Psykologi',
+    course: 'Psykologi Nivå 1',
+    courseCode: 'PSYL1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_PSYKOLOGI,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Psykologi Nivå 1 (PSYL1000X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Psykologi 1 (PSKPSY01) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['psykologi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-psyl2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Psykologi',
+    course: 'Psykologi Nivå 2',
+    courseCode: 'PSYL2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_PSYKOLOGI,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Psykologi Nivå 2 (PSYL2000X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period.',
+    tags: ['psykologi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-redo1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Företagsekonomi',
+    course: 'Redovisning Nivå 1',
+    courseCode: 'REDO1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Redovisning Nivå 1 (REDO1000X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Redovisning 1 (FÖRRED01) kan du pröva den i stället — anmäl dig som vanligt och mejla ' +
+      'sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning ' +
+      'här.',
+    tags: ['företagsekonomi', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-reli1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Religionskunskap',
+    course: 'Religionskunskap Nivå 1',
+    courseCode: 'RELI1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_RELIGION,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Religionskunskap Nivå 1 (RELI1000X) hos Komvux Helsingborg, som lägger ' +
+      'sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Religionskunskap 1 (RELREL01) kan du pröva den i stället — anmäl dig som vanligt och ' +
+      'mejla sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en ' +
+      'Gy11-prövning här.',
+    tags: ['religionskunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-reli2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Religionskunskap',
+    course: 'Religionskunskap Nivå 2',
+    courseCode: 'RELI2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_RELIGION,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Religionskunskap Nivå 2 (RELI2000X) hos Komvux Helsingborg, som lägger ' +
+      'sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Religionskunskap 2 (RELREL02) kan du pröva den i stället — anmäl dig som vanligt och ' +
+      'mejla sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en ' +
+      'Gy11-prövning här.',
+    tags: ['religionskunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-reto1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Svenska',
+    course: 'Retorik Nivå 1',
+    courseCode: 'RETO1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Retorik Nivå 1 (RETO1000X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Retorik (SVERET0) kan du pröva den i stället — anmäl dig som vanligt och mejla sedan ' +
+      'betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning här.',
+    tags: ['svenska', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-samh1a10x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 1a1',
+    courseCode: 'SAMH1A10X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Samhällskunskap Nivå 1a1 (SAMH1A10X) hos Komvux Helsingborg, som ' +
+      'lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen ' +
+      'hand i lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra ' +
+      'omgång hade sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 ' +
+      'oktober–6 november; du får göra högst två prövningar per period. Har du redan betyg i ' +
+      'motsvarande Gy11-kurs Samhällskunskap 1a1 (SAMSAM01a1) kan du pröva den i stället — ' +
+      'anmäl dig som vanligt och mejla sedan betygsprovning@helsingborg.se, vilket är den enda ' +
+      'vägen till en Gy11-prövning här.',
+    tags: ['samhällskunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-samh1a20x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 1a2',
+    courseCode: 'SAMH1A20X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Samhällskunskap Nivå 1a2 (SAMH1A20X) hos Komvux Helsingborg, som ' +
+      'lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen ' +
+      'hand i lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra ' +
+      'omgång hade sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 ' +
+      'oktober–6 november; du får göra högst två prövningar per period. Har du redan betyg i ' +
+      'motsvarande Gy11-kurs Samhällskunskap 1a2 (SAMSAM01a2) kan du pröva den i stället — ' +
+      'anmäl dig som vanligt och mejla sedan betygsprovning@helsingborg.se, vilket är den enda ' +
+      'vägen till en Gy11-prövning här.',
+    tags: ['samhällskunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-samh1b00x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 1b',
+    courseCode: 'SAMH1B00X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Samhällskunskap Nivå 1b (SAMH1B00X) hos Komvux Helsingborg, som lägger ' +
+      'sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Samhällskunskap 1b (SAMSAM01b) kan du pröva den i stället — anmäl dig som vanligt och ' +
+      'mejla sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en ' +
+      'Gy11-prövning här.',
+    tags: ['samhällskunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-samh2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 2',
+    courseCode: 'SAMH2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Samhällskunskap Nivå 2 (SAMH2000X) hos Komvux Helsingborg, som lägger ' +
+      'sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Samhällskunskap 2 (SAMSAM02) kan du pröva den i stället — anmäl dig som vanligt och ' +
+      'mejla sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en ' +
+      'Gy11-prövning här.',
+    tags: ['samhällskunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-samh3000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 3',
+    courseCode: 'SAMH3000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Samhällskunskap Nivå 3 (SAMH3000X) hos Komvux Helsingborg, som lägger ' +
+      'sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Samhällskunskap 3 (SAMSAM03) kan du pröva den i stället — anmäl dig som vanligt och ' +
+      'mejla sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en ' +
+      'Gy11-prövning här.',
+    tags: ['samhällskunskap', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-serv1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Service och bemötande',
+    course: 'Service och bemötande Nivå 1',
+    courseCode: 'SERV1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Service och bemötande Nivå 1 (SERV1000X) hos Komvux Helsingborg, som ' +
+      'lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen ' +
+      'hand i lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra ' +
+      'omgång hade sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 ' +
+      'oktober–6 november; du får göra högst två prövningar per period. Har du redan betyg i ' +
+      'motsvarande Gy11-kurs Service och bemötande 1 (SEVSEV01) kan du pröva den i stället — ' +
+      'anmäl dig som vanligt och mejla sedan betygsprovning@helsingborg.se, vilket är den enda ' +
+      'vägen till en Gy11-prövning här.',
+    tags: ['service och bemötande', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-spei1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Pedagogik',
+    course: 'Specialpedagogik Nivå 1',
+    courseCode: 'SPEI1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Specialpedagogik Nivå 1 (SPEI1000X) hos Komvux Helsingborg, som lägger ' +
+      'sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period.',
+    tags: ['pedagogik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-sven1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Svenska',
+    course: 'Svenska Nivå 1',
+    courseCode: 'SVEN1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Svenska Nivå 1 (SVEN1000X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Svenska 1 (SVESVE01) kan du pröva den i stället — anmäl dig som vanligt och mejla sedan ' +
+      'betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning här.',
+    tags: ['svenska', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-sven2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Svenska',
+    course: 'Svenska Nivå 2',
+    courseCode: 'SVEN2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Svenska Nivå 2 (SVEN2000X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Svenska 2 (SVESVE02) kan du pröva den i stället — anmäl dig som vanligt och mejla sedan ' +
+      'betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning här.',
+    tags: ['svenska', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-sven3000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Svenska',
+    course: 'Svenska Nivå 3',
+    courseCode: 'SVEN3000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Svenska Nivå 3 (SVEN3000X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Svenska 3 (SVESVE03) kan du pröva den i stället — anmäl dig som vanligt och mejla sedan ' +
+      'betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning här.',
+    tags: ['svenska', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-svea1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk Nivå 1',
+    courseCode: 'SVEA1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SVA,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Svenska som andraspråk Nivå 1 (SVEA1000X) hos Komvux Helsingborg, som ' +
+      'lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen ' +
+      'hand i lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra ' +
+      'omgång hade sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 ' +
+      'oktober–6 november; du får göra högst två prövningar per period. Har du redan betyg i ' +
+      'motsvarande Gy11-kurs Svenska som andraspråk 1 (SVASVA01) kan du pröva den i stället — ' +
+      'anmäl dig som vanligt och mejla sedan betygsprovning@helsingborg.se, vilket är den enda ' +
+      'vägen till en Gy11-prövning här.',
+    tags: ['svenska som andraspråk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-svea2000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk Nivå 2',
+    courseCode: 'SVEA2000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SVA,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Svenska som andraspråk Nivå 2 (SVEA2000X) hos Komvux Helsingborg, som ' +
+      'lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen ' +
+      'hand i lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra ' +
+      'omgång hade sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 ' +
+      'oktober–6 november; du får göra högst två prövningar per period. Har du redan betyg i ' +
+      'motsvarande Gy11-kurs Svenska som andraspråk 2 (SVASVA02) kan du pröva den i stället — ' +
+      'anmäl dig som vanligt och mejla sedan betygsprovning@helsingborg.se, vilket är den enda ' +
+      'vägen till en Gy11-prövning här.',
+    tags: ['svenska som andraspråk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-svea3000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk Nivå 3',
+    courseCode: 'SVEA3000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_SVA,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Svenska som andraspråk Nivå 3 (SVEA3000X) hos Komvux Helsingborg, som ' +
+      'lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen ' +
+      'hand i lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra ' +
+      'omgång hade sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 ' +
+      'oktober–6 november; du får göra högst två prövningar per period. Har du redan betyg i ' +
+      'motsvarande Gy11-kurs Svenska som andraspråk 3 (SVASVA03) kan du pröva den i stället — ' +
+      'anmäl dig som vanligt och mejla sedan betygsprovning@helsingborg.se, vilket är den enda ' +
+      'vägen till en Gy11-prövning här.',
+    tags: ['svenska som andraspråk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-teki1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Teknik',
+    course: 'Teknik Nivå 1',
+    courseCode: 'TEKI1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Teknik Nivå 1 (TEKI1000X) hos Komvux Helsingborg, som lägger sina ' +
+      'gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Teknik 1 (TEKTEK01) kan du pröva den i stället — anmäl dig som vanligt och mejla sedan ' +
+      'betygsprovning@helsingborg.se, vilket är den enda vägen till en Gy11-prövning här.',
+    tags: ['teknik', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-webs1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Programmering',
+    course: 'Webbserverprogrammering Nivå 1',
+    courseCode: 'WEBS1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_PROGRAMMERING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Webbserverprogrammering Nivå 1 (WEBS1000X) hos Komvux Helsingborg, som ' +
+      'lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen ' +
+      'hand i lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra ' +
+      'omgång hade sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 ' +
+      'oktober–6 november; du får göra högst två prövningar per period. Har du redan betyg i ' +
+      'motsvarande Gy11-kurs Webbserverprogrammering 1 (WESWEB01) kan du pröva den i stället — ' +
+      'anmäl dig som vanligt och mejla sedan betygsprovning@helsingborg.se, vilket är den enda ' +
+      'vägen till en Gy11-prövning här.',
+    tags: ['programmering', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-webb1000x',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Programmering',
+    course: 'Webbutveckling Nivå 1',
+    courseCode: 'WEBB1000X',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_PROGRAMMERING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Webbutveckling Nivå 1 (WEBB1000X) hos Komvux Helsingborg, som lägger ' +
+      'sina gymnasiala prövningar hos Arena Utbildning: du läser in ämnesnivån på egen hand i ' +
+      'lärplattformen Exlearn och gör proven inom prövningsperioden. Höstens andra omgång hade ' +
+      'sista anmälnings- och betalningsdag 11 september 2026 och prövas 12 oktober–6 november; ' +
+      'du får göra högst två prövningar per period. Har du redan betyg i motsvarande Gy11-kurs ' +
+      'Webbutveckling 1 (WEUWEB01) kan du pröva den i stället — anmäl dig som vanligt och ' +
+      'mejla sedan betygsprovning@helsingborg.se, vilket är den enda vägen till en ' +
+      'Gy11-prövning här.',
+    tags: ['programmering', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mody1000xfra',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – nybörjare Nivå 1, Franska',
+    courseCode: 'MODY1000XFRA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Moderna språk – nybörjare Nivå 1, Franska (MODY1000XFRA) hos Komvux ' +
+      'Helsingborg, som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ' +
+      'ämnesnivån på egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. ' +
+      'Höstens andra omgång hade sista anmälnings- och betalningsdag 11 september 2026 och ' +
+      'prövas 12 oktober–6 november; du får göra högst två prövningar per period. Har du redan ' +
+      'betyg i motsvarande Gy11-kurs Moderna språk 1, franska (MODFRA01) kan du pröva den i ' +
+      'stället — anmäl dig som vanligt och mejla sedan betygsprovning@helsingborg.se, vilket ' +
+      'är den enda vägen till en Gy11-prövning här.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modg1000xfra',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – grund Nivå 1, Franska',
+    courseCode: 'MODG1000XFRA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Moderna språk – grund Nivå 1, Franska (MODG1000XFRA) hos Komvux ' +
+      'Helsingborg, som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ' +
+      'ämnesnivån på egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. ' +
+      'Höstens andra omgång hade sista anmälnings- och betalningsdag 11 september 2026 och ' +
+      'prövas 12 oktober–6 november; du får göra högst två prövningar per period. Har du redan ' +
+      'betyg i motsvarande Gy11-kurs Moderna språk 2, franska (MODFRA02) kan du pröva den i ' +
+      'stället — anmäl dig som vanligt och mejla sedan betygsprovning@helsingborg.se, vilket ' +
+      'är den enda vägen till en Gy11-prövning här.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modo1000xfra',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 1, Franska',
+    courseCode: 'MODO1000XFRA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 1, Franska (MODO1000XFRA) hos Komvux ' +
+      'Helsingborg, som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ' +
+      'ämnesnivån på egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. ' +
+      'Höstens andra omgång hade sista anmälnings- och betalningsdag 11 september 2026 och ' +
+      'prövas 12 oktober–6 november; du får göra högst två prövningar per period. Har du redan ' +
+      'betyg i motsvarande Gy11-kurs Moderna språk 3, franska (MODFRA03) kan du pröva den i ' +
+      'stället — anmäl dig som vanligt och mejla sedan betygsprovning@helsingborg.se, vilket ' +
+      'är den enda vägen till en Gy11-prövning här.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modo2000xfra',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 2, Franska',
+    courseCode: 'MODO2000XFRA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 2, Franska (MODO2000XFRA) hos Komvux ' +
+      'Helsingborg, som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ' +
+      'ämnesnivån på egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. ' +
+      'Höstens andra omgång hade sista anmälnings- och betalningsdag 11 september 2026 och ' +
+      'prövas 12 oktober–6 november; du får göra högst två prövningar per period. Har du redan ' +
+      'betyg i motsvarande Gy11-kurs Moderna språk 4, franska (MODFRA04) kan du pröva den i ' +
+      'stället — anmäl dig som vanligt och mejla sedan betygsprovning@helsingborg.se, vilket ' +
+      'är den enda vägen till en Gy11-prövning här.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modf1000xfra',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fördjupning Nivå 1, Franska',
+    courseCode: 'MODF1000XFRA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Moderna språk – fördjupning Nivå 1, Franska (MODF1000XFRA) hos Komvux ' +
+      'Helsingborg, som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ' +
+      'ämnesnivån på egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. ' +
+      'Höstens andra omgång hade sista anmälnings- och betalningsdag 11 september 2026 och ' +
+      'prövas 12 oktober–6 november; du får göra högst två prövningar per period. Har du redan ' +
+      'betyg i motsvarande Gy11-kurs Moderna språk 5, franska (MODFRA05) kan du pröva den i ' +
+      'stället — anmäl dig som vanligt och mejla sedan betygsprovning@helsingborg.se, vilket ' +
+      'är den enda vägen till en Gy11-prövning här.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mody1000xdeu',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – nybörjare Nivå 1, Tyska',
+    courseCode: 'MODY1000XDEU',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Moderna språk – nybörjare Nivå 1, Tyska (MODY1000XDEU) hos Komvux ' +
+      'Helsingborg, som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ' +
+      'ämnesnivån på egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. ' +
+      'Höstens andra omgång hade sista anmälnings- och betalningsdag 11 september 2026 och ' +
+      'prövas 12 oktober–6 november; du får göra högst två prövningar per period. Har du redan ' +
+      'betyg i motsvarande Gy11-kurs Moderna språk 1, tyska (MODDEU01) kan du pröva den i ' +
+      'stället — anmäl dig som vanligt och mejla sedan betygsprovning@helsingborg.se, vilket ' +
+      'är den enda vägen till en Gy11-prövning här.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modg1000xdeu',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – grund Nivå 1, Tyska',
+    courseCode: 'MODG1000XDEU',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Moderna språk – grund Nivå 1, Tyska (MODG1000XDEU) hos Komvux ' +
+      'Helsingborg, som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ' +
+      'ämnesnivån på egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. ' +
+      'Höstens andra omgång hade sista anmälnings- och betalningsdag 11 september 2026 och ' +
+      'prövas 12 oktober–6 november; du får göra högst två prövningar per period. Har du redan ' +
+      'betyg i motsvarande Gy11-kurs Moderna språk 2, tyska (MODDEU02) kan du pröva den i ' +
+      'stället — anmäl dig som vanligt och mejla sedan betygsprovning@helsingborg.se, vilket ' +
+      'är den enda vägen till en Gy11-prövning här.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modo1000xdeu',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 1, Tyska',
+    courseCode: 'MODO1000XDEU',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 1, Tyska (MODO1000XDEU) hos Komvux ' +
+      'Helsingborg, som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ' +
+      'ämnesnivån på egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. ' +
+      'Höstens andra omgång hade sista anmälnings- och betalningsdag 11 september 2026 och ' +
+      'prövas 12 oktober–6 november; du får göra högst två prövningar per period. Har du redan ' +
+      'betyg i motsvarande Gy11-kurs Moderna språk 3, tyska (MODDEU03) kan du pröva den i ' +
+      'stället — anmäl dig som vanligt och mejla sedan betygsprovning@helsingborg.se, vilket ' +
+      'är den enda vägen till en Gy11-prövning här.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modo2000xdeu',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 2, Tyska',
+    courseCode: 'MODO2000XDEU',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 2, Tyska (MODO2000XDEU) hos Komvux ' +
+      'Helsingborg, som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ' +
+      'ämnesnivån på egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. ' +
+      'Höstens andra omgång hade sista anmälnings- och betalningsdag 11 september 2026 och ' +
+      'prövas 12 oktober–6 november; du får göra högst två prövningar per period. Har du redan ' +
+      'betyg i motsvarande Gy11-kurs Moderna språk 4, tyska (MODDEU04) kan du pröva den i ' +
+      'stället — anmäl dig som vanligt och mejla sedan betygsprovning@helsingborg.se, vilket ' +
+      'är den enda vägen till en Gy11-prövning här.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modf1000xdeu',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fördjupning Nivå 1, Tyska',
+    courseCode: 'MODF1000XDEU',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Moderna språk – fördjupning Nivå 1, Tyska (MODF1000XDEU) hos Komvux ' +
+      'Helsingborg, som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ' +
+      'ämnesnivån på egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. ' +
+      'Höstens andra omgång hade sista anmälnings- och betalningsdag 11 september 2026 och ' +
+      'prövas 12 oktober–6 november; du får göra högst två prövningar per period. Har du redan ' +
+      'betyg i motsvarande Gy11-kurs Moderna språk 5, tyska (MODDEU05) kan du pröva den i ' +
+      'stället — anmäl dig som vanligt och mejla sedan betygsprovning@helsingborg.se, vilket ' +
+      'är den enda vägen till en Gy11-prövning här.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mody1000xspa',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – nybörjare Nivå 1, Spanska',
+    courseCode: 'MODY1000XSPA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Moderna språk – nybörjare Nivå 1, Spanska (MODY1000XSPA) hos Komvux ' +
+      'Helsingborg, som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ' +
+      'ämnesnivån på egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. ' +
+      'Höstens andra omgång hade sista anmälnings- och betalningsdag 11 september 2026 och ' +
+      'prövas 12 oktober–6 november; du får göra högst två prövningar per period.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modg1000xspa',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – grund Nivå 1, Spanska',
+    courseCode: 'MODG1000XSPA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Moderna språk – grund Nivå 1, Spanska (MODG1000XSPA) hos Komvux ' +
+      'Helsingborg, som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ' +
+      'ämnesnivån på egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. ' +
+      'Höstens andra omgång hade sista anmälnings- och betalningsdag 11 september 2026 och ' +
+      'prövas 12 oktober–6 november; du får göra högst två prövningar per period.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modo1000xspa',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 1, Spanska',
+    courseCode: 'MODO1000XSPA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 1, Spanska (MODO1000XSPA) hos Komvux ' +
+      'Helsingborg, som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ' +
+      'ämnesnivån på egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. ' +
+      'Höstens andra omgång hade sista anmälnings- och betalningsdag 11 september 2026 och ' +
+      'prövas 12 oktober–6 november; du får göra högst två prövningar per period.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modo2000xspa',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 2, Spanska',
+    courseCode: 'MODO2000XSPA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 2, Spanska (MODO2000XSPA) hos Komvux ' +
+      'Helsingborg, som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ' +
+      'ämnesnivån på egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. ' +
+      'Höstens andra omgång hade sista anmälnings- och betalningsdag 11 september 2026 och ' +
+      'prövas 12 oktober–6 november; du får göra högst två prövningar per period.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mody1000xita',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – nybörjare Nivå 1, Italienska',
+    courseCode: 'MODY1000XITA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Moderna språk – nybörjare Nivå 1, Italienska (MODY1000XITA) hos Komvux ' +
+      'Helsingborg, som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ' +
+      'ämnesnivån på egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. ' +
+      'Höstens andra omgång hade sista anmälnings- och betalningsdag 11 september 2026 och ' +
+      'prövas 12 oktober–6 november; du får göra högst två prövningar per period.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modg1000xita',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – grund Nivå 1, Italienska',
+    courseCode: 'MODG1000XITA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Moderna språk – grund Nivå 1, Italienska (MODG1000XITA) hos Komvux ' +
+      'Helsingborg, som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ' +
+      'ämnesnivån på egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. ' +
+      'Höstens andra omgång hade sista anmälnings- och betalningsdag 11 september 2026 och ' +
+      'prövas 12 oktober–6 november; du får göra högst två prövningar per period.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-modo1000xita',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 1, Italienska',
+    courseCode: 'MODO1000XITA',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 1, Italienska (MODO1000XITA) hos ' +
+      'Komvux Helsingborg, som lägger sina gymnasiala prövningar hos Arena Utbildning: du ' +
+      'läser in ämnesnivån på egen hand i lärplattformen Exlearn och gör proven inom ' +
+      'prövningsperioden. Höstens andra omgång hade sista anmälnings- och betalningsdag 11 ' +
+      'september 2026 och prövas 12 oktober–6 november; du får göra högst två prövningar per ' +
+      'period.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'helsingborg-mody1000xdan',
+    schoolName: 'Komvux Helsingborg (Arena Utbildning)',
+    provider: 'Helsingborgs stad',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – nybörjare Nivå 1, Danska',
+    courseCode: 'MODY1000XDAN',
+    level: 'Komvux',
+    city: 'Helsingborg',
+    region: 'Skåne',
+    address: 'Arena Utbildning, distans med prov på plats i Helsingborg',
+    lat: 56.0465,
+    lng: 12.6945,
+    price: 500,
+    priceNote: HELSINGBORG_PRICE_NOTE,
+    nextPeriod: HELSINGBORG_PERIOD_4,
+    components: COMPONENTS_HELSINGBORG,
+    studyTips: TIPS_INLASNING,
+    registrationUrl:
+      'https://ansokanvux.helsingborg.se/HCW.Welfare.CC.AdultOpenChoiceWeb/ApplicantHome.aspx',
+    registration: REGISTRATION_HELSINGBORG,
+    infoUrl: 'https://helsingborg.se/forskola-och-utbildning/vuxenutbildning/betygsprovning/',
+    description:
+      'Betygsprövning i Moderna språk – nybörjare Nivå 1, Danska (MODY1000XDAN) hos Komvux ' +
+      'Helsingborg, som lägger sina gymnasiala prövningar hos Arena Utbildning: du läser in ' +
+      'ämnesnivån på egen hand i lärplattformen Exlearn och gör proven inom prövningsperioden. ' +
+      'Höstens andra omgång hade sista anmälnings- och betalningsdag 11 september 2026 och ' +
+      'prövas 12 oktober–6 november; du får göra högst två prövningar per period.',
+    tags: ['moderna språk', 'helsingborg', 'skåne', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-grai1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Grafisk kommunikation',
+    course: 'Grafisk kommunikation Nivå 1',
+    courseCode: 'GRAI1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Grafisk kommunikation Nivå 1 (GRAI1000X) hos Komvux Norrköping, en av ' +
+      'de ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['grafisk kommunikation', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-grai2000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Grafisk kommunikation',
+    course: 'Grafisk kommunikation Nivå 2',
+    courseCode: 'GRAI2000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Grafisk kommunikation Nivå 2 (GRAI2000X) hos Komvux Norrköping, en av ' +
+      'de ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['grafisk kommunikation', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-info1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Information och kommunikation',
+    course: 'Information och kommunikation Nivå 1',
+    courseCode: 'INFO1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Information och kommunikation Nivå 1 (INFO1000X) hos Komvux ' +
+      'Norrköping, en av de ämnesnivåer som gick att söka i kommunens Alvis när listningen ' +
+      'kontrollerades. Prövningen görs antingen på plats på Källvindsskolan eller på distans ' +
+      'via Talenti, som tar de flesta ämnesnivåerna; du får göra en prövning per period och ' +
+      'skola. Avgiften betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings ' +
+      'kommun har förtur när platserna inte räcker.',
+    tags: ['information och kommunikation', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-intr1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Internationella relationer',
+    course: 'Internationella relationer Nivå 1',
+    courseCode: 'INTR1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Internationella relationer Nivå 1 (INTR1000X) hos Komvux Norrköping, ' +
+      'en av de ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['internationella relationer', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-juri1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Juridik',
+    course: 'Juridik Nivå 1',
+    courseCode: 'JURI1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Juridik Nivå 1 (JURI1000X) hos Komvux Norrköping, en av de ämnesnivåer ' +
+      'som gick att söka i kommunens Alvis när listningen kontrollerades. Prövningen görs ' +
+      'antingen på plats på Källvindsskolan eller på distans via Talenti, som tar de flesta ' +
+      'ämnesnivåerna; du får göra en prövning per period och skola. Avgiften betalas först ' +
+      'efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har förtur när ' +
+      'platserna inte räcker.',
+    tags: ['juridik', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-juri2000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Juridik',
+    course: 'Juridik Nivå 2',
+    courseCode: 'JURI2000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Juridik Nivå 2 (JURI2000X) hos Komvux Norrköping, en av de ämnesnivåer ' +
+      'som gick att söka i kommunens Alvis när listningen kontrollerades. Prövningen görs ' +
+      'antingen på plats på Källvindsskolan eller på distans via Talenti, som tar de flesta ' +
+      'ämnesnivåerna; du får göra en prövning per period och skola. Avgiften betalas först ' +
+      'efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har förtur när ' +
+      'platserna inte räcker.',
+    tags: ['juridik', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-leda1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Ledarskap och organisation',
+    course: 'Ledarskap och organisation Nivå 1',
+    courseCode: 'LEDA1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Ledarskap och organisation Nivå 1 (LEDA1000X) hos Komvux Norrköping, ' +
+      'en av de ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['ledarskap och organisation', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-psyl1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Psykologi',
+    course: 'Psykologi Nivå 1',
+    courseCode: 'PSYL1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_PSYKOLOGI,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Psykologi Nivå 1 (PSYL1000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['psykologi', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-psyl2000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Psykologi',
+    course: 'Psykologi Nivå 2',
+    courseCode: 'PSYL2000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_PSYKOLOGI,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Psykologi Nivå 2 (PSYL2000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['psykologi', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-admi1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Administration',
+    course: 'Administration Nivå 1',
+    courseCode: 'ADMI1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Administration Nivå 1 (ADMI1000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['administration', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-admi2000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Administration',
+    course: 'Administration Nivå 2',
+    courseCode: 'ADMI2000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Administration Nivå 2 (ADMI2000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['administration', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-foet1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Företagsekonomi',
+    course: 'Företagsekonomi Nivå 1',
+    courseCode: 'FOET1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Företagsekonomi Nivå 1 (FOET1000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['företagsekonomi', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-foet2000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Företagsekonomi',
+    course: 'Företagsekonomi Nivå 2',
+    courseCode: 'FOET2000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Företagsekonomi Nivå 2 (FOET2000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['företagsekonomi', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-inko1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Inköp',
+    course: 'Inköp Nivå 1',
+    courseCode: 'INKO1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Inköp Nivå 1 (INKO1000X) hos Komvux Norrköping, en av de ämnesnivåer ' +
+      'som gick att söka i kommunens Alvis när listningen kontrollerades. Prövningen görs ' +
+      'antingen på plats på Källvindsskolan eller på distans via Talenti, som tar de flesta ' +
+      'ämnesnivåerna; du får göra en prövning per period och skola. Avgiften betalas först ' +
+      'efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har förtur när ' +
+      'platserna inte räcker.',
+    tags: ['inköp', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-inko2000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Inköp',
+    course: 'Inköp Nivå 2',
+    courseCode: 'INKO2000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Inköp Nivå 2 (INKO2000X) hos Komvux Norrköping, en av de ämnesnivåer ' +
+      'som gick att söka i kommunens Alvis när listningen kontrollerades. Prövningen görs ' +
+      'antingen på plats på Källvindsskolan eller på distans via Talenti, som tar de flesta ' +
+      'ämnesnivåerna; du får göra en prövning per period och skola. Avgiften betalas först ' +
+      'efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har förtur när ' +
+      'platserna inte räcker.',
+    tags: ['inköp', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-logs1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Logistik',
+    course: 'Logistik Nivå 1',
+    courseCode: 'LOGS1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Logistik Nivå 1 (LOGS1000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['logistik', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-logs2000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Logistik',
+    course: 'Logistik Nivå 2',
+    courseCode: 'LOGS2000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Logistik Nivå 2 (LOGS2000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['logistik', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-mark1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Marknadsföring',
+    course: 'Marknadsföring Nivå 1',
+    courseCode: 'MARK1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Marknadsföring Nivå 1 (MARK1000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['marknadsföring', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-mark2000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Marknadsföring',
+    course: 'Marknadsföring Nivå 2',
+    courseCode: 'MARK2000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Marknadsföring Nivå 2 (MARK2000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['marknadsföring', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-datr1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Dator- och kommunikationsteknik',
+    course: 'Dator- och kommunikationsteknik Nivå 1',
+    courseCode: 'DATR1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Dator- och kommunikationsteknik Nivå 1 (DATR1000X) hos Komvux ' +
+      'Norrköping, en av de ämnesnivåer som gick att söka i kommunens Alvis när listningen ' +
+      'kontrollerades. Prövningen görs antingen på plats på Källvindsskolan eller på distans ' +
+      'via Talenti, som tar de flesta ämnesnivåerna; du får göra en prövning per period och ' +
+      'skola. Avgiften betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings ' +
+      'kommun har förtur när platserna inte räcker.',
+    tags: ['dator- och kommunikationsteknik', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-diga1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Digitalt skapande',
+    course: 'Digitalt skapande Nivå 1',
+    courseCode: 'DIGA1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Digitalt skapande Nivå 1 (DIGA1000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['digitalt skapande', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-nate1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Nätverksadministration',
+    course: 'Nätverksadministration Nivå 1',
+    courseCode: 'NATE1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_PROGRAMMERING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Nätverksadministration Nivå 1 (NATE1000X) hos Komvux Norrköping, en av ' +
+      'de ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['nätverksadministration', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-nate2000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Nätverksadministration',
+    course: 'Nätverksadministration Nivå 2',
+    courseCode: 'NATE2000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_PROGRAMMERING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Nätverksadministration Nivå 2 (NATE2000X) hos Komvux Norrköping, en av ' +
+      'de ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['nätverksadministration', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-natv1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Nätverksteknologier',
+    course: 'Nätverksteknologier Nivå 1',
+    courseCode: 'NATV1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_PROGRAMMERING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Nätverksteknologier Nivå 1 (NATV1000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['nätverksteknologier', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-prog1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Programmering',
+    course: 'Programmering Nivå 1',
+    courseCode: 'PROG1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_PROGRAMMERING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Programmering Nivå 1 (PROG1000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['programmering', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-prog2000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Programmering',
+    course: 'Programmering Nivå 2',
+    courseCode: 'PROG2000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_PROGRAMMERING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Programmering Nivå 2 (PROG2000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['programmering', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-mato1b00x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Matematik',
+    course: 'Matematik – fortsättning Nivå 1b',
+    courseCode: 'MATO1B00X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Matematik – fortsättning Nivå 1b (MATO1B00X) hos Komvux Norrköping, en ' +
+      'av de ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['matematik', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-mato1c00x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Matematik',
+    course: 'Matematik – fortsättning Nivå 1c',
+    courseCode: 'MATO1C00X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Matematik – fortsättning Nivå 1c (MATO1C00X) hos Komvux Norrköping, en ' +
+      'av de ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['matematik', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-mato2000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Matematik',
+    course: 'Matematik – fortsättning Nivå 2',
+    courseCode: 'MATO2000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Matematik – fortsättning Nivå 2 (MATO2000X) hos Komvux Norrköping, en ' +
+      'av de ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['matematik', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-matf1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Matematik',
+    course: 'Matematik – fördjupning Nivå 1',
+    courseCode: 'MATF1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Matematik – fördjupning Nivå 1 (MATF1000X) hos Komvux Norrköping, en ' +
+      'av de ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['matematik', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-mate1a00x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 1a',
+    courseCode: 'MATE1A00X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Matematik Nivå 1a (MATE1A00X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['matematik', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-mate1b00x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 1b',
+    courseCode: 'MATE1B00X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Matematik Nivå 1b (MATE1B00X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['matematik', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-mate1c00x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 1c',
+    courseCode: 'MATE1C00X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Matematik Nivå 1c (MATE1C00X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['matematik', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-mate2a00x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 2a',
+    courseCode: 'MATE2A00X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Matematik Nivå 2a (MATE2A00X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['matematik', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-mate2b00x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 2b',
+    courseCode: 'MATE2B00X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Matematik Nivå 2b (MATE2B00X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['matematik', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-mate2c00x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 2c',
+    courseCode: 'MATE2C00X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Matematik Nivå 2c (MATE2C00X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['matematik', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-biog1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Biologi',
+    course: 'Biologi Nivå 1',
+    courseCode: 'BIOG1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_BIOLOGI,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Biologi Nivå 1 (BIOG1000X) hos Komvux Norrköping, en av de ämnesnivåer ' +
+      'som gick att söka i kommunens Alvis när listningen kontrollerades. Prövningen görs ' +
+      'antingen på plats på Källvindsskolan eller på distans via Talenti, som tar de flesta ' +
+      'ämnesnivåerna; du får göra en prövning per period och skola. Avgiften betalas först ' +
+      'efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har förtur när ' +
+      'platserna inte räcker.',
+    tags: ['biologi', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-biog2000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Biologi',
+    course: 'Biologi Nivå 2',
+    courseCode: 'BIOG2000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_BIOLOGI,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Biologi Nivå 2 (BIOG2000X) hos Komvux Norrköping, en av de ämnesnivåer ' +
+      'som gick att söka i kommunens Alvis när listningen kontrollerades. Prövningen görs ' +
+      'antingen på plats på Källvindsskolan eller på distans via Talenti, som tar de flesta ' +
+      'ämnesnivåerna; du får göra en prövning per period och skola. Avgiften betalas först ' +
+      'efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har förtur när ' +
+      'platserna inte räcker.',
+    tags: ['biologi', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-fysk1b00x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Fysik',
+    course: 'Fysik Nivå 1b',
+    courseCode: 'FYSK1B00X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_FYSIK,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Fysik Nivå 1b (FYSK1B00X) hos Komvux Norrköping, en av de ämnesnivåer ' +
+      'som gick att söka i kommunens Alvis när listningen kontrollerades. Prövningen görs ' +
+      'antingen på plats på Källvindsskolan eller på distans via Talenti, som tar de flesta ' +
+      'ämnesnivåerna; du får göra en prövning per period och skola. Avgiften betalas först ' +
+      'efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har förtur när ' +
+      'platserna inte räcker.',
+    tags: ['fysik', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-fysk2000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Fysik',
+    course: 'Fysik Nivå 2',
+    courseCode: 'FYSK2000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_FYSIK,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Fysik Nivå 2 (FYSK2000X) hos Komvux Norrköping, en av de ämnesnivåer ' +
+      'som gick att söka i kommunens Alvis när listningen kontrollerades. Prövningen görs ' +
+      'antingen på plats på Källvindsskolan eller på distans via Talenti, som tar de flesta ' +
+      'ämnesnivåerna; du får göra en prövning per period och skola. Avgiften betalas först ' +
+      'efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har förtur när ' +
+      'platserna inte räcker.',
+    tags: ['fysik', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-kemi1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Kemi',
+    course: 'Kemi Nivå 1',
+    courseCode: 'KEMI1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_KEMI,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Kemi Nivå 1 (KEMI1000X) hos Komvux Norrköping, en av de ämnesnivåer ' +
+      'som gick att söka i kommunens Alvis när listningen kontrollerades. Prövningen görs ' +
+      'antingen på plats på Källvindsskolan eller på distans via Talenti, som tar de flesta ' +
+      'ämnesnivåerna; du får göra en prövning per period och skola. Avgiften betalas först ' +
+      'efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har förtur när ' +
+      'platserna inte räcker.',
+    tags: ['kemi', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-kemi2000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Kemi',
+    course: 'Kemi Nivå 2',
+    courseCode: 'KEMI2000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_KEMI,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Kemi Nivå 2 (KEMI2000X) hos Komvux Norrköping, en av de ämnesnivåer ' +
+      'som gick att söka i kommunens Alvis när listningen kontrollerades. Prövningen görs ' +
+      'antingen på plats på Källvindsskolan eller på distans via Talenti, som tar de flesta ' +
+      'ämnesnivåerna; du får göra en prövning per period och skola. Avgiften betalas först ' +
+      'efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har förtur när ' +
+      'platserna inte räcker.',
+    tags: ['kemi', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-natu1a10x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 1a1',
+    courseCode: 'NATU1A10X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Naturkunskap Nivå 1a1 (NATU1A10X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['naturkunskap', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-natu1a20x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 1a2',
+    courseCode: 'NATU1A20X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Naturkunskap Nivå 1a2 (NATU1A20X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['naturkunskap', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-natu1b00x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 1b',
+    courseCode: 'NATU1B00X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Naturkunskap Nivå 1b (NATU1B00X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['naturkunskap', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-natu2000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 2',
+    courseCode: 'NATU2000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Naturkunskap Nivå 2 (NATU2000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['naturkunskap', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-teki1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Teknik',
+    course: 'Teknik Nivå 1',
+    courseCode: 'TEKI1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Teknik Nivå 1 (TEKI1000X) hos Komvux Norrköping, en av de ämnesnivåer ' +
+      'som gick att söka i kommunens Alvis när listningen kontrollerades. Prövningen görs ' +
+      'antingen på plats på Källvindsskolan eller på distans via Talenti, som tar de flesta ' +
+      'ämnesnivåerna; du får göra en prövning per period och skola. Avgiften betalas först ' +
+      'efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har förtur när ' +
+      'platserna inte räcker.',
+    tags: ['teknik', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-fils1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Filosofi',
+    course: 'Filosofi Nivå 1',
+    courseCode: 'FILS1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Filosofi Nivå 1 (FILS1000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['filosofi', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-fils2000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Filosofi',
+    course: 'Filosofi Nivå 2',
+    courseCode: 'FILS2000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Filosofi Nivå 2 (FILS2000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['filosofi', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-geog1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Geografi',
+    course: 'Geografi Nivå 1',
+    courseCode: 'GEOG1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Geografi Nivå 1 (GEOG1000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['geografi', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-geog2000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Geografi',
+    course: 'Geografi Nivå 2',
+    courseCode: 'GEOG2000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Geografi Nivå 2 (GEOG2000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['geografi', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-hist1a20x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Historia',
+    course: 'Historia Nivå 1a2',
+    courseCode: 'HIST1A20X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Historia Nivå 1a2 (HIST1A20X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['historia', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-hist1b00x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Historia',
+    course: 'Historia Nivå 1b',
+    courseCode: 'HIST1B00X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Historia Nivå 1b (HIST1B00X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['historia', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-hist2a00x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Historia',
+    course: 'Historia Nivå 2a',
+    courseCode: 'HIST2A00X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Historia Nivå 2a (HIST2A00X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['historia', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-inte1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Internationell ekonomi',
+    course: 'Internationell ekonomi Nivå 1',
+    courseCode: 'INTE1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Internationell ekonomi Nivå 1 (INTE1000X) hos Komvux Norrköping, en av ' +
+      'de ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['internationell ekonomi', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-reli1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Religionskunskap',
+    course: 'Religionskunskap Nivå 1',
+    courseCode: 'RELI1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_RELIGION,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Religionskunskap Nivå 1 (RELI1000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['religionskunskap', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-reli2000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Religionskunskap',
+    course: 'Religionskunskap Nivå 2',
+    courseCode: 'RELI2000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_RELIGION,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Religionskunskap Nivå 2 (RELI2000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['religionskunskap', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-samh1a10x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 1a1',
+    courseCode: 'SAMH1A10X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Samhällskunskap Nivå 1a1 (SAMH1A10X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['samhällskunskap', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-samh1a20x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 1a2',
+    courseCode: 'SAMH1A20X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Samhällskunskap Nivå 1a2 (SAMH1A20X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['samhällskunskap', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-samh1b00x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 1b',
+    courseCode: 'SAMH1B00X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Samhällskunskap Nivå 1b (SAMH1B00X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['samhällskunskap', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-samh2000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 2',
+    courseCode: 'SAMH2000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Samhällskunskap Nivå 2 (SAMH2000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['samhällskunskap', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-samh3000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 3',
+    courseCode: 'SAMH3000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Samhällskunskap Nivå 3 (SAMH3000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['samhällskunskap', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-enge1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Engelska',
+    course: 'Engelska Nivå 1',
+    courseCode: 'ENGE1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Engelska Nivå 1 (ENGE1000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['engelska', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-enge2000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Engelska',
+    course: 'Engelska Nivå 2',
+    courseCode: 'ENGE2000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Engelska Nivå 2 (ENGE2000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['engelska', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-enge3000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Engelska',
+    course: 'Engelska Nivå 3',
+    courseCode: 'ENGE3000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Engelska Nivå 3 (ENGE3000X) hos Komvux Norrköping, en av de ' +
+      'ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['engelska', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-modo1000xara',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 1, Arabiska',
+    courseCode: 'MODO1000XARA',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 1, Arabiska (MODO1000XARA) hos ' +
+      'Komvux Norrköping, en av de ämnesnivåer som gick att söka i kommunens Alvis när ' +
+      'listningen kontrollerades. Prövningen görs antingen på plats på Källvindsskolan eller ' +
+      'på distans via Talenti, som tar de flesta ämnesnivåerna; du får göra en prövning per ' +
+      'period och skola. Avgiften betalas först efter antagningsbeskedet, och folkbokförda i ' +
+      'Norrköpings kommun har förtur när platserna inte räcker.',
+    tags: ['moderna språk', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-modo1000xfra',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 1, Franska',
+    courseCode: 'MODO1000XFRA',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 1, Franska (MODO1000XFRA) hos Komvux ' +
+      'Norrköping, en av de ämnesnivåer som gick att söka i kommunens Alvis när listningen ' +
+      'kontrollerades. Prövningen görs antingen på plats på Källvindsskolan eller på distans ' +
+      'via Talenti, som tar de flesta ämnesnivåerna; du får göra en prövning per period och ' +
+      'skola. Avgiften betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings ' +
+      'kommun har förtur när platserna inte räcker.',
+    tags: ['moderna språk', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-modo1000xita',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 1, Italienska',
+    courseCode: 'MODO1000XITA',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 1, Italienska (MODO1000XITA) hos ' +
+      'Komvux Norrköping, en av de ämnesnivåer som gick att söka i kommunens Alvis när ' +
+      'listningen kontrollerades. Prövningen görs antingen på plats på Källvindsskolan eller ' +
+      'på distans via Talenti, som tar de flesta ämnesnivåerna; du får göra en prövning per ' +
+      'period och skola. Avgiften betalas först efter antagningsbeskedet, och folkbokförda i ' +
+      'Norrköpings kommun har förtur när platserna inte räcker.',
+    tags: ['moderna språk', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-modo1000xspa',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 1, Spanska',
+    courseCode: 'MODO1000XSPA',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 1, Spanska (MODO1000XSPA) hos Komvux ' +
+      'Norrköping, en av de ämnesnivåer som gick att söka i kommunens Alvis när listningen ' +
+      'kontrollerades. Prövningen görs antingen på plats på Källvindsskolan eller på distans ' +
+      'via Talenti, som tar de flesta ämnesnivåerna; du får göra en prövning per period och ' +
+      'skola. Avgiften betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings ' +
+      'kommun har förtur när platserna inte räcker.',
+    tags: ['moderna språk', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-modo1000xdeu',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 1, Tyska',
+    courseCode: 'MODO1000XDEU',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 1, Tyska (MODO1000XDEU) hos Komvux ' +
+      'Norrköping, en av de ämnesnivåer som gick att söka i kommunens Alvis när listningen ' +
+      'kontrollerades. Prövningen görs antingen på plats på Källvindsskolan eller på distans ' +
+      'via Talenti, som tar de flesta ämnesnivåerna; du får göra en prövning per period och ' +
+      'skola. Avgiften betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings ' +
+      'kommun har förtur när platserna inte räcker.',
+    tags: ['moderna språk', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-modo2000xara',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 2, Arabiska',
+    courseCode: 'MODO2000XARA',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 2, Arabiska (MODO2000XARA) hos ' +
+      'Komvux Norrköping, en av de ämnesnivåer som gick att söka i kommunens Alvis när ' +
+      'listningen kontrollerades. Prövningen görs antingen på plats på Källvindsskolan eller ' +
+      'på distans via Talenti, som tar de flesta ämnesnivåerna; du får göra en prövning per ' +
+      'period och skola. Avgiften betalas först efter antagningsbeskedet, och folkbokförda i ' +
+      'Norrköpings kommun har förtur när platserna inte räcker.',
+    tags: ['moderna språk', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-modo2000xfra',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 2, Franska',
+    courseCode: 'MODO2000XFRA',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 2, Franska (MODO2000XFRA) hos Komvux ' +
+      'Norrköping, en av de ämnesnivåer som gick att söka i kommunens Alvis när listningen ' +
+      'kontrollerades. Prövningen görs antingen på plats på Källvindsskolan eller på distans ' +
+      'via Talenti, som tar de flesta ämnesnivåerna; du får göra en prövning per period och ' +
+      'skola. Avgiften betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings ' +
+      'kommun har förtur när platserna inte räcker.',
+    tags: ['moderna språk', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-modo2000xita',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 2, Italienska',
+    courseCode: 'MODO2000XITA',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 2, Italienska (MODO2000XITA) hos ' +
+      'Komvux Norrköping, en av de ämnesnivåer som gick att söka i kommunens Alvis när ' +
+      'listningen kontrollerades. Prövningen görs antingen på plats på Källvindsskolan eller ' +
+      'på distans via Talenti, som tar de flesta ämnesnivåerna; du får göra en prövning per ' +
+      'period och skola. Avgiften betalas först efter antagningsbeskedet, och folkbokförda i ' +
+      'Norrköpings kommun har förtur när platserna inte räcker.',
+    tags: ['moderna språk', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-modo2000xspa',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 2, Spanska',
+    courseCode: 'MODO2000XSPA',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 2, Spanska (MODO2000XSPA) hos Komvux ' +
+      'Norrköping, en av de ämnesnivåer som gick att söka i kommunens Alvis när listningen ' +
+      'kontrollerades. Prövningen görs antingen på plats på Källvindsskolan eller på distans ' +
+      'via Talenti, som tar de flesta ämnesnivåerna; du får göra en prövning per period och ' +
+      'skola. Avgiften betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings ' +
+      'kommun har förtur när platserna inte räcker.',
+    tags: ['moderna språk', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-modo2000xdeu',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fortsättning Nivå 2, Tyska',
+    courseCode: 'MODO2000XDEU',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Moderna språk – fortsättning Nivå 2, Tyska (MODO2000XDEU) hos Komvux ' +
+      'Norrköping, en av de ämnesnivåer som gick att söka i kommunens Alvis när listningen ' +
+      'kontrollerades. Prövningen görs antingen på plats på Källvindsskolan eller på distans ' +
+      'via Talenti, som tar de flesta ämnesnivåerna; du får göra en prövning per period och ' +
+      'skola. Avgiften betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings ' +
+      'kommun har förtur när platserna inte räcker.',
+    tags: ['moderna språk', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-modf1000xara',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fördjupning Nivå 1, Arabiska',
+    courseCode: 'MODF1000XARA',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Moderna språk – fördjupning Nivå 1, Arabiska (MODF1000XARA) hos Komvux ' +
+      'Norrköping, en av de ämnesnivåer som gick att söka i kommunens Alvis när listningen ' +
+      'kontrollerades. Prövningen görs antingen på plats på Källvindsskolan eller på distans ' +
+      'via Talenti, som tar de flesta ämnesnivåerna; du får göra en prövning per period och ' +
+      'skola. Avgiften betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings ' +
+      'kommun har förtur när platserna inte räcker.',
+    tags: ['moderna språk', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-modf1000xspa',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – fördjupning Nivå 1, Spanska',
+    courseCode: 'MODF1000XSPA',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Moderna språk – fördjupning Nivå 1, Spanska (MODF1000XSPA) hos Komvux ' +
+      'Norrköping, en av de ämnesnivåer som gick att söka i kommunens Alvis när listningen ' +
+      'kontrollerades. Prövningen görs antingen på plats på Källvindsskolan eller på distans ' +
+      'via Talenti, som tar de flesta ämnesnivåerna; du får göra en prövning per period och ' +
+      'skola. Avgiften betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings ' +
+      'kommun har förtur när platserna inte räcker.',
+    tags: ['moderna språk', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-modg1000xara',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – grund Nivå 1, Arabiska',
+    courseCode: 'MODG1000XARA',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Moderna språk – grund Nivå 1, Arabiska (MODG1000XARA) hos Komvux ' +
+      'Norrköping, en av de ämnesnivåer som gick att söka i kommunens Alvis när listningen ' +
+      'kontrollerades. Prövningen görs antingen på plats på Källvindsskolan eller på distans ' +
+      'via Talenti, som tar de flesta ämnesnivåerna; du får göra en prövning per period och ' +
+      'skola. Avgiften betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings ' +
+      'kommun har förtur när platserna inte räcker.',
+    tags: ['moderna språk', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-modg1000xfra',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – grund Nivå 1, Franska',
+    courseCode: 'MODG1000XFRA',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Moderna språk – grund Nivå 1, Franska (MODG1000XFRA) hos Komvux ' +
+      'Norrköping, en av de ämnesnivåer som gick att söka i kommunens Alvis när listningen ' +
+      'kontrollerades. Prövningen görs antingen på plats på Källvindsskolan eller på distans ' +
+      'via Talenti, som tar de flesta ämnesnivåerna; du får göra en prövning per period och ' +
+      'skola. Avgiften betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings ' +
+      'kommun har förtur när platserna inte räcker.',
+    tags: ['moderna språk', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-modg1000xita',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – grund Nivå 1, Italienska',
+    courseCode: 'MODG1000XITA',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Moderna språk – grund Nivå 1, Italienska (MODG1000XITA) hos Komvux ' +
+      'Norrköping, en av de ämnesnivåer som gick att söka i kommunens Alvis när listningen ' +
+      'kontrollerades. Prövningen görs antingen på plats på Källvindsskolan eller på distans ' +
+      'via Talenti, som tar de flesta ämnesnivåerna; du får göra en prövning per period och ' +
+      'skola. Avgiften betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings ' +
+      'kommun har förtur när platserna inte räcker.',
+    tags: ['moderna språk', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-modg1000xspa',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – grund Nivå 1, Spanska',
+    courseCode: 'MODG1000XSPA',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Moderna språk – grund Nivå 1, Spanska (MODG1000XSPA) hos Komvux ' +
+      'Norrköping, en av de ämnesnivåer som gick att söka i kommunens Alvis när listningen ' +
+      'kontrollerades. Prövningen görs antingen på plats på Källvindsskolan eller på distans ' +
+      'via Talenti, som tar de flesta ämnesnivåerna; du får göra en prövning per period och ' +
+      'skola. Avgiften betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings ' +
+      'kommun har förtur när platserna inte räcker.',
+    tags: ['moderna språk', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-modg1000xdeu',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – grund Nivå 1, Tyska',
+    courseCode: 'MODG1000XDEU',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Moderna språk – grund Nivå 1, Tyska (MODG1000XDEU) hos Komvux ' +
+      'Norrköping, en av de ämnesnivåer som gick att söka i kommunens Alvis när listningen ' +
+      'kontrollerades. Prövningen görs antingen på plats på Källvindsskolan eller på distans ' +
+      'via Talenti, som tar de flesta ämnesnivåerna; du får göra en prövning per period och ' +
+      'skola. Avgiften betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings ' +
+      'kommun har förtur när platserna inte räcker.',
+    tags: ['moderna språk', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-mody1000xara',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – nybörjare Nivå 1, Arabiska',
+    courseCode: 'MODY1000XARA',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Moderna språk – nybörjare Nivå 1, Arabiska (MODY1000XARA) hos Komvux ' +
+      'Norrköping, en av de ämnesnivåer som gick att söka i kommunens Alvis när listningen ' +
+      'kontrollerades. Prövningen görs antingen på plats på Källvindsskolan eller på distans ' +
+      'via Talenti, som tar de flesta ämnesnivåerna; du får göra en prövning per period och ' +
+      'skola. Avgiften betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings ' +
+      'kommun har förtur när platserna inte räcker.',
+    tags: ['moderna språk', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-mody1000xfra',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – nybörjare Nivå 1, Franska',
+    courseCode: 'MODY1000XFRA',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Moderna språk – nybörjare Nivå 1, Franska (MODY1000XFRA) hos Komvux ' +
+      'Norrköping, en av de ämnesnivåer som gick att söka i kommunens Alvis när listningen ' +
+      'kontrollerades. Prövningen görs antingen på plats på Källvindsskolan eller på distans ' +
+      'via Talenti, som tar de flesta ämnesnivåerna; du får göra en prövning per period och ' +
+      'skola. Avgiften betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings ' +
+      'kommun har förtur när platserna inte räcker.',
+    tags: ['moderna språk', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-mody1000xita',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – nybörjare Nivå 1, Italienska',
+    courseCode: 'MODY1000XITA',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Moderna språk – nybörjare Nivå 1, Italienska (MODY1000XITA) hos Komvux ' +
+      'Norrköping, en av de ämnesnivåer som gick att söka i kommunens Alvis när listningen ' +
+      'kontrollerades. Prövningen görs antingen på plats på Källvindsskolan eller på distans ' +
+      'via Talenti, som tar de flesta ämnesnivåerna; du får göra en prövning per period och ' +
+      'skola. Avgiften betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings ' +
+      'kommun har förtur när platserna inte räcker.',
+    tags: ['moderna språk', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-mody1000xspa',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – nybörjare Nivå 1, Spanska',
+    courseCode: 'MODY1000XSPA',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Moderna språk – nybörjare Nivå 1, Spanska (MODY1000XSPA) hos Komvux ' +
+      'Norrköping, en av de ämnesnivåer som gick att söka i kommunens Alvis när listningen ' +
+      'kontrollerades. Prövningen görs antingen på plats på Källvindsskolan eller på distans ' +
+      'via Talenti, som tar de flesta ämnesnivåerna; du får göra en prövning per period och ' +
+      'skola. Avgiften betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings ' +
+      'kommun har förtur när platserna inte räcker.',
+    tags: ['moderna språk', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-mody1000xdeu',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Moderna språk',
+    course: 'Moderna språk – nybörjare Nivå 1, Tyska',
+    courseCode: 'MODY1000XDEU',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_INLASNING,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Moderna språk – nybörjare Nivå 1, Tyska (MODY1000XDEU) hos Komvux ' +
+      'Norrköping, en av de ämnesnivåer som gick att söka i kommunens Alvis när listningen ' +
+      'kontrollerades. Prövningen görs antingen på plats på Källvindsskolan eller på distans ' +
+      'via Talenti, som tar de flesta ämnesnivåerna; du får göra en prövning per period och ' +
+      'skola. Avgiften betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings ' +
+      'kommun har förtur när platserna inte räcker.',
+    tags: ['moderna språk', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-sven1000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Svenska',
+    course: 'Svenska Nivå 1',
+    courseCode: 'SVEN1000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Svenska Nivå 1 (SVEN1000X) hos Komvux Norrköping, en av de ämnesnivåer ' +
+      'som gick att söka i kommunens Alvis när listningen kontrollerades. Prövningen görs ' +
+      'antingen på plats på Källvindsskolan eller på distans via Talenti, som tar de flesta ' +
+      'ämnesnivåerna; du får göra en prövning per period och skola. Avgiften betalas först ' +
+      'efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har förtur när ' +
+      'platserna inte räcker.',
+    tags: ['svenska', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-sven2000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Svenska',
+    course: 'Svenska Nivå 2',
+    courseCode: 'SVEN2000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Svenska Nivå 2 (SVEN2000X) hos Komvux Norrköping, en av de ämnesnivåer ' +
+      'som gick att söka i kommunens Alvis när listningen kontrollerades. Prövningen görs ' +
+      'antingen på plats på Källvindsskolan eller på distans via Talenti, som tar de flesta ' +
+      'ämnesnivåerna; du får göra en prövning per period och skola. Avgiften betalas först ' +
+      'efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har förtur när ' +
+      'platserna inte räcker.',
+    tags: ['svenska', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-sven3000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Svenska',
+    course: 'Svenska Nivå 3',
+    courseCode: 'SVEN3000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Svenska Nivå 3 (SVEN3000X) hos Komvux Norrköping, en av de ämnesnivåer ' +
+      'som gick att söka i kommunens Alvis när listningen kontrollerades. Prövningen görs ' +
+      'antingen på plats på Källvindsskolan eller på distans via Talenti, som tar de flesta ' +
+      'ämnesnivåerna; du får göra en prövning per period och skola. Avgiften betalas först ' +
+      'efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har förtur när ' +
+      'platserna inte räcker.',
+    tags: ['svenska', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
+  },
+  {
+    id: 'norrkoping-svea2000x',
+    schoolName: 'Komvux Norrköping',
+    provider: 'Norrköpings kommun / Vuxenutbildning Norrköping',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk Nivå 2',
+    courseCode: 'SVEA2000X',
+    level: 'Komvux',
+    city: 'Norrköping',
+    region: 'Östergötland',
+    address: 'Källvindsskolan, Norrköping, eller på distans via Talenti',
+    lat: 58.5877,
+    lng: 16.1924,
+    price: 500,
+    priceNote: NORRKOPING_PRICE_NOTE,
+    nextPeriod: NORRKOPING_PERIOD_3,
+    laterRound: NORRKOPING_LATER,
+    components: COMPONENTS_NORRKOPING,
+    studyTips: TIPS_SVA,
+    registrationUrl: 'https://norrkoping.alvis.se/provning/amnesomrade',
+    registration: REGISTRATION_NORRKOPING,
+    infoUrl: 'https://komvux.norrkoping.se/komvux/provning',
+    description:
+      'Betygsprövning i Svenska som andraspråk Nivå 2 (SVEA2000X) hos Komvux Norrköping, en av ' +
+      'de ämnesnivåer som gick att söka i kommunens Alvis när listningen kontrollerades. ' +
+      'Prövningen görs antingen på plats på Källvindsskolan eller på distans via Talenti, som ' +
+      'tar de flesta ämnesnivåerna; du får göra en prövning per period och skola. Avgiften ' +
+      'betalas först efter antagningsbeskedet, och folkbokförda i Norrköpings kommun har ' +
+      'förtur när platserna inte räcker.',
+    tags: ['svenska som andraspråk', 'norrköping', 'östergötland', 'gy25'],
+    verifiedAt: SEP_15_VERIFIED,
   },
 ];
 
