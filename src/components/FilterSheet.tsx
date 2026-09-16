@@ -21,6 +21,8 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
     setFilterDirectOnly,
     filterOpenOnly,
     setFilterOpenOnly,
+    filterCourseSystem,
+    setFilterCourseSystem,
     userLocation,
     locationStatus,
     requestLocation,
@@ -31,6 +33,7 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
   const [localSortBy, setLocalSortBy] = useState(filterSortBy);
   const [localDirectOnly, setLocalDirectOnly] = useState(filterDirectOnly);
   const [localOpenOnly, setLocalOpenOnly] = useState(filterOpenOnly);
+  const [localCourseSystem, setLocalCourseSystem] = useState(filterCourseSystem);
 
   const apply = () => {
     setFilterSubject(localSubject);
@@ -38,6 +41,7 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
     setFilterSortBy(localSortBy);
     setFilterDirectOnly(localDirectOnly);
     setFilterOpenOnly(localOpenOnly);
+    setFilterCourseSystem(localCourseSystem);
     onClose();
   };
 
@@ -47,6 +51,7 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
     setLocalSortBy('date');
     setLocalDirectOnly(false);
     setLocalOpenOnly(false);
+    setLocalCourseSystem('');
   };
 
   const chip = (active: boolean) =>
@@ -138,6 +143,45 @@ export function FilterSheet({ onClose }: FilterSheetProps) {
               <span className="w-5 h-5 bg-white rounded-full shadow-sm" />
             </span>
           </button>
+        </div>
+
+        {/* När du läste kursen.
+            Sedan Gy25 publicerar anordnarna samma prövning två gånger — en gång
+            som Gy11-kurs, en gång som ämnesnivå — och bara den ena är din.
+            Frågan är därför inte "vilket system vill du se" utan den enda fråga
+            en elev kan svara på utan att veta vad Gy11 heter: när läste du?
+            Svaret är detsamma nästa gång appen öppnas, så det sparas. */}
+        <div className="mb-6">
+          <span id="filter-system-label" className="text-sm font-semibold text-ink block mb-2">
+            När läste du kursen?
+          </span>
+          <div className="flex gap-2" role="group" aria-labelledby="filter-system-label">
+            {(
+              [
+                ['', 'Spelar ingen roll'],
+                ['gy11', 'Före juli 2025'],
+                ['gy25', 'Juli 2025 eller senare'],
+              ] as const
+            ).map(([value, label]) => (
+              <button
+                key={value || 'alla'}
+                onClick={() => setLocalCourseSystem(value)}
+                aria-pressed={localCourseSystem === value}
+                className={`flex-1 px-2 py-2 rounded text-xs font-semibold leading-tight transition-colors ${
+                  localCourseSystem === value ? 'bg-brand-500 text-white' : 'bg-sand text-ink-soft'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-ink-soft mt-2 leading-relaxed">
+            {localCourseSystem === ''
+              ? 'Samma kurs kan ligga som två prövningar — den gamla Gy11-kursen och den nya ämnesnivån. Svara så visas bara din.'
+              : localCourseSystem === 'gy11'
+                ? 'Visar Gy11-kurserna. Ämnesnivåerna enligt Gy25 döljs.'
+                : 'Visar ämnesnivåerna enligt Gy25. Gy11-kurserna döljs.'}
+          </p>
         </div>
 
         {/* Sort */}

@@ -208,6 +208,19 @@ https-anrop faller:
 NODE_EXTRA_CA_CERTS=/sökväg/till/ca-bundle.crt npm run check:links
 ```
 
+### Hämta om läroplanstabellen
+
+```sh
+npm run update:course-systems   # skriver om src/lib/courseSystemIndex.ts
+```
+
+Läser Skolverkets kursplane-API och skriver om vilken läroplan varje kurskod i
+datan tillhör. Kör det när nya kurskoder tillkommit — skriptet skriver ut de
+koder API:et inte känner igen, och den listan ska bara innehålla sådant som
+verkligen står utanför de två läroplanerna (grundläggande, sfi, rader som täcker
+flera kurser). Dyker en vanlig gymnasiekod upp där är det ett stavfel i datan,
+inte en lucka hos Skolverket — så hittades `PSYPSK01`.
+
 ### En region är ett län
 
 `region` innehåller ett av Sveriges 21 länsnamn, aldrig ett landskap, och
@@ -253,6 +266,43 @@ Detaljvyn säger vilken av de två som är din, med anordnarens egen regel: läs
 du kursen före juli 2025 är det Gy11-kursen du ska pröva, annars ämnesnivån. Det
 är en mening under rubriken, inte ett val att göra — appen vet redan vilken kod
 listningen har.
+
+### När läste du kursen?
+
+Att veta vilken av två listningar som är din hjälper föga när båda ligger i
+listan. Komvux Malmö publicerar hela sitt utbud två gånger — 49 Gy11-kurser och
+55 Gy25-ämnen på samma adress i samma vecka — och Göteborg och Örebro gör
+detsamma, så ungefär hälften av varje sökresultat prövar rätt kurs enligt fel
+läroplan.
+
+Filtret ställer därför den enda fråga en elev kan svara på utan att veta vad
+"Gy11" heter: **Spelar ingen roll · Före juli 2025 · Juli 2025 eller senare**.
+Svaret tar bort 200 respektive 383 listningar av 665, och i Malmö halverar det
+listan exakt. Det är det enda filtret som sparas mellan besök — när du läste
+kursen är ett faktum om dig, inte en sökning du gör om, och det står också med i
+dataexporten i Profil.
+
+Två saker håller det ärligt.
+
+- **Svaret per kod är läst, inte gissat.**
+  [`src/lib/courseSystemIndex.ts`](src/lib/courseSystemIndex.ts) är genererad av
+  `npm run update:course-systems`, som läser Skolverkets eget kursplane-API: där
+  är varje ämne märkt `SUBJECT_SYLLABUS` (Gy11) eller `GRADE_SUBJECT_SYLLABUS`
+  (Gy25), och varje kurskod hänger under ett ämne. Att läsa mönster i koden i
+  stället hade fungerat tills det inte gjorde det — `FYSFYS01b1` och
+  `FYSK1B00X` skiljer sig med ett tecken och tillhör var sitt system.
+- **En kod utan läroplan filtreras aldrig bort.** 82 av 665 listningar har ingen:
+  grundläggande kurser (`GRNMAT2`) och sfi (`SFIKUB92`) tillhör ingen av de två,
+  och en rad som täcker flera kurser tillhör bägge. De syns oavsett vad du
+  svarat, för tystnad om en listnings läroplan får inte bli ett skäl att gömma
+  den. Ett test i
+  [`src/lib/courseSystems.test.ts`](src/lib/courseSystems.test.ts) håller listan
+  över de 14 oklassade koderna exakt, så en ny kod ingen slagit upp inte kan
+  smyga in bland dem.
+
+Samma korsläsning mot Skolverket hittade två kurskoder datan hade bakvänt:
+NTI:s Psykiatri 1 och 2 stod som `PSYPSK01` och `PSYPSY02`, medan Skolverket —
+och Göteborgs listning av samma kurs — säger `PSYPSY01` och `PSYPSK02`.
 
 ## Profil och community
 

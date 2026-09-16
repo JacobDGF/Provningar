@@ -23,6 +23,8 @@
  * läst 2026-09-10.
  */
 
+import { COURSE_SYSTEM_BY_CODE } from './courseSystemIndex';
+
 export interface CourseVariant {
   /** Kurskoden, som anordnaren skriver den. */
   code: string;
@@ -122,4 +124,27 @@ for (const pair of COURSE_PAIRS) {
  */
 export function courseCounterpart(courseCode: string): Counterpart | undefined {
   return BY_CODE.get(courseCode.trim().toLowerCase());
+}
+
+const BY_CODE_SYSTEM = new Map<string, CourseSystem>(
+  Object.entries(COURSE_SYSTEM_BY_CODE).map(([code, system]) => [code.toLowerCase(), system]),
+);
+
+/**
+ * Vilken läroplan en kurskod tillhör, eller `undefined` när koden inte tillhör
+ * någon av de två.
+ *
+ * Svaret kommer ur [`courseSystemIndex`](./courseSystemIndex.ts), som är läst
+ * ur Skolverkets kursplane-API — inte ur kodens utseende. `MATO1B00X` ser ut
+ * som en Gy25-kod och är det, men `FYSFYS01b1` och `FYSK1B00X` skiljer sig med
+ * ett tecken och tillhör var sitt system, och en app som läser mönster i
+ * stället för källan gömmer förr eller senare rätt prövning för fel person.
+ *
+ * `undefined` är ett riktigt svar, inte ett saknat: en grundläggande kurs eller
+ * en sfi-kurs tillhör ingen av läroplanerna, och en listning som täcker flera
+ * kurser på en gång tillhör bägge. De ska synas oavsett vad användaren svarat
+ * på frågan om när hen läste kursen.
+ */
+export function courseSystemOf(courseCode: string): CourseSystem | undefined {
+  return BY_CODE_SYSTEM.get(courseCode.trim().toLowerCase());
 }

@@ -4,6 +4,73 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-09-16
+
+**Data: +77 prövningar.** Hela Komvux Malmös skrivschema och utbud för period 4,
+läst rad för rad ur kommunens egen sida. Datasetet går från 588 till 665
+listningar.
+
+| Kommun | Listningar | Källa                                                            |
+| ------ | ---------- | ---------------------------------------------------------------- |
+| Malmö  | 28 → 105   | Komvux Malmös skrivschema och utbud, period 4 2026 (Gy11 + Gy25) |
+
+Prioritetsordningen säger Malmö efter Stockholm och Göteborg, och de 28 rader
+som redan fanns visade sig vara ungefär en fjärdedel av vad kommunen publicerar:
+hela Gy25-utbudet saknades, och drygt tjugo Gy11-kurser med.
+
+- **Anmälan stänger 18 september**, tre dagar efter den här omgången. Prövningen
+  görs 26 oktober–25 november, med betygsdatum 25 november.
+- **Varje kurs har sin egen skrivdag.** Skrivschemat lägger kurserna på måndag
+  till torsdag, och Malmö avvisar en anmälan vars två kurser krockar — så varje
+  kort bär sitt eget datum och sin egen incheckningstid i stället för periodens.
+  Engelska, svenska och svenska som andraspråk har två delprov på två dagar,
+  och Svenska 3, SvA 3, Matematik 4 och 5 har längre skrivtid än fyra timmar.
+- **Gy11 och Gy25 är två kort, som datan kräver.** 49 Gy11-kurser och 55
+  Gy25-ämnen på samma adress, och kommunen säger själv vilken som är din: läste
+  du efter 1 juli 2025 söker du ämnesnivån.
+- **Kurskoderna är hämtade ur Skolverkets kursplane-API**, inte ur kursnamnet —
+  skrivschemat skriver inte ut dem. Det gav också de sju Gy25-ämnen som ingen
+  tidigare källa i datan haft koden för (Juridik, Sociologi, Ungdomskunskap,
+  Politik och hållbar utveckling, Entreprenörskap, Entreprenörskap och
+  företagande, Redovisning nivå 1).
+- **Två poster uppdaterade i stället för dubblerade.** `malmo-eng6` och
+  `malmo-svenska3` låg kvar från juni utan skrivdagar, med en `infoUrl` som inte
+  visade datumen och taggen `malmo` i stället för `malmö`/`skåne`. De bär nu
+  samma uppgifter som sina syskon, med sina gamla id kvar.
+- **Ett kort med en ärlig lucka.** Malmö skriver "Artificiell intelligens" utan
+  siffra, och ämnet har två kurser. Kortet säger det rakt ut i stället för att
+  välja åt användaren.
+- Kvar att göra: `check:dates` pekar ut 17 listningar vars omgång helt har
+  passerat (bland andra Växjö, Värnamo, Kunskapsförbundet Väst, ABF Stockholm,
+  Vux Huddinge och två Göteborgskurser). De behöver läsas om mot anordnarens
+  sida, inte skrivas om på gissning.
+
+**Produkt: när läste du kursen?** Ett svar, och halva listan försvinner — den
+halva som prövar rätt kurs enligt fel läroplan. Filtret har tre lägen (Spelar
+ingen roll · Före juli 2025 · Juli 2025 eller senare) och tar bort 200
+respektive 383 av 665 listningar. Se
+[README](README.md#när-läste-du-kursen).
+
+- **Frågan är den enda eleven kan svara på.** Ingen vet om hen läste "Gy11" —
+  alla vet när de gick kursen. Appen översätter själv.
+- **Svaret per kurskod är läst hos Skolverket**, inte gissat ur kodens
+  utseende: [`src/lib/courseSystemIndex.ts`](src/lib/courseSystemIndex.ts)
+  genereras av `npm run update:course-systems` ur kursplane-API:et, där varje
+  ämne är märkt Gy11 eller Gy25. 263 av datans 277 kurskoder får ett svar.
+- **De 14 utan svar filtreras aldrig bort.** Grundläggande kurser och sfi
+  tillhör ingen läroplan, en rad som täcker flera kurser tillhör bägge — och en
+  kod ingen slagit upp får inte gömma en riktig prövning. Ett test håller den
+  listan exakt.
+- **Det enda filtret som sparas mellan besök.** När du läste kursen är ett
+  faktum om dig, inte en sökning du gör om. Det står därför också med i
+  dataexporten i Profil, och försvinner med "Rensa allt".
+- **Verifierat i Chromium mot ett riktigt bygge**: 665 träffar utan svar, 465
+  med "Före juli 2025", 282 med "Juli 2025 eller senare", svaret kvar efter en
+  omladdning, inga JS-fel, och knapptexterna ryms utan att klippas på 390 px.
+- **Korsläsningen hittade två fel i datan.** NTI:s Psykiatri 1 och 2 stod som
+  `PSYPSK01` och `PSYPSY02`; Skolverket och Göteborgs listning av samma kurser
+  säger `PSYPSY01` och `PSYPSK02`. Rättat, och id:na med.
+
 ## 2026-09-11 (räknaren i drift)
 
 Räknaren står nu hos Cloudflare och appen är byggd mot den. Kedjan är

@@ -57,6 +57,7 @@ export function Profile() {
     currentUser,
     updateUser,
     savedExams,
+    filterCourseSystem,
     setActiveTab,
     setShowingFaq,
     setShowingConsent,
@@ -126,8 +127,9 @@ export function Profile() {
       exporteradDen: new Date().toISOString(),
       profil: currentUser,
       sparadePrövningar: savedExams,
-      // Samtycket är också något appen vet om dig, och den enda plats det står
-      // utanför den här filen är en rad i localStorage.
+      // Två saker till som appen minns om dig mellan besök, och som därför hör
+      // hemma i en kopia av dina data: när du läste kursen, och samtycket.
+      närDuLästeKursen: filterCourseSystem || 'inget svar',
       statistiksamtycke: consent.choice,
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], {

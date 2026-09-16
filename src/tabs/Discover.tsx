@@ -15,6 +15,7 @@ import { StatusFilterBar } from '../components/StatusFilterBar';
 import { WatchButton } from '../components/WatchButton';
 import { haversineDistanceKm } from '../lib/distance';
 import { matchesQuery } from '../lib/examSearch';
+import { courseSystemOf } from '../lib/courseSystems';
 import { isOpenForRegistration, compareByPeriod } from '../lib/examStatus';
 import { getStatusKey } from '../lib/examStatusColor';
 import { getRegistrationFlow } from '../lib/registrationFlow';
@@ -69,6 +70,8 @@ export function Discover() {
     setFilterOpenOnly,
     filterStatus,
     setFilterStatus,
+    filterCourseSystem,
+    setFilterCourseSystem,
     setFilterSubject,
     setFilterRegion,
     setFilterDirectOnly,
@@ -87,6 +90,7 @@ export function Discover() {
     filterDirectOnly ||
     filterOpenOnly ||
     filterStatus ||
+    filterCourseSystem ||
     filterCity
   );
 
@@ -98,6 +102,7 @@ export function Discover() {
     setFilterStatus('');
     setSearchQuery('');
     setFilterCity('');
+    setFilterCourseSystem('');
   };
 
   const filtered = useMemo(() => {
@@ -109,6 +114,10 @@ export function Discover() {
       const matchesDirect = !filterDirectOnly || getRegistrationFlow(e).direct;
       const matchesOpen = !filterOpenOnly || isOpenForRegistration(e);
       const matchesStatus = !filterStatus || getStatusKey(e) === filterStatus;
+      // En kod utan läroplan — grundläggande, sfi, eller en rad som täcker
+      // flera kurser — hör hemma i bägge svaren och filtreras aldrig bort.
+      const system = courseSystemOf(e.courseCode);
+      const matchesSystem = !filterCourseSystem || !system || system === filterCourseSystem;
       return (
         matchesSearch &&
         matchesSubject &&
@@ -116,7 +125,8 @@ export function Discover() {
         matchesCity &&
         matchesDirect &&
         matchesOpen &&
-        matchesStatus
+        matchesStatus &&
+        matchesSystem
       );
     });
 
@@ -143,6 +153,7 @@ export function Discover() {
     filterDirectOnly,
     filterOpenOnly,
     filterStatus,
+    filterCourseSystem,
     // Status buckets are computed against the clock.
     tick,
     userLocation,

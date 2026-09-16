@@ -5,6 +5,7 @@ import { EXAMS } from '../data/exams';
 import { INITIAL_POSTS } from '../data/community';
 import { isOwnPhoto } from '../lib/avatar';
 import { StatusKey } from '../lib/examStatusColor';
+import { CourseSystem } from '../lib/courseSystems';
 import { makeWatch, matchesWatch, watchKey } from '../lib/watches';
 import { track } from '../lib/analytics';
 
@@ -79,6 +80,16 @@ interface AppState {
    */
   filterStatus: StatusKey | '';
   setFilterStatus: (s: StatusKey | '') => void;
+  /**
+   * Vilken läroplan användaren läste kursen i, eller '' för att inte fråga.
+   *
+   * Sparas mellan besök, till skillnad från övriga filter. Svaret är ett faktum
+   * om användaren — när hen gick kursen — inte en sökning hen gör om, och att
+   * behöva svara på nytt varje gång appen öppnas vore att fråga om samma sak
+   * igen. Se `filterCourseSystem` i README.
+   */
+  filterCourseSystem: CourseSystem | '';
+  setFilterCourseSystem: (s: CourseSystem | '') => void;
 
   // Location / GPS
   userLocation: { lat: number; lng: number } | null;
@@ -232,6 +243,8 @@ export const useStore = create<AppState>()(
       setFilterOpenOnly: (v) => set({ filterOpenOnly: v }),
       filterStatus: '',
       setFilterStatus: (s) => set({ filterStatus: s }),
+      filterCourseSystem: '',
+      setFilterCourseSystem: (s) => set({ filterCourseSystem: s }),
 
       userLocation: null,
       locationStatus: 'idle',
@@ -404,6 +417,7 @@ export const useStore = create<AppState>()(
       name: 'provningar-storage',
       version: 1,
       partialize: (s) => ({
+        filterCourseSystem: s.filterCourseSystem,
         savedExams: s.savedExams,
         watches: s.watches,
         viewedExams: s.viewedExams,

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { COURSE_PAIRS, courseCounterpart } from './courseSystems';
+import { COURSE_PAIRS, courseCounterpart, courseSystemOf } from './courseSystems';
+import { COURSE_SYSTEM_BY_CODE, UNCLASSIFIED_CODES } from './courseSystemIndex';
 import { EXAMS } from '../data/exams';
 
 describe('courseCounterpart', () => {
@@ -54,5 +55,63 @@ describe('courseCounterpart', () => {
       }
     }
     expect(drifted).toEqual([]);
+  });
+});
+
+describe('courseSystemOf', () => {
+  it('reads the läroplan out of Skolverkets index', () => {
+    expect(courseSystemOf('MATMAT03b')).toBe('gy11');
+    expect(courseSystemOf('MATO1B00X')).toBe('gy25');
+    expect(courseSystemOf(' mate2b00x ')).toBe('gy25');
+  });
+
+  /**
+   * The pair table and the index are two different sources — Örebros tabell and
+   * Skolverkets API — answering the same question for the courses they share.
+   * They must not disagree: the app filters on one and explains with the other,
+   * so a listing could otherwise be hidden as Gy25 while its detail line calls
+   * it a Gy11-kurs.
+   */
+  it('agrees with every pair the Örebro table spelled out', () => {
+    const disagreements: string[] = [];
+    for (const pair of COURSE_PAIRS) {
+      for (const [expected, variant] of [
+        ['gy11', pair.gy11],
+        ['gy25', pair.gy25],
+      ] as const) {
+        const actual = courseSystemOf(variant.code);
+        if (actual !== expected) disagreements.push(`${variant.code}: ${actual} ≠ ${expected}`);
+      }
+    }
+    expect(disagreements).toEqual([]);
+  });
+
+  /**
+   * `undefined` is an answer, not a gap. A grundläggande kurs and an sfi-kurs
+   * belong to neither läroplan, and a row covering several courses belongs to
+   * both — all three have to stay visible whichever way the user answers "när
+   * läste du kursen", which is exactly what an unknown system buys them.
+   */
+  it('says nothing about a code outside the two läroplaner', () => {
+    expect(courseSystemOf('GRNMAT2')).toBeUndefined();
+    expect(courseSystemOf('SFIKUB92')).toBeUndefined();
+    expect(courseSystemOf('Varierar')).toBeUndefined();
+  });
+
+  it('classifies nearly every kurskod in the dataset', () => {
+    const codes = [...new Set(EXAMS.map((e) => e.courseCode))];
+    // The unclassified set is small and deliberate; a code appearing here that
+    // the generated file doesn't list is one nobody looked up.
+    const unknown = codes.filter((c) => !courseSystemOf(c));
+    expect(unknown.sort()).toEqual([...UNCLASSIFIED_CODES].sort());
+  });
+
+  it('never claims both läroplaner for one code', () => {
+    for (const code of Object.keys(COURSE_SYSTEM_BY_CODE)) {
+      expect(['gy11', 'gy25']).toContain(COURSE_SYSTEM_BY_CODE[code]);
+    }
+    for (const code of UNCLASSIFIED_CODES) {
+      expect(COURSE_SYSTEM_BY_CODE[code]).toBeUndefined();
+    }
   });
 });
