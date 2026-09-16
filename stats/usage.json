@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-09-15T07:50:49.103Z",
+  "uppdaterad": "2026-09-16T07:45:02.831Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -93,21 +93,42 @@
       }
     },
     "2026-09-15": {
-      "besök": 1,
+      "besök": 5,
       "sidvisningar": {
-        "/discover": 15
+        "/ai": 3,
+        "/community": 4,
+        "/discover": 22,
+        "/exams": 3,
+        "/history": 2,
+        "/profile": 2
       },
       "händelser": {
-        "Prövning öppnad": 1
+        "Bevakning skapad": 2,
+        "Prövning öppnad": 10,
+        "Till anmälan": 7
       },
       "kommuner": {
-        "Malmö": 1
+        "Stockholm": 7,
+        "Malmö": 3,
+        "Mora": 4,
+        "Skellefteå": 2,
+        "Motala": 2,
+        "Örebro": 1
       },
       "ämnen": {
-        "Fysik": 1
+        "Fysik": 2,
+        "Matematik": 2,
+        "Svenska": 4,
+        "Flera ämnen": 1,
+        "Kemi": 1
       },
       "kurser": {
-        "FYSFYS02": 1
+        "FYSFYS02": 3,
+        "MATMAT02b": 3,
+        "SVESVE03": 6,
+        "SVESVE01": 2,
+        "Varierar": 2,
+        "KEMKEM01": 1
       }
     }
   }
