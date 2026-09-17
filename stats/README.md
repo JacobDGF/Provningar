@@ -8,16 +8,18 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 **Filen är genererad.** Ändringar här skrivs över vid nästa körning; räkningen ändras i
 `collector/worker.js` och i `src/lib/analytics.ts`.
 
-## Senaste 30 dygnen (t.o.m. 2026-09-16)
+## Senaste 30 dygnen (t.o.m. 2026-09-17)
 
 | Besök | Sidvisningar | Till anmälan |
 | ----- | ------------ | ------------ |
-| 26 | 72 | 16 |
+| 29 | 79 | 18 |
 
 ### Per dygn
 
 | Dygn | Besök | Sidvisningar | Till anmälan |
 | ---- | ----- | ------------ | ------------ |
+| 2026-09-17 | 2 | 2 | 2 |
+| 2026-09-16 | 1 | 5 | 0 |
 | 2026-09-15 | 5 | 36 | 7 |
 | 2026-09-14 | 13 | 21 | 7 |
 | 2026-09-13 | 4 | 12 | 1 |
@@ -27,10 +29,10 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Upptäck | 49 |
-| Community | 8 |
-| Mina prövningar | 5 |
-| Historik | 4 |
+| Upptäck | 53 |
+| Community | 9 |
+| Mina prövningar | 6 |
+| Historik | 5 |
 | AI-prövning | 3 |
 | Profil | 3 |
 
@@ -38,30 +40,30 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Prövning öppnad | 41 |
-| Till anmälan | 16 |
+| Prövning öppnad | 45 |
+| Till anmälan | 18 |
 | Bevakning skapad | 2 |
 
 ### Kommuner i öppnade prövningar
 
 | Namn | Antal |
 | ---- | ----- |
-| Örebro | 22 |
-| Malmö | 9 |
+| Örebro | 24 |
+| Malmö | 11 |
 | Stockholm | 8 |
 | Mora | 6 |
-| Skellefteå | 4 |
+| Skellefteå | 5 |
+| Norrköping | 3 |
 | Sollentuna | 3 |
 | Linköping | 2 |
 | Motala | 2 |
-| Norrköping | 2 |
 | Södertälje | 1 |
 
 ### Ämnen
 
 | Namn | Antal |
 | ---- | ----- |
-| Kemi | 13 |
+| Kemi | 17 |
 | Engelska | 12 |
 | Svenska | 10 |
 | Fysik | 3 |
@@ -76,4 +78,4 @@ besök går inte att skilja åt ens i råtabellen, och "besök" räknas en gång
 webbläsarsession utan något som följer med till nästa. Statistiken finns bara för dem som
 sagt ja i appens samtyckesruta.
 
-<sub>Uppdaterad 2026-09-16T07:45:02.831Z.</sub>
+<sub>Uppdaterad 2026-09-17T07:46:25.364Z.</sub>

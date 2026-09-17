@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-09-16T07:45:02.831Z",
+  "uppdaterad": "2026-09-17T07:46:25.364Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -129,6 +129,42 @@
         "SVESVE01": 2,
         "Varierar": 2,
         "KEMKEM01": 1
+      }
+    },
+    "2026-09-16": {
+      "besök": 1,
+      "sidvisningar": {
+        "/community": 1,
+        "/discover": 2,
+        "/exams": 1,
+        "/history": 1
+      },
+      "händelser": {},
+      "kommuner": {},
+      "ämnen": {},
+      "kurser": {}
+    },
+    "2026-09-17": {
+      "besök": 2,
+      "sidvisningar": {
+        "/discover": 2
+      },
+      "händelser": {
+        "Prövning öppnad": 4,
+        "Till anmälan": 2
+      },
+      "kommuner": {
+        "Örebro": 2,
+        "Skellefteå": 1,
+        "Norrköping": 1,
+        "Malmö": 2
+      },
+      "ämnen": {
+        "Kemi": 4
+      },
+      "kurser": {
+        "KEMI1000X": 2,
+        "KEMKEM01": 4
       }
     }
   }
