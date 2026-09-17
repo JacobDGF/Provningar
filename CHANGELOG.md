@@ -4,6 +4,66 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-09-17
+
+**Data: +154 prövningar.** Hela Helsingborgs prövningsutbud, läst rad för rad ur
+stadens egen jämförelsetabell "Gymnasiala kurser – Arena betygsprövning
+jämförelse Gy25" och betygsprövningssidans perioder. Datasetet går från 588 till
+742 listningar.
+
+| Kommun      | Listningar | Källa                                                                     |
+| ----------- | ---------- | ------------------------------------------------------------------------- |
+| Helsingborg | 1 → 155    | helsingborg.se: betygsprövningssidan och kommunens Gy11/Gy25-tabell (PDF) |
+
+Helsingborg står näst i prioritetsordningen efter Örebro och hade ett enda kort.
+Staden publicerar hela utbudet med kurskod i båda systemen, vilket är precis den
+upplösning appen är byggd för.
+
+- **Anmälan stängde 11 september, och det är poängen med raden.** Höstens
+  omgång (kommunens period 4) hade anmälan öppen 7–11 september; proven skrivs
+  12 oktober–6 november med ett fast provdatum som anordnaren sätter. Kommunen
+  prövar fyra gånger per år, men vårens datum står inte på sidan än — då säger
+  kortet det, i stället för att gissa dem.
+- **Två system, två kort, två vägar in.** Webbansökan listar Gy25-ämnesnivåerna;
+  Gy11-kursen får man genom att mejla betygsprövningsenheten efter anmälan, och
+  bara om man redan har ett betyg i kursen. Det är två anmälningar med olika
+  krav, så de är två kort med var sina steg under "Så anmäler du dig".
+- **Anordnaren är namngiven.** Prövningarna genomförs av Arena Utbildning på
+  stadens uppdrag, med lärplattformen Exlearn som väg in — provlokalen
+  publicerar kommunen inte, och kortet skriver det rakt ut i stället för att
+  peka ut en adress staden inte nämner.
+- **Kurser vars ämne inte finns i datan är inte inlagda** (Administration,
+  Datorteknik, Digitalt skapande, Logistik, Medieproduktion, Service och
+  bemötande, Webbutveckling med flera). Varje sådan hade lagt till ett
+  ämnesfilter med en enda kurs under sig — samma grupperingsbeslut som NTI-svepet
+  sköt upp. Fyra grundläggande kurser (engelska, matematik, svenska, sva) ligger
+  inne utan kurskod, eftersom kommunen inte publicerar någon per steg.
+- **Tabellen är rättad mot datan där den skriver av sig själv**: `MATE1COOX` för
+  Matematik Nivå 1c (bokstaven O i stället för nollor), samma `PSYL1000X` på
+  både Psykologi Nivå 1 och Nivå 2, `HALAHL0`, `SPCSSPE01`, `MATMAt04`,
+  `PSKPSY02` och `MODDAN1`. Var och en är rättad mot den kod en annan publicerad
+  källa i datan redan bär, aldrig mot ett mönster vi hittat på.
+- **Paren som säger vad kursen heter i det andra systemet växer från 36 till 74.**
+  Helsingborgs tabell är den andra källan i datan som skriver ut Gy11 och Gy25 på
+  samma rad, och den parar ihop det Örebros lämnade osagt — bland annat Fysik 1a
+  med Fysik Nivå 1b, båda 150 poäng. En sökning på "Retorik", "Teknik 1" eller
+  "Marknadsföring" hittar nu också ämnesnivån, i alla kommuner.
+
+**Produkt: öppet på annan ort.** En hel kommun stänger samtidigt, så frågan
+_"Matte 2b i Helsingborg"_ har veckor där svaret är "inte här, inte nu" — medan
+samma kurs går att söka i Malmö, 53 km bort, med en dag kvar. AI-prövning lägger
+nu den andra halvan av svaret under träffarna: högst tre kort från de närmaste
+orterna där anmälan fortfarande är öppen, med avståndet utskrivet. Förslagen
+visas bara när orten själv inte har något att söka till, bara för omgångar med
+publicerade datum som inte passerat, och bara när frågan nämner en kurs eller ett
+ämne. Se [README](README.md#öppet-på-annan-ort).
+
+Kvar att göra: `check:dates` pekar ut 17 listningar vars omgång helt har passerat
+(Växjö, Värnamo, Kunskapsförbundet Väst, Kristinehamn, Katrineholm, Trollhättan,
+Uddevalla, ABF Stockholm, Iris Upplands Väsby, Vux Huddinge och två
+Göteborgskurser) samt Göteborgs höstprover som skrivs av allteftersom. De behöver
+läsas om mot anordnarens sida, inte skrivas om på gissning.
+
 ## 2026-09-11 (räknaren i drift)
 
 Räknaren står nu hos Cloudflare och appen är byggd mot den. Kedjan är

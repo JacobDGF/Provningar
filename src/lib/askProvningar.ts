@@ -1,4 +1,5 @@
 import { Exam } from '../types';
+import { haversineDistanceKm } from './distance';
 import { compareByPeriod, hasApplicationClosed, isFullyBooked } from './examStatus';
 
 /**
@@ -41,6 +42,18 @@ export interface AskResult {
    * says so — silently widening a search is how a wrong answer gets trusted.
    */
   widened: boolean;
+  /**
+   * Samma kurs, fortfarande öppen för anmälan, på närmaste orter utanför den
+   * frågan nämnde. Tom så länge orten själv har något att söka till.
+   */
+  elsewhere: Elsewhere[];
+}
+
+/** En prövning på annan ort, med fågelvägen dit från orten frågan nämnde. */
+export interface Elsewhere {
+  exam: Exam;
+  /** Fågelvägen mellan de två orternas prövningslokaler, i kilometer. */
+  km: number;
 }
 
 /** Everyday words for things the dataset spells out in full. */
@@ -185,6 +198,77 @@ export function hasConstraints(ask: Ask): boolean {
  * not so much choose as assume. Dropping the stad or the kurs instead would
  * answer a different question than the one asked.
  */
+/**
+ * Går den här omgången att anmäla sig till, i dag eller längre fram?
+ *
+ * Strängare än `stillActionable`, som är sann också för en listning utan
+ * datum: ett förslag ska vara något användaren kan göra något åt, inte en
+ * skola att ringa. En omgång vars anmälan öppnar först i januari räknas med —
+ * den är ett svar på "var kan jag söka?", bara inte i dag.
+ */
+function stillOpenForApplication(exam: Exam, today: Date): boolean {
+  const p = exam.nextPeriod;
+  if (!p.confirmed || p.full) return false;
+  if (hasApplicationClosed(exam, today)) return false;
+  return Boolean(p.applicationEnd || p.applicationStart);
+}
+
+/** Koordinaten frågan utgår från: den ort som nämndes, annars länets första listning. */
+function originOf(ask: Ask, exams: Exam[]): Exam | undefined {
+  for (const city of ask.cities) {
+    const here = exams.find((e) => e.city === city);
+    if (here) return here;
+  }
+  for (const region of ask.regions) {
+    const here = exams.find((e) => e.region === region);
+    if (here) return here;
+  }
+  return undefined;
+}
+
+/**
+ * Närmaste orter där samma kurs fortfarande går att söka.
+ *
+ * En hel kommuns prövningar stänger samtidigt — Helsingborg tar emot anmälan
+ * fyra dagar per period, Göteborg en gång per termin — så "Matte 2b i
+ * Helsingborg" är en fråga vars ärliga svar en vecka av fyra är "inte här, inte
+ * nu". Det svaret är bara till hälften sant: kursen prövas i Malmö i morgon.
+ * Utan den andra halvan får användaren en grå lista och uppmaningen att själv
+ * gissa vilken grannkommun som är värd att öppna.
+ *
+ * En ort, en rad: den mest brådskande omgången per ort, de tre närmaste först.
+ * Deadlinen i frågan ("innan december") gäller inte här — förslaget är "det här
+ * går att söka", och korten bär sina egna datum.
+ */
+function openElsewhere(ask: Ask, exams: Exam[], today: Date): Elsewhere[] {
+  if (!ask.courses.length && !ask.subjects.length) return [];
+  const origin = originOf(ask, exams);
+  if (!origin) return [];
+
+  const askedCities = new Set(ask.cities);
+  const askedRegions = new Set(ask.regions);
+  const candidates = exams.filter((e) => {
+    if (askedCities.has(e.city)) return false;
+    if (askedRegions.size && askedRegions.has(e.region)) return false;
+    const subjectOk = !ask.subjects.length || ask.subjects.includes(e.subject);
+    const courseOk = !ask.courses.length || ask.courses.includes(e.course);
+    return subjectOk && courseOk && stillOpenForApplication(e, today);
+  });
+
+  const perCity = new Map<string, Exam>();
+  for (const exam of candidates.slice().sort(compareByPeriod)) {
+    if (!perCity.has(exam.city)) perCity.set(exam.city, exam);
+  }
+
+  return [...perCity.values()]
+    .map((exam) => ({
+      exam,
+      km: haversineDistanceKm(origin.lat, origin.lng, exam.lat, exam.lng),
+    }))
+    .sort((a, b) => a.km - b.km)
+    .slice(0, 3);
+}
+
 export function answerAsk(question: string, exams: Exam[], today = new Date()): AskResult {
   const ask = readAsk(question, exams, today);
 
@@ -200,7 +284,10 @@ export function answerAsk(question: string, exams: Exam[], today = new Date()): 
     (e) => stillActionable(e, today) && (!ask.before || fallsBefore(e, ask.before)),
   );
   const matches = (strict.length ? strict : named).slice().sort(compareByPeriod);
-  return { ask, matches, widened: strict.length === 0 && named.length > 0 };
+  // Bara när orten själv inte har något att söka till: annars konkurrerar ett
+  // förslag om en annan stad med det svar användaren faktiskt bad om.
+  const elsewhere = strict.length === 0 ? openElsewhere(ask, exams, today) : [];
+  return { ask, matches, widened: strict.length === 0 && named.length > 0, elsewhere };
 }
 
 /** One line saying what the sentence was read as, for the user to check. */

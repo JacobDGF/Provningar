@@ -3,7 +3,8 @@ import { Sparkles, HelpCircle, Loader2, ArrowUp } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { ExamCard } from '../components/ExamCard';
 import { Exam } from '../types';
-import { answerAsk, describeAsk, hasConstraints } from '../lib/askProvningar';
+import { answerAsk, describeAsk, hasConstraints, Elsewhere } from '../lib/askProvningar';
+import { formatDistanceKm } from '../lib/distance';
 import { askClaude, isAiConfigured } from '../lib/aiProvning';
 import { track } from '../lib/analytics';
 
@@ -37,6 +38,10 @@ interface Turn {
   matches: Exam[];
   widened: boolean;
   understood: boolean;
+  /** Närmaste orter där kursen fortfarande går att söka, när den frågade inte gör det. */
+  elsewhere: Elsewhere[];
+  /** Orten frågan nämnde, som rubriken under svaret talar om. */
+  place: string;
 }
 
 const EXAMPLES = [
@@ -56,12 +61,27 @@ function localAnswer(result: ReturnType<typeof answerAsk>, understood: boolean):
   const reading = describeAsk(result.ask);
   const n = result.matches.length;
   if (n === 0) {
-    return `Jag läste frågan som ${reading}, och hittade ingen prövning som stämmer. Prova en angränsande kommun eller ett bredare ämne.`;
+    return result.elsewhere.length
+      ? `Jag läste frågan som ${reading}, och hittade ingen prövning som stämmer. Närmast öppna ligger nedanför.`
+      : `Jag läste frågan som ${reading}, och hittade ingen prövning som stämmer. Prova en angränsande kommun eller ett bredare ämne.`;
   }
   const head = `Jag läste frågan som ${reading}. ${n === 1 ? '1 prövning' : `${n} prövningar`} stämmer${n > 8 ? ' — de närmaste deadlinesen först' : ''}.`;
-  return result.widened
-    ? `${head} Ingen av dem hinner före din gräns eller är öppen för anmälan just nu, så här är hela träfflistan i stället.`
-    : head;
+  if (!result.widened) return head;
+  const widened = `${head} Ingen av dem hinner före din gräns eller är öppen för anmälan just nu, så här är hela träfflistan i stället.`;
+  return result.elsewhere.length
+    ? `${widened} Närmast öppna på annan ort ligger under listan.`
+    : widened;
+}
+
+/** Vad raden över förslagen säger: varför de står där, och hur långt bort de är. */
+function elsewhereLine(place: string, hadLocal: boolean, elsewhere: Elsewhere[]): string {
+  const where = elsewhere
+    .map(({ exam, km }) => `${exam.city} (${formatDistanceKm(km)})`)
+    .join(', ');
+  const why = hadLocal
+    ? `Ingen av prövningarna i ${place} går att anmäla sig till nu`
+    : `${place} har ingen sådan prövning i appens data`;
+  return `${why}. Närmast där du fortfarande kan anmäla dig: ${where}.`;
 }
 
 export function AiProvning() {
@@ -83,6 +103,8 @@ export function AiProvning() {
       matches: result.matches,
       widened: result.widened,
       understood,
+      elsewhere: result.elsewhere,
+      place: result.ask.cities[0] ?? (result.ask.regions[0] ? `${result.ask.regions[0]} län` : ''),
     };
 
     setDraft('');
@@ -221,6 +243,24 @@ export function AiProvning() {
                 Visar 12 av {turn.matches.length} träffar. Smalna av frågan med en kurs eller en
                 kommun.
               </p>
+            )}
+
+            {turn.elsewhere.length > 0 && turn.place && (
+              <div className="flex flex-col gap-3.5">
+                <div className="border-t border-line pt-5">
+                  <p className="text-[11.5px] font-bold uppercase tracking-[.09em] text-ink-faint">
+                    Öppet på annan ort
+                  </p>
+                  <p className="text-[14.5px] leading-relaxed text-ink-soft mt-1.5">
+                    {elsewhereLine(turn.place, turn.matches.length > 0, turn.elsewhere)}
+                  </p>
+                </div>
+                <div className="grid gap-3.5 sm:grid-cols-2">
+                  {turn.elsewhere.map(({ exam }) => (
+                    <ExamCard key={exam.id} exam={exam} />
+                  ))}
+                </div>
+              </div>
             )}
           </section>
         ))}

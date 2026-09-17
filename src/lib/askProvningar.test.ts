@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { EXAMS } from '../data/exams';
 import { answerAsk, describeAsk, hasConstraints, readAsk } from './askProvningar';
+import { hasApplicationClosed } from './examStatus';
 
 /**
  * These run against the real dataset on purpose.
@@ -98,6 +99,56 @@ describe('answerAsk', () => {
 
   it('finds nothing, and says nothing, for a course nobody offers there', () => {
     expect(answerAsk('Fysik 2 i Kiruna', EXAMS, TODAY).matches).toEqual([]);
+  });
+});
+
+/**
+ * A whole kommun closes at once — Helsingborg takes applications on four days
+ * per period, Göteborg once a term — so "Matte 2b i Helsingborg" has weeks
+ * where the honest answer is "not here, not now". These check the other half of
+ * that answer: where it *is* still open, nearest first.
+ */
+describe('answerAsk, when the asked-for kommun has nothing to apply to', () => {
+  /** Helsingborg's autumn application closed on 11 September. */
+  const AFTER_HELSINGBORG_CLOSED = new Date('2026-09-17T12:00:00Z');
+
+  it('offers the nearest kommun where the same course is still open', () => {
+    const { elsewhere } = answerAsk('Matematik 2b i Helsingborg', EXAMS, AFTER_HELSINGBORG_CLOSED);
+    expect(elsewhere.length).toBeGreaterThan(0);
+    expect(elsewhere[0].exam.city).toBe('Malmö');
+    expect(elsewhere[0].km).toBeLessThan(80);
+    for (const { exam } of elsewhere) {
+      expect(exam.city).not.toBe('Helsingborg');
+      expect(exam.course).toBe('Matematik 2b');
+      expect(hasApplicationClosed(exam, AFTER_HELSINGBORG_CLOSED)).toBe(false);
+      expect(exam.nextPeriod.confirmed).toBe(true);
+    }
+  });
+
+  it('keeps the suggestions nearest first, and one per ort', () => {
+    const { elsewhere } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    expect(elsewhere.length).toBeGreaterThan(0);
+    expect(elsewhere.length).toBeLessThanOrEqual(3);
+    const distances = elsewhere.map((e) => e.km);
+    expect([...distances].sort((a, b) => a - b)).toEqual(distances);
+    const cities = elsewhere.map((e) => e.exam.city);
+    expect(new Set(cities).size).toBe(cities.length);
+  });
+
+  /**
+   * The suggestion is a second-best answer, and a second-best answer next to a
+   * usable one is noise: it competes with the listing the user actually asked
+   * for.
+   */
+  it('says nothing when the ort itself still has an open round', () => {
+    expect(answerAsk('Matematik 2b i Göteborg', EXAMS, TODAY).elsewhere).toEqual([]);
+  });
+
+  /** Without a kurs or an ämne, "nearest open" would mean "nearest anything". */
+  it('needs a course or a subject before it suggests an ort', () => {
+    expect(
+      answerAsk('finns det något i Helsingborg', EXAMS, AFTER_HELSINGBORG_CLOSED).elsewhere,
+    ).toEqual([]);
   });
 });
 

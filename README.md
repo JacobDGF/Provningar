@@ -240,10 +240,14 @@ läser dem: träffar frågan kursens andra namn eller andra kurskod är listning
 en träff. Två saker håller det ärligt.
 
 - **Paren är lästa, inte härledda.** `MATMAT03b → MATO1B00X` går inte att gissa
-  fram ur koden. Paren kommer ur Komvux Örebros prövningstabell, som är den
-  källa i datan som skriver ut båda systemen på samma rad. Kurser som bara finns
-  i ett system — Fysik 1a, Fysik nivå 1b — står inte där, och då säger appen
-  ingenting om övergången.
+  fram ur koden. De 74 paren kommer ur de två kommunala tabeller som skriver ut
+  båda systemen på samma rad: Komvux Örebros prövningstabell och Helsingborgs
+  jämförelsetabell för Gy25. Kurser ingen av dem parar ihop står inte där —
+  Fysik 3, sfi-kurserna, och Matematik specialisering, där en Gy11-kurs mappas
+  på två ämnesnivåer och inget enda "andra namn" finns att ge. Då säger appen
+  ingenting om övergången. Fysik 1a var exemplet på det tills Helsingborg
+  skrev ut paret (Fysik Nivå 1b, samma 150 poäng); en andra källa som säger det
+  Örebro lämnade osagt är hur listan växer.
 - **Namnen är datans egen stavning.** Ett test i
   [`src/lib/courseSystems.test.ts`](src/lib/courseSystems.test.ts) jämför varje
   par mot `EXAMS`, så en omdöpt kurs inte kan lämna sökningen med ett namn inget
@@ -337,6 +341,34 @@ Två saker gör den ärlig i stället för magisk:
 - **Den säger när den vidgat sökningen.** Om inget som fortfarande går att söka
   hinner före gränsen visas hela träfflistan — men med den meningen utskriven.
   En tyst vidgning är hur ett fel svar blir betrott.
+
+### Öppet på annan ort
+
+En hel kommun stänger på samma gång. Helsingborg tar emot anmälan fyra dagar per
+period, Göteborg en gång per termin, Örebro två veckor på hösten — så _"Matte 2b
+i Helsingborg"_ har veckor där det ärliga svaret är "inte här, inte nu". Det
+svaret är bara till hälften sant: kursen prövas i Malmö, 53 km bort, med
+anmälan öppen en dag till. Utan den andra halvan får användaren en grå lista och
+uppmaningen att själv gissa vilken grannkommun som är värd att öppna.
+
+Därför får ett svar utan något att söka till en egen rad under träffarna:
+_"Ingen av prövningarna i Helsingborg går att anmäla sig till nu. Närmast där du
+fortfarande kan anmäla dig: Malmö (53 km), Örebro (387 km)."_ Under den ligger
+högst tre vanliga listningskort. Reglerna är fyra, och alla fyra finns som test
+i [`src/lib/askProvningar.test.ts`](src/lib/askProvningar.test.ts):
+
+- **Bara när orten inte har något själv.** Finns det en öppen omgång där frågan
+  pekar syns inga förslag alls — ett näst bästa svar bredvid ett användbart
+  svar är brus.
+- **Bara det som faktiskt går att söka.** Förslagen har publicerade datum, är
+  inte fullbokade och har inte passerat sin sista anmälningsdag. En omgång som
+  öppnar i januari räknas med; en listning utan datum gör det inte, för då är
+  förslaget "ring en skola".
+- **En ort, en rad, närmast först.** Den mest brådskande omgången per ort, och
+  avståndet fågelvägen utskrivet — 481 km är ett svar användaren får väga
+  själv, inte ett vi döljer.
+- **Kursen eller ämnet måste stå i frågan.** Utan det skulle "närmast öppet"
+  betyda "närmast vad som helst".
 
 ### Modellen formulerar, datan svarar
 

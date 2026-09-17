@@ -19,14 +19,29 @@ describe('courseCounterpart', () => {
   });
 
   /**
-   * Silence is the answer for a course only one system has. Fysik 1a and Fysik
-   * nivå 1b sit on separate rows in the source table, and pairing them here
-   * because the names look adjacent would tell somebody to sit the wrong prov.
+   * Silence is the answer for a course no published table has paired. Fysik 3
+   * and the sfi courses stand alone in both sources, and Matematik
+   * specialisering is worse than unpaired: Helsingborg's table maps the one
+   * Gy11 course onto two Gy25 ämnesnivåer (B and C), so there is no single
+   * other name to give. Guessing any of them would send somebody to the wrong
+   * prov.
    */
   it('says nothing about a course no source has paired', () => {
-    expect(courseCounterpart('FYSFYS01a')).toBeUndefined();
-    expect(courseCounterpart('FYSK1B00X')).toBeUndefined();
+    expect(courseCounterpart('FYSFYS03')).toBeUndefined();
+    expect(courseCounterpart('MATMAT00S')).toBeUndefined();
+    expect(courseCounterpart('MASB1000X')).toBeUndefined();
     expect(courseCounterpart('SFIKUB92')).toBeUndefined();
+  });
+
+  /**
+   * Fysik 1a used to be the example of an unpaired course, because Örebro's
+   * table lists it and Fysik nivå 1b on separate rows. Helsingborg's
+   * comparison table prints them on one row, at the same 150 poäng — a pair
+   * read out of a source, which is exactly what this file holds.
+   */
+  it('takes a pair the second source writes out', () => {
+    expect(courseCounterpart('FYSFYS01a')?.other.code).toBe('FYSK1B00X');
+    expect(courseCounterpart('FYSK1A20X')?.other.code).toBe('FYSFYS01b2');
   });
 
   it('pairs each code exactly once, and never with itself', () => {
