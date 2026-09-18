@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-09-17T07:46:25.364Z",
+  "uppdaterad": "2026-09-18T07:27:30.535Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -165,6 +165,27 @@
       "kurser": {
         "KEMI1000X": 2,
         "KEMKEM01": 4
+      }
+    },
+    "2026-09-18": {
+      "besök": 1,
+      "sidvisningar": {
+        "/discover": 1
+      },
+      "händelser": {
+        "Prövning öppnad": 5,
+        "Till anmälan": 3
+      },
+      "kommuner": {
+        "Malmö": 6,
+        "Norrköping": 2
+      },
+      "ämnen": {
+        "Kemi": 5
+      },
+      "kurser": {
+        "KEMKEM02": 1,
+        "KEMKEM01": 7
       }
     }
   }
