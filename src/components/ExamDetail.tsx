@@ -19,7 +19,7 @@ import {
   Clock,
   ListChecks,
 } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Exam } from '../types';
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
@@ -30,6 +30,7 @@ import { getExamAction } from '../lib/examAction';
 import { courseCounterpart } from '../lib/courseSystems';
 import { track } from '../lib/analytics';
 import { examCalendarEvents, downloadCalendar } from '../lib/calendarFile';
+import { openAlternatives } from '../lib/openAlternatives';
 import { useEscapeKey } from '../hooks/useEscapeKey';
 
 /**
@@ -111,6 +112,9 @@ export function ExamDetail() {
   } = useStore();
   const [tab, setTab] = useState<DetailTab>('dates');
   const [shared, setShared] = useState(false);
+  // Switching to another listing replaces the sheet's content in place; without
+  // this the reader keeps the old scroll position and lands mid-page.
+  const scrollRef = useRef<HTMLDivElement>(null);
   const exam = exams.find((e) => e.id === showingExamDetail);
   // Before the early return: hooks can't run conditionally, and the sheet is
   // only mounted while an exam is showing anyway.
@@ -125,6 +129,8 @@ export function ExamDetail() {
   const flow = getRegistrationFlow(exam);
   const action = getExamAction(exam);
   const calendarEvents = examCalendarEvents(exam);
+  // Empty unless this round is closed or full — see lib/openAlternatives.ts.
+  const alternatives = openAlternatives(exam, exams);
   const stat = applicationStat(exam);
   const hero = HERO_GRADIENT[status.tone.key] ?? HERO_DEFAULT;
   // The design was drawn around "Matematik 2b". A third of the dataset reads
@@ -225,7 +231,7 @@ export function ExamDetail() {
         </div>
 
         {/* Scroll content */}
-        <div className="overflow-y-auto flex-1">
+        <div ref={scrollRef} className="overflow-y-auto flex-1">
           <div className="p-4 lg:p-6 space-y-4">
             {/* HERO */}
             <div className={`relative overflow-hidden rounded-3xl p-6 lg:p-8 ${hero}`}>
@@ -370,6 +376,53 @@ export function ExamDetail() {
                 </a>
               )}
             </div>
+
+            {/* The way out of a round you can't book: the same course,
+                somewhere it is still open. Nothing renders when there is no
+                such listing — see lib/openAlternatives.ts. */}
+            {alternatives.length > 0 && (
+              <div className="bg-surface border-[1.5px] border-line rounded-3xl p-4 lg:p-5 flex flex-col gap-3">
+                <div>
+                  <p className="font-display font-semibold text-[17px] text-ink">
+                    Samma kurs, öppen någon annanstans
+                  </p>
+                  <p className="text-ink-soft text-[13px] mt-1 leading-relaxed">
+                    Du behöver inte pröva i din egen kommun. Villkoren är anordnarens — de står i
+                    listningen.
+                  </p>
+                </div>
+                <div className="flex flex-col gap-2">
+                  {alternatives.map((alt) => {
+                    const altStatus = getExamStatus(alt);
+                    return (
+                      <button
+                        key={alt.id}
+                        onClick={() => {
+                          setShowingExamDetail(alt.id);
+                          scrollRef.current?.scrollTo({ top: 0 });
+                        }}
+                        className="flex items-center justify-between gap-3 bg-cream hover:bg-sand border border-line rounded-2xl px-4 py-3 text-left transition-colors"
+                      >
+                        <span className="min-w-0">
+                          <span className="block font-display font-semibold text-[15.5px] text-ink truncate">
+                            {alt.city} · {alt.schoolName}
+                          </span>
+                          <span className="block text-ink-soft text-[12.5px] truncate">
+                            {alt.course !== exam.course ? `${alt.course} · ` : ''}
+                            {alt.price} kr
+                          </span>
+                        </span>
+                        <span
+                          className={`text-[12px] font-bold px-3 py-1.5 rounded-full whitespace-nowrap ${altStatus.tone.softChip}`}
+                        >
+                          {altStatus.label}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Where the facts came from */}
             <p className="inline-flex items-center gap-1.5 text-trust-700 text-[12.5px] font-medium px-1">

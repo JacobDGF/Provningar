@@ -99,6 +99,36 @@ lilla knappen, för den som vill se det stängda formuläret med egna ögon.
 Stegen under "Så anmäler du dig" försvinner samtidigt: tre numrerade steg är ett
 löfte om vad som händer efter knappen, och på en stängd omgång håller det inte.
 
+### Samma kurs, någon annanstans
+
+Sex av tio listningar är stängda vilken dag som helst — anmälan tog slut i
+förrgår, eller anordnaren har skrivit att platserna är slut. Fram tills nu sa
+appen det som var sant men oanvändbart: "Stängde 11 sep", och en länk till
+anordnarens sida där nästa omgång kanske annonseras om tre månader.
+
+En stängd listning visar därför de prövningar som prövar **samma kurs** och
+fortfarande tar emot anmälningar, närmast deadline först, som en rad var med ort,
+skola och hur lång tid som är kvar. Raden öppnar listningen i samma panel.
+[`src/lib/openAlternatives.ts`](src/lib/openAlternatives.ts) bestämmer vilka de
+är, och tre regler håller svaret ärligt:
+
+- **Samma kurs, inte samma ämne.** Matchningen går på kurskod. Matematik 2b och
+  Matematik 3b är två prov, och ett förslag som byter kurs är sämre än inget
+  förslag eftersom det ser ut som ett svar. Gy25-nivån räknas som samma kurs som
+  sin Gy11-kurs — men bara där [paret är läst ur en
+  källa](#kursen-har-två-namn), och raden skriver då ut det andra kursnamnet.
+- **Bara kurskoder som betyder en kurs.** Listningar med koden `Varierar`
+  ("Flera kurser, kontakta skolan") har ingen kurs gemensam med någon.
+- **Bara det som går att söka till i dag.** Ett förslag som självt är stängt är
+  samma återvändsgränd en gång till.
+
+Blocket finns inte på en listning som är öppen, och inte heller på en odaterad:
+den är inte stängd, den är okänd, och där är anordnarens egen sida fortfarande
+rätt svar. Förslaget lovar heller ingen plats — Umevux prövar bara för
+folkbokförda i Västerbotten, Södertälje för fem kommuner, ABF Stockholm tvärtom
+bara för den som bor utanför staden. Villkoret står i varje listnings egen
+beskrivning, och det är dit raden leder.
+
 ### Två vägar ut ur varje listning
 
 [`src/lib/providerLinks.ts`](src/lib/providerLinks.ts) ger varje listning två mål,

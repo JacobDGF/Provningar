@@ -19,14 +19,27 @@ describe('courseCounterpart', () => {
   });
 
   /**
-   * Silence is the answer for a course only one system has. Fysik 1a and Fysik
-   * nivå 1b sit on separate rows in the source table, and pairing them here
-   * because the names look adjacent would tell somebody to sit the wrong prov.
+   * Silence is the answer until a source writes the pair out. Psykologi 2 is
+   * the standing case: Helsingborgs jämförelselista ger den samma kod som
+   * Psykologi 1 (`PSYL1000X`), och att rätta den koden vore en gissning som
+   * skickar någon till fel prov. Detsamma gäller Specialpedagogik 1, vars
+   * Gy11-kod listan stavar `SPCSSPE01`.
    */
   it('says nothing about a course no source has paired', () => {
-    expect(courseCounterpart('FYSFYS01a')).toBeUndefined();
-    expect(courseCounterpart('FYSK1B00X')).toBeUndefined();
+    expect(courseCounterpart('PSKPSY02')).toBeUndefined();
+    expect(courseCounterpart('SPCSPE01')).toBeUndefined();
     expect(courseCounterpart('SFIKUB92')).toBeUndefined();
+  });
+
+  /**
+   * Fysik 1a ↔ Fysik Nivå 1b was the old example of that silence — Örebro lists
+   * the two without pairing them. Helsingborgs list puts them on one row, so the
+   * pair is now read rather than guessed, and this is the case that says the
+   * difference between the two is evidence and not taste.
+   */
+  it('pairs Fysik 1a with Fysik Nivå 1b, since a source now writes the row', () => {
+    expect(courseCounterpart('FYSFYS01a')?.other.code).toBe('FYSK1B00X');
+    expect(courseCounterpart('FYSK1B00X')?.other.code).toBe('FYSFYS01a');
   });
 
   it('pairs each code exactly once, and never with itself', () => {

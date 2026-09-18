@@ -4,6 +4,57 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-09-18
+
+**Data: +89 prövningar.** Hela Helsingborgs prövningsutbud, läst ur kommunens
+egen kurslista — den jämförelse-PDF stadens betygsprövningssida länkar till —
+och ur periodtabellen på samma sida. Datasetet går från 588 till 677 listningar.
+
+| Kommun      | Listningar | Källa                                                             |
+| ----------- | ---------- | ----------------------------------------------------------------- |
+| Helsingborg | 1 → 90     | helsingborg.se: betygsprövningssidan och dess kurslista Gy11/Gy25 |
+
+Helsingborg står åttonde i prioritetsordningen och hade ett enda kort. Staden
+publicerar i själva verket hela sitt utbud — 85 gymnasiala ämnesnivåer och fyra
+kurser på grundläggande nivå — plus alla sina anmälningsfönster för året.
+
+- **Arena Utbildning genomför prövningarna**, på Planteringsvägen 5, och det är
+  därifrån mejlet med inloggning till lärplattformen Exlearn kommer. Det gamla
+  kortet låg på kommunens receptionsadress och är flyttat dit, med sitt id kvar
+  så en sparad prövning fortfarande hittar hem. De fyra grundläggande kurserna
+  ligger kvar hos Komvux Helsingborg på Rönnowsgatan, som är den adress staden
+  skriver ut för dem.
+- **Anmälan görs i Gy25, Gy11 på mejl.** Webbansökan tar bara emot
+  ämnesnivåerna; vill du pröva den gamla kursen mejlar du kommunen efter
+  anmälan, och bara om du redan har ett betyg i den. Därför är de 85 korten
+  Gy25-nivåer, och det gamla Matematik 2b-kortet säger nu exakt vad den vägen
+  kräver i stället för att se ut som vilken anmälan som helst.
+- **Fönstret är fem dagar långt**, vilket är hela skälet att datumen står
+  utskrivna: höstens omgång var öppen 7–11 september, prövningen görs
+  12 oktober–6 november, och den som missade veckan får vänta. Kommunen har inte
+  publicerat några perioder för 2027, så listningarna bär årets riktiga datum
+  och ingen påhittad fortsättning.
+- **37 nya kurspar.** Helsingborgs lista ställer gammal kurs och ny ämnesnivå i
+  var sin kolumn, och är därmed den andra källan i datan som skriver ut båda
+  systemen på samma rad. Bland dem Fysik 1a ↔ Fysik Nivå 1b, som stod i koden
+  som exempel på ett par vi _inte_ fick gissa — nu är det läst.
+- Kvar att lägga in: de tio kurser i listan vars ämne inte finns i datan än
+  (Administration, Arkitektur, Datorteknik, Digitalt skapande, Film- och
+  TV-kunskap, Logistik, Medieproduktion, Service och bemötande,
+  Webbserverprogrammering, Webbutveckling) — varje sådan skulle lägga till ett
+  ämnesfilter med en enda kurs under sig. Tre par lämnades också osagda, för att
+  källan skriver en kod som inte finns: Psykologi 2 får samma kod som Psykologi
+  1, Hälsopedagogik står som `HALAHL0`, Specialpedagogik som `SPCSSPE01`.
+
+**Produkt: samma kurs, någon annanstans.** En stängd listning visar nu de
+prövningar som prövar samma kurs och fortfarande tar emot anmälningar — ort,
+skola och hur lång tid som är kvar, närmast deadline först, och raden öppnar
+listningen. 445 av 677 listningar är stängda eller fullbokade i dag, och 213 av
+dem har en sådan utväg; tidigare fick alla samma svar, "stängde 11 sep" och en
+länk till anordnarens sida. Matchningen går på kurskod, aldrig på ämne, så att
+förslaget aldrig byter kurs bakom ryggen på någon. Se
+[README](README.md#samma-kurs-någon-annanstans).
+
 ## 2026-09-11 (räknaren i drift)
 
 Räknaren står nu hos Cloudflare och appen är byggd mot den. Kedjan är
