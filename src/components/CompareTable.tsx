@@ -1,6 +1,7 @@
 import { Exam } from '../types';
 import { useStore } from '../store/useStore';
 import { buildComparison, countDifferences } from '../lib/compareExams';
+import { describeClash, findExamClashes } from '../lib/examClashes';
 import { getExamStatus } from '../lib/examStatusColor';
 
 /** Row-label column, in px. Wide enough for "Prövningsperiod" on two lines. */
@@ -42,9 +43,25 @@ export function CompareTable({ exams }: { exams: Exam[] }) {
   }
 
   const differing = countDifferences(rows);
+  const clashes = findExamClashes(exams);
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Krocken står före jämförelsen, inte i den. Raden "Skrivpass" i
+          tabellen säger vilken dag varje prov ligger, men att två av dem säger
+          samma dag är en slutsats läsaren annars får dra själv — och
+          konsekvensen, att anmälan inte går att genomföra, syns först hos
+          anordnaren. Meningen säger vad som krockar och stannar där: vilken av
+          dem som ska väljas bort är hela valet, och det är läsarens. */}
+      {clashes.map((clash) => (
+        <p
+          key={`${clash.schoolName}-${clash.date}`}
+          className="font-display text-[17px] leading-snug text-orange-700 bg-orange-50 border border-orange-200 rounded-[18px] px-4 py-3"
+        >
+          {describeClash(clash, exams)}
+        </p>
+      ))}
+
       <p className="font-display text-[17px] text-ink-soft">
         {differing === 0 ? (
           <>Ingenting skiljer de här {exams.length} prövningarna åt — välj den som passar dig.</>

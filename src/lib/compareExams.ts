@@ -65,6 +65,19 @@ function examWindow(exam: Exam): string {
   return `${formatDate(p.examWindowStart)} – ${formatDate(p.examWindowEnd)}`;
 }
 
+/**
+ * De utsatta skrivpassen som en cell.
+ *
+ * En listning utan publicerade provdatum säger `—` i stället för att låna
+ * prövningsperiodens datum: en period är inte ett provtillfälle, och en cell
+ * som påstår det skickar någon till fel dag.
+ */
+function sittings(exam: Exam): string {
+  const dates = exam.writtenExamDates ?? [];
+  if (dates.length === 0) return NONE;
+  return dates.map(formatDate).join(' och ');
+}
+
 function applicationDate(exam: Exam, end: boolean): string {
   const { nextPeriod: p } = exam;
   if (!p.confirmed) return NONE;
@@ -83,6 +96,11 @@ const ROWS: { key: string; label: string; value: (exam: Exam) => string }[] = [
   { key: 'opens', label: 'Anmälan öppnar', value: (e) => applicationDate(e, false) },
   { key: 'closes', label: 'Sista anmälan', value: (e) => applicationDate(e, true) },
   { key: 'window', label: 'Prövningsperiod', value: examWindow },
+  // Skrivpasset är inte samma sak som prövningsperioden ovanför: perioden är
+  // veckorna anordnaren rättar inom, skrivpasset är eftermiddagen du måste
+  // sitta i salen. Två listningar med samma period kan ha olika skrivpass, och
+  // det är den raden som avgör om de går att kombinera alls.
+  { key: 'sitting', label: 'Skrivpass', value: sittings },
   { key: 'flow', label: 'Så anmäler du dig', value: (e) => getRegistrationFlow(e).landing },
   { key: 'where', label: 'Var', value: (e) => `${e.schoolName}, ${e.city}` },
   { key: 'code', label: 'Kurskod', value: (e) => e.courseCode },

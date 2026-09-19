@@ -4,6 +4,65 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-09-19
+
+**Data: +83 prövningar.** Hela Komvux Malmös publicerade utbud för period 4
+2026, läst rad för rad ur anordnarens eget skrivschema: Gy11-kurserna,
+Gy25-ämnena och de grundläggande kurserna. Datasetet går från 588 till 671
+listningar, och Malmö från 28 till 111.
+
+| Kommun | Listningar | Källa                                                                  |
+| ------ | ---------- | ---------------------------------------------------------------------- |
+| Malmö  | 28 → 111   | Komvux Malmös skrivschema och utbud, period 4 2026 (Gy11, Gy25, grund) |
+
+Prioritetsordningen säger Malmö efter Stockholm och Göteborg, och Malmö var den
+första av dem med ett publicerat utbud som datan bara hade en fjärdedel av:
+26 Gy11-kurser fanns, hela Gy25-katalogen saknades.
+
+- **Kurskoderna kommer ur Skolverkets öppna kursplane-API.** Malmös skrivschema
+  skriver ut namnet ("Juridik, nivå 1") men aldrig koden, och en kod är det som
+  avgör vilket förberedelsedokument man läser. `JURI1000X` är därför hämtad ur
+  den källa som publicerar den, inte härledd ur mönstret i de andra koderna.
+- **Gy11 och Gy25 är två kort, som datan kräver.** Malmö prövar båda systemen i
+  samma period, på samma eftermiddagar, men som två anmälningar. Där Örebros
+  tabell skrivit ut paret säger korten det: _"Samma innehåll prövas också som
+  Gy11-kursen Matematik 3b."_ Där ingen källa har skrivit ut det säger de inget.
+- **Grundläggande nivå har en egen tidplan** — prövningsperiod 29 oktober–4
+  december i stället för 26 oktober–25 november, och ett obligatoriskt
+  informationsmöte 26 oktober klockan 16 som gymnasial nivå inte har. Sex
+  listningar med egen period, egen e-tjänst (927, inte 926) och egen betygsskala.
+- **Två tunna listningar blev omskrivna i stället för dubblerade.** `malmo-eng6`
+  och `malmo-svenska3` fanns sedan den första datainsamlingen, utan skrivdag och
+  utan delprov. De behöll sina id — någon kan ha dem sparade — och fick resten.
+- **Anmälan för period 4 stängde 18 september**, dagen före den här omgången.
+  Korten säger det rakt ut och sjunker under de öppna; utbudet, avgiften och
+  skrivschemat är ändå det Malmö publicerat, och nästa periods datum blir ett
+  fältbyte när kommunen lägger upp dem.
+- Kvar att göra: `check:dates` pekar nu ut 19 listningar vars omgång helt har
+  passerat (upp från 8), varav en tredjedel är Göteborgs höstomgångar som rullat
+  förbi. `check:links` hittar två döda anmälningslänkar: Motalas e-tjänst (404)
+  och Västerås Alvis-portal (soft-404).
+
+**Produkt: krockvarning i Jämför.** Två prövningar som är utsatta samma dag hos
+samma anordnare går inte att kombinera — Malmö behandlar inte ens anmälan — och
+det var osynligt i appen, eftersom skrivdagen låg i en mening på varje listning
+och två listningar läses en i taget.
+
+- **Skrivdagen är ett datum i datan nu** (`writtenExamDates`), satt för alla 105
+  Malmölistningar med utsatt prov. Bara publicerade, obligatoriska provtillfällen
+  hör hemma där: en period där läraren sätter dagen får inget datum, och appen
+  varnar inte för en krock den inte kan se.
+- **Raden ovanför tabellen säger vad som krockar och stannar där**: _"Fysik 2 och
+  Programmering 1 är båda utsatta tisdag 27 oktober hos Komvux Malmö. Du kan bara
+  skriva ett prov per dag."_ Vilken av dem som ska väljas bort är hela valet, och
+  det är läsarens.
+- **Tabellen fick raden "Skrivpass"**, skild från "Prövningsperiod": perioden är
+  veckorna anordnaren rättar inom, skrivpasset är eftermiddagen du sitter i salen.
+- Verifierat i Chromium mot ett riktigt bygge, på både desktop- och telefonbredd:
+  varningen syns för de två tisdagsproven, uteblir när Biologi 1 (måndag) läggs
+  till, och sidan får fortfarande ingen vågrät rullning — tabellen rullar i sin
+  egen ruta. Se [README](README.md#när-två-prov-ligger-samma-dag).
+
 ## 2026-09-11 (räknaren i drift)
 
 Räknaren står nu hos Cloudflare och appen är byggd mot den. Kedjan är

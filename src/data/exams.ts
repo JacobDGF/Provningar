@@ -200,6 +200,55 @@ const TIPS_RELIGION = [
   'Läs på om relationen mellan religion och vetenskap i den aktuella samhällsdebatten.',
 ];
 
+const TIPS_HISTORIA = [
+  'Bygg en egen tidslinje över epokerna — årtalen fastnar när de hänger ihop.',
+  'Öva källkritik på riktiga källor: vem skrev, när, för vem och varför.',
+  'Repetera de stora förändringsprocesserna (industrialisering, demokratisering, kolonialism).',
+  'Träna på att jämföra orsak och konsekvens i ett skriftligt resonemang.',
+];
+
+const TIPS_EKONOMI = [
+  'Räkna på resultat- och balansräkning för hand innan du provar kalkylprogram.',
+  'Lär dig grundbegreppen: intäkt, kostnad, likviditet, soliditet och marginal.',
+  'Öva på att läsa ett verkligt företags årsredovisning och förklara siffrorna.',
+  'Koppla teorin till ett konkret företag du känner till — frågorna är ofta fallbaserade.',
+];
+
+const TIPS_FILOSOFI = [
+  'Lär dig skilja på deskriptiva och normativa påståenden — hela ämnet vilar på det.',
+  'Repetera de etiska modellerna och öva på att tillämpa dem på samma fall.',
+  'Träna på att rekonstruera ett argument: premisser, slutsats, och vad som brister.',
+  'Läs korta originaltexter hellre än långa sammanfattningar.',
+];
+
+const TIPS_GEOGRAFI = [
+  'Öva på att läsa kartor, diagram och statistik — det är återkommande i provet.',
+  'Repetera de naturgeografiska processerna: klimat, vatten, jordskorpan.',
+  'Koppla ihop naturresurser, befolkning och hållbar utveckling i konkreta exempel.',
+  'Följ aktuella klimat- och resursfrågor i nyheterna för egna exempel.',
+];
+
+const TIPS_JURIDIK = [
+  'Lär dig hitta i lagtexten — att slå upp rätt paragraf är halva uppgiften.',
+  'Repetera rättskällorna och hur de förhåller sig till varandra.',
+  'Öva på att lösa rättsfall i tre steg: fakta, regel, slutsats.',
+  'Läs domar i referat för att se hur juridiska resonemang skrivs.',
+];
+
+const TIPS_BETEENDE = [
+  'Repetera de centrala teorierna och vem som formulerade dem.',
+  'Öva på att koppla teori till konkreta vardagsexempel — det efterfrågas i bedömningen.',
+  'Träna på att jämföra perspektiv i stället för att återge ett i taget.',
+  'Läs på om metod: hur kunskap i ämnet tas fram, och vad den inte kan säga.',
+];
+
+const TIPS_AI = [
+  'Repetera skillnaden mellan regelbaserade system, maskininlärning och generativa modeller.',
+  'Öva på att förklara hur en modell tränas, och vad träningsdatan gör med resultatet.',
+  'Läs på om etiken: bias, integritet, upphovsrätt och ansvar när ett system gör fel.',
+  'Prova ett verktyg själv och dokumentera vad det klarade och var det brast.',
+];
+
 const TIPS_FLERA = [
   'Kontakta skolan tidigt för att få exakt kurskod och provupplägg för din kurs.',
   'Fråga om gamla tentor eller övningsmaterial för just den kurs du ska pröva.',
@@ -434,6 +483,35 @@ function ntiAutumn2026(): NextPeriod {
 // tar deras teoretiska prövningar), och Västerås hade hunnit skriva ut att
 // årets omgång är fullbokad.
 const SEP_10_VERIFIED = '2026-09-10';
+
+// Malmösvepet 2026-09-19: hela Komvux Malmös publicerade utbud för period 4,
+// läst rad för rad ur anordnarens eget skrivschema (Gy11-kurser, Gy25-ämnen och
+// grundläggande kurser). Kurskoderna är hämtade ur Skolverkets öppna
+// kursplane-API, som är den källa som skriver ut koden för varje namn Malmö
+// listar — skrivschemat självt nämner ingen kod.
+const SEP_19_VERIFIED = '2026-09-19';
+
+/**
+ * Komvux Malmös period 4 2026 på grundläggande nivå.
+ *
+ * Grundläggande kurser har en egen tidplan hos Malmö: samma anmälningsperiod
+ * som de gymnasiala, men en prövningsperiod som börjar tre dagar senare och
+ * slutar nio dagar senare — och ett obligatoriskt informationsmöte 26 oktober
+ * som inte har någon motsvarighet på gymnasial nivå. Att låta dem dela
+ * `malmoPeriod4` vore att skriva fel slutdatum på sex listningar.
+ */
+function malmoGrundPeriod4(): NextPeriod {
+  return {
+    label:
+      'Period 4 2026: anmälan 7–18 september, obligatoriskt informationsmöte 26 oktober ' +
+      'klockan 16, prövningsperiod 29 oktober – 4 december. Betygsdatum 4 december.',
+    applicationStart: '2026-09-07',
+    applicationEnd: '2026-09-18',
+    examWindowStart: '2026-10-29',
+    examWindowEnd: '2026-12-04',
+    confirmed: true,
+  };
+}
 
 const OREBRO_PRICE_NOTE =
   '500 kr per kurs. Avgiftsfritt om du har F eller IG i kursen från komvux — betygskopian ska ' +
@@ -4214,25 +4292,38 @@ export const EXAMS: Exam[] = [
     lat: 55.605,
     lng: 13.0038,
     price: 500,
-    priceNote: FREE_IF_PRIOR_F + ' Svenska har två obligatoriska provdagar.',
-    nextPeriod: {
-      label:
-        'Period 4 2026: anmälan 7–18 september, prövningsperiod 26 oktober – 25 november. (Period 3 stängde 7 augusti.)',
-      applicationStart: '2026-09-07',
-      applicationEnd: '2026-09-18',
-      examWindowStart: '2026-10-26',
-      examWindowEnd: '2026-11-25',
-      confirmed: true,
-    },
-    components: COMPONENTS_SVENSKA,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('tisdag 27 oktober (delprov 1) och fredag 30 oktober (delprov 2)'),
+    writtenExamDates: ['2026-10-27', '2026-10-30'],
+    components: [
+      {
+        name: 'Delprov 1',
+        duration: '5 timmar',
+        description:
+          'Tisdag 27 oktober 2026. Incheckning klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+      {
+        name: 'Delprov 2',
+        duration: '5 timmar',
+        description:
+          'Fredag 30 oktober 2026. Incheckning klockan 12.15–13.00, provstart klockan 13.00. ' +
+          'Delprov 2 kan bara skrivas av den som gjort delprov 1.',
+      },
+    ],
     studyTips: TIPS_SVENSKA,
     registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
     infoUrl:
-      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser.html',
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
     description:
-      'Komvux Malmö genomför betygsprövning i Svenska 3 på plats, med två obligatoriska provdagar enligt skrivschemat.',
-    tags: ['svenska', 'malmo'],
-    verifiedAt: VERIFIED,
+      'Prövning i Svenska 3 (SVESVE03) hos Komvux Malmö, period 4 2026. Skrivpassen ligger ' +
+      'tisdag 27 oktober (delprov 1) och fredag 30 oktober (delprov 2) på Kungsgatan 44. Kolla ' +
+      'skrivschemat så att dina kurser inte krockar — du får skriva högst ett kursprov per dag. ' +
+      'Samma kurs prövas också som Gy25-ämnesnivån Svenska Nivå 3 — har du läst kursen före ' +
+      'juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['svenska', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-eng6',
@@ -4248,25 +4339,38 @@ export const EXAMS: Exam[] = [
     lat: 55.605,
     lng: 13.0038,
     price: 500,
-    priceNote: FREE_IF_PRIOR_F,
-    nextPeriod: {
-      label:
-        'Period 4 2026: anmälan 7–18 september, prövningsperiod 26 oktober – 25 november. (Period 3 stängde 7 augusti.)',
-      applicationStart: '2026-09-07',
-      applicationEnd: '2026-09-18',
-      examWindowStart: '2026-10-26',
-      examWindowEnd: '2026-11-25',
-      confirmed: true,
-    },
-    components: COMPONENTS_ENGELSKA,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober (delprov 1) och fredag 30 oktober (delprov 2)'),
+    writtenExamDates: ['2026-10-26', '2026-10-30'],
+    components: [
+      {
+        name: 'Delprov 1',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Incheckning klockan 12.45–13.25, provstart klockan 13.30.',
+      },
+      {
+        name: 'Delprov 2',
+        duration: '4 timmar',
+        description:
+          'Fredag 30 oktober 2026. Incheckning klockan 12.15–13.00, provstart klockan 13.00. ' +
+          'Delprov 2 kan bara skrivas av den som gjort delprov 1.',
+      },
+    ],
     studyTips: TIPS_ENGELSKA,
     registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
     infoUrl:
-      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser.html',
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
     description:
-      'Komvux Malmö genomför betygsprövning i Engelska 6 på plats, all examination sker på svenska anvisad lokal.',
-    tags: ['engelska', 'malmo'],
-    verifiedAt: VERIFIED,
+      'Prövning i Engelska 6 (ENGENG06) hos Komvux Malmö, period 4 2026. Skrivpassen ligger ' +
+      'måndag 26 oktober (delprov 1) och fredag 30 oktober (delprov 2) på Kungsgatan 44. Kolla ' +
+      'skrivschemat så att dina kurser inte krockar — du får skriva högst ett kursprov per dag. ' +
+      'Samma kurs prövas också som Gy25-ämnesnivån Engelska Nivå 2 — har du läst kursen före ' +
+      'juli 2025 är det den här Gy11-varianten du ska söka.',
+    tags: ['engelska', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'helsingborg-ma2b',
@@ -7897,6 +8001,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('måndag 26 oktober (delprov 1) och fredag 30 oktober (delprov 2)'),
+    writtenExamDates: ['2026-10-26', '2026-10-30'],
     components: [
       {
         name: 'Delprov 1',
@@ -7922,7 +8027,7 @@ export const EXAMS: Exam[] = [
       'skrivschemat så att dina kurser inte krockar — du får skriva högst ett kursprov per ' +
       'dag.',
     tags: ['engelska', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-komvux-engelska-7',
@@ -7942,6 +8047,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('måndag 26 oktober (delprov 1) och fredag 30 oktober (delprov 2)'),
+    writtenExamDates: ['2026-10-26', '2026-10-30'],
     components: [
       {
         name: 'Delprov 1',
@@ -7967,7 +8073,7 @@ export const EXAMS: Exam[] = [
       'skrivschemat så att dina kurser inte krockar — du får skriva högst ett kursprov per ' +
       'dag.',
     tags: ['engelska', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-komvux-biologi-1',
@@ -7987,6 +8093,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
     components: [
       {
         name: 'Skriftligt prov',
@@ -8005,7 +8112,7 @@ export const EXAMS: Exam[] = [
       'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
       'skriva högst ett kursprov per dag.',
     tags: ['biologi', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-komvux-fysik-1a',
@@ -8025,6 +8132,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
     components: [
       {
         name: 'Skriftligt prov',
@@ -8043,7 +8151,7 @@ export const EXAMS: Exam[] = [
       'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
       'skriva högst ett kursprov per dag.',
     tags: ['fysik', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-komvux-kemi-2',
@@ -8063,6 +8171,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
     components: [
       {
         name: 'Skriftligt prov',
@@ -8081,7 +8190,7 @@ export const EXAMS: Exam[] = [
       'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
       'skriva högst ett kursprov per dag.',
     tags: ['kemi', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-komvux-naturkunskap-1b',
@@ -8101,6 +8210,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
     components: [
       {
         name: 'Skriftligt prov',
@@ -8119,7 +8229,7 @@ export const EXAMS: Exam[] = [
       '26 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du ' +
       'får skriva högst ett kursprov per dag.',
     tags: ['naturkunskap', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-komvux-fysik-2',
@@ -8139,6 +8249,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('tisdag 27 oktober'),
+    writtenExamDates: ['2026-10-27'],
     components: [
       {
         name: 'Skriftligt prov',
@@ -8157,7 +8268,7 @@ export const EXAMS: Exam[] = [
       'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
       'skriva högst ett kursprov per dag.',
     tags: ['fysik', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-komvux-programmering-1',
@@ -8177,6 +8288,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('tisdag 27 oktober'),
+    writtenExamDates: ['2026-10-27'],
     components: [
       {
         name: 'Skriftligt prov',
@@ -8195,7 +8307,7 @@ export const EXAMS: Exam[] = [
       '27 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du ' +
       'får skriva högst ett kursprov per dag.',
     tags: ['programmering', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-komvux-psykologi-1',
@@ -8215,6 +8327,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('tisdag 27 oktober'),
+    writtenExamDates: ['2026-10-27'],
     components: [
       {
         name: 'Skriftligt prov',
@@ -8233,7 +8346,7 @@ export const EXAMS: Exam[] = [
       'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
       'skriva högst ett kursprov per dag.',
     tags: ['psykologi', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-komvux-samhallskunskap-1b',
@@ -8253,6 +8366,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('tisdag 27 oktober'),
+    writtenExamDates: ['2026-10-27'],
     components: [
       {
         name: 'Skriftligt prov',
@@ -8271,7 +8385,7 @@ export const EXAMS: Exam[] = [
       'tisdag 27 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar ' +
       '— du får skriva högst ett kursprov per dag.',
     tags: ['samhällskunskap', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-komvux-svenska-1',
@@ -8291,6 +8405,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('tisdag 27 oktober (delprov 1) och fredag 30 oktober (delprov 2)'),
+    writtenExamDates: ['2026-10-27', '2026-10-30'],
     components: [
       {
         name: 'Delprov 1',
@@ -8316,7 +8431,7 @@ export const EXAMS: Exam[] = [
       'skrivschemat så att dina kurser inte krockar — du får skriva högst ett kursprov per ' +
       'dag.',
     tags: ['svenska', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-komvux-svenska-2',
@@ -8336,6 +8451,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('tisdag 27 oktober (delprov 1) och fredag 30 oktober (delprov 2)'),
+    writtenExamDates: ['2026-10-27', '2026-10-30'],
     components: [
       {
         name: 'Delprov 1',
@@ -8361,7 +8477,7 @@ export const EXAMS: Exam[] = [
       'skrivschemat så att dina kurser inte krockar — du får skriva högst ett kursprov per ' +
       'dag.',
     tags: ['svenska', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-komvux-svenska-som-andrasprak-1',
@@ -8381,6 +8497,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('tisdag 27 oktober (delprov 1) och fredag 30 oktober (delprov 2)'),
+    writtenExamDates: ['2026-10-27', '2026-10-30'],
     components: [
       {
         name: 'Delprov 1',
@@ -8406,7 +8523,7 @@ export const EXAMS: Exam[] = [
       '44. Kolla skrivschemat så att dina kurser inte krockar — du får skriva högst ett ' +
       'kursprov per dag.',
     tags: ['sva', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-komvux-svenska-som-andrasprak-3',
@@ -8426,6 +8543,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('tisdag 27 oktober (delprov 1) och fredag 30 oktober (delprov 2)'),
+    writtenExamDates: ['2026-10-27', '2026-10-30'],
     components: [
       {
         name: 'Delprov 1',
@@ -8451,7 +8569,7 @@ export const EXAMS: Exam[] = [
       '44. Kolla skrivschemat så att dina kurser inte krockar — du får skriva högst ett ' +
       'kursprov per dag.',
     tags: ['sva', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-komvux-biologi-2',
@@ -8471,6 +8589,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
     components: [
       {
         name: 'Skriftligt prov',
@@ -8489,7 +8608,7 @@ export const EXAMS: Exam[] = [
       'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
       'skriva högst ett kursprov per dag.',
     tags: ['biologi', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-komvux-kemi-1',
@@ -8509,6 +8628,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
     components: [
       {
         name: 'Skriftligt prov',
@@ -8527,7 +8647,7 @@ export const EXAMS: Exam[] = [
       'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
       'skriva högst ett kursprov per dag.',
     tags: ['kemi', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-komvux-naturkunskap-2',
@@ -8547,6 +8667,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
     components: [
       {
         name: 'Skriftligt prov',
@@ -8565,7 +8686,7 @@ export const EXAMS: Exam[] = [
       '28 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du ' +
       'får skriva högst ett kursprov per dag.',
     tags: ['naturkunskap', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-komvux-matematik-1b',
@@ -8585,6 +8706,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    writtenExamDates: ['2026-10-29'],
     components: [
       {
         name: 'Skriftligt prov',
@@ -8603,7 +8725,7 @@ export const EXAMS: Exam[] = [
       'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
       'skriva högst ett kursprov per dag.',
     tags: ['matematik', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-komvux-matematik-1c',
@@ -8623,6 +8745,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    writtenExamDates: ['2026-10-29'],
     components: [
       {
         name: 'Skriftligt prov',
@@ -8641,7 +8764,7 @@ export const EXAMS: Exam[] = [
       'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
       'skriva högst ett kursprov per dag.',
     tags: ['matematik', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-komvux-matematik-2b',
@@ -8661,6 +8784,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    writtenExamDates: ['2026-10-29'],
     components: [
       {
         name: 'Skriftligt prov',
@@ -8679,7 +8803,7 @@ export const EXAMS: Exam[] = [
       'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
       'skriva högst ett kursprov per dag.',
     tags: ['matematik', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-komvux-matematik-2c',
@@ -8699,6 +8823,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    writtenExamDates: ['2026-10-29'],
     components: [
       {
         name: 'Skriftligt prov',
@@ -8717,7 +8842,7 @@ export const EXAMS: Exam[] = [
       'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
       'skriva högst ett kursprov per dag.',
     tags: ['matematik', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-komvux-matematik-3b',
@@ -8737,6 +8862,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    writtenExamDates: ['2026-10-29'],
     components: [
       {
         name: 'Skriftligt prov',
@@ -8755,7 +8881,7 @@ export const EXAMS: Exam[] = [
       'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
       'skriva högst ett kursprov per dag.',
     tags: ['matematik', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-komvux-matematik-3c',
@@ -8775,6 +8901,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    writtenExamDates: ['2026-10-29'],
     components: [
       {
         name: 'Skriftligt prov',
@@ -8793,7 +8920,7 @@ export const EXAMS: Exam[] = [
       'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
       'skriva högst ett kursprov per dag.',
     tags: ['matematik', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-komvux-matematik-4',
@@ -8813,6 +8940,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    writtenExamDates: ['2026-10-29'],
     components: [
       {
         name: 'Skriftligt prov',
@@ -8831,7 +8959,7 @@ export const EXAMS: Exam[] = [
       'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
       'skriva högst ett kursprov per dag.',
     tags: ['matematik', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-komvux-matematik-5',
@@ -8851,6 +8979,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    writtenExamDates: ['2026-10-29'],
     components: [
       {
         name: 'Skriftligt prov',
@@ -8869,7 +8998,7 @@ export const EXAMS: Exam[] = [
       'oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får ' +
       'skriva högst ett kursprov per dag.',
     tags: ['matematik', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'malmo-komvux-svenska-som-andrasprak-2',
@@ -8889,6 +9018,7 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i ' +
       'samband med anmälan och kan inte flyttas till en annan period.',
     nextPeriod: malmoPeriod4('fredag 30 oktober'),
+    writtenExamDates: ['2026-10-30'],
     components: [
       {
         name: 'Skriftligt prov',
@@ -8906,7 +9036,3442 @@ export const EXAMS: Exam[] = [
       'ligger fredag 30 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
       'krockar — du får skriva högst ett kursprov per dag.',
     tags: ['sva', 'malmö', 'skåne', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-entreprenorskap',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Entreprenörskap',
+    course: 'Entreprenörskap',
+    courseCode: 'ENTENR0',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_EKONOMI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Entreprenörskap (ENTENR0) hos Komvux Malmö, period 4 2026. Skrivpasset ligger ' +
+      'måndag 26 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — ' +
+      'du får skriva högst ett kursprov per dag.',
+    tags: ['entreprenörskap', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-foretagsekonomi-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Företagsekonomi',
+    course: 'Företagsekonomi 1',
+    courseCode: 'FÖRFÖR01',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_EKONOMI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Företagsekonomi 1 (FÖRFÖR01) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger måndag 26 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag.',
+    tags: ['företagsekonomi', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-historia-1a1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Historia',
+    course: 'Historia 1a1',
+    courseCode: 'HISHIS01a1',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_HISTORIA,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Historia 1a1 (HISHIS01a1) hos Komvux Malmö, period 4 2026. Skrivpasset ligger ' +
+      'måndag 26 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — ' +
+      'du får skriva högst ett kursprov per dag. Samma kurs prövas också som Gy25-ämnesnivån ' +
+      'Historia Nivå 1a1 — har du läst kursen före juli 2025 är det den här Gy11-varianten du ' +
+      'ska söka.',
+    tags: ['historia', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-historia-1a2',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Historia',
+    course: 'Historia 1a2',
+    courseCode: 'HISHIS01a2',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_HISTORIA,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Historia 1a2 (HISHIS01a2) hos Komvux Malmö, period 4 2026. Skrivpasset ligger ' +
+      'måndag 26 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — ' +
+      'du får skriva högst ett kursprov per dag. Samma kurs prövas också som Gy25-ämnesnivån ' +
+      'Historia Nivå 1a2 — har du läst kursen före juli 2025 är det den här Gy11-varianten du ' +
+      'ska söka.',
+    tags: ['historia', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-historia-1b',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Historia',
+    course: 'Historia 1b',
+    courseCode: 'HISHIS01b',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_HISTORIA,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Historia 1b (HISHIS01b) hos Komvux Malmö, period 4 2026. Skrivpasset ligger ' +
+      'måndag 26 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — ' +
+      'du får skriva högst ett kursprov per dag. Samma kurs prövas också som Gy25-ämnesnivån ' +
+      'Historia Nivå 1b — har du läst kursen före juli 2025 är det den här Gy11-varianten du ' +
+      'ska söka.',
+    tags: ['historia', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-internationella-relationer',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Samhällskunskap',
+    course: 'Internationella relationer',
+    courseCode: 'SAMINR0',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Internationella relationer (SAMINR0) hos Komvux Malmö, period 4 2026. ' +
+      'Skrivpasset ligger måndag 26 oktober på Kungsgatan 44. Kolla skrivschemat så att dina ' +
+      'kurser inte krockar — du får skriva högst ett kursprov per dag.',
+    tags: ['samhällskunskap', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-naturkunskap-1a1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap 1a1',
+    courseCode: 'NAKNAK01a1',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Naturkunskap 1a1 (NAKNAK01a1) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger måndag 26 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Samma kurs prövas också som ' +
+      'Gy25-ämnesnivån Naturkunskap Nivå 1a1 — har du läst kursen före juli 2025 är det den här ' +
+      'Gy11-varianten du ska söka.',
+    tags: ['naturkunskap', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-naturkunskap-1a2',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap 1a2',
+    courseCode: 'NAKNAK01a2',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Naturkunskap 1a2 (NAKNAK01a2) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger måndag 26 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Samma kurs prövas också som ' +
+      'Gy25-ämnesnivån Naturkunskap Nivå 1a2 — har du läst kursen före juli 2025 är det den här ' +
+      'Gy11-varianten du ska söka.',
+    tags: ['naturkunskap', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-samhallskunskap-1a1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap 1a1',
+    courseCode: 'SAMSAM01a1',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('tisdag 27 oktober'),
+    writtenExamDates: ['2026-10-27'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Tisdag 27 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Samhällskunskap 1a1 (SAMSAM01a1) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger tisdag 27 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Samma kurs prövas också som ' +
+      'Gy25-ämnesnivån Samhällskunskap Nivå 1a1 — har du läst kursen före juli 2025 är det den ' +
+      'här Gy11-varianten du ska söka.',
+    tags: ['samhällskunskap', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-samhallskunskap-1a2',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap 1a2',
+    courseCode: 'SAMSAM01a2',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('tisdag 27 oktober'),
+    writtenExamDates: ['2026-10-27'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Tisdag 27 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Samhällskunskap 1a2 (SAMSAM01a2) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger tisdag 27 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Samma kurs prövas också som ' +
+      'Gy25-ämnesnivån Samhällskunskap Nivå 1a2 — har du läst kursen före juli 2025 är det den ' +
+      'här Gy11-varianten du ska söka.',
+    tags: ['samhällskunskap', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-artificiell-intelligens-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Artificiell intelligens',
+    course: 'Artificiell intelligens 1',
+    courseCode: 'ARTART01',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_AI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Artificiell intelligens 1 (ARTART01) hos Komvux Malmö, period 4 2026. ' +
+      'Skrivpasset ligger onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att dina ' +
+      'kurser inte krockar — du får skriva högst ett kursprov per dag.',
+    tags: ['artificiell intelligens', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-entreprenorskap-och-foretagande',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Företagsekonomi',
+    course: 'Entreprenörskap och företagande',
+    courseCode: 'FÖRENT0',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_EKONOMI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Entreprenörskap och företagande (FÖRENT0) hos Komvux Malmö, period 4 2026. ' +
+      'Skrivpasset ligger onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att dina ' +
+      'kurser inte krockar — du får skriva högst ett kursprov per dag.',
+    tags: ['företagsekonomi', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-filosofi-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Filosofi',
+    course: 'Filosofi 1',
+    courseCode: 'FIOFIO01',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_FILOSOFI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Filosofi 1 (FIOFIO01) hos Komvux Malmö, period 4 2026. Skrivpasset ligger ' +
+      'onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — ' +
+      'du får skriva högst ett kursprov per dag.',
+    tags: ['filosofi', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-foretagsekonomi-2',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Företagsekonomi',
+    course: 'Företagsekonomi 2',
+    courseCode: 'FÖRFÖR02',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_EKONOMI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Företagsekonomi 2 (FÖRFÖR02) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag.',
+    tags: ['företagsekonomi', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-geografi-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Geografi',
+    course: 'Geografi 1',
+    courseCode: 'GEOGEO01',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_GEOGRAFI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Geografi 1 (GEOGEO01) hos Komvux Malmö, period 4 2026. Skrivpasset ligger ' +
+      'onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — ' +
+      'du får skriva högst ett kursprov per dag.',
+    tags: ['geografi', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-ledarskap-och-organisation',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Ledarskap och organisation',
+    course: 'Ledarskap och organisation',
+    courseCode: 'LEDLED0',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_EKONOMI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Ledarskap och organisation (LEDLED0) hos Komvux Malmö, period 4 2026. ' +
+      'Skrivpasset ligger onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att dina ' +
+      'kurser inte krockar — du får skriva högst ett kursprov per dag.',
+    tags: ['ledarskap och organisation', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-psykologi-2a',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Psykologi',
+    course: 'Psykologi 2a',
+    courseCode: 'PSKPSY02a',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_PSYKOLOGI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Psykologi 2a (PSKPSY02a) hos Komvux Malmö, period 4 2026. Skrivpasset ligger ' +
+      'onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — ' +
+      'du får skriva högst ett kursprov per dag.',
+    tags: ['psykologi', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-redovisning-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Företagsekonomi',
+    course: 'Redovisning 1',
+    courseCode: 'FÖRRED01',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_EKONOMI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Redovisning 1 (FÖRRED01) hos Komvux Malmö, period 4 2026. Skrivpasset ligger ' +
+      'onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — ' +
+      'du får skriva högst ett kursprov per dag.',
+    tags: ['företagsekonomi', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-religionskunskap-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Religionskunskap',
+    course: 'Religionskunskap 1',
+    courseCode: 'RELREL01',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_RELIGION,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Religionskunskap 1 (RELREL01) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Samma kurs prövas också som ' +
+      'Gy25-ämnesnivån Religionskunskap Nivå 1 — har du läst kursen före juli 2025 är det den ' +
+      'här Gy11-varianten du ska söka.',
+    tags: ['religionskunskap', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-samhallskunskap-2',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap 2',
+    courseCode: 'SAMSAM02',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Samhällskunskap 2 (SAMSAM02) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag.',
+    tags: ['samhällskunskap', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-matematik-1a',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Matematik',
+    course: 'Matematik 1a',
+    courseCode: 'MATMAT01a',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    writtenExamDates: ['2026-10-29'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Torsdag 29 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Matematik 1a (MATMAT01a) hos Komvux Malmö, period 4 2026. Skrivpasset ligger ' +
+      'torsdag 29 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar ' +
+      '— du får skriva högst ett kursprov per dag. Samma kurs prövas också som Gy25-ämnesnivån ' +
+      'Matematik Nivå 1a — har du läst kursen före juli 2025 är det den här Gy11-varianten du ' +
+      'ska söka.',
+    tags: ['matematik', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-matematik-2a',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Matematik',
+    course: 'Matematik 2a',
+    courseCode: 'MATMAT02a',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    writtenExamDates: ['2026-10-29'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Torsdag 29 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Matematik 2a (MATMAT02a) hos Komvux Malmö, period 4 2026. Skrivpasset ligger ' +
+      'torsdag 29 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar ' +
+      '— du får skriva högst ett kursprov per dag. Samma kurs prövas också som Gy25-ämnesnivån ' +
+      'Matematik Nivå 2a — har du läst kursen före juli 2025 är det den här Gy11-varianten du ' +
+      'ska söka.',
+    tags: ['matematik', 'malmö', 'skåne', 'gy11'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-engelska-niva-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Engelska',
+    course: 'Engelska Nivå 1',
+    courseCode: 'ENGE1000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober (delprov 1) och fredag 30 oktober (delprov 2)'),
+    writtenExamDates: ['2026-10-26', '2026-10-30'],
+    components: [
+      {
+        name: 'Delprov 1',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Incheckning klockan 12.45–13.25, provstart klockan 13.30.',
+      },
+      {
+        name: 'Delprov 2',
+        duration: '4 timmar',
+        description:
+          'Fredag 30 oktober 2026. Incheckning klockan 12.15–13.00, provstart klockan 13.00. ' +
+          'Delprov 2 kan bara skrivas av den som gjort delprov 1.',
+      },
+    ],
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Engelska Nivå 1 (ENGE1000X) hos Komvux Malmö, period 4 2026. Skrivpassen ' +
+      'ligger måndag 26 oktober (delprov 1) och fredag 30 oktober (delprov 2) på Kungsgatan 44. ' +
+      'Kolla skrivschemat så att dina kurser inte krockar — du får skriva högst ett kursprov ' +
+      'per dag. Samma innehåll prövas också som Gy11-kursen Engelska 5, som är den variant du ' +
+      'söker om du läste kursen före juli 2025.',
+    tags: ['engelska', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-engelska-niva-2',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Engelska',
+    course: 'Engelska Nivå 2',
+    courseCode: 'ENGE2000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober (delprov 1) och fredag 30 oktober (delprov 2)'),
+    writtenExamDates: ['2026-10-26', '2026-10-30'],
+    components: [
+      {
+        name: 'Delprov 1',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Incheckning klockan 12.45–13.25, provstart klockan 13.30.',
+      },
+      {
+        name: 'Delprov 2',
+        duration: '4 timmar',
+        description:
+          'Fredag 30 oktober 2026. Incheckning klockan 12.15–13.00, provstart klockan 13.00. ' +
+          'Delprov 2 kan bara skrivas av den som gjort delprov 1.',
+      },
+    ],
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Engelska Nivå 2 (ENGE2000X) hos Komvux Malmö, period 4 2026. Skrivpassen ' +
+      'ligger måndag 26 oktober (delprov 1) och fredag 30 oktober (delprov 2) på Kungsgatan 44. ' +
+      'Kolla skrivschemat så att dina kurser inte krockar — du får skriva högst ett kursprov ' +
+      'per dag. Samma innehåll prövas också som Gy11-kursen Engelska 6, som är den variant du ' +
+      'söker om du läste kursen före juli 2025.',
+    tags: ['engelska', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-engelska-niva-3',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Engelska',
+    course: 'Engelska Nivå 3',
+    courseCode: 'ENGE3000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober (delprov 1) och fredag 30 oktober (delprov 2)'),
+    writtenExamDates: ['2026-10-26', '2026-10-30'],
+    components: [
+      {
+        name: 'Delprov 1',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Incheckning klockan 12.45–13.25, provstart klockan 13.30.',
+      },
+      {
+        name: 'Delprov 2',
+        duration: '4 timmar',
+        description:
+          'Fredag 30 oktober 2026. Incheckning klockan 12.15–13.00, provstart klockan 13.00. ' +
+          'Delprov 2 kan bara skrivas av den som gjort delprov 1.',
+      },
+    ],
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Engelska Nivå 3 (ENGE3000X) hos Komvux Malmö, period 4 2026. Skrivpassen ' +
+      'ligger måndag 26 oktober (delprov 1) och fredag 30 oktober (delprov 2) på Kungsgatan 44. ' +
+      'Kolla skrivschemat så att dina kurser inte krockar — du får skriva högst ett kursprov ' +
+      'per dag. Samma innehåll prövas också som Gy11-kursen Engelska 7, som är den variant du ' +
+      'söker om du läste kursen före juli 2025.',
+    tags: ['engelska', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-biologi-niva-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Biologi',
+    course: 'Biologi Nivå 1',
+    courseCode: 'BIOG1000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_BIOLOGI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Biologi Nivå 1 (BIOG1000X) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger måndag 26 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Samma innehåll prövas också som ' +
+      'Gy11-kursen Biologi 1, som är den variant du söker om du läste kursen före juli 2025.',
+    tags: ['biologi', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-entreprenorskap-niva-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Entreprenörskap',
+    course: 'Entreprenörskap Nivå 1',
+    courseCode: 'ENTR1000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_EKONOMI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Entreprenörskap Nivå 1 (ENTR1000X) hos Komvux Malmö, period 4 2026. ' +
+      'Skrivpasset ligger måndag 26 oktober på Kungsgatan 44. Kolla skrivschemat så att dina ' +
+      'kurser inte krockar — du får skriva högst ett kursprov per dag. Kursen är ämnesnivån i ' +
+      'Gy25, som gäller för den som läser ämnet från juli 2025.',
+    tags: ['entreprenörskap', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-fysik-niva-1b',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Fysik',
+    course: 'Fysik Nivå 1b',
+    courseCode: 'FYSK1B00X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_FYSIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Fysik Nivå 1b (FYSK1B00X) hos Komvux Malmö, period 4 2026. Skrivpasset ligger ' +
+      'måndag 26 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — ' +
+      'du får skriva högst ett kursprov per dag. Kursen är ämnesnivån i Gy25, som gäller för ' +
+      'den som läser ämnet från juli 2025.',
+    tags: ['fysik', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-foretagsekonomi-niva-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Företagsekonomi',
+    course: 'Företagsekonomi Nivå 1',
+    courseCode: 'FOET1000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_EKONOMI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Företagsekonomi Nivå 1 (FOET1000X) hos Komvux Malmö, period 4 2026. ' +
+      'Skrivpasset ligger måndag 26 oktober på Kungsgatan 44. Kolla skrivschemat så att dina ' +
+      'kurser inte krockar — du får skriva högst ett kursprov per dag. Kursen är ämnesnivån i ' +
+      'Gy25, som gäller för den som läser ämnet från juli 2025.',
+    tags: ['företagsekonomi', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-historia-niva-1a1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Historia',
+    course: 'Historia Nivå 1a1',
+    courseCode: 'HIST1A10X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_HISTORIA,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Historia Nivå 1a1 (HIST1A10X) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger måndag 26 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Samma innehåll prövas också som ' +
+      'Gy11-kursen Historia 1a1, som är den variant du söker om du läste kursen före juli 2025.',
+    tags: ['historia', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-historia-niva-1a2',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Historia',
+    course: 'Historia Nivå 1a2',
+    courseCode: 'HIST1A20X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_HISTORIA,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Historia Nivå 1a2 (HIST1A20X) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger måndag 26 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Samma innehåll prövas också som ' +
+      'Gy11-kursen Historia 1a2, som är den variant du söker om du läste kursen före juli 2025.',
+    tags: ['historia', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-historia-niva-1b',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Historia',
+    course: 'Historia Nivå 1b',
+    courseCode: 'HIST1B00X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_HISTORIA,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Historia Nivå 1b (HIST1B00X) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger måndag 26 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Samma innehåll prövas också som ' +
+      'Gy11-kursen Historia 1b, som är den variant du söker om du läste kursen före juli 2025.',
+    tags: ['historia', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-internationella-relationer-niva-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Internationella relationer',
+    course: 'Internationella relationer Nivå 1',
+    courseCode: 'INTR1000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Internationella relationer Nivå 1 (INTR1000X) hos Komvux Malmö, period 4 ' +
+      '2026. Skrivpasset ligger måndag 26 oktober på Kungsgatan 44. Kolla skrivschemat så att ' +
+      'dina kurser inte krockar — du får skriva högst ett kursprov per dag. Kursen är ' +
+      'ämnesnivån i Gy25, som gäller för den som läser ämnet från juli 2025.',
+    tags: ['internationella relationer', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-kemi-niva-2',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Kemi',
+    course: 'Kemi Nivå 2',
+    courseCode: 'KEMI2000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_KEMI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Kemi Nivå 2 (KEMI2000X) hos Komvux Malmö, period 4 2026. Skrivpasset ligger ' +
+      'måndag 26 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — ' +
+      'du får skriva högst ett kursprov per dag. Samma innehåll prövas också som Gy11-kursen ' +
+      'Kemi 2, som är den variant du söker om du läste kursen före juli 2025.',
+    tags: ['kemi', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-naturkunskap-niva-1a1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 1a1',
+    courseCode: 'NATU1A10X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Naturkunskap Nivå 1a1 (NATU1A10X) hos Komvux Malmö, period 4 2026. ' +
+      'Skrivpasset ligger måndag 26 oktober på Kungsgatan 44. Kolla skrivschemat så att dina ' +
+      'kurser inte krockar — du får skriva högst ett kursprov per dag. Samma innehåll prövas ' +
+      'också som Gy11-kursen Naturkunskap 1a1, som är den variant du söker om du läste kursen ' +
+      'före juli 2025.',
+    tags: ['naturkunskap', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-naturkunskap-niva-1a2',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 1a2',
+    courseCode: 'NATU1A20X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Naturkunskap Nivå 1a2 (NATU1A20X) hos Komvux Malmö, period 4 2026. ' +
+      'Skrivpasset ligger måndag 26 oktober på Kungsgatan 44. Kolla skrivschemat så att dina ' +
+      'kurser inte krockar — du får skriva högst ett kursprov per dag. Samma innehåll prövas ' +
+      'också som Gy11-kursen Naturkunskap 1a2, som är den variant du söker om du läste kursen ' +
+      'före juli 2025.',
+    tags: ['naturkunskap', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-naturkunskap-niva-1b',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 1b',
+    courseCode: 'NATU1B00X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Naturkunskap Nivå 1b (NATU1B00X) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger måndag 26 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Samma innehåll prövas också som ' +
+      'Gy11-kursen Naturkunskap 1b, som är den variant du söker om du läste kursen före juli ' +
+      '2025.',
+    tags: ['naturkunskap', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-pedagogik-niva-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Pedagogik',
+    course: 'Pedagogik Nivå 1',
+    courseCode: 'PEDG1000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_BETEENDE,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Pedagogik Nivå 1 (PEDG1000X) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger måndag 26 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Kursen är ämnesnivån i Gy25, som ' +
+      'gäller för den som läser ämnet från juli 2025.',
+    tags: ['pedagogik', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-ungdomskunskap-niva-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Ungdomskunskap',
+    course: 'Ungdomskunskap Nivå 1',
+    courseCode: 'UNGD1000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('måndag 26 oktober'),
+    writtenExamDates: ['2026-10-26'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Måndag 26 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_BETEENDE,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Ungdomskunskap Nivå 1 (UNGD1000X) hos Komvux Malmö, period 4 2026. ' +
+      'Skrivpasset ligger måndag 26 oktober på Kungsgatan 44. Kolla skrivschemat så att dina ' +
+      'kurser inte krockar — du får skriva högst ett kursprov per dag. Kursen är ämnesnivån i ' +
+      'Gy25, som gäller för den som läser ämnet från juli 2025.',
+    tags: ['ungdomskunskap', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-fysik-niva-2',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Fysik',
+    course: 'Fysik Nivå 2',
+    courseCode: 'FYSK2000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('tisdag 27 oktober'),
+    writtenExamDates: ['2026-10-27'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Tisdag 27 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_FYSIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Fysik Nivå 2 (FYSK2000X) hos Komvux Malmö, period 4 2026. Skrivpasset ligger ' +
+      'tisdag 27 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — ' +
+      'du får skriva högst ett kursprov per dag. Samma innehåll prövas också som Gy11-kursen ' +
+      'Fysik 2, som är den variant du söker om du läste kursen före juli 2025.',
+    tags: ['fysik', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-programmering-niva-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Programmering',
+    course: 'Programmering Nivå 1',
+    courseCode: 'PROG1000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('tisdag 27 oktober'),
+    writtenExamDates: ['2026-10-27'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Tisdag 27 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_PROGRAMMERING,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Programmering Nivå 1 (PROG1000X) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger tisdag 27 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Kursen är ämnesnivån i Gy25, som ' +
+      'gäller för den som läser ämnet från juli 2025.',
+    tags: ['programmering', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-psykologi-niva-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Psykologi',
+    course: 'Psykologi Nivå 1',
+    courseCode: 'PSYL1000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('tisdag 27 oktober'),
+    writtenExamDates: ['2026-10-27'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Tisdag 27 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_PSYKOLOGI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Psykologi Nivå 1 (PSYL1000X) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger tisdag 27 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Samma innehåll prövas också som ' +
+      'Gy11-kursen Psykologi 1, som är den variant du söker om du läste kursen före juli 2025.',
+    tags: ['psykologi', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-samhallskunskap-niva-1a1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 1a1',
+    courseCode: 'SAMH1A10X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('tisdag 27 oktober'),
+    writtenExamDates: ['2026-10-27'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Tisdag 27 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Samhällskunskap Nivå 1a1 (SAMH1A10X) hos Komvux Malmö, period 4 2026. ' +
+      'Skrivpasset ligger tisdag 27 oktober på Kungsgatan 44. Kolla skrivschemat så att dina ' +
+      'kurser inte krockar — du får skriva högst ett kursprov per dag. Samma innehåll prövas ' +
+      'också som Gy11-kursen Samhällskunskap 1a1, som är den variant du söker om du läste ' +
+      'kursen före juli 2025.',
+    tags: ['samhällskunskap', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-samhallskunskap-niva-1a2',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 1a2',
+    courseCode: 'SAMH1A20X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('tisdag 27 oktober'),
+    writtenExamDates: ['2026-10-27'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Tisdag 27 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Samhällskunskap Nivå 1a2 (SAMH1A20X) hos Komvux Malmö, period 4 2026. ' +
+      'Skrivpasset ligger tisdag 27 oktober på Kungsgatan 44. Kolla skrivschemat så att dina ' +
+      'kurser inte krockar — du får skriva högst ett kursprov per dag. Samma innehåll prövas ' +
+      'också som Gy11-kursen Samhällskunskap 1a2, som är den variant du söker om du läste ' +
+      'kursen före juli 2025.',
+    tags: ['samhällskunskap', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-samhallskunskap-niva-1b',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 1b',
+    courseCode: 'SAMH1B00X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('tisdag 27 oktober'),
+    writtenExamDates: ['2026-10-27'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Tisdag 27 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Samhällskunskap Nivå 1b (SAMH1B00X) hos Komvux Malmö, period 4 2026. ' +
+      'Skrivpasset ligger tisdag 27 oktober på Kungsgatan 44. Kolla skrivschemat så att dina ' +
+      'kurser inte krockar — du får skriva högst ett kursprov per dag. Samma innehåll prövas ' +
+      'också som Gy11-kursen Samhällskunskap 1b, som är den variant du söker om du läste kursen ' +
+      'före juli 2025.',
+    tags: ['samhällskunskap', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-svenska-niva-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Svenska',
+    course: 'Svenska Nivå 1',
+    courseCode: 'SVEN1000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('tisdag 27 oktober (delprov 1) och fredag 30 oktober (delprov 2)'),
+    writtenExamDates: ['2026-10-27', '2026-10-30'],
+    components: [
+      {
+        name: 'Delprov 1',
+        duration: '4 timmar',
+        description:
+          'Tisdag 27 oktober 2026. Incheckning klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+      {
+        name: 'Delprov 2',
+        duration: '4 timmar',
+        description:
+          'Fredag 30 oktober 2026. Incheckning klockan 12.15–13.00, provstart klockan 13.00. ' +
+          'Delprov 2 kan bara skrivas av den som gjort delprov 1.',
+      },
+    ],
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Svenska Nivå 1 (SVEN1000X) hos Komvux Malmö, period 4 2026. Skrivpassen ' +
+      'ligger tisdag 27 oktober (delprov 1) och fredag 30 oktober (delprov 2) på Kungsgatan 44. ' +
+      'Kolla skrivschemat så att dina kurser inte krockar — du får skriva högst ett kursprov ' +
+      'per dag. Samma innehåll prövas också som Gy11-kursen Svenska 1, som är den variant du ' +
+      'söker om du läste kursen före juli 2025.',
+    tags: ['svenska', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-svenska-niva-2',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Svenska',
+    course: 'Svenska Nivå 2',
+    courseCode: 'SVEN2000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('tisdag 27 oktober (delprov 1) och fredag 30 oktober (delprov 2)'),
+    writtenExamDates: ['2026-10-27', '2026-10-30'],
+    components: [
+      {
+        name: 'Delprov 1',
+        duration: '4 timmar',
+        description:
+          'Tisdag 27 oktober 2026. Incheckning klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+      {
+        name: 'Delprov 2',
+        duration: '4 timmar',
+        description:
+          'Fredag 30 oktober 2026. Incheckning klockan 12.15–13.00, provstart klockan 13.00. ' +
+          'Delprov 2 kan bara skrivas av den som gjort delprov 1.',
+      },
+    ],
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Svenska Nivå 2 (SVEN2000X) hos Komvux Malmö, period 4 2026. Skrivpassen ' +
+      'ligger tisdag 27 oktober (delprov 1) och fredag 30 oktober (delprov 2) på Kungsgatan 44. ' +
+      'Kolla skrivschemat så att dina kurser inte krockar — du får skriva högst ett kursprov ' +
+      'per dag. Samma innehåll prövas också som Gy11-kursen Svenska 2, som är den variant du ' +
+      'söker om du läste kursen före juli 2025.',
+    tags: ['svenska', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-svenska-niva-3',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Svenska',
+    course: 'Svenska Nivå 3',
+    courseCode: 'SVEN3000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('tisdag 27 oktober (delprov 1) och fredag 30 oktober (delprov 2)'),
+    writtenExamDates: ['2026-10-27', '2026-10-30'],
+    components: [
+      {
+        name: 'Delprov 1',
+        duration: '5 timmar',
+        description:
+          'Tisdag 27 oktober 2026. Incheckning klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+      {
+        name: 'Delprov 2',
+        duration: '5 timmar',
+        description:
+          'Fredag 30 oktober 2026. Incheckning klockan 12.15–13.00, provstart klockan 13.00. ' +
+          'Delprov 2 kan bara skrivas av den som gjort delprov 1.',
+      },
+    ],
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Svenska Nivå 3 (SVEN3000X) hos Komvux Malmö, period 4 2026. Skrivpassen ' +
+      'ligger tisdag 27 oktober (delprov 1) och fredag 30 oktober (delprov 2) på Kungsgatan 44. ' +
+      'Kolla skrivschemat så att dina kurser inte krockar — du får skriva högst ett kursprov ' +
+      'per dag. Samma innehåll prövas också som Gy11-kursen Svenska 3, som är den variant du ' +
+      'söker om du läste kursen före juli 2025.',
+    tags: ['svenska', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-svenska-som-andrasprak-niva-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk Nivå 1',
+    courseCode: 'SVEA1000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('tisdag 27 oktober (delprov 1) och fredag 30 oktober (delprov 2)'),
+    writtenExamDates: ['2026-10-27', '2026-10-30'],
+    components: [
+      {
+        name: 'Delprov 1',
+        duration: '4 timmar',
+        description:
+          'Tisdag 27 oktober 2026. Incheckning klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+      {
+        name: 'Delprov 2',
+        duration: '4 timmar',
+        description:
+          'Fredag 30 oktober 2026. Incheckning klockan 12.15–13.00, provstart klockan 13.00. ' +
+          'Delprov 2 kan bara skrivas av den som gjort delprov 1.',
+      },
+    ],
+    studyTips: TIPS_SVA,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Svenska som andraspråk Nivå 1 (SVEA1000X) hos Komvux Malmö, period 4 2026. ' +
+      'Skrivpassen ligger tisdag 27 oktober (delprov 1) och fredag 30 oktober (delprov 2) på ' +
+      'Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får skriva högst ' +
+      'ett kursprov per dag. Samma innehåll prövas också som Gy11-kursen Svenska som andraspråk ' +
+      '1, som är den variant du söker om du läste kursen före juli 2025.',
+    tags: ['svenska som andraspråk', 'sva', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-svenska-som-andrasprak-niva-2',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk Nivå 2',
+    courseCode: 'SVEA2000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('tisdag 27 oktober (delprov 1) och fredag 30 oktober (delprov 2)'),
+    writtenExamDates: ['2026-10-27', '2026-10-30'],
+    components: [
+      {
+        name: 'Delprov 1',
+        duration: '4 timmar',
+        description:
+          'Tisdag 27 oktober 2026. Incheckning klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+      {
+        name: 'Delprov 2',
+        duration: '4 timmar',
+        description:
+          'Fredag 30 oktober 2026. Incheckning klockan 12.15–13.00, provstart klockan 13.00. ' +
+          'Delprov 2 kan bara skrivas av den som gjort delprov 1.',
+      },
+    ],
+    studyTips: TIPS_SVA,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Svenska som andraspråk Nivå 2 (SVEA2000X) hos Komvux Malmö, period 4 2026. ' +
+      'Skrivpassen ligger tisdag 27 oktober (delprov 1) och fredag 30 oktober (delprov 2) på ' +
+      'Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får skriva högst ' +
+      'ett kursprov per dag. Samma innehåll prövas också som Gy11-kursen Svenska som andraspråk ' +
+      '2, som är den variant du söker om du läste kursen före juli 2025.',
+    tags: ['svenska som andraspråk', 'sva', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-svenska-som-andrasprak-niva-3',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk Nivå 3',
+    courseCode: 'SVEA3000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('tisdag 27 oktober (delprov 1) och fredag 30 oktober (delprov 2)'),
+    writtenExamDates: ['2026-10-27', '2026-10-30'],
+    components: [
+      {
+        name: 'Delprov 1',
+        duration: '5 timmar',
+        description:
+          'Tisdag 27 oktober 2026. Incheckning klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+      {
+        name: 'Delprov 2',
+        duration: '5 timmar',
+        description:
+          'Fredag 30 oktober 2026. Incheckning klockan 12.15–13.00, provstart klockan 13.00. ' +
+          'Delprov 2 kan bara skrivas av den som gjort delprov 1.',
+      },
+    ],
+    studyTips: TIPS_SVA,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Svenska som andraspråk Nivå 3 (SVEA3000X) hos Komvux Malmö, period 4 2026. ' +
+      'Skrivpassen ligger tisdag 27 oktober (delprov 1) och fredag 30 oktober (delprov 2) på ' +
+      'Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — du får skriva högst ' +
+      'ett kursprov per dag. Samma innehåll prövas också som Gy11-kursen Svenska som andraspråk ' +
+      '3, som är den variant du söker om du läste kursen före juli 2025.',
+    tags: ['svenska som andraspråk', 'sva', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-artificiell-intelligens-niva-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Artificiell intelligens',
+    course: 'Artificiell intelligens Nivå 1',
+    courseCode: 'ARTI1000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_AI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Artificiell intelligens Nivå 1 (ARTI1000X) hos Komvux Malmö, period 4 2026. ' +
+      'Skrivpasset ligger onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att dina ' +
+      'kurser inte krockar — du får skriva högst ett kursprov per dag. Kursen är ämnesnivån i ' +
+      'Gy25, som gäller för den som läser ämnet från juli 2025.',
+    tags: ['artificiell intelligens', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-biologi-niva-2',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Biologi',
+    course: 'Biologi Nivå 2',
+    courseCode: 'BIOG2000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_BIOLOGI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Biologi Nivå 2 (BIOG2000X) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Samma innehåll prövas också som ' +
+      'Gy11-kursen Biologi 2, som är den variant du söker om du läste kursen före juli 2025.',
+    tags: ['biologi', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-entreprenorskap-och-foretagande-niva-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Entreprenörskap och företagande',
+    course: 'Entreprenörskap och företagande Nivå 1',
+    courseCode: 'ENTP1000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_EKONOMI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Entreprenörskap och företagande Nivå 1 (ENTP1000X) hos Komvux Malmö, period 4 ' +
+      '2026. Skrivpasset ligger onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att ' +
+      'dina kurser inte krockar — du får skriva högst ett kursprov per dag. Kursen är ' +
+      'ämnesnivån i Gy25, som gäller för den som läser ämnet från juli 2025.',
+    tags: ['entreprenörskap och företagande', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-filosofi-niva-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Filosofi',
+    course: 'Filosofi Nivå 1',
+    courseCode: 'FILS1000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_FILOSOFI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Filosofi Nivå 1 (FILS1000X) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Kursen är ämnesnivån i Gy25, som ' +
+      'gäller för den som läser ämnet från juli 2025.',
+    tags: ['filosofi', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-foretagsekonomi-niva-2',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Företagsekonomi',
+    course: 'Företagsekonomi Nivå 2',
+    courseCode: 'FOET2000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_EKONOMI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Företagsekonomi Nivå 2 (FOET2000X) hos Komvux Malmö, period 4 2026. ' +
+      'Skrivpasset ligger onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att dina ' +
+      'kurser inte krockar — du får skriva högst ett kursprov per dag. Kursen är ämnesnivån i ' +
+      'Gy25, som gäller för den som läser ämnet från juli 2025.',
+    tags: ['företagsekonomi', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-geografi-niva-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Geografi',
+    course: 'Geografi Nivå 1',
+    courseCode: 'GEOG1000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_GEOGRAFI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Geografi Nivå 1 (GEOG1000X) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Kursen är ämnesnivån i Gy25, som ' +
+      'gäller för den som läser ämnet från juli 2025.',
+    tags: ['geografi', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-juridik-niva-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Juridik',
+    course: 'Juridik Nivå 1',
+    courseCode: 'JURI1000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_JURIDIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Juridik Nivå 1 (JURI1000X) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Kursen är ämnesnivån i Gy25, som ' +
+      'gäller för den som läser ämnet från juli 2025.',
+    tags: ['juridik', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-kemi-niva-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Kemi',
+    course: 'Kemi Nivå 1',
+    courseCode: 'KEMI1000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_KEMI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Kemi Nivå 1 (KEMI1000X) hos Komvux Malmö, period 4 2026. Skrivpasset ligger ' +
+      'onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte krockar — ' +
+      'du får skriva högst ett kursprov per dag. Samma innehåll prövas också som Gy11-kursen ' +
+      'Kemi 1, som är den variant du söker om du läste kursen före juli 2025.',
+    tags: ['kemi', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-ledarskap-och-organisation-niva-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Ledarskap och organisation',
+    course: 'Ledarskap och organisation Nivå 1',
+    courseCode: 'LEDA1000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_EKONOMI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Ledarskap och organisation Nivå 1 (LEDA1000X) hos Komvux Malmö, period 4 ' +
+      '2026. Skrivpasset ligger onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att ' +
+      'dina kurser inte krockar — du får skriva högst ett kursprov per dag. Kursen är ' +
+      'ämnesnivån i Gy25, som gäller för den som läser ämnet från juli 2025.',
+    tags: ['ledarskap och organisation', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-naturkunskap-niva-2',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 2',
+    courseCode: 'NATU2000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Naturkunskap Nivå 2 (NATU2000X) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Samma innehåll prövas också som ' +
+      'Gy11-kursen Naturkunskap 2, som är den variant du söker om du läste kursen före juli ' +
+      '2025.',
+    tags: ['naturkunskap', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-politik-och-hallbar-utveckling-niva-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Politik och hållbar utveckling',
+    course: 'Politik och hållbar utveckling Nivå 1',
+    courseCode: 'POLT1000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Politik och hållbar utveckling Nivå 1 (POLT1000X) hos Komvux Malmö, period 4 ' +
+      '2026. Skrivpasset ligger onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att ' +
+      'dina kurser inte krockar — du får skriva högst ett kursprov per dag. Kursen är ' +
+      'ämnesnivån i Gy25, som gäller för den som läser ämnet från juli 2025.',
+    tags: ['politik och hållbar utveckling', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-psykologi-niva-2',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Psykologi',
+    course: 'Psykologi Nivå 2',
+    courseCode: 'PSYL2000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_PSYKOLOGI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Psykologi Nivå 2 (PSYL2000X) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Kursen är ämnesnivån i Gy25, som ' +
+      'gäller för den som läser ämnet från juli 2025.',
+    tags: ['psykologi', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-redovisning-niva-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Redovisning',
+    course: 'Redovisning Nivå 1',
+    courseCode: 'REDO1000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_EKONOMI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Redovisning Nivå 1 (REDO1000X) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Kursen är ämnesnivån i Gy25, som ' +
+      'gäller för den som läser ämnet från juli 2025.',
+    tags: ['redovisning', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-religionskunskap-niva-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Religionskunskap',
+    course: 'Religionskunskap Nivå 1',
+    courseCode: 'RELI1000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_RELIGION,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Religionskunskap Nivå 1 (RELI1000X) hos Komvux Malmö, period 4 2026. ' +
+      'Skrivpasset ligger onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att dina ' +
+      'kurser inte krockar — du får skriva högst ett kursprov per dag. Samma innehåll prövas ' +
+      'också som Gy11-kursen Religionskunskap 1, som är den variant du söker om du läste kursen ' +
+      'före juli 2025.',
+    tags: ['religionskunskap', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-samhallskunskap-niva-2',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 2',
+    courseCode: 'SAMH2000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Samhällskunskap Nivå 2 (SAMH2000X) hos Komvux Malmö, period 4 2026. ' +
+      'Skrivpasset ligger onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att dina ' +
+      'kurser inte krockar — du får skriva högst ett kursprov per dag. Kursen är ämnesnivån i ' +
+      'Gy25, som gäller för den som läser ämnet från juli 2025.',
+    tags: ['samhällskunskap', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-sociologi-niva-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Sociologi',
+    course: 'Sociologi Nivå 1',
+    courseCode: 'SOCI1000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('onsdag 28 oktober'),
+    writtenExamDates: ['2026-10-28'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Onsdag 28 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_BETEENDE,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Sociologi Nivå 1 (SOCI1000X) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger onsdag 28 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Kursen är ämnesnivån i Gy25, som ' +
+      'gäller för den som läser ämnet från juli 2025.',
+    tags: ['sociologi', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-matematik-niva-1a',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 1a',
+    courseCode: 'MATE1A00X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    writtenExamDates: ['2026-10-29'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Torsdag 29 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Matematik Nivå 1a (MATE1A00X) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger torsdag 29 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Samma innehåll prövas också som ' +
+      'Gy11-kursen Matematik 1a, som är den variant du söker om du läste kursen före juli 2025.',
+    tags: ['matematik', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-matematik-niva-1b',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 1b',
+    courseCode: 'MATE1B00X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    writtenExamDates: ['2026-10-29'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Torsdag 29 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Matematik Nivå 1b (MATE1B00X) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger torsdag 29 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Samma innehåll prövas också som ' +
+      'Gy11-kursen Matematik 1b, som är den variant du söker om du läste kursen före juli 2025.',
+    tags: ['matematik', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-matematik-niva-1c',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 1c',
+    courseCode: 'MATE1C00X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    writtenExamDates: ['2026-10-29'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Torsdag 29 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Matematik Nivå 1c (MATE1C00X) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger torsdag 29 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Samma innehåll prövas också som ' +
+      'Gy11-kursen Matematik 1c, som är den variant du söker om du läste kursen före juli 2025.',
+    tags: ['matematik', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-matematik-niva-2a',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 2a',
+    courseCode: 'MATE2A00X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    writtenExamDates: ['2026-10-29'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Torsdag 29 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Matematik Nivå 2a (MATE2A00X) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger torsdag 29 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Samma innehåll prövas också som ' +
+      'Gy11-kursen Matematik 2a, som är den variant du söker om du läste kursen före juli 2025.',
+    tags: ['matematik', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-matematik-niva-2b',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 2b',
+    courseCode: 'MATE2B00X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    writtenExamDates: ['2026-10-29'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Torsdag 29 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Matematik Nivå 2b (MATE2B00X) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger torsdag 29 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Samma innehåll prövas också som ' +
+      'Gy11-kursen Matematik 2b, som är den variant du söker om du läste kursen före juli 2025.',
+    tags: ['matematik', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-matematik-niva-2c',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 2c',
+    courseCode: 'MATE2C00X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    writtenExamDates: ['2026-10-29'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Torsdag 29 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Matematik Nivå 2c (MATE2C00X) hos Komvux Malmö, period 4 2026. Skrivpasset ' +
+      'ligger torsdag 29 oktober på Kungsgatan 44. Kolla skrivschemat så att dina kurser inte ' +
+      'krockar — du får skriva högst ett kursprov per dag. Samma innehåll prövas också som ' +
+      'Gy11-kursen Matematik 2c, som är den variant du söker om du läste kursen före juli 2025.',
+    tags: ['matematik', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-matematik-fortsattning-niva-1b',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Matematik',
+    course: 'Matematik – fortsättning Nivå 1b',
+    courseCode: 'MATO1B00X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    writtenExamDates: ['2026-10-29'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Torsdag 29 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Matematik – fortsättning Nivå 1b (MATO1B00X) hos Komvux Malmö, period 4 2026. ' +
+      'Skrivpasset ligger torsdag 29 oktober på Kungsgatan 44. Kolla skrivschemat så att dina ' +
+      'kurser inte krockar — du får skriva högst ett kursprov per dag. Samma innehåll prövas ' +
+      'också som Gy11-kursen Matematik 3b, som är den variant du söker om du läste kursen före ' +
+      'juli 2025.',
+    tags: ['matematik', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-matematik-fortsattning-niva-1c',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Matematik',
+    course: 'Matematik – fortsättning Nivå 1c',
+    courseCode: 'MATO1C00X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    writtenExamDates: ['2026-10-29'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4 timmar',
+        description:
+          'Torsdag 29 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Matematik – fortsättning Nivå 1c (MATO1C00X) hos Komvux Malmö, period 4 2026. ' +
+      'Skrivpasset ligger torsdag 29 oktober på Kungsgatan 44. Kolla skrivschemat så att dina ' +
+      'kurser inte krockar — du får skriva högst ett kursprov per dag. Samma innehåll prövas ' +
+      'också som Gy11-kursen Matematik 3c, som är den variant du söker om du läste kursen före ' +
+      'juli 2025.',
+    tags: ['matematik', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-matematik-fortsattning-niva-2',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Matematik',
+    course: 'Matematik – fortsättning Nivå 2',
+    courseCode: 'MATO2000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    writtenExamDates: ['2026-10-29'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4,5 timmar',
+        description:
+          'Torsdag 29 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Matematik – fortsättning Nivå 2 (MATO2000X) hos Komvux Malmö, period 4 2026. ' +
+      'Skrivpasset ligger torsdag 29 oktober på Kungsgatan 44. Kolla skrivschemat så att dina ' +
+      'kurser inte krockar — du får skriva högst ett kursprov per dag. Samma innehåll prövas ' +
+      'också som Gy11-kursen Matematik 4, som är den variant du söker om du läste kursen före ' +
+      'juli 2025.',
+    tags: ['matematik', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-matematik-fordjupning-niva-1',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Matematik',
+    course: 'Matematik – fördjupning Nivå 1',
+    courseCode: 'MATF1000X',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoPeriod4('torsdag 29 oktober'),
+    writtenExamDates: ['2026-10-29'],
+    components: [
+      {
+        name: 'Skriftligt prov',
+        duration: '4,5 timmar',
+        description:
+          'Torsdag 29 oktober 2026. Ett obligatoriskt skrivpass på Kungsgatan 44. Incheckning ' +
+          'klockan 14.15–15.00, provstart klockan 15.15.',
+      },
+    ],
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/926',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---gymnasiala-kurser/Skrivschema-och-utbud----gymnasiala-kurser-amnen.html',
+    description:
+      'Prövning i Matematik – fördjupning Nivå 1 (MATF1000X) hos Komvux Malmö, period 4 2026. ' +
+      'Skrivpasset ligger torsdag 29 oktober på Kungsgatan 44. Kolla skrivschemat så att dina ' +
+      'kurser inte krockar — du får skriva högst ett kursprov per dag. Samma innehåll prövas ' +
+      'också som Gy11-kursen Matematik 5, som är den variant du söker om du läste kursen före ' +
+      'juli 2025.',
+    tags: ['matematik', 'malmö', 'skåne', 'gy25'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-grund-biologi',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Biologi',
+    course: 'Biologi grundläggande nivå',
+    courseCode: 'VGRBIO1',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoGrundPeriod4(),
+    components: [
+      {
+        name: 'Informationsmöte',
+        duration: 'Obligatoriskt',
+        description:
+          'Måndag 26 oktober 2026 klockan 16. Mötet är obligatoriskt för den som prövar en ' +
+          'grundläggande kurs.',
+      },
+      {
+        name: 'Delprov i kursens alla delar',
+        duration: 'Inom prövningsperioden',
+        description:
+          'På grundläggande nivå görs delprov i alla delar av kursen. Datumen får du av ' +
+          'examinatorn efter informationsmötet.',
+      },
+    ],
+    studyTips: TIPS_BIOLOGI,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/927',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---grundlaggande-kurser.html',
+    description:
+      'Prövning i Biologi grundläggande nivå (VGRBIO1) hos Komvux Malmö, period 4 2026. Anmälan ' +
+      'var öppen 7–18 september, informationsmötet 26 oktober klockan 16 är obligatoriskt och ' +
+      'prövningsperioden löper 29 oktober – 4 december med betygsdatum 4 december. På ' +
+      'grundläggande nivå sätts betyget Godkänd eller Icke godkänd, och en godkänd prövning ger ' +
+      '150 poäng.',
+    tags: ['biologi', 'malmö', 'skåne', 'grundläggande'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-grund-engelska',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Engelska',
+    course: 'Engelska grundläggande nivå',
+    courseCode: 'VGRENG1',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoGrundPeriod4(),
+    components: [
+      {
+        name: 'Informationsmöte',
+        duration: 'Obligatoriskt',
+        description:
+          'Måndag 26 oktober 2026 klockan 16. Mötet är obligatoriskt för den som prövar en ' +
+          'grundläggande kurs.',
+      },
+      {
+        name: 'Delprov i kursens alla delar',
+        duration: 'Inom prövningsperioden',
+        description:
+          'På grundläggande nivå görs delprov i alla delar av kursen. Datumen får du av ' +
+          'examinatorn efter informationsmötet.',
+      },
+    ],
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/927',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---grundlaggande-kurser.html',
+    description:
+      'Prövning i Engelska grundläggande nivå (VGRENG1) hos Komvux Malmö, period 4 2026. ' +
+      'Anmälan var öppen 7–18 september, informationsmötet 26 oktober klockan 16 är ' +
+      'obligatoriskt och prövningsperioden löper 29 oktober – 4 december med betygsdatum 4 ' +
+      'december. På grundläggande nivå sätts betyget Godkänd eller Icke godkänd, och en godkänd ' +
+      'prövning ger 600 poäng.',
+    tags: ['engelska', 'malmö', 'skåne', 'grundläggande'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-grund-matematik',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Matematik',
+    course: 'Matematik grundläggande nivå',
+    courseCode: 'VGRMAT1',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoGrundPeriod4(),
+    components: [
+      {
+        name: 'Informationsmöte',
+        duration: 'Obligatoriskt',
+        description:
+          'Måndag 26 oktober 2026 klockan 16. Mötet är obligatoriskt för den som prövar en ' +
+          'grundläggande kurs.',
+      },
+      {
+        name: 'Delprov i kursens alla delar',
+        duration: 'Inom prövningsperioden',
+        description:
+          'På grundläggande nivå görs delprov i alla delar av kursen. Datumen får du av ' +
+          'examinatorn efter informationsmötet.',
+      },
+    ],
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/927',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---grundlaggande-kurser.html',
+    description:
+      'Prövning i Matematik grundläggande nivå (VGRMAT1) hos Komvux Malmö, period 4 2026. ' +
+      'Anmälan var öppen 7–18 september, informationsmötet 26 oktober klockan 16 är ' +
+      'obligatoriskt och prövningsperioden löper 29 oktober – 4 december med betygsdatum 4 ' +
+      'december. På grundläggande nivå sätts betyget Godkänd eller Icke godkänd, och en godkänd ' +
+      'prövning ger 600 poäng.',
+    tags: ['matematik', 'malmö', 'skåne', 'grundläggande'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-grund-samhallskunskap',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap grundläggande nivå',
+    courseCode: 'VGRSAM1',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoGrundPeriod4(),
+    components: [
+      {
+        name: 'Informationsmöte',
+        duration: 'Obligatoriskt',
+        description:
+          'Måndag 26 oktober 2026 klockan 16. Mötet är obligatoriskt för den som prövar en ' +
+          'grundläggande kurs.',
+      },
+      {
+        name: 'Delprov i kursens alla delar',
+        duration: 'Inom prövningsperioden',
+        description:
+          'På grundläggande nivå görs delprov i alla delar av kursen. Datumen får du av ' +
+          'examinatorn efter informationsmötet.',
+      },
+    ],
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/927',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---grundlaggande-kurser.html',
+    description:
+      'Prövning i Samhällskunskap grundläggande nivå (VGRSAM1) hos Komvux Malmö, period 4 2026. ' +
+      'Anmälan var öppen 7–18 september, informationsmötet 26 oktober klockan 16 är ' +
+      'obligatoriskt och prövningsperioden löper 29 oktober – 4 december med betygsdatum 4 ' +
+      'december. På grundläggande nivå sätts betyget Godkänd eller Icke godkänd, och en godkänd ' +
+      'prövning ger 150 poäng.',
+    tags: ['samhällskunskap', 'malmö', 'skåne', 'grundläggande'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-grund-svenska',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Svenska',
+    course: 'Svenska grundläggande nivå',
+    courseCode: 'GRNSVE2',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoGrundPeriod4(),
+    components: [
+      {
+        name: 'Informationsmöte',
+        duration: 'Obligatoriskt',
+        description:
+          'Måndag 26 oktober 2026 klockan 16. Mötet är obligatoriskt för den som prövar en ' +
+          'grundläggande kurs.',
+      },
+      {
+        name: 'Delprov i kursens alla delar',
+        duration: 'Inom prövningsperioden',
+        description:
+          'På grundläggande nivå görs delprov i alla delar av kursen. Datumen får du av ' +
+          'examinatorn efter informationsmötet.',
+      },
+    ],
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/927',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---grundlaggande-kurser.html',
+    description:
+      'Prövning i Svenska grundläggande nivå (GRNSVE2) hos Komvux Malmö, period 4 2026. Anmälan ' +
+      'var öppen 7–18 september, informationsmötet 26 oktober klockan 16 är obligatoriskt och ' +
+      'prövningsperioden löper 29 oktober – 4 december med betygsdatum 4 december. På ' +
+      'grundläggande nivå sätts betyget Godkänd eller Icke godkänd, och en godkänd prövning ger ' +
+      '700 poäng.',
+    tags: ['svenska', 'malmö', 'skåne', 'grundläggande'],
+    verifiedAt: SEP_19_VERIFIED,
+  },
+  {
+    id: 'malmo-komvux-grund-svenska-som-andrasprak',
+    schoolName: 'Komvux Malmö',
+    provider: 'Malmö stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk grundläggande nivå',
+    courseCode: 'GRNSVA2',
+    level: 'Komvux',
+    city: 'Malmö',
+    region: 'Skåne',
+    address: 'Kungsgatan 44, Malmö',
+    lat: 55.605,
+    lng: 13.0038,
+    price: 500,
+    priceNote:
+      'Kostnadsfritt om du redan har betyg F eller streck i kursen. Avgiften betalas i samband ' +
+      'med anmälan och kan inte flyttas till en annan period.',
+    nextPeriod: malmoGrundPeriod4(),
+    components: [
+      {
+        name: 'Informationsmöte',
+        duration: 'Obligatoriskt',
+        description:
+          'Måndag 26 oktober 2026 klockan 16. Mötet är obligatoriskt för den som prövar en ' +
+          'grundläggande kurs.',
+      },
+      {
+        name: 'Delprov i kursens alla delar',
+        duration: 'Inom prövningsperioden',
+        description:
+          'På grundläggande nivå görs delprov i alla delar av kursen. Datumen får du av ' +
+          'examinatorn efter informationsmötet.',
+      },
+    ],
+    studyTips: TIPS_SVA,
+    registrationUrl: 'https://sjalvservice.malmo.se/oversikt/overview/927',
+    infoUrl:
+      'https://malmo.se/Komvux-Malmo/Om-Komvux-Malmo/Provning-komvux/Provning---grundlaggande-kurser.html',
+    description:
+      'Prövning i Svenska som andraspråk grundläggande nivå (GRNSVA2) hos Komvux Malmö, period ' +
+      '4 2026. Anmälan var öppen 7–18 september, informationsmötet 26 oktober klockan 16 är ' +
+      'obligatoriskt och prövningsperioden löper 29 oktober – 4 december med betygsdatum 4 ' +
+      'december. På grundläggande nivå sätts betyget Godkänd eller Icke godkänd, och en godkänd ' +
+      'prövning ger 700 poäng.',
+    tags: ['svenska som andraspråk', 'sva', 'malmö', 'skåne', 'grundläggande'],
+    verifiedAt: SEP_19_VERIFIED,
   },
   {
     id: 'linvux-linkoping-engelska-5',

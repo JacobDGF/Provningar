@@ -48,6 +48,10 @@ Fem regler styr datan, och de testas i
   över, kalenderexporten försvinner och listningen sjunker under de odaterade i
   "närmast i tiden" — en gången deadline sorterar annars först, eftersom ett
   äldre datum är mindre som text.
+- **Ett skrivpass är ett datum, inte en mening.** `writtenExamDates` bär bara de
+  provtillfällen anordnaren satt ut och publicerat. En prövningsperiod som
+  läraren sätter en dag inom får inget datum här, och då varnar appen inte för
+  en krock den inte kan se. Se [Jämför sida vid sida](#när-två-prov-ligger-samma-dag).
 - **Samma skola och kurs listas en gång.** Datan växer en anordnare i taget, och
   två omgångar hos samma skola hör hemma i samma listnings etikett. Två kort
   läser som två skolor, där den ena råkar vara fullbokad. Två _kurser_ är
@@ -313,6 +317,38 @@ Alla kolumner är lika breda. En anordnare som skriver ett stycke om sin avgift
 skulle annars dra ut sin egen kolumn till dubbla bredden, och en rad man inte
 kan läsa tvärs över är ingen jämförelse. Tabellen är bredare än en telefon med
 flit och rullar i sin egen ruta, aldrig sidan.
+
+### När två prov ligger samma dag
+
+Jämförelsen svarar på vilken av listningarna man vill ha. Den frågan har ett
+tyst undantag: två av dem kan vara omöjliga att välja _tillsammans_, och det
+syns inte i någon kolumn. Komvux Malmö skriver ut regeln själv — "du kan anmäla
+dig till max två kurser per period, men endast skriva ett kursprov per skrivdag
+… om kurserna krockar kan vi inte behandla din ansökan" — och den som sparat
+Fysik 2 och Programmering 1 ser två öppna omgångar hos samma skola, med samma
+avgift och samma deadline, där båda proven ligger samma tisdag eftermiddag.
+
+Därför är skrivdagen ett datum i datan (`writtenExamDates`) och inte bara en
+mening i en etikett. [`src/lib/examClashes.ts`](src/lib/examClashes.ts) grupperar
+de jämförda listningarna per anordnare och dag, och en dag som bär två av dem
+blir en rad ovanför tabellen: _"Fysik 2 och Programmering 1 är båda utsatta
+tisdag 27 oktober hos Komvux Malmö. Du kan bara skriva ett prov per dag."_
+
+Tre gränser håller raden ärlig:
+
+- **Bara utsatta prov räknas.** En prövningsperiod där läraren sätter dagen —
+  Talenti i Örebro, till exempel — har inget skrivpass i datan, och då varnar
+  appen inte. En krock mellan två gissade datum är en gissning två gånger.
+- **Bara samma anordnare.** Två prov samma dag i Malmö och Umeå krockar också i
+  praktiken, men bara om tiderna gör det, och de tiderna publiceras var för sig.
+  Det anordnaren själv har skrivit ut är att dess egna prov ligger ett per dag.
+- **Appen väljer inte åt någon.** Meningen säger vad som krockar och stannar
+  där. Vilken av de två som ska väljas bort är hela valet, och det är läsarens.
+
+Tabellen fick samtidigt raden "Skrivpass", skild från "Prövningsperiod" ovanför:
+perioden är veckorna anordnaren rättar inom, skrivpasset är eftermiddagen du
+måste sitta i salen. Listningar utan utsatt dag säger `—` i stället för att låna
+periodens datum.
 
 ## AI-prövning
 

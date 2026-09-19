@@ -90,6 +90,21 @@ describe('buildComparison', () => {
     }
   });
 
+  /**
+   * Skrivpasset är raden som avgör om två listningar går att kombinera, så
+   * den får varken låna prövningsperiodens datum eller stå tom när
+   * anordnaren faktiskt satt ut en dag.
+   */
+  it('prints the published sittings, and a dash when there are none', () => {
+    const rows = buildComparison([
+      exam({ id: 'a', writtenExamDates: ['2026-10-27', '2026-10-30'] }),
+      exam({ id: 'b' }),
+    ]);
+    const sitting = rows.find((r) => r.key === 'sitting')!;
+    expect(sitting.values).toEqual(['27 okt. 2026 och 30 okt. 2026', '—']);
+    expect(sitting.differs).toBe(true);
+  });
+
   it('builds every row for real listings without throwing', () => {
     const rows = buildComparison(EXAMS.slice(0, 12));
     expect(rows.length).toBeGreaterThan(0);

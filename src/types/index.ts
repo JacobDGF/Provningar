@@ -63,6 +63,17 @@ export interface Exam {
   price: number;
   priceNote?: string;
   nextPeriod: NextPeriod;
+  /**
+   * Datumen för de skrivpass anordnaren har satt ut, i ISO-form.
+   *
+   * Bara obligatoriska, publicerade provtillfällen hör hemma här — inte en
+   * prövningsperiod som läraren sätter en dag inom, och inte ett datum vi
+   * räknat fram. Fältet finns för att två prövningar samma dag hos samma
+   * anordnare är en kombination som inte går att genomföra, och det är en
+   * kollision som bara syns om dagen är ett datum i datan i stället för en
+   * mening i en etikett.
+   */
+  writtenExamDates?: string[];
   components: ExamComponent[];
   studyTips: string[];
   registrationUrl: string;
