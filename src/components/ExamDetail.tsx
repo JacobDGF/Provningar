@@ -18,6 +18,7 @@ import {
   Check,
   Clock,
   ListChecks,
+  ChevronRight,
 } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { Exam } from '../types';
@@ -28,6 +29,7 @@ import { getExamStatus } from '../lib/examStatusColor';
 import { getRegistrationFlow } from '../lib/registrationFlow';
 import { getExamAction } from '../lib/examAction';
 import { courseCounterpart } from '../lib/courseSystems';
+import { openAlternatives } from '../lib/openAlternatives';
 import { track } from '../lib/analytics';
 import { examCalendarEvents, downloadCalendar } from '../lib/calendarFile';
 import { useEscapeKey } from '../hooks/useEscapeKey';
@@ -126,6 +128,9 @@ export function ExamDetail() {
   const action = getExamAction(exam);
   const calendarEvents = examCalendarEvents(exam);
   const stat = applicationStat(exam);
+  // Samma kurs, fortfarande bokbar, närmast först. Räknas bara ut för att
+  // visas när den här omgången inte går att boka.
+  const alternatives = action.live ? [] : openAlternatives(exam, exams);
   const hero = HERO_GRADIENT[status.tone.key] ?? HERO_DEFAULT;
   // The design was drawn around "Matematik 2b". A third of the dataset reads
   // "Flera kurser (Ma 1a–5, kontakta skolan för kurskod)", which set five
@@ -370,6 +375,64 @@ export function ExamDetail() {
                 </a>
               )}
             </div>
+
+            {/* The dead end's way out: same course, still bookable, nearest
+                first. Only on a round nobody can book — see
+                lib/openAlternatives.ts. */}
+            {!action.live && alternatives.length > 0 && (
+              <section className="bg-surface rounded-3xl border border-line p-4 lg:p-5">
+                <p className="text-[11.5px] font-bold uppercase tracking-[.09em] text-ink-faint">
+                  Fortfarande öppet någon annanstans
+                </p>
+                <ul className="mt-1 divide-y divide-line">
+                  {alternatives.map(({ exam: alt, km, otherSystem }) => (
+                    <li key={alt.id}>
+                      <button
+                        onClick={() => {
+                          setTab('dates');
+                          setShowingExamDetail(alt.id);
+                        }}
+                        className="w-full flex items-center gap-3 py-3 text-left hover:bg-sand rounded-xl px-2 -mx-2 transition-colors"
+                      >
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-ink text-[15px] font-bold truncate">
+                            {alt.schoolName}
+                          </span>
+                          <span className="block text-ink-soft text-[13px] truncate">
+                            {alt.city} · {formatDistanceKm(km)}
+                          </span>
+                          {/* Varför kursen heter något annat här: det är samma
+                              innehåll i det andra systemet, och namnet är det
+                              anmälan kräver. */}
+                          {otherSystem && (
+                            <span className="block text-ink-faint text-[12.5px] truncate">
+                              som {alt.course}
+                            </span>
+                          )}
+                        </span>
+                        <span className="flex-shrink-0 text-right">
+                          <span className="block text-ink text-[13.5px] font-bold">
+                            {alt.nextPeriod.applicationEnd
+                              ? formatShort(alt.nextPeriod.applicationEnd)
+                              : 'Öppen'}
+                          </span>
+                          <span className="block text-ink-faint text-[11.5px]">
+                            {alt.nextPeriod.applicationEnd
+                              ? 'sista anmälan'
+                              : 'tills platserna tar slut'}
+                          </span>
+                        </span>
+                        <ChevronRight size={18} className="text-ink-faint flex-shrink-0" />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-ink-faint text-[12.5px] leading-relaxed mt-2.5">
+                  Kommunerna har olika regler för vem som får pröva hos dem. Kontrollera villkoren
+                  hos anordnaren innan du planerar resan.
+                </p>
+              </section>
+            )}
 
             {/* Where the facts came from */}
             <p className="inline-flex items-center gap-1.5 text-trust-700 text-[12.5px] font-medium px-1">

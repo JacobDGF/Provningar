@@ -4,6 +4,67 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-09-20
+
+**Data: +82 prövningar.** Hela Helsingborgs prövningsutbud på gymnasial nivå,
+läst rad för rad ur stadens egen kurslista och mot betygsprövningssidans
+periodtabell. Datasetet går från 588 till 670 listningar.
+
+| Kommun      | Listningar | Källa                                                                             |
+| ----------- | ---------- | --------------------------------------------------------------------------------- |
+| Helsingborg | 1 → 83     | Helsingborgs stads betygsprövningssida och kurslistan "Gymnasiala kurser distans" |
+
+Helsingborg står åttonde i prioritetsordningen och hade ett enda kort. De sju
+före är antingen lästa kurs för kurs i tidigare omgångar (Stockholm, Göteborg,
+Malmö, Linköping, Örebro) eller publicerar ingen kurslista att läsa: Uppsala
+lägger sina teoretiska prövningar hos NTI-skolan, och Västerås har skrivit ut
+att årets omgång är fullbokad. Helsingborg publicerar både hela utbudet och
+fyra daterade prövningsperioder per år.
+
+- **Anmälan stängde 11 september, och det är vad raden säger.** Period 4 2026
+  är stadens sista publicerade omgång: ansökan 7–11 september med avgiften
+  betald samma dag, prövningsperiod 12 oktober – 6 november, fast provdatum
+  inom perioden och högst två prövningar per person och period. Några
+  2027-datum står inte på sidan, så datan påstår ingenting om dem.
+- **Ett kort per kurs, i det system anmälan görs.** Staden tar emot anmälan
+  till Gy25-ämnesnivån i webbansökan; Gy11-kursen prövas efter ett mejl till
+  `betygsprovning@helsingborg.se` och bara av den som redan har betyg i
+  kursen. Korten bär därför ämnesnivån, och varje beskrivning skriver ut
+  Gy11-kursens namn, kod och den vägen. Det gamla Matematik 2b-kortet är
+  uppdaterat i stället för dubblerat, med sitt id kvar, så en sparad prövning
+  fortfarande hittar hem.
+- **Betalningen är ett eget steg.** Det härledda e-tjänstflödet slutar vid
+  "betala enligt instruktionerna"; Helsingborg vill ha 500 kr på plusgiro
+  918192-6 senast sista anmälningsdag **och** ett kvitto mejlat till
+  prövningsenheten, annars behandlas inte anmälan. Listningarna bär de fyra
+  stegen som anordnaren skriver dem.
+- **+47 kurspar.** Stadens lista ställer Gy11 och Gy25 i var sin kolumn på
+  samma rad, vilket gör den till datasetets andra publicerade källa för
+  [`courseSystems.ts`](src/lib/courseSystems.ts). Fysik 1a ↔ Fysik nivå 1b är
+  ett av dem: Örebro listade dem var för sig, Helsingborg skriver dem på en
+  rad med samma poängtal på båda sidor. Där listan skriver `MATE1COOX` och
+  `MATMAt04` för koder som står som `MATE1C00X` och `MATMAT04` på varje annan
+  rad i datasetet vinner datans stavning — det är skrivfel, inte två kurser.
+- **Vad som lämnades utanför**, och varför: de kurser vars ämne inte finns i
+  datan (Administration, Arkitektur, Datorteknik, Digitalt skapande,
+  Filmkunskap, Logistik, Medieproduktion, Service och bemötande,
+  Webbutveckling) skulle var och en lägga till ett ämnesfilter med en enda
+  kurs under sig. Matematik specialisering står mot två olika ämnesnivåer på
+  två rader, så där finns ingen motsvarighet att peka ut. Och danskans
+  Gy11-kod skrivs `MODDAN1` i listan, en förkortning ingen annan rad i datan
+  kan bekräfta.
+
+**Produkt: stängd här, öppen där.** En stängd omgång var appens återvändsgränd
+— svart kort, en knapp till anordnarens sida, och frågan obesvarad. Under
+knapparna står nu **Fortfarande öppet någon annanstans**: högst tre listningar
+av samma kurs som går att anmäla sig till i dag, med ort, avstånd och sista
+anmälningsdag, och ett tryck byter listning i samma ark. 280 av datasetets 470
+stängda kort har nu en levande väg vidare. Matchningen går på kurskod plus
+kursens andra namn, bara mot omgångar som verkligen är öppna, närmast först
+och en rad per anordnare. Vem som får pröva var kan appen inte svara på —
+kommunerna har olika regler — och det står i klartext under listan. Se
+[README](README.md#stängd-här-öppen-där).
+
 ## 2026-09-11 (räknaren i drift)
 
 Räknaren står nu hos Cloudflare och appen är byggd mot den. Kedjan är

@@ -240,10 +240,12 @@ läser dem: träffar frågan kursens andra namn eller andra kurskod är listning
 en träff. Två saker håller det ärligt.
 
 - **Paren är lästa, inte härledda.** `MATMAT03b → MATO1B00X` går inte att gissa
-  fram ur koden. Paren kommer ur Komvux Örebros prövningstabell, som är den
-  källa i datan som skriver ut båda systemen på samma rad. Kurser som bara finns
-  i ett system — Fysik 1a, Fysik nivå 1b — står inte där, och då säger appen
-  ingenting om övergången.
+  fram ur koden. Paren kommer ur de två anordnarsidor i datan som skriver ut
+  båda systemen på samma rad: Komvux Örebros prövningstabell och Helsingborgs
+  stads jämförelselista över hela sitt prövningsutbud. Kurser som bara finns i
+  ett system, och kurser vars källa pekar ut två motsvarigheter i stället för
+  en — Matematik specialisering står mot två ämnesnivåer hos Helsingborg —
+  står inte där, och då säger appen ingenting om övergången.
 - **Namnen är datans egen stavning.** Ett test i
   [`src/lib/courseSystems.test.ts`](src/lib/courseSystems.test.ts) jämför varje
   par mot `EXAMS`, så en omdöpt kurs inte kan lämna sökningen med ett namn inget
@@ -282,6 +284,40 @@ att ta bort, och en genomförd prövning går att rätta eller radera i
 som är samma ark oavsett om du lägger till eller ändrar. Betygsraderna räknas
 in i snittpoängen på profilen, så ett betyg på fel rad var tidigare ett fel svar
 på appens enda riktiga fråga — utan annan väg tillbaka än att radera allt.
+
+## Stängd här, öppen där
+
+En listning vars anmälan har stängt var appens återvändsgränd: kortet blir
+svart, knappen skickar vidare till anordnarens sida, och där står i bästa fall
+när nästa omgång publiceras. Frågan användaren kom med var aldrig "vad gör
+Helsingborg i vår" — den var "var kan jag pröva Matematik 2b innan december",
+och det svaret ligger redan i datan. 670 listningar på ett ställe är hela
+poängen med appen; att inte titta i dem just när den man öppnat är stängd vore
+att kasta bort den.
+
+Under knapparna på en omgång ingen kan boka står därför **Fortfarande öppet
+någon annanstans**: högst tre listningar av samma kurs som går att anmäla sig
+till i dag, med ort, avstånd och sista anmälningsdag. Ett tryck byter listning
+i samma ark. [`src/lib/openAlternatives.ts`](src/lib/openAlternatives.ts) är
+regeln, och den är smal med flit:
+
+- **Samma kurs, inte samma ämne.** Matchningen går på kurskod, plus kursens
+  motsvarighet i det andra systemet när [paren](#kursen-har-två-namn) är
+  publicerade. Ett "Matematik 3c" när du sökte Matematik 2b är inte ett
+  alternativ, det är brus.
+- **Bara omgångar som faktiskt går att boka**, med samma villkor som färgen på
+  kortet: bekräftade datum, inte fullbokat, och dagen inne i fönstret. Ett test
+  kör regeln mot hela datasetet och kräver att varje förslag appen kan visa är
+  öppet.
+- **Närmast först**, räknat från listningen du tittar på — inte från telefonens
+  position, som oftast inte finns. Hos samma anordnare blir det en rad, i det
+  system du redan står i, eftersom Örebros två anmälningar för samma prövning
+  inte är två alternativ.
+
+Vad appen inte kan svara på är vem som får pröva var: kommunerna har olika
+regler och några prövar bara sina egna invånare. Därför står det under listan,
+i klartext, att villkoren ska kontrolleras hos anordnaren — förslaget är en
+ingång, inte ett löfte.
 
 ## Jämför sida vid sida
 

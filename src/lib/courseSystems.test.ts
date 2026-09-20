@@ -19,14 +19,26 @@ describe('courseCounterpart', () => {
   });
 
   /**
-   * Silence is the answer for a course only one system has. Fysik 1a and Fysik
-   * nivå 1b sit on separate rows in the source table, and pairing them here
-   * because the names look adjacent would tell somebody to sit the wrong prov.
+   * Silence is the answer for a course no source has put on one row. Örebro
+   * lists Fysik 1a and Fysik nivå 1b separately; Helsingborg writes them on
+   * the same row, with the same 150 poäng on both sides, so that pair is now
+   * published and the app may say it.
+   *
+   * Matematik specialisering is the case that stays silent: the same Gy11 code
+   * faces two different ämnesnivåer on two rows, so there is no single
+   * counterpart to name — and naming one of them would send somebody to the
+   * wrong prov, which is exactly what this table exists to prevent.
    */
-  it('says nothing about a course no source has paired', () => {
-    expect(courseCounterpart('FYSFYS01a')).toBeUndefined();
-    expect(courseCounterpart('FYSK1B00X')).toBeUndefined();
+  it('says nothing about a course no source has paired to exactly one other', () => {
+    expect(courseCounterpart('MATMAT00S')).toBeUndefined();
+    expect(courseCounterpart('BIOBIT0')).toBeUndefined();
     expect(courseCounterpart('SFIKUB92')).toBeUndefined();
+  });
+
+  /** A pair a second source published on one row, with matching poäng. */
+  it('pairs Fysik 1a with Fysik Nivå 1b, the way Helsingborg publishes it', () => {
+    expect(courseCounterpart('FYSFYS01a')?.other.code).toBe('FYSK1B00X');
+    expect(courseCounterpart('FYSK1B00X')?.other.code).toBe('FYSFYS01a');
   });
 
   it('pairs each code exactly once, and never with itself', () => {
