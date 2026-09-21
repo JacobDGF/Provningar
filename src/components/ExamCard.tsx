@@ -3,6 +3,7 @@ import { Exam } from '../types';
 import { useStore } from '../store/useStore';
 import { haversineDistanceKm, formatDistanceKm } from '../lib/distance';
 import { getExamStatus } from '../lib/examStatusColor';
+import { nextChanceFor } from '../lib/nextChance';
 
 interface ExamCardProps {
   exam: Exam;
@@ -28,6 +29,7 @@ export function ExamCard({ exam, showDistance }: ExamCardProps) {
   const { isExamSaved, saveExam, unsaveExam, setShowingExamDetail, userLocation } = useStore();
   const saved = isExamSaved(exam.id);
   const status = getExamStatus(exam);
+  const nextChance = nextChanceFor(exam);
 
   const distanceKm = userLocation
     ? haversineDistanceKm(userLocation.lat, userLocation.lng, exam.lat, exam.lng)
@@ -89,6 +91,12 @@ export function ExamCard({ exam, showDistance }: ExamCardProps) {
         >
           {status.label}
         </span>
+
+        {/* The one thing a closed round still has to offer: when the next one
+            opens. Only ever the provider's own sentence — see lib/nextChance. */}
+        {nextChance && (
+          <p className="text-[13px] leading-snug text-ink-soft -mt-1">{nextChance.note}</p>
+        )}
 
         <div className="mt-auto flex items-center justify-between gap-2.5 pt-3 border-t-[1.5px] border-sand">
           <span className="text-[13.5px] font-bold text-ink-soft tnum">{foot}</span>

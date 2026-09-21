@@ -67,7 +67,7 @@ kan inte säga olika saker om samma omgång.
 | Färg       | Betyder                                               |
 | ---------- | ----------------------------------------------------- |
 | 🔴 Röd     | Fullbokat — anordnaren har sagt att platserna är slut |
-| ⚪ Grå     | Anmälan stängde (datumet står på kortet)              |
+| ⚪ Grå     | Anmälan stängde, eller omgången är över               |
 | 🟠 Orange  | Öppen, men stänger inom en vecka                      |
 | 🟢 Grön    | Öppen för anmälan i dag                               |
 | 🔵 Blå     | Datum satt, anmälan har inte öppnat än                |
@@ -83,6 +83,29 @@ gränsen.
 Färgnyckeln under hjältebilden är också filtret: tryck på "Fullbokat" för att se
 vad du missade, tryck igen för att få tillbaka allt. Färger utan innehåll visas
 inte alls — en tom "Fullbokat"-knapp är ett löfte om resultat som inte finns.
+
+### Nästa chans
+
+En stängd listning är appens enda återvändsgränd: färgen blir röd eller grå,
+knappen säger "se nästa omgång", och ingenstans står det när den omgången är.
+`nextPeriod.nextChance` bär anordnarens eget svar på just den frågan, och
+[`src/lib/nextChance.ts`](src/lib/nextChance.ts) visar det bara där frågan är
+aktuell — på en fullbokad, stängd eller gången omgång. På en öppen listning vore
+en senare möjlighet bredvid den som finns nu inte hjälp utan en ursäkt att vänta.
+
+Fältet är anordnarens ord, aldrig en förutsägelse ur förra omgångens rytm.
+Stockholms fyra prövningsanordnare skriver ut det i samma mening som de stänger
+höstens omgång ("nästa möjlighet att anmäla sig är i början av 2027"), och
+NTI-skolan namnger terminen. `opensOn` sätts bara när anordnaren publicerat en
+faktisk dag — "i början av 2027" är en månad, och att avrunda den till ett datum
+vore att lägga en deadline ingen lovat i någons kalender.
+
+Samma svep gav regeln dess andra halva: en omgång vars prövningsdatum passerat
+är inte längre öppen för anmälan, hur halvöppet anordnaren än skrev fönstret.
+Stockholms anordnare publicerar en öppningsdag och ingen stängning ("anmälan
+stänger så snart platserna är fullbokade"), och utan den regeln stod varje sådan
+listning grön och bokningsbar i veckor efter att provet skrivits. Den säger
+"Omgången är över" nu, i samma grå som en passerad sista anmälningsdag.
 
 ### Knappen får aldrig lova mer än färgen
 
@@ -345,7 +368,10 @@ ligger i [`src/lib/aiProvning.ts`](src/lib/aiProvning.ts). Modellen får frågan
 och de tolv aktuella listningarna som JSON, och en systemprompt som säger åt
 den att aldrig gissa datum eller avgifter utan hänvisa till `kalla_url`.
 Korten under svaret kommer alltid ur `answerAsk` — en mening kan bli fel, men
-ett kort länkar till den anmälan det namnger.
+ett kort länkar till den anmälan det namnger. `nasta_chans` följer med i samma
+JSON, så svaret på en stängd omgång kan citera anordnarens egen mening om nästa
+i stället för att sluta vid "den är full"; står fältet tomt får modellen inte
+gissa.
 
 Sajten är statisk och har ingen server, så den kan inte hålla en API-nyckel: allt
 som ligger i bygget är offentligt, och en Anthropic-nyckel i ett offentligt bygge

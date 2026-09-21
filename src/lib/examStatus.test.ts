@@ -127,6 +127,44 @@ describe('isOpenForRegistration', () => {
   });
 });
 
+/**
+ * Stockholms fyra anordnare publicerar en öppningsdag och ingen stängning —
+ * "anmälan stänger så snart platserna är fullbokade". Utan det här var varje
+ * sådan listning grön och bokningsbar i evighet, provdatumet må ha varit i
+ * augusti.
+ */
+describe('isOpenForRegistration efter att prövningen skrivits', () => {
+  it('är stängd när prövningsperioden är förbi, även utan sista anmälningsdag', () => {
+    at('2026-09-21T09:00:00Z');
+    expect(
+      isOpenForRegistration(
+        examWith({
+          label: '',
+          applicationStart: '2026-08-13',
+          examWindowStart: '2026-08-31',
+          examWindowEnd: '2026-09-11',
+          confirmed: true,
+        }),
+      ),
+    ).toBe(false);
+  });
+
+  it('är fortfarande öppen när prövningsperioden ligger kvar framför', () => {
+    at('2026-09-21T09:00:00Z');
+    expect(
+      isOpenForRegistration(
+        examWith({
+          label: '',
+          applicationStart: '2026-08-13',
+          examWindowStart: '2026-10-01',
+          examWindowEnd: '2026-10-30',
+          confirmed: true,
+        }),
+      ),
+    ).toBe(true);
+  });
+});
+
 describe('isFullyBooked', () => {
   it('is true only when the provider published the round as full', () => {
     expect(isFullyBooked(examWith({ label: '', confirmed: true, full: true }))).toBe(true);

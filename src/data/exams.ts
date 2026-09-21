@@ -1,4 +1,4 @@
-import { Exam, ExamComponent, NextPeriod } from '../types';
+import { Exam, ExamComponent, NextChance, NextPeriod } from '../types';
 
 // Date this dataset's facts (providers, prices, URLs, periods) were checked against
 // each provider's own website / official municipal source.
@@ -200,6 +200,20 @@ const TIPS_RELIGION = [
   'Läs på om relationen mellan religion och vetenskap i den aktuella samhällsdebatten.',
 ];
 
+const TIPS_HISTORIA = [
+  'Bygg en tidslinje över epokerna — frågorna handlar oftare om samband än om årtal.',
+  'Öva källkritik på både text och bild: vem skrev, när, för vem och varför.',
+  'Repetera de långa linjerna (industrialisering, demokratisering, kolonialism) med egna exempel.',
+  'Träna på att jämföra två skeenden och motivera likheter och skillnader i skrift.',
+];
+
+const TIPS_HANDEL = [
+  'Lär dig kundmötets steg och kunna beskriva dem med egna ord och exempel.',
+  'Repetera konsumentköplagen, distansavtalslagen och vad som gäller vid reklamation.',
+  'Öva på prissättning, marginal och varuflöde — räkneuppgifterna återkommer.',
+  'Koppla hållbarhetsfrågorna till en konkret butik: sortiment, svinn och transporter.',
+];
+
 const TIPS_FLERA = [
   'Kontakta skolan tidigt för att få exakt kurskod och provupplägg för din kurs.',
   'Fråga om gamla tentor eller övningsmaterial för just den kurs du ska pröva.',
@@ -283,6 +297,17 @@ function publishedOnPage(what: string, when: string): Exam['registration'] {
 }
 
 /**
+ * Stockholms fyra anordnare säger alla samma sak om nästa omgång, i samma
+ * mening som de säger att den här är slut: "Efter vecka 35 är nästa möjlighet
+ * att anmäla sig till en prövning i början av 2027." Det är den enda meningen
+ * på sidan som fortfarande går att planera efter, så den följer med varje
+ * listning i stadens omgång — Södermalms, Hermods och NTI:s.
+ */
+const STHLM_NEXT_CHANCE: NextChance = {
+  note: 'Nästa anmälan hos Stockholms prövningsanordnare öppnar i början av 2027.',
+};
+
+/**
  * Stockholms stad's autumn 2026 prövningsomgång.
  *
  * The city moved to one opening day per school, staggered across weeks 33–35
@@ -298,6 +323,7 @@ function sthlmAutumn2026(opensOn: string, opensLabel: string): NextPeriod {
       'kompletteringsdagen i början av december. Nästa möjlighet därefter är i början av 2027.',
     applicationStart: opensOn,
     confirmed: true,
+    nextChance: STHLM_NEXT_CHANCE,
   };
 }
 
@@ -423,6 +449,9 @@ function ntiAutumn2026(): NextPeriod {
     examWindowStart: '2026-09-14',
     examWindowEnd: '2026-10-30',
     confirmed: true,
+    nextChance: {
+      note: 'Nästa ansökan gäller vårterminen 2027; NTI-skolan publicerar datumen under hösten.',
+    },
   };
 }
 
@@ -495,69 +524,197 @@ const COMPONENTS_OREBRO_TALENTI_LAB: ExamComponent[] = [
   COMPONENTS_OREBRO_TALENTI[2],
 ];
 
+// Stockholmssvepet 2026-09-21: Komvux Södermalms hela publicerade prövningsutbud,
+// läst ämne för ämne ur skolans egna sidor — prövningsdatum, anmälningsdag och
+// omställningstabellen Gy11 → Gy25. Södermalm är en av de fyra anordnare
+// Stockholms stad hänvisar till för gymnasiala teoretiska prövningar, och datan
+// hade två av skolans listningar. Varje kurskod här är dessutom kontrollerad mot
+// Skolverkets syllabus-API, som är det enda stället båda systemens koder står
+// utskrivna med sina egna namn.
+const SODERMALM_VERIFIED = '2026-09-21';
+
+const SODERMALM_PRICE_NOTE =
+  '500 kr per prövning. Avgiften betalas inom tre arbetsdagar från att skolan erbjudit dig ' +
+  'platsen och återbetalas inte — du ansvarar själv för att anmälan avser rätt kurs. Har du ' +
+  'läst kursen på komvux och fått F är prövningen avgiftsfri, mot en betygskopia mejlad inom ' +
+  'samma tre dagar.';
+
+/**
+ * Komvux Södermalms höstomgång 2026 i gymnasiala teoretiska kurser.
+ *
+ * Omgången är fullbokad, och det är anordnarens egen bokning som säger det:
+ * anmälningsformuläret skolan länkar till svarar "Denna anmälan är slutförd",
+ * och staden skriver att anmälan stänger "så snart antalet platser är
+ * fullbokade". Det är precis det fall `full` finns till för — datumen ser öppna
+ * ut, anordnaren säger nej.
+ *
+ * Provdatumen är kursens egna, som de står på ämnets sida. De ligger kvar i
+ * perioden även när de passerat: frågan "hann jag?" besvaras av datumet, inte
+ * av att det tas bort.
+ *
+ * @param tillfalle kursens egna provdatum, med anordnarens egna klockslag
+ */
+function sodermalmAutumn2026(tillfalle: string, examStart?: string, examEnd?: string): NextPeriod {
+  return {
+    label:
+      'Anmälan öppnade torsdag 13 augusti klockan 10.00 och stängde när platserna tog slut — ' +
+      `först till kvarn, ingen reservlista och ingen efteranmälan. ${tillfalle}`,
+    applicationStart: '2026-08-13',
+    ...(examStart ? { examWindowStart: examStart, examWindowEnd: examEnd ?? examStart } : {}),
+    confirmed: true,
+    full: true,
+    nextChance: STHLM_NEXT_CHANCE,
+  };
+}
+
+/**
+ * Yrkesämnena går i en egen omgång med en egen anmälningsdag, en månad efter
+ * den teoretiska. Den har inte öppnat än, vilket är hela skillnaden: det här är
+ * de enda listningarna hos Södermalm som fortfarande går att hinna med.
+ */
+function sodermalmYrkesAutumn2026(tillfalle: string, examDay?: string): NextPeriod {
+  return {
+    label:
+      'Anmälan öppnar måndag 26 oktober klockan 10.00 och stänger så snart platserna är ' +
+      `fullbokade. Det finns inget reserv- eller efterintag. ${tillfalle}`,
+    applicationStart: '2026-10-26',
+    ...(examDay ? { examWindowStart: examDay, examWindowEnd: examDay } : {}),
+    confirmed: true,
+  };
+}
+
+/**
+ * Skolans prövningar görs i två steg: en skriftlig del på ett utsatt datum, och
+ * en praktisk eller muntlig del ett annat. Datumen skiljer sig per ämne, så de
+ * står i momentet i stället för i en generisk "prövning enligt kursplan".
+ */
+function sodermalmParts(skriftlig: string, praktisk?: string): ExamComponent[] {
+  const parts: ExamComponent[] = [
+    {
+      name: 'Skriftlig del',
+      duration: skriftlig,
+      description:
+        'Skrivs på plats på Blekingegatan 55. Kallelsen kommer 1–2 veckor innan och fotolegitimation krävs.',
+    },
+  ];
+  if (praktisk) {
+    parts.push({
+      name: 'Praktisk eller muntlig del',
+      duration: praktisk,
+      description:
+        'Ett eget tillfälle, en annan dag. Du kallas dit när den skriftliga delen är godkänd.',
+    });
+  }
+  return parts;
+}
+
+const COMPONENTS_SODERMALM_NV = sodermalmParts(
+  '31 augusti kl. 09.00–13.00',
+  '11 september kl. 13.00–16.00',
+);
+const COMPONENTS_SODERMALM_ENG1 = sodermalmParts(
+  '18 september kl. 09.00–13.40',
+  '2 oktober kl. 09.00–12.00',
+);
+const COMPONENTS_SODERMALM_ENG2 = sodermalmParts(
+  '18 september kl. 10.15–15.20',
+  '2 oktober kl. 09.00–12.00',
+);
+const COMPONENTS_SODERMALM_FYS = sodermalmParts(
+  '17 september kl. 09.00–13.00',
+  '25 september kl. 13.00–14.30',
+);
+const COMPONENTS_SODERMALM_HIST = sodermalmParts('9 september kl. 09.00–13.00');
+const COMPONENTS_SODERMALM_KEM = sodermalmParts(
+  '16 september kl. 08.30–13.00',
+  'Under vecka 44, cirka 3 timmar',
+);
+const COMPONENTS_SODERMALM_MAT = sodermalmParts(
+  '14 september kl. 09.00–15.00',
+  'Under vecka 39, kl. 13.00–15.00',
+);
+const COMPONENTS_SODERMALM_REL = sodermalmParts('16 september kl. 09.00–13.00');
+const COMPONENTS_SODERMALM_SAM = sodermalmParts('9 september kl. 09.00–13.00');
+
+/** Svenska och svenska som andraspråk publiceras utan eget provdatum. */
+const COMPONENTS_SODERMALM_ODATERAD = sodermalmParts('Enligt kallelsen');
+
+const COMPONENTS_SODERMALM_YRKE: ExamComponent[] = [
+  {
+    name: 'Skriftligt kursprov',
+    duration: 'Enligt prövningsschemat',
+    description:
+      'Ett kursprov med både faktafrågor och förklarande frågor av praktisk karaktär. Skrivs på plats på Blekingegatan 55.',
+  },
+  {
+    name: 'Muntlig komplettering',
+    duration: 'Vid behov',
+    description:
+      'Krävs i vissa fall till det skriftliga resultatet. Ansvarig lärare hör i så fall av sig.',
+  },
+];
+
+const PERIOD_SODERMALM_NV = sodermalmAutumn2026(
+  'Skriftlig del 31 augusti kl. 09.00–13.00, praktisk del 11 september kl. 13.00–16.00.',
+  '2026-08-31',
+  '2026-09-11',
+);
+const PERIOD_SODERMALM_ENG1 = sodermalmAutumn2026(
+  'Skriftlig del 18 september kl. 09.00–13.40, muntlig del 2 oktober kl. 09.00–12.00.',
+  '2026-09-18',
+  '2026-10-02',
+);
+const PERIOD_SODERMALM_ENG2 = sodermalmAutumn2026(
+  'Skriftlig del 18 september kl. 10.15–15.20, muntlig del 2 oktober kl. 09.00–12.00.',
+  '2026-09-18',
+  '2026-10-02',
+);
+const PERIOD_SODERMALM_FYS = sodermalmAutumn2026(
+  'Skriftlig del 17 september kl. 09.00–13.00, praktisk del 25 september kl. 13.00–14.30.',
+  '2026-09-17',
+  '2026-09-25',
+);
+const PERIOD_SODERMALM_HIST = sodermalmAutumn2026(
+  'Skriftlig del 9 september kl. 09.00–13.00.',
+  '2026-09-09',
+);
+const PERIOD_SODERMALM_KEM = sodermalmAutumn2026(
+  'Skriftlig del 16 september kl. 08.30–13.00, praktisk del under vecka 44 (cirka 3 timmar).',
+  '2026-09-16',
+  '2026-11-01',
+);
+const PERIOD_SODERMALM_MAT = sodermalmAutumn2026(
+  'Skriftlig del 14 september kl. 09.00–15.00, praktisk del under vecka 39 kl. 13.00–15.00.',
+  '2026-09-14',
+  '2026-09-27',
+);
+const PERIOD_SODERMALM_REL = sodermalmAutumn2026(
+  'Skriftlig del 16 september kl. 09.00–13.00.',
+  '2026-09-16',
+);
+const PERIOD_SODERMALM_SAM = sodermalmAutumn2026(
+  'Skriftlig del 9 september kl. 09.00–13.00.',
+  '2026-09-09',
+);
+/**
+ * Svenska och svenska som andraspråk saknar utsatt provdatum hos anordnaren —
+ * rubriken "Prövningstillfällen och anmälan" står tom på båda ämnessidorna. Då
+ * är skolans egen periodangivelse det enda som går att säga.
+ */
+const PERIOD_SODERMALM_ODATERAD = sodermalmAutumn2026(
+  'Skolan har inte publicerat något eget provdatum för ämnet; höstens prövningstillfällen ' +
+    'ligger i perioden augusti–oktober.',
+);
+const PERIOD_SODERMALM_VO = sodermalmYrkesAutumn2026(
+  'Prövningen skrivs tisdag 17 november kl. 13.00–17.00.',
+  '2026-11-17',
+);
+const PERIOD_SODERMALM_FOS = sodermalmYrkesAutumn2026(
+  'Höstens prövningstillfällen i yrkesämnen ligger i november; skolan har inte publicerat ' +
+    'vilken dag det här ämnet skrivs.',
+);
+
 export const EXAMS: Exam[] = [
-  {
-    id: 'sodermalm-kemi1',
-    schoolName: 'Komvux Södermalm',
-    provider: 'Stockholms stad',
-    subject: 'Kemi',
-    course: 'Kemi 1',
-    courseCode: 'KEMKEM01',
-    level: 'Komvux',
-    city: 'Stockholm',
-    region: 'Stockholm',
-    address: 'Stockholm (campusadress bekräftas vid anmälan)',
-    lat: 59.3142,
-    lng: 18.0735,
-    price: 500,
-    priceNote: FREE_IF_PRIOR_F,
-    nextPeriod: sthlmAutumn2026('2026-08-13', 'torsdag 13 augusti 2026'),
-    components: COMPONENTS_KEMI,
-    studyTips: TIPS_KEMI,
-    // Checked 2026-08-13: anmälan is a form published on this page when the
-    // school's window opens — "anmälan blir tillgänglig på den dag och tid som
-    // anges i prövningsschemat", först till kvarn, ingen reservlista och ingen
-    // efteranmälan. No deeper link exists to point at in the meantime.
-    registration: publishedOnPage('anmälningsformuläret', 'den 13 augusti kl. 10'),
-    registrationUrl: 'https://komvuxsodermalm.stockholm/provningar/anmalan-till-provning/',
-    infoUrl:
-      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/kemi-laroplan-gy11gy25/provning-i-kemi-1/',
-    description:
-      'Prövning i Kemi 1 hos Komvux Södermalm, en av Stockholms stads vuxenutbildningar. Avgiften följer det nationella pristaket på 500 kr.',
-    tags: ['kemi', 'naturvetenskap', 'stockholm'],
-    verifiedAt: LINK_SWEEP_VERIFIED,
-  },
-  {
-    id: 'sodermalm-fysik2',
-    schoolName: 'Komvux Södermalm',
-    provider: 'Stockholms stad',
-    subject: 'Fysik',
-    course: 'Fysik 2',
-    courseCode: 'FYSFYS02',
-    level: 'Komvux',
-    city: 'Stockholm',
-    region: 'Stockholm',
-    address: 'Stockholm (campusadress bekräftas vid anmälan)',
-    lat: 59.3142,
-    lng: 18.0735,
-    price: 500,
-    priceNote: FREE_IF_PRIOR_F,
-    nextPeriod: sthlmAutumn2026('2026-08-13', 'torsdag 13 augusti 2026'),
-    components: COMPONENTS_FYSIK,
-    studyTips: TIPS_FYSIK,
-    // Checked 2026-08-13: anmälan is a form published on this page when the
-    // school's window opens — "anmälan blir tillgänglig på den dag och tid som
-    // anges i prövningsschemat", först till kvarn, ingen reservlista och ingen
-    // efteranmälan. No deeper link exists to point at in the meantime.
-    registration: publishedOnPage('anmälningsformuläret', 'den 13 augusti kl. 10'),
-    registrationUrl: 'https://komvuxsodermalm.stockholm/provningar/anmalan-till-provning/',
-    infoUrl:
-      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/fysik-laroplan-gy11gy25/provning-i-fysik-2/',
-    description:
-      'Prövning i Fysik 2 hos Komvux Södermalm. Krävs ofta för tekniska och naturvetenskapliga högskoleutbildningar.',
-    tags: ['fysik', 'naturvetenskap', 'stockholm'],
-    verifiedAt: LINK_SWEEP_VERIFIED,
-  },
   {
     id: 'taby-flera',
     schoolName: 'Medlearn (Täby / KCNO)',
@@ -20047,6 +20204,2273 @@ export const EXAMS: Exam[] = [
       '26 oktober–13 november; ditt eget datum inom perioden bestäms av ansvarig lärare.',
     tags: ['svenska för invandrare', 'sfi', 'örebro'],
     verifiedAt: SEP_10_VERIFIED,
+  },
+  {
+    id: 'sodermalm-biobio01',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Biologi',
+    course: 'Biologi 1',
+    courseCode: 'BIOBIO01',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_NV,
+    components: COMPONENTS_SODERMALM_NV,
+    studyTips: TIPS_BIOLOGI,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/biologi-laroplan-gy11gy25/',
+    description:
+      'Prövning i Biologi 1 (BIOBIO01) hos Komvux Södermalm på Blekingegatan 55, en av ' +
+      'Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['biologi', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-biog1000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Biologi',
+    course: 'Biologi Nivå 1',
+    courseCode: 'BIOG1000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_NV,
+    components: COMPONENTS_SODERMALM_NV,
+    studyTips: TIPS_BIOLOGI,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/biologi-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Biologi Nivå 1 (BIOG1000X) hos Komvux Södermalm på Blekingegatan ' +
+      '55. Nivån är Gy25 och ersätter Biologi 1 för dig som läser efter 1 juli 2025. Höstens ' +
+      'omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget formulär svarar nu ' +
+      'att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['biologi', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-biobio02',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Biologi',
+    course: 'Biologi 2',
+    courseCode: 'BIOBIO02',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_NV,
+    components: COMPONENTS_SODERMALM_NV,
+    studyTips: TIPS_BIOLOGI,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/biologi-laroplan-gy11gy25/',
+    description:
+      'Prövning i Biologi 2 (BIOBIO02) hos Komvux Södermalm på Blekingegatan 55, en av ' +
+      'Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['biologi', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-biog2000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Biologi',
+    course: 'Biologi Nivå 2',
+    courseCode: 'BIOG2000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_NV,
+    components: COMPONENTS_SODERMALM_NV,
+    studyTips: TIPS_BIOLOGI,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/biologi-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Biologi Nivå 2 (BIOG2000X) hos Komvux Södermalm på Blekingegatan ' +
+      '55. Nivån är Gy25 och ersätter Biologi 2 för dig som läser efter 1 juli 2025. Höstens ' +
+      'omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget formulär svarar nu ' +
+      'att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['biologi', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-engeng05',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Engelska',
+    course: 'Engelska 5',
+    courseCode: 'ENGENG05',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_ENG1,
+    components: COMPONENTS_SODERMALM_ENG1,
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/engelska-laroplan-gy11gy25/',
+    description:
+      'Prövning i Engelska 5 (ENGENG05) hos Komvux Södermalm på Blekingegatan 55, en av ' +
+      'Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['engelska', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-enge1000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Engelska',
+    course: 'Engelska Nivå 1',
+    courseCode: 'ENGE1000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_ENG1,
+    components: COMPONENTS_SODERMALM_ENG1,
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/engelska-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Engelska Nivå 1 (ENGE1000X) hos Komvux Södermalm på Blekingegatan ' +
+      '55. Nivån är Gy25 och ersätter Engelska 5 för dig som läser efter 1 juli 2025. Höstens ' +
+      'omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget formulär svarar nu ' +
+      'att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['engelska', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-engeng06',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Engelska',
+    course: 'Engelska 6',
+    courseCode: 'ENGENG06',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_ENG2,
+    components: COMPONENTS_SODERMALM_ENG2,
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/engelska-laroplan-gy11gy25/',
+    description:
+      'Prövning i Engelska 6 (ENGENG06) hos Komvux Södermalm på Blekingegatan 55, en av ' +
+      'Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['engelska', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-enge2000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Engelska',
+    course: 'Engelska Nivå 2',
+    courseCode: 'ENGE2000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_ENG2,
+    components: COMPONENTS_SODERMALM_ENG2,
+    studyTips: TIPS_ENGELSKA,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/engelska-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Engelska Nivå 2 (ENGE2000X) hos Komvux Södermalm på Blekingegatan ' +
+      '55. Nivån är Gy25 och ersätter Engelska 6 för dig som läser efter 1 juli 2025. Höstens ' +
+      'omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget formulär svarar nu ' +
+      'att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['engelska', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-fysfys01a',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Fysik',
+    course: 'Fysik 1a',
+    courseCode: 'FYSFYS01a',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_FYS,
+    components: COMPONENTS_SODERMALM_FYS,
+    studyTips: TIPS_FYSIK,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/fysik-laroplan-gy11gy25/',
+    description:
+      'Prövning i Fysik 1a (FYSFYS01a) hos Komvux Södermalm på Blekingegatan 55, en av ' +
+      'Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['fysik', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-fysk1b00x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Fysik',
+    course: 'Fysik Nivå 1b',
+    courseCode: 'FYSK1B00X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_FYS,
+    components: COMPONENTS_SODERMALM_FYS,
+    studyTips: TIPS_FYSIK,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/fysik-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Fysik Nivå 1b (FYSK1B00X) hos Komvux Södermalm på Blekingegatan ' +
+      '55. Nivån är Gy25 och ersätter Fysik 1a för dig som läser efter 1 juli 2025. Höstens ' +
+      'omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget formulär svarar nu ' +
+      'att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['fysik', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-fysik2',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Fysik',
+    course: 'Fysik 2',
+    courseCode: 'FYSFYS02',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_FYS,
+    components: COMPONENTS_SODERMALM_FYS,
+    studyTips: TIPS_FYSIK,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/fysik-laroplan-gy11gy25/',
+    description:
+      'Prövning i Fysik 2 (FYSFYS02) hos Komvux Södermalm på Blekingegatan 55, en av Stockholms ' +
+      'stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli 2025. Höstens ' +
+      'omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget formulär svarar nu ' +
+      'att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['fysik', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-fysk2000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Fysik',
+    course: 'Fysik Nivå 2',
+    courseCode: 'FYSK2000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_FYS,
+    components: COMPONENTS_SODERMALM_FYS,
+    studyTips: TIPS_FYSIK,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/fysik-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Fysik Nivå 2 (FYSK2000X) hos Komvux Södermalm på Blekingegatan 55. ' +
+      'Nivån är Gy25 och ersätter Fysik 2 för dig som läser efter 1 juli 2025. Höstens omgång ' +
+      'är fullbokad: anmälan öppnade 13 augusti och anordnarens eget formulär svarar nu att ' +
+      'anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['fysik', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-hishis01a1',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Historia',
+    course: 'Historia 1a1',
+    courseCode: 'HISHIS01a1',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_HIST,
+    components: COMPONENTS_SODERMALM_HIST,
+    studyTips: TIPS_HISTORIA,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/historia-laroplan-gy11gy25/',
+    description:
+      'Prövning i Historia 1a1 (HISHIS01a1) hos Komvux Södermalm på Blekingegatan 55, en av ' +
+      'Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['historia', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-hist1a10x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Historia',
+    course: 'Historia Nivå 1a1',
+    courseCode: 'HIST1A10X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_HIST,
+    components: COMPONENTS_SODERMALM_HIST,
+    studyTips: TIPS_HISTORIA,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/historia-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Historia Nivå 1a1 (HIST1A10X) hos Komvux Södermalm på ' +
+      'Blekingegatan 55. Nivån är Gy25 och ersätter Historia 1a1 för dig som läser efter 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['historia', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-hishis01b',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Historia',
+    course: 'Historia 1b',
+    courseCode: 'HISHIS01b',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_HIST,
+    components: COMPONENTS_SODERMALM_HIST,
+    studyTips: TIPS_HISTORIA,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/historia-laroplan-gy11gy25/',
+    description:
+      'Prövning i Historia 1b (HISHIS01b) hos Komvux Södermalm på Blekingegatan 55, en av ' +
+      'Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['historia', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-hist1b00x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Historia',
+    course: 'Historia Nivå 1b',
+    courseCode: 'HIST1B00X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_HIST,
+    components: COMPONENTS_SODERMALM_HIST,
+    studyTips: TIPS_HISTORIA,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/historia-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Historia Nivå 1b (HIST1B00X) hos Komvux Södermalm på Blekingegatan ' +
+      '55. Nivån är Gy25 och ersätter Historia 1b för dig som läser efter 1 juli 2025. Höstens ' +
+      'omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget formulär svarar nu ' +
+      'att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['historia', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-kemi1',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Kemi',
+    course: 'Kemi 1',
+    courseCode: 'KEMKEM01',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_KEM,
+    components: COMPONENTS_SODERMALM_KEM,
+    studyTips: TIPS_KEMI,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/kemi-laroplan-gy11gy25/',
+    description:
+      'Prövning i Kemi 1 (KEMKEM01) hos Komvux Södermalm på Blekingegatan 55, en av Stockholms ' +
+      'stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli 2025. Höstens ' +
+      'omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget formulär svarar nu ' +
+      'att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['kemi', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-kemi1000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Kemi',
+    course: 'Kemi Nivå 1',
+    courseCode: 'KEMI1000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_KEM,
+    components: COMPONENTS_SODERMALM_KEM,
+    studyTips: TIPS_KEMI,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/kemi-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Kemi Nivå 1 (KEMI1000X) hos Komvux Södermalm på Blekingegatan 55. ' +
+      'Nivån är Gy25 och ersätter Kemi 1 för dig som läser efter 1 juli 2025. Höstens omgång är ' +
+      'fullbokad: anmälan öppnade 13 augusti och anordnarens eget formulär svarar nu att ' +
+      'anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['kemi', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-kemkem02',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Kemi',
+    course: 'Kemi 2',
+    courseCode: 'KEMKEM02',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_KEM,
+    components: COMPONENTS_SODERMALM_KEM,
+    studyTips: TIPS_KEMI,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/kemi-laroplan-gy11gy25/',
+    description:
+      'Prövning i Kemi 2 (KEMKEM02) hos Komvux Södermalm på Blekingegatan 55, en av Stockholms ' +
+      'stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli 2025. Höstens ' +
+      'omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget formulär svarar nu ' +
+      'att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['kemi', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-kemi2000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Kemi',
+    course: 'Kemi Nivå 2',
+    courseCode: 'KEMI2000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_KEM,
+    components: COMPONENTS_SODERMALM_KEM,
+    studyTips: TIPS_KEMI,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/kemi-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Kemi Nivå 2 (KEMI2000X) hos Komvux Södermalm på Blekingegatan 55. ' +
+      'Nivån är Gy25 och ersätter Kemi 2 för dig som läser efter 1 juli 2025. Höstens omgång är ' +
+      'fullbokad: anmälan öppnade 13 augusti och anordnarens eget formulär svarar nu att ' +
+      'anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['kemi', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-matmat01a',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Matematik',
+    course: 'Matematik 1a',
+    courseCode: 'MATMAT01a',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_MAT,
+    components: COMPONENTS_SODERMALM_MAT,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/matematik-laroplan-gy11gy25/',
+    description:
+      'Prövning i Matematik 1a (MATMAT01a) hos Komvux Södermalm på Blekingegatan 55, en av ' +
+      'Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['matematik', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-mate1a00x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 1a',
+    courseCode: 'MATE1A00X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_MAT,
+    components: COMPONENTS_SODERMALM_MAT,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/matematik-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Matematik Nivå 1a (MATE1A00X) hos Komvux Södermalm på ' +
+      'Blekingegatan 55. Nivån är Gy25 och ersätter Matematik 1a för dig som läser efter 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['matematik', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-matmat01b',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Matematik',
+    course: 'Matematik 1b',
+    courseCode: 'MATMAT01b',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_MAT,
+    components: COMPONENTS_SODERMALM_MAT,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/matematik-laroplan-gy11gy25/',
+    description:
+      'Prövning i Matematik 1b (MATMAT01b) hos Komvux Södermalm på Blekingegatan 55, en av ' +
+      'Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['matematik', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-mate1b00x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 1b',
+    courseCode: 'MATE1B00X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_MAT,
+    components: COMPONENTS_SODERMALM_MAT,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/matematik-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Matematik Nivå 1b (MATE1B00X) hos Komvux Södermalm på ' +
+      'Blekingegatan 55. Nivån är Gy25 och ersätter Matematik 1b för dig som läser efter 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['matematik', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-matmat01c',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Matematik',
+    course: 'Matematik 1c',
+    courseCode: 'MATMAT01c',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_MAT,
+    components: COMPONENTS_SODERMALM_MAT,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/matematik-laroplan-gy11gy25/',
+    description:
+      'Prövning i Matematik 1c (MATMAT01c) hos Komvux Södermalm på Blekingegatan 55, en av ' +
+      'Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['matematik', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-mate1c00x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 1c',
+    courseCode: 'MATE1C00X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_MAT,
+    components: COMPONENTS_SODERMALM_MAT,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/matematik-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Matematik Nivå 1c (MATE1C00X) hos Komvux Södermalm på ' +
+      'Blekingegatan 55. Nivån är Gy25 och ersätter Matematik 1c för dig som läser efter 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['matematik', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-matmat02a',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Matematik',
+    course: 'Matematik 2a',
+    courseCode: 'MATMAT02a',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_MAT,
+    components: COMPONENTS_SODERMALM_MAT,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/matematik-laroplan-gy11gy25/',
+    description:
+      'Prövning i Matematik 2a (MATMAT02a) hos Komvux Södermalm på Blekingegatan 55, en av ' +
+      'Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['matematik', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-mate2a00x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 2a',
+    courseCode: 'MATE2A00X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_MAT,
+    components: COMPONENTS_SODERMALM_MAT,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/matematik-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Matematik Nivå 2a (MATE2A00X) hos Komvux Södermalm på ' +
+      'Blekingegatan 55. Nivån är Gy25 och ersätter Matematik 2a för dig som läser efter 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['matematik', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-matmat02b',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Matematik',
+    course: 'Matematik 2b',
+    courseCode: 'MATMAT02b',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_MAT,
+    components: COMPONENTS_SODERMALM_MAT,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/matematik-laroplan-gy11gy25/',
+    description:
+      'Prövning i Matematik 2b (MATMAT02b) hos Komvux Södermalm på Blekingegatan 55, en av ' +
+      'Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['matematik', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-mate2b00x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 2b',
+    courseCode: 'MATE2B00X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_MAT,
+    components: COMPONENTS_SODERMALM_MAT,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/matematik-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Matematik Nivå 2b (MATE2B00X) hos Komvux Södermalm på ' +
+      'Blekingegatan 55. Nivån är Gy25 och ersätter Matematik 2b för dig som läser efter 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['matematik', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-matmat02c',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Matematik',
+    course: 'Matematik 2c',
+    courseCode: 'MATMAT02c',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_MAT,
+    components: COMPONENTS_SODERMALM_MAT,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/matematik-laroplan-gy11gy25/',
+    description:
+      'Prövning i Matematik 2c (MATMAT02c) hos Komvux Södermalm på Blekingegatan 55, en av ' +
+      'Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['matematik', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-mate2c00x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Matematik',
+    course: 'Matematik Nivå 2c',
+    courseCode: 'MATE2C00X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_MAT,
+    components: COMPONENTS_SODERMALM_MAT,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/matematik-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Matematik Nivå 2c (MATE2C00X) hos Komvux Södermalm på ' +
+      'Blekingegatan 55. Nivån är Gy25 och ersätter Matematik 2c för dig som läser efter 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['matematik', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-matmat03b',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Matematik',
+    course: 'Matematik 3b',
+    courseCode: 'MATMAT03b',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_MAT,
+    components: COMPONENTS_SODERMALM_MAT,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/matematik-laroplan-gy11gy25/',
+    description:
+      'Prövning i Matematik 3b (MATMAT03b) hos Komvux Södermalm på Blekingegatan 55, en av ' +
+      'Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['matematik', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-mato1b00x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Matematik',
+    course: 'Matematik – fortsättning Nivå 1b',
+    courseCode: 'MATO1B00X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_MAT,
+    components: COMPONENTS_SODERMALM_MAT,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/matematik-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Matematik – fortsättning Nivå 1b (MATO1B00X) hos Komvux Södermalm ' +
+      'på Blekingegatan 55. Nivån är Gy25 och ersätter Matematik 3b för dig som läser efter 1 ' +
+      'juli 2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['matematik', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-matmat03c',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Matematik',
+    course: 'Matematik 3c',
+    courseCode: 'MATMAT03c',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_MAT,
+    components: COMPONENTS_SODERMALM_MAT,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/matematik-laroplan-gy11gy25/',
+    description:
+      'Prövning i Matematik 3c (MATMAT03c) hos Komvux Södermalm på Blekingegatan 55, en av ' +
+      'Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['matematik', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-mato1c00x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Matematik',
+    course: 'Matematik – fortsättning Nivå 1c',
+    courseCode: 'MATO1C00X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_MAT,
+    components: COMPONENTS_SODERMALM_MAT,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/matematik-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Matematik – fortsättning Nivå 1c (MATO1C00X) hos Komvux Södermalm ' +
+      'på Blekingegatan 55. Nivån är Gy25 och ersätter Matematik 3c för dig som läser efter 1 ' +
+      'juli 2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['matematik', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-matmat04',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Matematik',
+    course: 'Matematik 4',
+    courseCode: 'MATMAT04',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_MAT,
+    components: COMPONENTS_SODERMALM_MAT,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/matematik-laroplan-gy11gy25/',
+    description:
+      'Prövning i Matematik 4 (MATMAT04) hos Komvux Södermalm på Blekingegatan 55, en av ' +
+      'Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['matematik', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-mato2000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Matematik',
+    course: 'Matematik – fortsättning Nivå 2',
+    courseCode: 'MATO2000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_MAT,
+    components: COMPONENTS_SODERMALM_MAT,
+    studyTips: TIPS_MATEMATIK,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/matematik-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Matematik – fortsättning Nivå 2 (MATO2000X) hos Komvux Södermalm ' +
+      'på Blekingegatan 55. Nivån är Gy25 och ersätter Matematik 4 för dig som läser efter 1 ' +
+      'juli 2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['matematik', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-naknak01a1',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap 1a1',
+    courseCode: 'NAKNAK01a1',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_NV,
+    components: COMPONENTS_SODERMALM_NV,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/naturkunskap-laroplan-gy11gy25/',
+    description:
+      'Prövning i Naturkunskap 1a1 (NAKNAK01a1) hos Komvux Södermalm på Blekingegatan 55, en av ' +
+      'Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['naturkunskap', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-natu1a10x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 1a1',
+    courseCode: 'NATU1A10X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_NV,
+    components: COMPONENTS_SODERMALM_NV,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/naturkunskap-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Naturkunskap Nivå 1a1 (NATU1A10X) hos Komvux Södermalm på ' +
+      'Blekingegatan 55. Nivån är Gy25 och ersätter Naturkunskap 1a1 för dig som läser efter 1 ' +
+      'juli 2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['naturkunskap', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-naknak01a2',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap 1a2',
+    courseCode: 'NAKNAK01a2',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_NV,
+    components: COMPONENTS_SODERMALM_NV,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/naturkunskap-laroplan-gy11gy25/',
+    description:
+      'Prövning i Naturkunskap 1a2 (NAKNAK01a2) hos Komvux Södermalm på Blekingegatan 55, en av ' +
+      'Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['naturkunskap', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-natu1a20x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 1a2',
+    courseCode: 'NATU1A20X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_NV,
+    components: COMPONENTS_SODERMALM_NV,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/naturkunskap-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Naturkunskap Nivå 1a2 (NATU1A20X) hos Komvux Södermalm på ' +
+      'Blekingegatan 55. Nivån är Gy25 och ersätter Naturkunskap 1a2 för dig som läser efter 1 ' +
+      'juli 2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['naturkunskap', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-naknak01b',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap 1b',
+    courseCode: 'NAKNAK01b',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_NV,
+    components: COMPONENTS_SODERMALM_NV,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/naturkunskap-laroplan-gy11gy25/',
+    description:
+      'Prövning i Naturkunskap 1b (NAKNAK01b) hos Komvux Södermalm på Blekingegatan 55, en av ' +
+      'Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['naturkunskap', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-natu1b00x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 1b',
+    courseCode: 'NATU1B00X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_NV,
+    components: COMPONENTS_SODERMALM_NV,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/naturkunskap-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Naturkunskap Nivå 1b (NATU1B00X) hos Komvux Södermalm på ' +
+      'Blekingegatan 55. Nivån är Gy25 och ersätter Naturkunskap 1b för dig som läser efter 1 ' +
+      'juli 2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['naturkunskap', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-naknak02',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap 2',
+    courseCode: 'NAKNAK02',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_NV,
+    components: COMPONENTS_SODERMALM_NV,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/naturkunskap-laroplan-gy11gy25/',
+    description:
+      'Prövning i Naturkunskap 2 (NAKNAK02) hos Komvux Södermalm på Blekingegatan 55, en av ' +
+      'Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['naturkunskap', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-natu2000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Naturkunskap',
+    course: 'Naturkunskap Nivå 2',
+    courseCode: 'NATU2000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_NV,
+    components: COMPONENTS_SODERMALM_NV,
+    studyTips: TIPS_NATURKUNSKAP,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/naturkunskap-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Naturkunskap Nivå 2 (NATU2000X) hos Komvux Södermalm på ' +
+      'Blekingegatan 55. Nivån är Gy25 och ersätter Naturkunskap 2 för dig som läser efter 1 ' +
+      'juli 2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['naturkunskap', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-relrel01',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Religionskunskap',
+    course: 'Religionskunskap 1',
+    courseCode: 'RELREL01',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_REL,
+    components: COMPONENTS_SODERMALM_REL,
+    studyTips: TIPS_RELIGION,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/religionskunskap-laroplan-gy11gy252/',
+    description:
+      'Prövning i Religionskunskap 1 (RELREL01) hos Komvux Södermalm på Blekingegatan 55, en av ' +
+      'Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['religionskunskap', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-reli1000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Religionskunskap',
+    course: 'Religionskunskap Nivå 1',
+    courseCode: 'RELI1000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_REL,
+    components: COMPONENTS_SODERMALM_REL,
+    studyTips: TIPS_RELIGION,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/religionskunskap-laroplan-gy11gy252/',
+    description:
+      'Prövning i ämnesnivån Religionskunskap Nivå 1 (RELI1000X) hos Komvux Södermalm på ' +
+      'Blekingegatan 55. Nivån är Gy25 och ersätter Religionskunskap 1 för dig som läser efter ' +
+      '1 juli 2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens ' +
+      'eget formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['religionskunskap', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-samsam01a1',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap 1a1',
+    courseCode: 'SAMSAM01a1',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_SAM,
+    components: COMPONENTS_SODERMALM_SAM,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/samhallskunskap-laroplan-gy11gy25/',
+    description:
+      'Prövning i Samhällskunskap 1a1 (SAMSAM01a1) hos Komvux Södermalm på Blekingegatan 55, en ' +
+      'av Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['samhällskunskap', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-samh1a10x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 1a1',
+    courseCode: 'SAMH1A10X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_SAM,
+    components: COMPONENTS_SODERMALM_SAM,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/samhallskunskap-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Samhällskunskap Nivå 1a1 (SAMH1A10X) hos Komvux Södermalm på ' +
+      'Blekingegatan 55. Nivån är Gy25 och ersätter Samhällskunskap 1a1 för dig som läser efter ' +
+      '1 juli 2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens ' +
+      'eget formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['samhällskunskap', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-samsam01a2',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap 1a2',
+    courseCode: 'SAMSAM01a2',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_SAM,
+    components: COMPONENTS_SODERMALM_SAM,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/samhallskunskap-laroplan-gy11gy25/',
+    description:
+      'Prövning i Samhällskunskap 1a2 (SAMSAM01a2) hos Komvux Södermalm på Blekingegatan 55, en ' +
+      'av Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['samhällskunskap', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-samh1a20x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 1a2',
+    courseCode: 'SAMH1A20X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_SAM,
+    components: COMPONENTS_SODERMALM_SAM,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/samhallskunskap-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Samhällskunskap Nivå 1a2 (SAMH1A20X) hos Komvux Södermalm på ' +
+      'Blekingegatan 55. Nivån är Gy25 och ersätter Samhällskunskap 1a2 för dig som läser efter ' +
+      '1 juli 2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens ' +
+      'eget formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['samhällskunskap', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-samsam01b',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap 1b',
+    courseCode: 'SAMSAM01b',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_SAM,
+    components: COMPONENTS_SODERMALM_SAM,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/samhallskunskap-laroplan-gy11gy25/',
+    description:
+      'Prövning i Samhällskunskap 1b (SAMSAM01b) hos Komvux Södermalm på Blekingegatan 55, en ' +
+      'av Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['samhällskunskap', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-samh1b00x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Samhällskunskap',
+    course: 'Samhällskunskap Nivå 1b',
+    courseCode: 'SAMH1B00X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_SAM,
+    components: COMPONENTS_SODERMALM_SAM,
+    studyTips: TIPS_SAMHALLSKUNSKAP,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/samhallskunskap-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Samhällskunskap Nivå 1b (SAMH1B00X) hos Komvux Södermalm på ' +
+      'Blekingegatan 55. Nivån är Gy25 och ersätter Samhällskunskap 1b för dig som läser efter ' +
+      '1 juli 2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens ' +
+      'eget formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['samhällskunskap', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-svesve01',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Svenska',
+    course: 'Svenska 1',
+    courseCode: 'SVESVE01',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_ODATERAD,
+    components: COMPONENTS_SODERMALM_ODATERAD,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/svenska-laroplan-gy11gy25/',
+    description:
+      'Prövning i Svenska 1 (SVESVE01) hos Komvux Södermalm på Blekingegatan 55, en av ' +
+      'Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['svenska', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-sven1000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Svenska',
+    course: 'Svenska Nivå 1',
+    courseCode: 'SVEN1000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_ODATERAD,
+    components: COMPONENTS_SODERMALM_ODATERAD,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/svenska-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Svenska Nivå 1 (SVEN1000X) hos Komvux Södermalm på Blekingegatan ' +
+      '55. Nivån är Gy25 och ersätter Svenska 1 för dig som läser efter 1 juli 2025. Höstens ' +
+      'omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget formulär svarar nu ' +
+      'att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['svenska', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-svesve02',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Svenska',
+    course: 'Svenska 2',
+    courseCode: 'SVESVE02',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_ODATERAD,
+    components: COMPONENTS_SODERMALM_ODATERAD,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/svenska-laroplan-gy11gy25/',
+    description:
+      'Prövning i Svenska 2 (SVESVE02) hos Komvux Södermalm på Blekingegatan 55, en av ' +
+      'Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['svenska', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-sven2000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Svenska',
+    course: 'Svenska Nivå 2',
+    courseCode: 'SVEN2000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_ODATERAD,
+    components: COMPONENTS_SODERMALM_ODATERAD,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/svenska-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Svenska Nivå 2 (SVEN2000X) hos Komvux Södermalm på Blekingegatan ' +
+      '55. Nivån är Gy25 och ersätter Svenska 2 för dig som läser efter 1 juli 2025. Höstens ' +
+      'omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget formulär svarar nu ' +
+      'att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['svenska', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-svesve03',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Svenska',
+    course: 'Svenska 3',
+    courseCode: 'SVESVE03',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_ODATERAD,
+    components: COMPONENTS_SODERMALM_ODATERAD,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/svenska-laroplan-gy11gy25/',
+    description:
+      'Prövning i Svenska 3 (SVESVE03) hos Komvux Södermalm på Blekingegatan 55, en av ' +
+      'Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 juli ' +
+      '2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['svenska', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-sven3000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Svenska',
+    course: 'Svenska Nivå 3',
+    courseCode: 'SVEN3000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_ODATERAD,
+    components: COMPONENTS_SODERMALM_ODATERAD,
+    studyTips: TIPS_SVENSKA,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/svenska-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Svenska Nivå 3 (SVEN3000X) hos Komvux Södermalm på Blekingegatan ' +
+      '55. Nivån är Gy25 och ersätter Svenska 3 för dig som läser efter 1 juli 2025. Höstens ' +
+      'omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget formulär svarar nu ' +
+      'att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['svenska', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-svasva01',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk 1',
+    courseCode: 'SVASVA01',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_ODATERAD,
+    components: COMPONENTS_SODERMALM_ODATERAD,
+    studyTips: TIPS_SVA,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/svenska-som-andrasprak-laroplan-gy11gy25/',
+    description:
+      'Prövning i Svenska som andraspråk 1 (SVASVA01) hos Komvux Södermalm på Blekingegatan 55, ' +
+      'en av Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 ' +
+      'juli 2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['svenska som andraspråk', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-svea1000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk Nivå 1',
+    courseCode: 'SVEA1000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_ODATERAD,
+    components: COMPONENTS_SODERMALM_ODATERAD,
+    studyTips: TIPS_SVA,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/svenska-som-andrasprak-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Svenska som andraspråk Nivå 1 (SVEA1000X) hos Komvux Södermalm på ' +
+      'Blekingegatan 55. Nivån är Gy25 och ersätter Svenska som andraspråk 1 för dig som läser ' +
+      'efter 1 juli 2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och ' +
+      'anordnarens eget formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i ' +
+      'början av 2027.',
+    tags: ['svenska som andraspråk', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-svasva02',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk 2',
+    courseCode: 'SVASVA02',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_ODATERAD,
+    components: COMPONENTS_SODERMALM_ODATERAD,
+    studyTips: TIPS_SVA,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/svenska-som-andrasprak-laroplan-gy11gy25/',
+    description:
+      'Prövning i Svenska som andraspråk 2 (SVASVA02) hos Komvux Södermalm på Blekingegatan 55, ' +
+      'en av Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 ' +
+      'juli 2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['svenska som andraspråk', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-svea2000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk Nivå 2',
+    courseCode: 'SVEA2000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_ODATERAD,
+    components: COMPONENTS_SODERMALM_ODATERAD,
+    studyTips: TIPS_SVA,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/svenska-som-andrasprak-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Svenska som andraspråk Nivå 2 (SVEA2000X) hos Komvux Södermalm på ' +
+      'Blekingegatan 55. Nivån är Gy25 och ersätter Svenska som andraspråk 2 för dig som läser ' +
+      'efter 1 juli 2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och ' +
+      'anordnarens eget formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i ' +
+      'början av 2027.',
+    tags: ['svenska som andraspråk', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-svasva03',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk 3',
+    courseCode: 'SVASVA03',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_ODATERAD,
+    components: COMPONENTS_SODERMALM_ODATERAD,
+    studyTips: TIPS_SVA,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/svenska-som-andrasprak-laroplan-gy11gy25/',
+    description:
+      'Prövning i Svenska som andraspråk 3 (SVASVA03) hos Komvux Södermalm på Blekingegatan 55, ' +
+      'en av Stockholms stads fyra prövningsanordnare. Kursen är Gy11 — den du läste före 1 ' +
+      'juli 2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och anordnarens eget ' +
+      'formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i början av 2027.',
+    tags: ['svenska som andraspråk', 'stockholm', 'gy11'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-svea3000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Svenska som andraspråk',
+    course: 'Svenska som andraspråk Nivå 3',
+    courseCode: 'SVEA3000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_ODATERAD,
+    components: COMPONENTS_SODERMALM_ODATERAD,
+    studyTips: TIPS_SVA,
+    registrationUrl: 'https://esmaker.net/a/Survey?id=84905d1b19da',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/svenska-som-andrasprak-laroplan-gy11gy25/',
+    description:
+      'Prövning i ämnesnivån Svenska som andraspråk Nivå 3 (SVEA3000X) hos Komvux Södermalm på ' +
+      'Blekingegatan 55. Nivån är Gy25 och ersätter Svenska som andraspråk 3 för dig som läser ' +
+      'efter 1 juli 2025. Höstens omgång är fullbokad: anmälan öppnade 13 augusti och ' +
+      'anordnarens eget formulär svarar nu att anmälan är slutförd. Nästa anmälan öppnar i ' +
+      'början av 2027.',
+    tags: ['svenska som andraspråk', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-funk1000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Vård och omsorg',
+    course: 'Funktionsförmåga och funktionsnedsättning Nivå 1',
+    courseCode: 'FUNK1000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_VO,
+    components: COMPONENTS_SODERMALM_YRKE,
+    studyTips: TIPS_VARD,
+    registration: publishedOnPage('anmälningsformuläret', 'den 26 oktober klockan 10.00'),
+    registrationUrl: 'https://komvuxsodermalm.stockholm/provningar/provningsschema/',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/provningar-vard-och-omsorg/',
+    description:
+      'Prövning i ämnesnivån Funktionsförmåga och funktionsnedsättning Nivå 1 (FUNK1000X) hos ' +
+      'Komvux Södermalm på Blekingegatan 55. Prövningen skrivs tisdag 17 november klockan ' +
+      '13.00–17.00 och anmälan öppnar 26 oktober klockan 10.00, i formuläret skolan då ' +
+      'publicerar i prövningsschemat.',
+    tags: ['vård och omsorg', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-gero1000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Vård och omsorg',
+    course: 'Gerontologi och geriatrik Nivå 1',
+    courseCode: 'GERO1000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_VO,
+    components: COMPONENTS_SODERMALM_YRKE,
+    studyTips: TIPS_VARD,
+    registration: publishedOnPage('anmälningsformuläret', 'den 26 oktober klockan 10.00'),
+    registrationUrl: 'https://komvuxsodermalm.stockholm/provningar/provningsschema/',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/provningar-vard-och-omsorg/',
+    description:
+      'Prövning i ämnesnivån Gerontologi och geriatrik Nivå 1 (GERO1000X) hos Komvux Södermalm ' +
+      'på Blekingegatan 55. Prövningen skrivs tisdag 17 november klockan 13.00–17.00 och ' +
+      'anmälan öppnar 26 oktober klockan 10.00, i formuläret skolan då publicerar i ' +
+      'prövningsschemat.',
+    tags: ['vård och omsorg', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-psyk1000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Vård och omsorg',
+    course: 'Psykiatri Nivå 1',
+    courseCode: 'PSYK1000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_VO,
+    components: COMPONENTS_SODERMALM_YRKE,
+    studyTips: TIPS_VARD,
+    registration: publishedOnPage('anmälningsformuläret', 'den 26 oktober klockan 10.00'),
+    registrationUrl: 'https://komvuxsodermalm.stockholm/provningar/provningsschema/',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/provningar-vard-och-omsorg/',
+    description:
+      'Prövning i ämnesnivån Psykiatri Nivå 1 (PSYK1000X) hos Komvux Södermalm på Blekingegatan ' +
+      '55. Prövningen skrivs tisdag 17 november klockan 13.00–17.00 och anmälan öppnar 26 ' +
+      'oktober klockan 10.00, i formuläret skolan då publicerar i prövningsschemat.',
+    tags: ['vård och omsorg', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-psyl1000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Psykologi',
+    course: 'Psykologi Nivå 1',
+    courseCode: 'PSYL1000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_VO,
+    components: COMPONENTS_SODERMALM_YRKE,
+    studyTips: TIPS_PSYKOLOGI,
+    registration: publishedOnPage('anmälningsformuläret', 'den 26 oktober klockan 10.00'),
+    registrationUrl: 'https://komvuxsodermalm.stockholm/provningar/provningsschema/',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/provningar-vard-och-omsorg/',
+    description:
+      'Prövning i ämnesnivån Psykologi Nivå 1 (PSYL1000X) hos Komvux Södermalm på Blekingegatan ' +
+      '55. Prövningen skrivs tisdag 17 november klockan 13.00–17.00 och anmälan öppnar 26 ' +
+      'oktober klockan 10.00, i formuläret skolan då publicerar i prövningsschemat.',
+    tags: ['psykologi', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-socl1000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Vård och omsorg',
+    course: 'Social omsorg Nivå 1',
+    courseCode: 'SOCL1000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_VO,
+    components: COMPONENTS_SODERMALM_YRKE,
+    studyTips: TIPS_VARD,
+    registration: publishedOnPage('anmälningsformuläret', 'den 26 oktober klockan 10.00'),
+    registrationUrl: 'https://komvuxsodermalm.stockholm/provningar/provningsschema/',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/provningar-vard-och-omsorg/',
+    description:
+      'Prövning i ämnesnivån Social omsorg Nivå 1 (SOCL1000X) hos Komvux Södermalm på ' +
+      'Blekingegatan 55. Prövningen skrivs tisdag 17 november klockan 13.00–17.00 och anmälan ' +
+      'öppnar 26 oktober klockan 10.00, i formuläret skolan då publicerar i prövningsschemat.',
+    tags: ['vård och omsorg', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-socl2000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Vård och omsorg',
+    course: 'Social omsorg Nivå 2',
+    courseCode: 'SOCL2000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_VO,
+    components: COMPONENTS_SODERMALM_YRKE,
+    studyTips: TIPS_VARD,
+    registration: publishedOnPage('anmälningsformuläret', 'den 26 oktober klockan 10.00'),
+    registrationUrl: 'https://komvuxsodermalm.stockholm/provningar/provningsschema/',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/provningar-vard-och-omsorg/',
+    description:
+      'Prövning i ämnesnivån Social omsorg Nivå 2 (SOCL2000X) hos Komvux Södermalm på ' +
+      'Blekingegatan 55. Prövningen skrivs tisdag 17 november klockan 13.00–17.00 och anmälan ' +
+      'öppnar 26 oktober klockan 10.00, i formuläret skolan då publicerar i prövningsschemat.',
+    tags: ['vård och omsorg', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-halc1000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Vård och omsorg',
+    course: 'Hälso- och sjukvård Nivå 1',
+    courseCode: 'HALC1000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_VO,
+    components: COMPONENTS_SODERMALM_YRKE,
+    studyTips: TIPS_VARD,
+    registration: publishedOnPage('anmälningsformuläret', 'den 26 oktober klockan 10.00'),
+    registrationUrl: 'https://komvuxsodermalm.stockholm/provningar/provningsschema/',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/provningar-vard-och-omsorg/',
+    description:
+      'Prövning i ämnesnivån Hälso- och sjukvård Nivå 1 (HALC1000X) hos Komvux Södermalm på ' +
+      'Blekingegatan 55. Prövningen skrivs tisdag 17 november klockan 13.00–17.00 och anmälan ' +
+      'öppnar 26 oktober klockan 10.00, i formuläret skolan då publicerar i prövningsschemat.',
+    tags: ['vård och omsorg', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-anat1b00x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Vård och omsorg',
+    course: 'Anatomi och fysiologi Nivå 1b',
+    courseCode: 'ANAT1B00X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_VO,
+    components: COMPONENTS_SODERMALM_YRKE,
+    studyTips: TIPS_VARD,
+    registration: publishedOnPage('anmälningsformuläret', 'den 26 oktober klockan 10.00'),
+    registrationUrl: 'https://komvuxsodermalm.stockholm/provningar/provningsschema/',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/provningar-vard-och-omsorg/',
+    description:
+      'Prövning i ämnesnivån Anatomi och fysiologi Nivå 1b (ANAT1B00X) hos Komvux Södermalm på ' +
+      'Blekingegatan 55. Prövningen skrivs tisdag 17 november klockan 13.00–17.00 och anmälan ' +
+      'öppnar 26 oktober klockan 10.00, i formuläret skolan då publicerar i prövningsschemat.',
+    tags: ['vård och omsorg', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-fors1000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Försäljning och service',
+    course: 'Försäljning och kundservice Nivå 1',
+    courseCode: 'FORS1000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_FOS,
+    components: COMPONENTS_SODERMALM_YRKE,
+    studyTips: TIPS_HANDEL,
+    registration: publishedOnPage('anmälningsformuläret', 'den 26 oktober klockan 10.00'),
+    registrationUrl: 'https://komvuxsodermalm.stockholm/provningar/provningsschema/',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/provningar-forsaljnings-och-service/',
+    description:
+      'Prövning i ämnesnivån Försäljning och kundservice Nivå 1 (FORS1000X) hos Komvux ' +
+      'Södermalm på Blekingegatan 55. Höstens yrkesprövningar görs i november och anmälan ' +
+      'öppnar 26 oktober klockan 10.00, i formuläret skolan då publicerar i prövningsschemat.',
+    tags: ['försäljning och service', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-fors2000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Försäljning och service',
+    course: 'Försäljning och kundservice Nivå 2',
+    courseCode: 'FORS2000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_FOS,
+    components: COMPONENTS_SODERMALM_YRKE,
+    studyTips: TIPS_HANDEL,
+    registration: publishedOnPage('anmälningsformuläret', 'den 26 oktober klockan 10.00'),
+    registrationUrl: 'https://komvuxsodermalm.stockholm/provningar/provningsschema/',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/provningar-forsaljnings-och-service/',
+    description:
+      'Prövning i ämnesnivån Försäljning och kundservice Nivå 2 (FORS2000X) hos Komvux ' +
+      'Södermalm på Blekingegatan 55. Höstens yrkesprövningar görs i november och anmälan ' +
+      'öppnar 26 oktober klockan 10.00, i formuläret skolan då publicerar i prövningsschemat.',
+    tags: ['försäljning och service', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-hand1000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Försäljning och service',
+    course: 'Handel Nivå 1',
+    courseCode: 'HAND1000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_FOS,
+    components: COMPONENTS_SODERMALM_YRKE,
+    studyTips: TIPS_HANDEL,
+    registration: publishedOnPage('anmälningsformuläret', 'den 26 oktober klockan 10.00'),
+    registrationUrl: 'https://komvuxsodermalm.stockholm/provningar/provningsschema/',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/provningar-forsaljnings-och-service/',
+    description:
+      'Prövning i ämnesnivån Handel Nivå 1 (HAND1000X) hos Komvux Södermalm på Blekingegatan ' +
+      '55. Höstens yrkesprövningar görs i november och anmälan öppnar 26 oktober klockan 10.00, ' +
+      'i formuläret skolan då publicerar i prövningsschemat.',
+    tags: ['försäljning och service', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
+  },
+  {
+    id: 'sodermalm-hane1000x',
+    schoolName: 'Komvux Södermalm',
+    provider: 'Stockholms stad',
+    subject: 'Försäljning och service',
+    course: 'Handel och hållbar utveckling Nivå 1',
+    courseCode: 'HANE1000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Blekingegatan 55, Stockholm',
+    lat: 59.3108,
+    lng: 18.0742,
+    price: 500,
+    priceNote: SODERMALM_PRICE_NOTE,
+    nextPeriod: PERIOD_SODERMALM_FOS,
+    components: COMPONENTS_SODERMALM_YRKE,
+    studyTips: TIPS_HANDEL,
+    registration: publishedOnPage('anmälningsformuläret', 'den 26 oktober klockan 10.00'),
+    registrationUrl: 'https://komvuxsodermalm.stockholm/provningar/provningsschema/',
+    infoUrl:
+      'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/provningar-forsaljnings-och-service/',
+    description:
+      'Prövning i ämnesnivån Handel och hållbar utveckling Nivå 1 (HANE1000X) hos Komvux ' +
+      'Södermalm på Blekingegatan 55. Höstens yrkesprövningar görs i november och anmälan ' +
+      'öppnar 26 oktober klockan 10.00, i formuläret skolan då publicerar i prövningsschemat.',
+    tags: ['försäljning och service', 'stockholm', 'gy25'],
+    verifiedAt: SODERMALM_VERIFIED,
   },
 ];
 

@@ -16,6 +16,12 @@ export function isOpenForRegistration(exam: Exam): boolean {
   // outright, and that beats the calendar.
   if (p.full) return false;
   if (!p.applicationStart && !p.applicationEnd) return false;
+  // Nobody can register for a prövning that has already been written. Providers
+  // who publish an opening day but no closing one — Stockholm's four
+  // anordnare say "stänger så snart platserna är fullbokade" — left every one
+  // of their listings green and bookable for as long as the dataset carried
+  // them, including the ones whose provdatum was three weeks ago.
+  if (hasPeriodPassed(exam)) return false;
   const now = Date.now();
   if (p.applicationStart && now < new Date(p.applicationStart).getTime()) return false;
   if (p.applicationEnd && now > endOfDay(p.applicationEnd)) return false;

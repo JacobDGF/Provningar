@@ -19,14 +19,22 @@ describe('courseCounterpart', () => {
   });
 
   /**
-   * Silence is the answer for a course only one system has. Fysik 1a and Fysik
-   * nivå 1b sit on separate rows in the source table, and pairing them here
-   * because the names look adjacent would tell somebody to sit the wrong prov.
+   * Silence is the answer for a course no source has paired. It is not a
+   * permanent answer: Fysik 1a and Fysik nivå 1b were unpaired here until Komvux
+   * Södermalm's omställningstabell wrote them on the same row, and they are a
+   * pair now because a provider said so — not because the names look adjacent.
    */
   it('says nothing about a course no source has paired', () => {
-    expect(courseCounterpart('FYSFYS01a')).toBeUndefined();
-    expect(courseCounterpart('FYSK1B00X')).toBeUndefined();
     expect(courseCounterpart('SFIKUB92')).toBeUndefined();
+    expect(courseCounterpart('ANOANA01')).toBeUndefined();
+  });
+
+  it('follows a provider that writes out a pair the first source left silent', () => {
+    expect(courseCounterpart('FYSFYS01a')?.other).toEqual({
+      code: 'FYSK1B00X',
+      name: 'Fysik Nivå 1b',
+    });
+    expect(courseCounterpart('GEOG1000X')?.other.code).toBe('GEOGEO01');
   });
 
   it('pairs each code exactly once, and never with itself', () => {

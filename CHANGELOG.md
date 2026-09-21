@@ -4,6 +4,70 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-09-21
+
+**Data: +76 prövningar, hela Komvux Södermalms utbud.** Stockholm står först i
+prioritetsordningen och hade 143 listningar, varav 135 hos en enda anordnare
+(NTI-skolan på distans). Stadens egen sida namnger fyra prövningsanordnare för
+gymnasiala teoretiska kurser — Jensen, Komvux Södermalm, NTI och Hermods — och
+Södermalm fanns i datan med två kurser. Nu finns skolans hela publicerade utbud,
+läst ämne för ämne ur skolans egna sidor. Datasetet går från 588 till 664
+listningar.
+
+| Kommun    | Listningar | Källa                                                         |
+| --------- | ---------- | ------------------------------------------------------------- |
+| Stockholm | 143 → 219  | Komvux Södermalms ämnessidor och prövningsschema, hösten 2026 |
+
+- **66 gymnasiala teoretiska listningar**, elva ämnen i två läroplaner: varje
+  kurs som Gy11-kurs och Gy25-ämnesnivå, eftersom skolan publicerar ett eget
+  förberedelsedokument per kod. **12 yrkeslistningar** i vård och omsorg och
+  försäljning och service, som är höstens enda Södermalmsomgång kvar att hinna:
+  anmälan öppnar 26 oktober klockan 10 och vård- och omsorgsprovet skrivs 17
+  november.
+- **Provdatumen är kursens egna**, inte skolans generella period: matematikens
+  skriftliga del 14 september och praktiska del under vecka 39, kemins praktiska
+  del under vecka 44, engelska 5 klockan 09.00–13.40 och engelska 6 klockan
+  10.15–15.20 samma dag.
+- **Den teoretiska omgången är fullbokad, enligt anordnarens egen bokning.**
+  Anmälningsformuläret skolan länkar till svarar "Denna anmälan är slutförd", och
+  staden skriver att anmälan stänger "så snart antalet platser är fullbokade".
+  Det är precis det `full` finns till för: datumen ser öppna ut, anordnaren
+  säger nej.
+- **Varje kurskod är kontrollerad mot Skolverkets syllabus-API**, som är enda
+  stället där båda systemens koder står med sina egna namn. Alla 78 stämde,
+  inklusive de fyra yrkeskoder Södermalm inte skriver ut (`FORS1000X`,
+  `FORS2000X`, `HAND1000X`, `HANE1000X`) och `ANAT1B00X`.
+- **Adressen är utskriven**: Blekingegatan 55 vid Skanstull, inte "campusadress
+  bekräftas vid anmälan" som de två gamla listningarna sa.
+- **Tolv nya kurspar Gy11 ↔ Gy25.** Skolans omställningstabell skriver ut par som
+  Örebros tabell lämnade tysta — Fysik 1a ↔ Fysik nivå 1b, geografins båda
+  nivåer, historia 2a/2b/3, samhällskunskap 2/3 och religionskunskap 2. En
+  sökning på det ena namnet hittar nu prövningen som publicerats under det andra.
+
+**Produkt: nästa chans.** En stängd listning var appens enda återvändsgränd —
+röd eller grå, med en knapp som sa "se nästa omgång" och ingenstans ett ord om
+när den omgången är. Nu bär listningen anordnarens eget svar
+(`nextPeriod.nextChance`), på kortet och under Viktiga datum: "Nästa anmälan hos
+Stockholms prövningsanordnare öppnar i början av 2027." Det visas bara där frågan
+är aktuell — på en öppen omgång vore en senare möjlighet en ursäkt att vänta —
+och bara med anordnarens ord. Ett datum sätts bara när anordnaren publicerat en
+dag; "i början av 2027" är en månad och avrundas inte till en deadline ingen
+lovat. Fältet följer också med i JSON:en AI-prövning skickar till modellen, så
+ett svar om en stängd omgång kan citera anordnarens mening om nästa i stället för
+att stanna vid "den är full". 214 listningar bär det i dag: Södermalms 78, NTI-skolans 135 och Hermods enda.
+
+Samma svep gav regeln dess andra halva: **en omgång vars prövningsdatum passerat
+är inte längre öppen för anmälan.** Stockholms anordnare publicerar en
+öppningsdag och ingen stängning, och utan den regeln stod varje sådan listning
+grön och bokningsbar i veckor efter att provet skrivits. Den säger "Omgången är
+över" nu. Verifierat i Chromium mot ett riktigt bygge.
+
+Kvar att göra: `check:dates` pekar fortfarande ut 20 listningar vars omgång helt
+har passerat (Växjö, Värnamo, Kunskapsförbundet Väst, Kristinehamn, Katrineholm,
+Trollhättan, ABF Stockholm, Iris Upplands Väsby, Uddevalla, Göteborg ×2, Vux
+Huddinge ×4, Motala, Umevux ×2, Ljungby). De behöver läsas om mot anordnarens
+sida, inte skrivas om på gissning.
+
 ## 2026-09-11 (räknaren i drift)
 
 Räknaren står nu hos Cloudflare och appen är byggd mot den. Kedjan är

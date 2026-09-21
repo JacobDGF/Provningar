@@ -15,6 +15,34 @@ export interface NextPeriod {
    * kvar"), never inferred.
    */
   full?: boolean;
+  /**
+   * What the provider says about the round *after* this one.
+   *
+   * A closed round is a dead end in the app the way it is written today: the
+   * card turns grey or red, the button says "se nästa omgång", and nothing
+   * anywhere says when that omgång is. For most of the dataset that silence is
+   * honest — the provider hasn't said. But Stockholm's four prövningsanordnare
+   * all publish the answer in the same sentence they publish the closing in
+   * ("nästa möjlighet att anmäla sig är i början av 2027"), and NTI-skolan
+   * names the term. Where the provider has said it, the listing carries it, so
+   * the user's next step is a date rather than a link to go hunting on.
+   *
+   * Only ever the provider's own words, never a term inferred from the last
+   * one's rhythm.
+   */
+  nextChance?: NextChance;
+}
+
+/** The provider's own answer to "när kan jag anmäla mig nästa gång?". */
+export interface NextChance {
+  /** The provider's sentence, as they wrote it. */
+  note: string;
+  /**
+   * ISO date, only when the provider has published an actual day. Left out for
+   * "i början av 2027" — a month is not a date, and rounding it to one would
+   * put a deadline in somebody's calendar that nobody promised.
+   */
+  opensOn?: string;
 }
 
 /** What kind of system `registrationUrl` drops the user into. */

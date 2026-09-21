@@ -15,12 +15,17 @@
  * Namnen är datans egen stavning av respektive kod, så en listning och dess
  * motsvarighet aldrig kan säga olika saker om samma kurs.
  *
- * Kurser som bara finns i ett av systemen står inte här. Fysik 1a och Fysik
- * nivå 1b listas var för sig hos Örebro utan att paras ihop, och då är tystnad
- * det enda ärliga svaret.
+ * Kurser som bara finns i ett av systemen står inte här, och inte heller par
+ * som ingen källa skrivit ut. Tystnad är det enda ärliga svaret så länge —
+ * men bara så länge: Fysik 1a och Fysik nivå 1b stod oparade här tills en andra
+ * källa skrev ut dem på samma rad.
  *
- * Källa: gymnasieskolor.orebro.se, Komvux Örebros prövningstabell hösten 2026,
- * läst 2026-09-10.
+ * Källor, båda lästa som anordnarens egen omställningstabell:
+ * gymnasieskolor.orebro.se, Komvux Örebros prövningstabell hösten 2026, läst
+ * 2026-09-10, och komvuxsodermalm.stockholm, "Osäker på om du ska pröva i Gy11
+ * eller Gy25?" på respektive ämnessida, läst 2026-09-21. Den andra källan
+ * tillförde fysikens, geografins och de sena historie-, samhälls- och
+ * religionsnivåernas par.
  */
 
 export interface CourseVariant {
@@ -43,10 +48,18 @@ export const COURSE_PAIRS: CoursePair[] = [
   { gy11: c('ENGENG05', 'Engelska 5'), gy25: c('ENGE1000X', 'Engelska Nivå 1') },
   { gy11: c('ENGENG06', 'Engelska 6'), gy25: c('ENGE2000X', 'Engelska Nivå 2') },
   { gy11: c('ENGENG07', 'Engelska 7'), gy25: c('ENGE3000X', 'Engelska Nivå 3') },
+  { gy11: c('FYSFYS01a', 'Fysik 1a'), gy25: c('FYSK1B00X', 'Fysik Nivå 1b') },
+  { gy11: c('FYSFYS01b1', 'Fysik 1b1'), gy25: c('FYSK1A10X', 'Fysik Nivå 1a1') },
+  { gy11: c('FYSFYS01b2', 'Fysik 1b2'), gy25: c('FYSK1A20X', 'Fysik Nivå 1a2') },
+  { gy11: c('GEOGEO01', 'Geografi 1'), gy25: c('GEOG1000X', 'Geografi Nivå 1') },
+  { gy11: c('GEOGEO02', 'Geografi 2'), gy25: c('GEOG2000X', 'Geografi Nivå 2') },
   { gy11: c('FYSFYS02', 'Fysik 2'), gy25: c('FYSK2000X', 'Fysik Nivå 2') },
   { gy11: c('HISHIS01a1', 'Historia 1a1'), gy25: c('HIST1A10X', 'Historia Nivå 1a1') },
   { gy11: c('HISHIS01a2', 'Historia 1a2'), gy25: c('HIST1A20X', 'Historia Nivå 1a2') },
   { gy11: c('HISHIS01b', 'Historia 1b'), gy25: c('HIST1B00X', 'Historia Nivå 1b') },
+  { gy11: c('HISHIS02a', 'Historia 2a'), gy25: c('HIST2A00X', 'Historia Nivå 2a') },
+  { gy11: c('HISHIS02b', 'Historia 2b – kultur'), gy25: c('HIST2B00X', 'Historia Nivå 2b') },
+  { gy11: c('HISHIS03', 'Historia 3'), gy25: c('HIST3000X', 'Historia Nivå 3') },
   { gy11: c('KEMKEM01', 'Kemi 1'), gy25: c('KEMI1000X', 'Kemi Nivå 1') },
   { gy11: c('KEMKEM02', 'Kemi 2'), gy25: c('KEMI2000X', 'Kemi Nivå 2') },
   { gy11: c('MATMAT01a', 'Matematik 1a'), gy25: c('MATE1A00X', 'Matematik Nivå 1a') },
@@ -71,6 +84,7 @@ export const COURSE_PAIRS: CoursePair[] = [
   { gy11: c('NAKNAK02', 'Naturkunskap 2'), gy25: c('NATU2000X', 'Naturkunskap Nivå 2') },
   { gy11: c('PSKPSY01', 'Psykologi 1'), gy25: c('PSYL1000X', 'Psykologi Nivå 1') },
   { gy11: c('RELREL01', 'Religionskunskap 1'), gy25: c('RELI1000X', 'Religionskunskap Nivå 1') },
+  { gy11: c('RELREL02', 'Religionskunskap 2'), gy25: c('RELI2000X', 'Religionskunskap Nivå 2') },
   {
     gy11: c('SAMSAM01a1', 'Samhällskunskap 1a1'),
     gy25: c('SAMH1A10X', 'Samhällskunskap Nivå 1a1'),
@@ -80,6 +94,8 @@ export const COURSE_PAIRS: CoursePair[] = [
     gy25: c('SAMH1A20X', 'Samhällskunskap Nivå 1a2'),
   },
   { gy11: c('SAMSAM01b', 'Samhällskunskap 1b'), gy25: c('SAMH1B00X', 'Samhällskunskap Nivå 1b') },
+  { gy11: c('SAMSAM02', 'Samhällskunskap 2'), gy25: c('SAMH2000X', 'Samhällskunskap Nivå 2') },
+  { gy11: c('SAMSAM03', 'Samhällskunskap 3'), gy25: c('SAMH3000X', 'Samhällskunskap Nivå 3') },
   { gy11: c('SVESVE01', 'Svenska 1'), gy25: c('SVEN1000X', 'Svenska Nivå 1') },
   { gy11: c('SVESVE02', 'Svenska 2'), gy25: c('SVEN2000X', 'Svenska Nivå 2') },
   { gy11: c('SVESVE03', 'Svenska 3'), gy25: c('SVEN3000X', 'Svenska Nivå 3') },

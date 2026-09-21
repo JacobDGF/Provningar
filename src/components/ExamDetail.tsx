@@ -18,6 +18,7 @@ import {
   Check,
   Clock,
   ListChecks,
+  CalendarClock,
 } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { Exam } from '../types';
@@ -28,6 +29,7 @@ import { getExamStatus } from '../lib/examStatusColor';
 import { getRegistrationFlow } from '../lib/registrationFlow';
 import { getExamAction } from '../lib/examAction';
 import { courseCounterpart } from '../lib/courseSystems';
+import { nextChanceFor, nextChanceHeadline } from '../lib/nextChance';
 import { track } from '../lib/analytics';
 import { examCalendarEvents, downloadCalendar } from '../lib/calendarFile';
 import { useEscapeKey } from '../hooks/useEscapeKey';
@@ -120,6 +122,7 @@ export function ExamDetail() {
 
   const saved = isExamSaved(exam.id);
   const { nextPeriod } = exam;
+  const nextChance = nextChanceFor(exam);
   const status = getExamStatus(exam);
   const passed = hasPeriodPassed(exam);
   const flow = getRegistrationFlow(exam);
@@ -445,6 +448,24 @@ export function ExamDetail() {
                       <Info size={15} className="text-ink-faint flex-shrink-0 mt-0.5" />
                       {nextPeriod.label}
                     </p>
+                    {/* Den här omgången är slut. Det som återstår att planera
+                        efter är nästa, och bara anordnarens egna ord om den. */}
+                    {nextChance && (
+                      <div className="flex items-start gap-2.5 bg-brand-50 rounded-2xl px-4 py-3">
+                        <CalendarClock
+                          size={15}
+                          className="text-brand-600 flex-shrink-0 mt-[3px]"
+                        />
+                        <div>
+                          <p className="text-ink text-[14px] font-bold">
+                            {nextChanceHeadline(nextChance)}
+                          </p>
+                          <p className="text-ink-soft text-[13.5px] leading-relaxed mt-0.5">
+                            {nextChance.note}
+                          </p>
+                        </div>
+                      </div>
+                    )}
                     {calendarEvents.length > 0 && !passed && action.live && (
                       <button
                         onClick={() => {

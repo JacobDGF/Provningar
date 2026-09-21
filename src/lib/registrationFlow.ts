@@ -107,6 +107,10 @@ const RULES: Array<{ kind: RegistrationKind; match: (url: URL) => boolean }> = [
     match: (u) => /(^|\.)(typeform\.com|office\.com|forms\.gle|google\.com)$/.test(u.hostname),
   },
   { kind: 'form', match: (u) => u.hostname === 'ansokan-provning.nti.se' },
+  // esMaker (Entergate) — enkätverktyget Stockholms stads komvuxskolor lägger
+  // sina prövningsanmälningar i. Länken är formuläret självt, inte en sida om
+  // det: skolan publicerar den på sin prövningssida den dag anmälan öppnar.
+  { kind: 'form', match: (u) => u.hostname === 'esmaker.net' },
   { kind: 'pdf', match: (u) => u.pathname.toLowerCase().endsWith('.pdf') },
   // Document endpoints that serve a PDF without saying so in the path. Gotland's
   // document service is the one in the dataset (verified: application/pdf), and

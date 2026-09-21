@@ -2,6 +2,7 @@ import { Exam } from '../types';
 import {
   daysUntil,
   hasApplicationClosed,
+  hasPeriodPassed,
   isFullyBooked,
   isOpenForRegistration,
 } from './examStatus';
@@ -165,6 +166,14 @@ export function getExamStatus(exam: Exam): ExamStatus {
 
   if (!p.confirmed) {
     return { tone: STATUS_TONES.undated, label: 'Datum ej satt', daysLeft: null };
+  }
+
+  // A round whose provdatum is behind us, published without a closing date.
+  // The colour is the same grey as a passed deadline — it is the same fact for
+  // the reader — but the words have to be the ones that are true: nothing
+  // "stängde" on a stated day, the round simply ran its course.
+  if (hasPeriodPassed(exam)) {
+    return { tone: STATUS_TONES.closed, label: 'Omgången är över', daysLeft: null };
   }
 
   if (isOpenForRegistration(exam)) {
