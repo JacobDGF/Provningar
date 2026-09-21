@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-09-20T07:47:25.505Z",
+  "uppdaterad": "2026-09-21T08:00:51.946Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -202,6 +202,32 @@
         "PSYL1000X": 2,
         "Varierar": 1
       }
+    },
+    "2026-09-20": {
+      "besök": 1,
+      "sidvisningar": {
+        "/ai": 2,
+        "/community": 2,
+        "/discover": 5,
+        "/exams": 2,
+        "/history": 1,
+        "/profile": 3
+      },
+      "händelser": {},
+      "kommuner": {},
+      "ämnen": {},
+      "kurser": {}
+    },
+    "2026-09-21": {
+      "besök": 1,
+      "sidvisningar": {
+        "/discover": 2,
+        "/exams": 1
+      },
+      "händelser": {},
+      "kommuner": {},
+      "ämnen": {},
+      "kurser": {}
     }
   }
 }
