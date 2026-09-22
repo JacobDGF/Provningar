@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-09-21T08:00:51.946Z",
+  "uppdaterad": "2026-09-22T07:46:00.158Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -219,15 +219,28 @@
       "kurser": {}
     },
     "2026-09-21": {
-      "besök": 1,
+      "besök": 3,
       "sidvisningar": {
-        "/discover": 2,
-        "/exams": 1
+        "/ai": 1,
+        "/community": 1,
+        "/discover": 5,
+        "/exams": 2,
+        "/history": 1
       },
-      "händelser": {},
-      "kommuner": {},
-      "ämnen": {},
-      "kurser": {}
+      "händelser": {
+        "Prövning öppnad": 3
+      },
+      "kommuner": {
+        "Örebro": 2,
+        "Göteborg": 1
+      },
+      "ämnen": {
+        "Svenska": 3
+      },
+      "kurser": {
+        "SVESVE02": 1,
+        "SVEN2000X": 2
+      }
     }
   }
 }
