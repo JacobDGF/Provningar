@@ -4,6 +4,49 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-09-23 (AI-prövning blev en chatt)
+
+**Produkt: den andra frågan.** Den första frågan till AI-prövning är en mening.
+Den andra är tre ord — _"visa bara de i Göteborg"_ — och de tre orden gav
+tidigare noll träffar, eftersom varje fråga lästes för sig och den här saknade
+kurs. Enda vägen vidare var att skriva om hela den första meningen igen. Ett
+fråga-svar-par i taget är inte ett samtal, det är en sökruta som råkar spara
+kvittona.
+
+- **En uppföljning läses mot förra svarets tolkning**, per axel och inte per
+  fält: ämne (`subjects` + `courses`), plats (`cities` + `regions`) och tid
+  (`before`). Fälten inom en axel är alternativ, inte tillägg — "Engelska"
+  efter en fråga om Matematik 2b sätter ett ämne och lämnar kursen tom, och att
+  bära den gamla kursen vidare vore att filtrera på något som är båda, vilket
+  ingenting är.
+- **Arvet står utskrivet.** `answerAsk` returnerar `carried` bredvid träffarna
+  och svaret slutar med "Matematik 2b är kvar från din förra fråga." Samma regel
+  som `widened` redan följde: det appen fyllde i åt användaren är en rad man ser,
+  inte något man ska gissa.
+- **Det finns en väg ut.** "Överallt", "när som helst" och "alla ämnen" nollar
+  sin axel, och "Nytt samtal" tömmer tråden. Ett ärvt villkor man inte kan
+  släppa är ett rum utan dörr.
+- **Modellen får samtalet.** Messages API är tillståndslöst, så tråden skickas
+  om varje tur som växlande `user`- och `assistant`-meddelanden. Bara det sista
+  meddelandet bär en träfflista, och systemprompten säger det med ord — tre
+  "aktuella" listor i samma anrop är hur en modell kommer att rekommendera en
+  omgång som filtrerades bort två frågor tidigare.
+- **Tråden bor i storen**, utanför `partialize`. Fliken avmonteras när man byter
+  flik, och ett samtal som försvinner av att man går och tittar på ett kort är
+  inget samtal — men en chatt som ligger kvar i `localStorage` i månader är en
+  logg ingen bett om.
+- **Fortfarande inga bubblor.** Frågan är en rubrik, svaret ett stycke, korten
+  är appens vanliga listningskort. Skrivfältet sitter kvar högst upp när tråden
+  växer, och under senaste svaret ligger ett par föreslagna uppföljningar: ett
+  samtal är bara så upptäckbart som sitt andra meddelande. De två som kräver en
+  modell för att betyda något erbjuds bara i byggen som har en.
+
+`VITE_AI_ENDPOINT` krävs fortfarande för modellsvar, och den lokala tolkningen
+är kvar som reserv när endpointen saknas eller faller. 34 nya tester, varav de
+första för `aiProvning.ts`: en tråd med en halv tur, en gammal träfflista kvar
+längre upp i samtalet, och ett anrop som går iväg trots att bygget saknar
+endpoint är alla fel som ser ut som ett dåligt modellsvar.
+
 ## 2026-09-23 (datumsvep)
 
 `check:dates` pekade ut 27 listningar vars omgång var helt förbi. Alla 27 är

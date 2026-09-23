@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { EXAMS } from '../data/exams';
-import { answerAsk, describeAsk, hasConstraints, readAsk } from './askProvningar';
+import { answerAsk, describeAsk, describeAxes, hasConstraints, readAsk } from './askProvningar';
 
 /**
  * These run against the real dataset on purpose.
@@ -105,5 +105,79 @@ describe('describeAsk', () => {
   it('says the reading back in the words the user could correct', () => {
     const ask = readAsk('Matte 2b i Göteborg innan december', EXAMS, TODAY);
     expect(describeAsk(ask)).toBe('Matematik 2b i Göteborg före december');
+  });
+});
+
+/**
+ * The half that makes the tab a conversation rather than a row of unrelated
+ * searches. "Visa bara de i Göteborg" is a complete thing to say to a person,
+ * and it carries no kurs — the kurs is in the message before it.
+ */
+describe('answerAsk med en tidigare fråga', () => {
+  const first = readAsk('Matte 2b', EXAMS, TODAY);
+
+  it('narrows the previous question instead of starting a new one', () => {
+    const { ask, matches, carried } = answerAsk('visa bara de i Göteborg', EXAMS, TODAY, first);
+    expect(ask.courses).toEqual(['Matematik 2b']);
+    expect(ask.cities).toEqual(['Göteborg']);
+    expect(carried).toEqual(['ämne']);
+    expect(matches.length).toBeGreaterThan(0);
+    for (const m of matches) {
+      expect(m.course).toBe('Matematik 2b');
+      expect(m.city).toBe('Göteborg');
+    }
+  });
+
+  it('adds a deadline to a question that already had a kurs and an ort', () => {
+    const withCity = readAsk('Matte 2b i Göteborg', EXAMS, TODAY);
+    const { ask, carried } = answerAsk('hinner jag innan december?', EXAMS, TODAY, withCity);
+    expect(ask.before).toBe('2026-12-01');
+    expect(carried).toEqual(['ämne', 'plats']);
+  });
+
+  /**
+   * The reason merging is per axis. An ämne and a kurs are two answers to the
+   * same question, so a new ämne has to push the old kurs out — carrying both
+   * would filter for a listing that is Engelska and Matematik 2b at once.
+   */
+  it('replaces the whole ämne axis when the follow-up names a new subject', () => {
+    const { ask } = answerAsk('och engelska då?', EXAMS, TODAY, first);
+    expect(ask.subjects).toEqual(['Engelska']);
+    expect(ask.courses).toEqual([]);
+  });
+
+  it('replaces the ort rather than adding to it', () => {
+    const inGbg = readAsk('Matte 2b i Göteborg', EXAMS, TODAY);
+    const { ask } = answerAsk('finns det i Malmö istället', EXAMS, TODAY, inGbg);
+    expect(ask.cities).toEqual(['Malmö']);
+  });
+
+  /** An inherited constraint you cannot drop is a room with no door. */
+  it('lets the user ask an axis back', () => {
+    const inGbg = readAsk('Matte 2b i Göteborg', EXAMS, TODAY);
+    const { ask, carried } = answerAsk('visa överallt', EXAMS, TODAY, inGbg);
+    expect(ask.cities).toEqual([]);
+    expect(ask.regions).toEqual([]);
+    expect(carried).toEqual(['ämne']);
+  });
+
+  it('keeps the whole reading for a follow-up that names nothing', () => {
+    const full = readAsk('Matte 2b i Göteborg innan december', EXAMS, TODAY);
+    const { ask, carried } = answerAsk('vad kostar de?', EXAMS, TODAY, full);
+    expect(ask).toEqual(full);
+    expect(carried).toEqual(['ämne', 'plats', 'tid']);
+    // Carried constraints still count as constraints, so the tab does not fall
+    // back to "jag hittade inget ämne" on a question the user can see is clear.
+    expect(hasConstraints(ask)).toBe(true);
+  });
+
+  it('carries nothing when there is no previous question', () => {
+    expect(answerAsk('Matte 2b i Göteborg', EXAMS, TODAY).carried).toEqual([]);
+  });
+
+  it('names the inherited part in the same words as the reading', () => {
+    const { ask, carried } = answerAsk('visa bara de i Göteborg', EXAMS, TODAY, first);
+    expect(describeAxes(ask, carried)).toBe('Matematik 2b');
+    expect(describeAsk(ask)).toBe('Matematik 2b i Göteborg');
   });
 });

@@ -21,6 +21,13 @@ import { compareByPeriod, hasApplicationClosed, isFullyBooked } from './examStat
  * The other half of that bargain is that the reading is shown rather than
  * assumed: the tab prints what it understood above the results, so a
  * misreading is one visible line instead of a confident paragraph.
+ *
+ * A question can also be read against the one before it. "Visa bara de i
+ * Göteborg" carries no kurs of its own and is a perfectly clear thing to say
+ * anyway, because the kurs is in the previous message — so `answerAsk` takes an
+ * optional `previous` reading and fills in the axes this sentence left alone.
+ * What it filled in comes back as `carried`, for the same reason the reading is
+ * printed at all.
  */
 
 export interface Ask {
@@ -32,6 +39,20 @@ export interface Ask {
   before?: string;
 }
 
+/**
+ * The three things a question can pin down.
+ *
+ * A follow-up is merged per axis rather than per field, because the fields
+ * inside one axis are alternatives rather than additions. "Engelska" after a
+ * question about Matematik 2b sets `subjects` and leaves `courses` empty — and
+ * carrying the old `courses` forward would then hand the filter both an ämne
+ * and a kurs that cannot both be true, which matches nothing. The axis is the
+ * unit the user is actually replacing.
+ */
+export type AskAxis = 'ämne' | 'plats' | 'tid';
+
+export const ASK_AXES: AskAxis[] = ['ämne', 'plats', 'tid'];
+
 export interface AskResult {
   ask: Ask;
   matches: Exam[];
@@ -41,6 +62,15 @@ export interface AskResult {
    * says so — silently widening a search is how a wrong answer gets trusted.
    */
   widened: boolean;
+  /**
+   * Axes this reading took from the previous question instead of from this one.
+   *
+   * The same rule as `widened`: what the app filled in on the user's behalf is
+   * printed, not assumed. "Visa bara de i Göteborg" is a useful question only
+   * because the kurs came from the message before it, and a user who cannot see
+   * that inheritance cannot tell a helpful answer from a stuck one.
+   */
+  carried: AskAxis[];
 }
 
 /** Everyday words for things the dataset spells out in full. */
@@ -147,7 +177,56 @@ function fallsBefore(exam: Exam, cutoff: string): boolean {
   return !!when && when < cutoff;
 }
 
-export function readAsk(question: string, exams: Exam[], today = new Date()): Ask {
+/** True when this reading pinned down anything at all on `axis`. */
+function namesAxis(ask: Ask, axis: AskAxis): boolean {
+  if (axis === 'ämne') return ask.subjects.length > 0 || ask.courses.length > 0;
+  if (axis === 'plats') return ask.cities.length > 0 || ask.regions.length > 0;
+  return ask.before !== undefined;
+}
+
+/**
+ * Asking for an axis back, in so many words.
+ *
+ * Without these, an inherited constraint is a room with no door: once a
+ * question has mentioned Göteborg, every follow-up is about Göteborg, and the
+ * only way out is to start over. "Överallt" has to be able to mean överallt.
+ */
+const WIDENINGS: Record<AskAxis, RegExp> = {
+  ämne: /\b(alla amnen|oavsett amne|alla kurser|oavsett kurs|vilken kurs som helst|vilket amne som helst)\b/,
+  plats:
+    /\b(overallt|var som helst|varsomhelst|hela sverige|hela landet|alla orter|alla kommuner|oavsett ort|oavsett kommun|oavsett var)\b/,
+  tid: /\b(nar som helst|narsomhelst|oavsett datum|oavsett nar|oavsett tid|ingen deadline|alla datum)\b/,
+};
+
+function copyAxis(target: Ask, source: Ask, axis: AskAxis): void {
+  if (axis === 'ämne') {
+    target.subjects = source.subjects;
+    target.courses = source.courses;
+  } else if (axis === 'plats') {
+    target.cities = source.cities;
+    target.regions = source.regions;
+  } else {
+    target.before = source.before;
+  }
+}
+
+export function readAsk(question: string, exams: Exam[], today = new Date(), previous?: Ask): Ask {
+  return read(question, exams, today, previous).ask;
+}
+
+/**
+ * The reading, plus what it had to borrow from the question before it.
+ *
+ * Kept private because `answerAsk` is the honest entry point: it returns
+ * `carried` alongside the matches, so a caller cannot get the benefit of the
+ * inheritance without also being handed the fact of it.
+ */
+function read(
+  question: string,
+  exams: Exam[],
+  today: Date,
+  previous?: Ask,
+): { ask: Ask; carried: AskAxis[] } {
   const padded = withAliases(normalize(question));
   const matching = (terms: string[]) => terms.filter((term) => contains(padded, term));
 
@@ -158,13 +237,28 @@ export function readAsk(question: string, exams: Exam[], today = new Date()): As
     }
   }
 
-  return {
+  const ask: Ask = {
     cities: matching(vocabulary(exams, (e) => e.city)),
     regions: matching(vocabulary(exams, (e) => e.region)),
     subjects: matching(vocabulary(exams, (e) => e.subject)),
     courses,
     before: readDeadline(padded, today),
   };
+
+  if (!previous) return { ask, carried: [] };
+
+  // Three ways an axis can end up unset, and only one of them is an invitation
+  // to reuse the last answer's: the user said nothing about it. Saying something
+  // new replaces it, and asking for it back clears it.
+  const carried: AskAxis[] = [];
+  for (const axis of ASK_AXES) {
+    if (namesAxis(ask, axis)) continue;
+    if (WIDENINGS[axis].test(padded)) continue;
+    if (!namesAxis(previous, axis)) continue;
+    copyAxis(ask, previous, axis);
+    carried.push(axis);
+  }
+  return { ask, carried };
 }
 
 export function hasConstraints(ask: Ask): boolean {
@@ -185,8 +279,13 @@ export function hasConstraints(ask: Ask): boolean {
  * not so much choose as assume. Dropping the stad or the kurs instead would
  * answer a different question than the one asked.
  */
-export function answerAsk(question: string, exams: Exam[], today = new Date()): AskResult {
-  const ask = readAsk(question, exams, today);
+export function answerAsk(
+  question: string,
+  exams: Exam[],
+  today = new Date(),
+  previous?: Ask,
+): AskResult {
+  const { ask, carried } = read(question, exams, today, previous);
 
   const named = exams.filter((e) => {
     const cityOk = !ask.cities.length || ask.cities.includes(e.city);
@@ -200,7 +299,7 @@ export function answerAsk(question: string, exams: Exam[], today = new Date()): 
     (e) => stillActionable(e, today) && (!ask.before || fallsBefore(e, ask.before)),
   );
   const matches = (strict.length ? strict : named).slice().sort(compareByPeriod);
-  return { ask, matches, widened: strict.length === 0 && named.length > 0 };
+  return { ask, matches, widened: strict.length === 0 && named.length > 0, carried };
 }
 
 /** One line saying what the sentence was read as, for the user to check. */
@@ -212,4 +311,17 @@ export function describeAsk(ask: Ask): string {
   else if (ask.regions.length) parts.push(`i ${ask.regions.join(', ')} län`);
   if (ask.before) parts.push(`före ${MONTHS[Number(ask.before.split('-')[1]) - 1]}`);
   return parts.join(' ');
+}
+
+/**
+ * Just the part of a reading that sits on `axes`, worded as `describeAsk` does.
+ *
+ * Used for the line that names what a follow-up inherited. It goes through the
+ * same formatter on purpose: "Matematik 2b" has to read identically whether it
+ * is the thing you asked for or the thing you asked about.
+ */
+export function describeAxes(ask: Ask, axes: AskAxis[]): string {
+  const empty: Ask = { cities: [], regions: [], subjects: [], courses: [] };
+  for (const axis of axes) copyAxis(empty, ask, axis);
+  return describeAsk(empty);
 }

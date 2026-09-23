@@ -338,14 +338,69 @@ Två saker gör den ärlig i stället för magisk:
   hinner före gränsen visas hela träfflistan — men med den meningen utskriven.
   En tyst vidgning är hur ett fel svar blir betrott.
 
+### Den andra meningen
+
+Den första frågan är en mening. Den andra är tre ord: _"visa bara de i
+Göteborg"_. Fliken läste tidigare varje fråga för sig, så de tre orden var en
+fråga utan kurs — noll träffar, och enda vägen vidare att skriva om hela den
+första meningen igen. Ett fråga-svar-par i taget är inte ett samtal, det är en
+sökruta som råkar spara kvittona.
+
+En uppföljning läses därför mot förra svarets tolkning. Sammanslagningen sker
+per _axel_ — ämne (`subjects` + `courses`), plats (`cities` + `regions`) och tid
+(`before`) — och inte per fält, eftersom fälten inom en axel är alternativ och
+inte tillägg. "Engelska" efter en fråga om Matematik 2b sätter ett ämne och
+lämnar kursen tom, och att då bära den gamla kursen vidare vore att filtrera på
+något som är både Engelska och Matematik 2b, vilket ingenting är. Axeln är det
+användaren faktiskt byter ut.
+
+Tre saker håller det ärligt, och alla tre är samma regel som tolkningen vilar
+på: det appen fyllde i åt användaren står utskrivet.
+
+- **Arvet syns.** `answerAsk` returnerar `carried` bredvid träffarna, och svaret
+  slutar med _"Matematik 2b är kvar från din förra fråga."_ Den som inte ser
+  arvet kan inte skilja ett hjälpsamt svar från ett svar som fastnat.
+- **Det finns en väg ut.** "Överallt", "när som helst" och "alla ämnen" nollar
+  sin axel. Ett ärvt villkor man inte kan släppa är ett rum utan dörr: när en
+  fråga väl nämnt Göteborg handlar varje uppföljning om Göteborg, och det enda
+  som återstår är "Nytt samtal".
+- **Modellen får samtalet, inte bara frågan.** Messages API är tillståndslöst,
+  så tråden skickas om varje tur: tidigare frågor och svar som växlande `user`-
+  och `assistant`-meddelanden, och dagens fråga sist. Bara det sista
+  meddelandet bär en träfflista, och systemprompten säger det med ord — tre
+  "aktuella" listor i samma anrop är hur en modell kommer att rekommendera en
+  omgång som filtrerades bort två frågor tidigare.
+
+Tråden bor i storen och inte i flikens `useState`, eftersom fliken avmonteras
+när man byter flik och ett samtal som försvinner av att man går och tittar på
+ett kort inte är ett samtal. Den ligger medvetet utanför `partialize`: frågorna
+är användarens egna meningar, och en chatt som ligger kvar i webbläsaren i
+månader är en logg ingen bett om.
+
+Fortfarande inga bubblor. Frågan står som en rubrik, svaret som ett stycke, och
+under det ligger vanliga listningskort — samma kort, samma färg och samma väg
+in i anmälan som i resten av appen. Ett samtal är vad fliken gör, inte vad den
+ser ut som. Skrivfältet sitter kvar högst upp när tråden växer, och under
+senaste svaret ligger ett par föreslagna uppföljningar: ett samtal är bara så
+upptäckbart som sitt andra meddelande, och ingenting antydde tidigare att "visa
+bara de i Göteborg" var något man fick säga.
+
 ### Modellen formulerar, datan svarar
 
 Anropet till Anthropics Messages API (`claude-sonnet-4-6`, `max_tokens: 1000`)
-ligger i [`src/lib/aiProvning.ts`](src/lib/aiProvning.ts). Modellen får frågan
-och de tolv aktuella listningarna som JSON, och en systemprompt som säger åt
-den att aldrig gissa datum eller avgifter utan hänvisa till `kalla_url`.
-Korten under svaret kommer alltid ur `answerAsk` — en mening kan bli fel, men
-ett kort länkar till den anmälan det namnger.
+ligger i [`src/lib/aiProvning.ts`](src/lib/aiProvning.ts). Modellen får de sex
+senaste turerna som växlande `user`- och `assistant`-meddelanden, dagens fråga
+sist, de tolv aktuella listningarna som JSON i just det meddelandet, och en
+systemprompt som säger åt den att aldrig gissa datum eller avgifter utan
+hänvisa till `kalla_url`. Korten under svaret kommer alltid ur `answerAsk` — en
+mening kan bli fel, men ett kort länkar till den anmälan det namnger.
+
+Appens egen läsning har inget sådant fönster: den bär villkoren vidare hur
+långt samtalet än blir, så en lång tråd tappar modellens minne av
+formuleringarna, aldrig filtret. `buildMessages` är exporterad för sitt tests
+skull — en tappad `assistant`-tur, två `user`-meddelanden i rad eller en gammal
+träfflista kvar i ett tidigare meddelande ser alla ut som en modell som svarar
+dåligt, vilket är den enda felrapport ingen kan göra något med.
 
 Sajten är statisk och har ingen server, så den kan inte hålla en API-nyckel: allt
 som ligger i bygget är offentligt, och en Anthropic-nyckel i ett offentligt bygge

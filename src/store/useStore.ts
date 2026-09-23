@@ -6,6 +6,7 @@ import { INITIAL_POSTS } from '../data/community';
 import { isOwnPhoto } from '../lib/avatar';
 import { StatusKey } from '../lib/examStatusColor';
 import { makeWatch, matchesWatch, watchKey } from '../lib/watches';
+import { AiTurn } from '../lib/aiThread';
 import { track } from '../lib/analytics';
 
 interface AppState {
@@ -125,6 +126,26 @@ interface AppState {
    */
   showingConsent: boolean;
   setShowingConsent: (v: boolean) => void;
+
+  /**
+   * AI-prövnings samtal.
+   *
+   * Ligger i storen och inte i flikens egen `useState` av samma skäl som
+   * `filterCity` flyttade dit: fliken avmonteras när man byter flik, och ett
+   * samtal som försvinner av att man går och tittar på ett kort är inget
+   * samtal. En uppföljning läses mot förra svarets tolkning, så tråden *är*
+   * sammanhanget — tappar den, tappar "visa bara de i Göteborg" sin mening.
+   *
+   * Står medvetet utanför `partialize`: den sparas inte i `localStorage`.
+   * Frågorna är användarens egna meningar, och en chatt som ligger kvar i
+   * webbläsaren i månader är en logg ingen bett om — till skillnad från sparade
+   * prövningar, som är det användaren faktiskt vill ha tillbaka.
+   */
+  aiThread: AiTurn[];
+  addAiTurn: (turn: AiTurn) => void;
+  /** Byter ut stycket ovanför korten mot modellens formulering. */
+  setAiAnswer: (id: string, answer: string) => void;
+  clearAiThread: () => void;
 }
 
 export const DEFAULT_USER: User = {
@@ -399,6 +420,14 @@ export const useStore = create<AppState>()(
       setShowingFaq: (v) => set({ showingFaq: v }),
       showingConsent: false,
       setShowingConsent: (v) => set({ showingConsent: v }),
+
+      aiThread: [],
+      addAiTurn: (turn) => set((s) => ({ aiThread: [...s.aiThread, turn] })),
+      setAiAnswer: (id, answer) =>
+        set((s) => ({
+          aiThread: s.aiThread.map((t) => (t.id === id ? { ...t, answer, fromModel: true } : t)),
+        })),
+      clearAiThread: () => set({ aiThread: [] }),
     }),
     {
       name: 'provningar-storage',
