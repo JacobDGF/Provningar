@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-09-22T07:46:00.158Z",
+  "uppdaterad": "2026-09-23T07:49:05.087Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -240,6 +240,37 @@
       "kurser": {
         "SVESVE02": 1,
         "SVEN2000X": 2
+      }
+    },
+    "2026-09-22": {
+      "besök": 7,
+      "sidvisningar": {
+        "/ai": 6,
+        "/community": 3,
+        "/discover": 20,
+        "/exams": 6,
+        "/history": 2,
+        "/profile": 2
+      },
+      "händelser": {
+        "Prövning öppnad": 13
+      },
+      "kommuner": {
+        "Stockholm": 4,
+        "Örebro": 6,
+        "Göteborg": 3
+      },
+      "ämnen": {
+        "Matematik": 9,
+        "Fysik": 4
+      },
+      "kurser": {
+        "MATMAT03b": 3,
+        "FYSFYS01a": 2,
+        "FYSK1B00X": 2,
+        "MATMAT04": 2,
+        "MATO2000X": 2,
+        "MATE2B00X": 2
       }
     }
   }
