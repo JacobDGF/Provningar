@@ -4,6 +4,41 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-09-23 (datumsvep)
+
+`check:dates` pekade ut 27 listningar vars omgång var helt förbi. Alla 27 är
+lästa mot anordnarens egen sida, en anordnare i taget, och rapporten är nu tom:
+noll listningar visar ett datum som varit.
+
+- **Tolv anordnare hade hunnit publicera nästa omgång**, och den ligger nu i
+  datan: ABF Stockholm (tillfälle 2 den 9 november, anmälan från 26 oktober),
+  Iris Upplands Väsby (8 december, anmälan 5 november), Vux Huddinge
+  (15 mars 2027, anmälan 25 januari–21 februari), Uddevalla (10 december–
+  28 februari), Kristinehamn (1 februari–1 mars), Motala (2 januari–
+  15 februari), Kunskapsförbundet Väst i både Vänersborg och Trollhättan
+  (senast 1 februari), Växjö (period 1: 15–22 februari), Katrineholm
+  (1–26 januari), Värnamo (senast 29 januari) och Ljungby (senast 20 oktober).
+- **Två hade det inte, och säger det själva.** Prövningsenheten Göteborgs nio
+  utgångna kurser står som `confirmed: false` med anordnarens egen mening —
+  "vårens prövningar publiceras den 1 december och första ansökningsdag är
+  15 december" — och Umevux med sin: "just nu ingen aktuell prövningsperiod".
+  Deras beskrivningar namngav dessutom ett provdatum som varit; det är borta.
+- **ABF:s engelska nivå 1–2 flyttade.** Blocket som i augusti låg den
+  7 september är nu ett eget tillfälle den 1 oktober, och ABF skriver
+  "(FULLT!)" om det — så listningen är `full: true` med rätt provdatum, och
+  dess `publishedOnPage`-flöde slutade påstå att formuläret dyker upp
+  24 augusti.
+- **Ny listning: ABF Stockholm, Engelska Nivå 3** (`ENGE3000X`). Nivå 3 har ett
+  eget datumblock hos ABF med ett andra tillfälle den 9 november, medan nivå
+  1–2 bara har det fulla oktobertillfället. Två kurser är två kort, och här är
+  det just skillnaden som betyder något: det ena går att boka.
+
+`check:links` hittade två döda bokningslänkar som står kvar orörda i väntan på
+besked — båda är anordnarens egna, och båda är fortfarande länkade från
+anordnarens egen sida: `etjanst.motala.se/provning` (404, blanketten publiceras
+bara under en öppen ansökningsperiod) och `vasteras.alvis.se/provning/amnesomrade`
+(Alvis svarar "Oväntat fel 404").
+
 ## 2026-09-11 (räknaren i drift)
 
 Räknaren står nu hos Cloudflare och appen är byggd mot den. Kedjan är

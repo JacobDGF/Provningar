@@ -435,6 +435,13 @@ function ntiAutumn2026(): NextPeriod {
 // årets omgång är fullbokad.
 const SEP_10_VERIFIED = '2026-09-10';
 
+// Datumsvepet 2026-09-23: de 27 listningar check:dates pekade ut som helt
+// gångna, lästa mot anordnarens egen sida en anordnare i taget. Tolv
+// anordnare hade hunnit publicera nästa omgång; Göteborg och Umeå hade inte,
+// och där står confirmed: false med anordnarens egen mening om när datumen
+// kommer i stället för ett datum som varit.
+const SEP_23_VERIFIED = '2026-09-23';
+
 const OREBRO_PRICE_NOTE =
   '500 kr per kurs. Avgiftsfritt om du har F eller IG i kursen från komvux — betygskopian ska ' +
   'bifogas direkt i anmälan, som inte går att komplettera i efterhand. Anmälan är bindande från ' +
@@ -4133,22 +4140,20 @@ export const EXAMS: Exam[] = [
     lng: 17.91,
     price: 500,
     priceNote: NON_REFUNDABLE,
-    // Checked 2026-08-20: Iris egen produktsida skriver i versaler "ALLA
-    // PRÖVNINGSPLATSER FÖR TISDAG DEN 8 SEPTEMBER I UPPLANDS VÄSBY ÄR
-    // BOKADE!" och webbshoppen står som "Slut i lager". Datumen såg öppna ut
-    // och kortet lyste grönt "Öppen nu" — vilket är exakt det `full` finns
-    // för: anordnarens ord slår kalendern.
+    // Läst 2026-09-23: septembertillfället är genomfört, och `full` togs bort
+    // med det — "fullbokat" beskrev den omgången, inte den här. Iris skriver
+    // ut hela sitt schema två år framåt, så decemberomgången är anordnarens
+    // eget datum och inte en gissning. Ingen applicationEnd: anmälan stänger
+    // när platserna är slut, inte på ett datum.
     nextPeriod: {
       label:
-        'Alla platser till provtillfället 8 september 2026 är bokade — Iris skriver "slut i lager". ' +
-        'Nästa tillfälle är tisdag 8 december kl. 9–12, med anmälan som öppnar torsdag 5 november ' +
-        'kl. 9:00 och stänger så snart platserna är fullbokade. Formuläret visas bara den dagen, ' +
-        'och platserna brukar gå åt på minuter.',
-      applicationStart: '2026-08-06',
-      examWindowStart: '2026-09-08',
-      examWindowEnd: '2026-09-08',
+        'Nästa prövningstillfälle i Upplands Väsby är tisdag 8 december 2026 kl. 9.00. ' +
+        'Anmälan öppnar torsdag 5 november kl. 09.00–12.00 och stänger så snart de 25 ' +
+        'platserna är fullbokade. Tillfället den 8 september är genomfört.',
+      applicationStart: '2026-11-05',
+      examWindowStart: '2026-12-08',
+      examWindowEnd: '2026-12-08',
       confirmed: true,
-      full: true,
     },
     components: COMPONENTS_FYSIK,
     studyTips: TIPS_FYSIK,
@@ -4158,7 +4163,7 @@ export const EXAMS: Exam[] = [
     description:
       'Iris Hadar genomför betygsprövning i naturvetenskapliga ämnen i Upplands Väsby ett par gånger per termin.',
     tags: ['fysik', 'upplands-vasby', 'iris'],
-    verifiedAt: FULL_SWEEP_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'iris-flemingsberg-ma',
@@ -4350,14 +4355,10 @@ export const EXAMS: Exam[] = [
       FREE_IF_PRIOR_F +
       ' Kräver folkbokföring i en Västerbottens-kommun. Endast ett ämne per prövningsperiod.',
     nextPeriod: {
-      // Umevux publicerar ansökningsfönstret men inte provdatumet: prövningen
-      // startar i oktober och pågår i cirka tre veckor, och det exakta datumet
-      // får man med antagningsbeskedet. Därför ingen examWindow.
       label:
-        'Ansökan till höstens prövningar öppnade 21 augusti 2026 och stänger 18 september. Prövningen startar i oktober och pågår i cirka tre veckor.',
-      applicationStart: '2026-08-21',
-      applicationEnd: '2026-09-18',
-      confirmed: true,
+        'Umeå har just nu ingen aktuell prövningsperiod att anmäla sig till. Anmälan till ' +
+        'prövningstillfällena för våren 2027 läggs ut när de är fastställda.',
+      confirmed: false,
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
@@ -4367,7 +4368,7 @@ export const EXAMS: Exam[] = [
     description:
       'Umevux erbjuder betygsprövning i gymnasiekurser för folkbokförda i Västerbottens kommuner, minst fyra gånger per år.',
     tags: ['matematik', 'umea'],
-    verifiedAt: AUG_18_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'umea-eng6',
@@ -4387,14 +4388,10 @@ export const EXAMS: Exam[] = [
       FREE_IF_PRIOR_F +
       ' Kräver folkbokföring i en Västerbottens-kommun. Endast ett ämne per prövningsperiod.',
     nextPeriod: {
-      // Umevux publicerar ansökningsfönstret men inte provdatumet: prövningen
-      // startar i oktober och pågår i cirka tre veckor, och det exakta datumet
-      // får man med antagningsbeskedet. Därför ingen examWindow.
       label:
-        'Ansökan till höstens prövningar öppnade 21 augusti 2026 och stänger 18 september. Prövningen startar i oktober och pågår i cirka tre veckor.',
-      applicationStart: '2026-08-21',
-      applicationEnd: '2026-09-18',
-      confirmed: true,
+        'Umeå har just nu ingen aktuell prövningsperiod att anmäla sig till. Anmälan till ' +
+        'prövningstillfällena för våren 2027 läggs ut när de är fastställda.',
+      confirmed: false,
     },
     components: COMPONENTS_ENGELSKA,
     studyTips: TIPS_ENGELSKA,
@@ -4404,7 +4401,7 @@ export const EXAMS: Exam[] = [
     description:
       'Umevux erbjuder betygsprövning i Engelska 6 för folkbokförda i Västerbottens kommuner.',
     tags: ['engelska', 'umea'],
-    verifiedAt: AUG_18_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'lulea-kemi1',
@@ -4861,8 +4858,9 @@ export const EXAMS: Exam[] = [
       '500 kr, lagstadgad avgift. Avgiftsfritt bl.a. för den som har betyget F i kursen och samtidigt studerar andra kurser på vuxenutbildningen.',
     nextPeriod: {
       label:
-        'Ansökan till höstens studieperiod 2026 ska vara inlämnad senast 1 september 2026 (vårens period senast 1 februari)',
-      applicationEnd: '2026-09-01',
+        'Ansökan om prövning till hösten 2026 är stängd. För vårens studieperiod ska ansökan ' +
+        'vara inlämnad senast 1 februari 2027.',
+      applicationEnd: '2027-02-01',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -4872,7 +4870,7 @@ export const EXAMS: Exam[] = [
     description:
       'Kunskapsförbundet Väst (Trollhättan/Vänersborg) erbjuder prövning i SFI samt kurser på grundläggande och gymnasial nivå. Ansökan för höstens studieperiod ska lämnas senast 1 september via blankett eller e-tjänst.',
     tags: ['komvux', 'trollhattan', 'vanersborg'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'vuxenutbildning-skovde-skovde-matematik-3b',
@@ -4986,9 +4984,11 @@ export const EXAMS: Exam[] = [
       '500 kr, lagstadgad avgift, återbetalas ej. Gratis vid F på grundläggande/gymnasial nivå, eller vid SFI-prövning för folkbokförda i Uddevalla.',
     nextPeriod: {
       label:
-        'Ansökan öppen 10 juni–10 september (prövning genomförs i november) samt 10 december–28 februari (prövning i april-juni)',
-      applicationStart: '2026-06-10',
-      applicationEnd: '2026-09-10',
+        'Nästa ansökningsperiod är 10 december–28 februari, och de prövningarna genomförs ' +
+        'under april–juni. Höstens period (10 juni–10 september) är stängd; de prövningarna ' +
+        'genomförs i november.',
+      applicationStart: '2026-12-10',
+      applicationEnd: '2027-02-28',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -5010,7 +5010,7 @@ export const EXAMS: Exam[] = [
     description:
       'Uddevalla Vuxenutbildning erbjuder prövning i grundläggande och gymnasiala kurser under två återkommande ansökningsperioder per år, med max två prövningar per period.',
     tags: ['komvux', 'uddevalla', 'flera-amnen'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'campus-alingsas-vuxenutbildningen-alingsas-flera-kurser-kont',
@@ -5263,9 +5263,11 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per kurs (bankgiro 110-0213); kostnadsfritt för studerande på vuxenutbildningen med IG/F i kursen.',
     nextPeriod: {
-      label: 'Höstprövning 2026: ansökan öppen 1 augusti–1 september, betalning senast 1 september',
-      applicationStart: '2026-08-01',
-      applicationEnd: '2026-09-01',
+      label:
+        'Vårprövning 2027: ansökan är öppen 1 februari–1 mars och avgiften ska vara betald ' +
+        'senast 1 mars. Höstens period stängde 1 september 2026.',
+      applicationStart: '2027-02-01',
+      applicationEnd: '2027-03-01',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -5277,7 +5279,7 @@ export const EXAMS: Exam[] = [
     description:
       'Kristinehamns kommun erbjuder prövning i svenska, svenska som andraspråk, engelska och matematik samt SFI, med max två ansökningar per person och termin.',
     tags: ['komvux', 'kristinehamn', 'flera-amnen'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'abf-stockholm-komvux-stockholm-flera-kurser-kontakta-skolan-',
@@ -5297,26 +5299,28 @@ export const EXAMS: Exam[] = [
       '500 kr per prövning; kostnadsfritt om tidigare betyg F/IG i kursen på komvux, styrks med betygskopia.',
     nextPeriod: {
       label:
-        'Prövningsdatum hösten 2026: 7 sep (ev. del 2 den 11 sep) och 9 nov (ev. del 2 den 13 nov)',
-      applicationStart: '2026-08-24',
-      applicationEnd: '2026-08-28',
-      examWindowStart: '2026-09-07',
-      examWindowEnd: '2026-09-07',
+        'Tillfälle 2 hösten 2026: prövning 9 november (ev. del 2 den 13 november). Anmälan ' +
+        'öppnar 26 oktober kl. 10 och sista betaldag är 30 oktober. Tillfälle 1 den ' +
+        '7 september är genomfört.',
+      applicationStart: '2026-10-26',
+      applicationEnd: '2026-10-30',
+      examWindowStart: '2026-11-09',
+      examWindowEnd: '2026-11-13',
       confirmed: true,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
-    // Checked 2026-08-13: "Anmälan sker ENDAST via ett formulär på denna
-    // webbsida, formuläret syns först när anmälan öppnar." Höstens formulär
-    // läggs upp 24 augusti kl. 10, betalning senast 28 augusti. Först till
-    // kvarn, ingen reservlista — så sidan är bokningen, när den är bokningen.
-    registration: publishedOnPage('anmälningsformuläret', 'den 24 augusti kl. 10'),
+    // Checked 2026-08-13, läst om 2026-09-23: "Anmälan sker ENDAST via ett
+    // formulär på denna webbsida, formuläret syns först när anmälan öppnar."
+    // Först till kvarn, ingen reservlista — så sidan är bokningen, när den är
+    // bokningen. Datumet följer tillfället: tillfälle 2 öppnar 26 oktober.
+    registration: publishedOnPage('anmälningsformuläret', 'den 26 oktober kl. 10'),
     registrationUrl: 'https://abfstockholm.se/komvux/provning/',
     infoUrl: 'https://abfstockholm.se/komvux/provning/',
     description:
       'ABF Stockholm erbjuder prövning i ämnesnivåer inom undersköterskeutbildningen (t.ex. Hälso- och sjukvård, Psykiatri, Social omsorg) för folkbokförda i bl.a. Botkyrka, Huddinge, Nacka, Sollentuna, Solna, Sundbyberg och Södertälje. Anmälan sker via formulär på skolans webbplats när det öppnar.',
     tags: ['komvux', 'vård och omsorg', 'storstockholm'],
-    verifiedAt: LINK_SWEEP_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'abf-stockholm-komvux-stockholm-engelska-6-niva-2',
@@ -5334,31 +5338,87 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per prövning; kostnadsfritt om tidigare betyg F/IG i kursen på komvux.',
     nextPeriod: {
-      // Checked 2026-08-13: ABF lists engelska nivå 1–3 under one datumblock —
-      // tillfälle 1 den 7 september (ev. del 2 den 11 september) med anmälan
-      // 24 augusti kl. 10 och sista betaldag 28 augusti, tillfälle 2 den
-      // 9 november med anmälan 26 oktober.
+      // Läst 2026-09-23: ABF har flyttat engelska nivå 1–2 ur septemberblocket
+      // till ett eget tillfälle den 1 oktober, och skriver "(FULLT!)" om det.
+      // Nivå 3 har ett andra tillfälle i november, nivå 1–2 har inget.
       label:
-        'Tillfälle 1: prövning 7 september 2026 (ev. del 2 den 11 september). Anmälan öppnar 24 augusti kl. 10 och sista betaldag är 28 augusti. Tillfälle 2 är 9 november med anmälan från 26 oktober.',
+        'Höstens enda tillfälle för engelska nivå 1–2 är 1 oktober 2026 (del 2 den ' +
+        '12 oktober). Anmälan öppnade 24 augusti kl. 10, och ABF skriver att tillfället ' +
+        'är fullt.',
       applicationStart: '2026-08-24',
       applicationEnd: '2026-08-28',
-      examWindowStart: '2026-09-07',
-      examWindowEnd: '2026-09-11',
+      examWindowStart: '2026-10-01',
+      examWindowEnd: '2026-10-12',
       confirmed: true,
+      full: true,
     },
     components: COMPONENTS_ENGELSKA,
     studyTips: TIPS_ENGELSKA,
-    // Checked 2026-08-13: "Anmälan sker ENDAST via ett formulär på denna
-    // webbsida, formuläret syns först när anmälan öppnar." Höstens formulär
-    // läggs upp 24 augusti kl. 10, betalning senast 28 augusti. Först till
-    // kvarn, ingen reservlista — så sidan är bokningen, när den är bokningen.
-    registration: publishedOnPage('anmälningsformuläret', 'den 24 augusti kl. 10'),
+    // Läst 2026-09-23: nivå 1–2 har bara ett tillfälle den här terminen, och
+    // ABF skriver "(FULLT!)" om det. Vårens formulär läggs upp på samma sida,
+    // men ABF har inte skrivit vilken dag — så flödet säger att sidan är där
+    // datumet dyker upp, utan att påstå när. `publishedOnPage` kräver ett
+    // "när", och ett gissat sådant är precis det datumet inte får vara.
+    registration: {
+      kind: 'page',
+      ctaLabel: 'Öppna anmälningssidan',
+      landing:
+        'Anmälan görs via ett formulär som ABF publicerar på den här sidan när nästa ' +
+        'tillfälle öppnar. Höstens tillfälle för engelska nivå 1–2 är fullt.',
+      steps: [
+        'ABF publicerar nästa prövningsdatum på sidan',
+        'Fyll i anmälningsformuläret den dag anmälan öppnar',
+        'Betala avgiften före sista betaldag',
+      ],
+    },
     registrationUrl: 'https://abfstockholm.se/komvux/provning/',
     infoUrl: 'https://abfstockholm.se/komvux/provning/',
     description:
       'ABF Stockholm erbjuder prövning i engelska (nivå 1-3, två delar) endast för sökande folkbokförda utanför Stockholms kommun, bland annat Botkyrka, Huddinge, Nacka och Sollentuna.',
     tags: ['komvux', 'engelska', 'storstockholm'],
-    verifiedAt: LINK_SWEEP_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
+  },
+  {
+    // Läst 2026-09-23: ABF listar engelska nivå 3 i ett eget datumblock, skilt
+    // från nivå 1–2 — nivå 3 har ett andra tillfälle den 9 november medan
+    // nivå 1–2 bara har det fulla oktobertillfället. Två kurser är två kort,
+    // och här är det just skillnaden som betyder något: det ena går att boka.
+    id: 'abf-stockholm-komvux-stockholm-engelska-niva-3',
+    schoolName: 'ABF Stockholm Komvux',
+    provider: 'ABF Stockholm',
+    subject: 'Engelska',
+    course: 'Engelska Nivå 3',
+    courseCode: 'ENGE3000X',
+    level: 'Komvux',
+    city: 'Stockholm',
+    region: 'Stockholm',
+    address: 'Sveavägen 41, Stockholm (adress bekräftas vid anmälan)',
+    lat: 59.34,
+    lng: 18.059,
+    price: 500,
+    priceNote: '500 kr per prövning; kostnadsfritt om tidigare betyg F/IG i kursen på komvux.',
+    nextPeriod: {
+      label:
+        'Tillfälle 2 hösten 2026: prövning 9 november, med del 2 den 13 november och ' +
+        '16 november. Anmälan öppnar 26 oktober kl. 10 och sista betaldag är 30 oktober. ' +
+        'Tillfälle 1 den 7 september är genomfört.',
+      applicationStart: '2026-10-26',
+      applicationEnd: '2026-10-30',
+      examWindowStart: '2026-11-09',
+      examWindowEnd: '2026-11-16',
+      confirmed: true,
+    },
+    components: COMPONENTS_ENGELSKA,
+    studyTips: TIPS_ENGELSKA,
+    // Samma villkor som ABF:s övriga prövningar: "Anmälan sker ENDAST via ett
+    // formulär på denna webbsida, formuläret syns först när anmälan öppnar."
+    registration: publishedOnPage('anmälningsformuläret', 'den 26 oktober kl. 10'),
+    registrationUrl: 'https://abfstockholm.se/komvux/provning/',
+    infoUrl: 'https://abfstockholm.se/komvux/provning/',
+    description:
+      'Betygsprövning i Engelska Nivå 3 (ENGE3000X) hos ABF Stockholm Komvux. Prövningen görs i två delar och båda måste genomföras för ett godkänt betyg. ABF har inget avtal med Stockholms kommun för engelska, så prövningen är bara öppen för dig som är folkbokförd i någon av de övriga avtalskommunerna — bland annat Botkyrka, Huddinge, Nacka, Sollentuna, Solna och Södertälje.',
+    tags: ['komvux', 'engelska', 'storstockholm', 'gy25'],
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'folkuniversitetet-komvux-sodertalje-sodertalje-flera-kurser-',
@@ -5494,11 +5554,13 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per kurs/ämnesnivå; kostnadsfritt vid tidigare betyg F eller IG i kursen på Komvux (styrks med betygskopia).',
     nextPeriod: {
-      label: 'Nästa prövningstillfälle är 14 september 2026, anmälan öppen 27 juli - 23 augusti',
-      applicationStart: '2026-07-27',
-      applicationEnd: '2026-08-23',
-      examWindowStart: '2026-09-14',
-      examWindowEnd: '2026-09-14',
+      label:
+        'Nästa prövningstillfälle är 15 mars 2027. Anmälan är öppen 25 januari–21 februari ' +
+        'och sista dag att betala är 21 februari. Begränsat antal platser — först till kvarn.',
+      applicationStart: '2027-01-25',
+      applicationEnd: '2027-02-21',
+      examWindowStart: '2027-03-15',
+      examWindowEnd: '2027-03-15',
       confirmed: true,
     },
     components: COMPONENTS_SVENSKA,
@@ -5509,7 +5571,7 @@ export const EXAMS: Exam[] = [
     description:
       'Vux Huddinge erbjuder prövning två gånger per år i svenska som andraspråk. Prövningen tar två dagar: skriftlig examination första dagen och muntlig examination andra dagen. Betalning sker via Swish.',
     tags: ['komvux', 'svenska som andraspråk', 'huddinge', 'gy11'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'vux-huddinge-huddinge-svenska-som-andrasprak-1',
@@ -5528,11 +5590,13 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per kurs/ämnesnivå; kostnadsfritt vid tidigare betyg F eller IG i kursen på Komvux (styrks med betygskopia).',
     nextPeriod: {
-      label: 'Nästa prövningstillfälle är 14 september 2026, anmälan öppen 27 juli - 23 augusti',
-      applicationStart: '2026-07-27',
-      applicationEnd: '2026-08-23',
-      examWindowStart: '2026-09-14',
-      examWindowEnd: '2026-09-14',
+      label:
+        'Nästa prövningstillfälle är 15 mars 2027. Anmälan är öppen 25 januari–21 februari ' +
+        'och sista dag att betala är 21 februari. Begränsat antal platser — först till kvarn.',
+      applicationStart: '2027-01-25',
+      applicationEnd: '2027-02-21',
+      examWindowStart: '2027-03-15',
+      examWindowEnd: '2027-03-15',
       confirmed: true,
     },
     components: COMPONENTS_SVENSKA,
@@ -5543,7 +5607,7 @@ export const EXAMS: Exam[] = [
     description:
       'Vux Huddinge erbjuder också prövning i Svenska som andraspråk 1, samma anmälningsperiod och villkor som nivå 3. Begränsat antal platser, principen är först till kvarn.',
     tags: ['komvux', 'svenska som andraspråk', 'huddinge', 'gy11'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   // Huddinge listar fyra kurser, inte två: SVASVA01/SVASVA03 enligt Gy11 och
   // SVEA1000X/SVEA3000X enligt Gy25, var och en med sitt eget
@@ -5568,11 +5632,13 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per kurs/ämnesnivå; kostnadsfritt vid tidigare betyg F eller IG i kursen på Komvux (styrks med betygskopia).',
     nextPeriod: {
-      label: 'Nästa prövningstillfälle är 14 september 2026, anmälan öppen 27 juli - 23 augusti',
-      applicationStart: '2026-07-27',
-      applicationEnd: '2026-08-23',
-      examWindowStart: '2026-09-14',
-      examWindowEnd: '2026-09-14',
+      label:
+        'Nästa prövningstillfälle är 15 mars 2027. Anmälan är öppen 25 januari–21 februari ' +
+        'och sista dag att betala är 21 februari. Begränsat antal platser — först till kvarn.',
+      applicationStart: '2027-01-25',
+      applicationEnd: '2027-02-21',
+      examWindowStart: '2027-03-15',
+      examWindowEnd: '2027-03-15',
       confirmed: true,
     },
     components: COMPONENTS_SVENSKA,
@@ -5583,7 +5649,7 @@ export const EXAMS: Exam[] = [
     description:
       'Gy25-motsvarigheten till Svenska som andraspråk 1, med eget förberedelsedokument hos Huddinge. Samma anmälningsperiod, avgift och upplägg som de andra tre: två dagar, skriftlig examination först och muntlig dagen efter, betalning via Swish. Kontrollera med din vägledare vilken läroplan ditt betyg ska följa innan du anmäler dig.',
     tags: ['komvux', 'svenska som andraspråk', 'huddinge', 'gy25'],
-    verifiedAt: AUG_26_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'vux-huddinge-huddinge-svenska-som-andrasprak-niva-3',
@@ -5602,11 +5668,13 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per kurs/ämnesnivå; kostnadsfritt vid tidigare betyg F eller IG i kursen på Komvux (styrks med betygskopia).',
     nextPeriod: {
-      label: 'Nästa prövningstillfälle är 14 september 2026, anmälan öppen 27 juli - 23 augusti',
-      applicationStart: '2026-07-27',
-      applicationEnd: '2026-08-23',
-      examWindowStart: '2026-09-14',
-      examWindowEnd: '2026-09-14',
+      label:
+        'Nästa prövningstillfälle är 15 mars 2027. Anmälan är öppen 25 januari–21 februari ' +
+        'och sista dag att betala är 21 februari. Begränsat antal platser — först till kvarn.',
+      applicationStart: '2027-01-25',
+      applicationEnd: '2027-02-21',
+      examWindowStart: '2027-03-15',
+      examWindowEnd: '2027-03-15',
       confirmed: true,
     },
     components: COMPONENTS_SVENSKA,
@@ -5617,7 +5685,7 @@ export const EXAMS: Exam[] = [
     description:
       'Gy25-motsvarigheten till Svenska som andraspråk 3, med eget förberedelsedokument hos Huddinge. Anmälan är bindande och platsen är inte garanterad förrän avgiften är betald — kommunen skriver själva att anmälan kan behöva stänga före sista anmälningsdag när platserna tar slut.',
     tags: ['komvux', 'svenska som andraspråk', 'huddinge', 'gy25'],
-    verifiedAt: AUG_26_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'vuxenutbildningen-kunskapsparken-sollentuna-sollentuna-flera',
@@ -5915,9 +5983,12 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per kurs/ämnesnivå, kostnadsfritt vid tidigare betyg F/IG',
     nextPeriod: {
-      label: 'Höstens anmälningsperiod 2026',
-      applicationStart: '2026-08-03',
-      applicationEnd: '2026-09-15',
+      label:
+        'Vårens anmälningsperiod är 2 januari–15 februari 2027. Höstens period tog emot ' +
+        'anmälningar till och med 15 september 2026. Motala har inga fasta prövningsdatum — ' +
+        'prövningen tar oftast sex veckor från att beslutet är fattat.',
+      applicationStart: '2027-01-02',
+      applicationEnd: '2027-02-15',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -5926,9 +5997,9 @@ export const EXAMS: Exam[] = [
     infoUrl:
       'https://www.motala.se/skola-och-forskola/vuxenutbildning/provning-pa-vuxenutbildningen/',
     description:
-      'Motala vuxenutbildning tar emot anmälningar till höstens prövningsperiod 3 augusti–15 september 2026; prövningen tar oftast cirka sex veckor och saknar fasta provdatum.',
+      'Motala vuxenutbildning tar emot anmälningar två perioder per år — höstens stängde 15 september 2026 och vårens är 2 januari–15 februari 2027. Anmälningsblanketten ligger på kommunens sida bara när en period är öppen, och prövningen tar oftast cirka sex veckor utan fasta provdatum.',
     tags: ['flera ämnen', 'gymnasial', 'östergötland'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'vuxenutbildningen-eskilstuna-eskilstuna-flera-kurser-kontakt',
@@ -6756,9 +6827,14 @@ export const EXAMS: Exam[] = [
       '500 kr per kurs/ämnesnivå; kostnadsfritt vid F/IG-betyg inom ett år från betygssättning',
     nextPeriod: {
       label:
-        'Period 2 2026: anmälan öppnar 15 augusti, sista anmälningsdag 22 augusti, prövning ska vara genomförd senast 30 december',
-      applicationStart: '2026-08-15',
-      applicationEnd: '2026-08-22',
+        'Period 1 2027: anmälan öppnar 15 februari, sista anmälningsdag 22 februari, sista ' +
+        'dag att komplettera med betyg 28 februari, sista betalningsdag 7 mars och ' +
+        'prövningen ska vara genomförd senast 30 juni. Period 2 2026 stängde 22 augusti.',
+      // "Prövningen ska vara genomförd senast 30 juni" är en sista dag, inte
+      // ett provfönster — Växjö sätter datumet med skolan efteråt. Det står
+      // därför i etiketten och inte som en examWindow med gissad start.
+      applicationStart: '2027-02-15',
+      applicationEnd: '2027-02-22',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -6768,7 +6844,7 @@ export const EXAMS: Exam[] = [
     description:
       'Växjö kommun har två anmälningsperioder per år för prövning, max två kurser/ämnesnivåer per tillfälle, med betalning via e-tjänst efter godkänd anmälan.',
     tags: ['komvux', 'växjö', 'småland'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'axel-weudelskolan-kunskapsnavet-kalmar-flera-kurser-kontakta',
@@ -7039,9 +7115,11 @@ export const EXAMS: Exam[] = [
     priceNote: FREE_IF_PRIOR_F + ' Avgiften betalas innan anmälan och kvittot bifogas i ansökan.',
     nextPeriod: {
       label:
-        'Höstens ansökningsperiod 2026: 1 augusti – 1 september. Prövning erbjuds på både grundläggande och gymnasial nivå.',
-      applicationStart: '2026-08-01',
-      applicationEnd: '2026-09-01',
+        'Vårens anmälningsperiod 2027 är 1–26 januari. Prövningen startar två veckor efter ' +
+        'att ansökan stänger och pågår i cirka fem veckor. Höstens period var ' +
+        '1 augusti–1 september.',
+      applicationStart: '2027-01-01',
+      applicationEnd: '2027-01-26',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -7051,7 +7129,7 @@ export const EXAMS: Exam[] = [
     description:
       'Viadidakt tar emot prövningsanmälningar i två perioder per år, i januari och i augusti. Prövning erbjuds i svenska, svenska som andraspråk, engelska och matematik på både grundläggande och gymnasial nivå.',
     tags: ['komvux', 'katrineholm', 'viadidakt'],
-    verifiedAt: STHLM_LAN_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'arena-utbildning-solna-flera-kurser',
@@ -7218,8 +7296,9 @@ export const EXAMS: Exam[] = [
       ' Du kan pröva högst två kurser per studieperiod, och avgiften betalas per kurs.',
     nextPeriod: {
       label:
-        'Ansökan till höstens studieperiod ska vara inne senast 1 september 2026. Vårens period stänger 1 februari.',
-      applicationEnd: '2026-09-01',
+        'Ansökan om prövning till hösten 2026 är stängd. För vårens studieperiod ska ansökan ' +
+        'vara inlämnad senast 1 februari 2027.',
+      applicationEnd: '2027-02-01',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -7229,7 +7308,7 @@ export const EXAMS: Exam[] = [
     description:
       'Kunskapsförbundet Väst är Trollhättans och Vänersborgs gemensamma vuxenutbildning och prövar alla kurser och ämnesnivåer det sätts betyg i — sfi, grundläggande och gymnasial nivå. Prövningen görs på Gärdhemsvägen 27 i Trollhättan eller på Vänerparken 5 i Vänersborg. Anmälan går via e-tjänsten, eller på blankett som skickas till Box 317, 462 24 Vänersborg.',
     tags: ['komvux', 'trollhättan', 'kunskapsförbundet'],
-    verifiedAt: LATE_SUMMER_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'landskrona-komvux-flera-kurser',
@@ -7533,11 +7612,13 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per kurs, betalas efter att anmälan godkänts och innan prövningen startar.',
     nextPeriod: {
-      // Ansökan sägs vara "öppen i augusti" utan startdatum, så bara sista
-      // dagen står här — ett påhittat startdatum vore ett sämre svar än inget.
+      // Anordnaren skriver "ansökan öppen i januari" utan att namnge dagen,
+      // så perioden är halvöppen: sista ansökningsdag men ingen startdag.
       label:
-        'Hösten 2026: ansökan är öppen i augusti och sista dag att ansöka är 28 augusti. Prövningsdatum får du besked om när ansökan har bedömts. (Våren 2027: sista ansökningsdag 29 januari.)',
-      applicationEnd: '2026-08-28',
+        'Våren 2027: ansökan är öppen i januari och sista dag att ansöka är 29 januari. ' +
+        'Prövningsdatum får du besked om när ansökan har bedömts. Höstens period stängde ' +
+        '28 augusti 2026.',
+      applicationEnd: '2027-01-29',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -7560,7 +7641,7 @@ export const EXAMS: Exam[] = [
     description:
       'Värnamo tar emot prövningsansökningar på papper hos studie- och yrkesvägledarna, även för de kurser som prövas på Finnvedens gymnasium. Du kan bara pröva kurser som finns i Värnamos eller Finnvedens utbud, och först efter godkänd ansökan betalar du avgiften.',
     tags: ['komvux', 'värnamo', 'jönköping', 'småland'],
-    verifiedAt: THIN_LAN_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'vuxenutbildningen-ljungby-flera-kurser',
@@ -7581,8 +7662,9 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyget F/IG i kursen.',
     nextPeriod: {
       label:
-        'Hösten 2026 har två prövningstillfällen. Anmäl dig senast 20 september eller 20 oktober. (Våren: senast 20 februari eller 1 april.)',
-      applicationEnd: '2026-09-20',
+        'Hösten 2026 har två prövningstillfällen och det andra har sista anmälningsdag ' +
+        '20 oktober. Våren 2027: senast 20 februari eller 1 april.',
+      applicationEnd: '2026-10-20',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -7603,7 +7685,7 @@ export const EXAMS: Exam[] = [
     description:
       'Ljungby har två prövningstillfällen per termin och tar anmälan via blankett efter kontakt med vägledaren. Vuxenutbildningen nås på 0372-78 40 60 och vuxenutbildningen@skola.ljungby.se.',
     tags: ['komvux', 'ljungby', 'kronoberg', 'småland'],
-    verifiedAt: THIN_LAN_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'ostersund-larcentrum-gymnasiala',
@@ -10518,20 +10600,19 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 14 augusti; provet skrivs fredag 11 september 2026 kl. 15.00–17.00. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-14',
-      examWindowStart: '2026-09-11',
-      examWindowEnd: '2026-09-11',
-      confirmed: true,
+        'Höstens prövningstillfälle är genomfört och kursen har inget sökbart datum kvar i ' +
+        'kurskatalogen. Vårens prövningar publiceras den 1 december och första ansökningsdag ' +
+        'är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_PROGRAMMERING,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/35981',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Programmering 1 (PRRPRR01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs fredag 11 september 2026 kl. 15.00–17.00 på Lindholmens tekniska gymnasium.',
+      'Betygsprövning i Programmering 1 (PRRPRR01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens tillfälle är genomfört — vårens prövningar publiceras 1 december.',
     tags: ['programmering', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'goteborg-prog1000x',
@@ -10550,20 +10631,19 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 14 augusti; provet skrivs fredag 11 september 2026 kl. 15.00–17.00. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-14',
-      examWindowStart: '2026-09-11',
-      examWindowEnd: '2026-09-11',
-      confirmed: true,
+        'Höstens prövningstillfälle är genomfört och kursen har inget sökbart datum kvar i ' +
+        'kurskatalogen. Vårens prövningar publiceras den 1 december och första ansökningsdag ' +
+        'är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_PROGRAMMERING,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/130229',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Programmering Nivå 1 (PROG1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs fredag 11 september 2026 kl. 15.00–17.00 på Lindholmens tekniska gymnasium.',
+      'Betygsprövning i Programmering Nivå 1 (PROG1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens tillfälle är genomfört — vårens prövningar publiceras 1 december.',
     tags: ['programmering', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'goteborg-engeng05',
@@ -10646,20 +10726,19 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 25 augusti; provet skrivs tisdag 22 september 2026 kl. 17.30–22.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-25',
-      examWindowStart: '2026-09-22',
-      examWindowEnd: '2026-09-22',
-      confirmed: true,
+        'Höstens prövningstillfälle är genomfört och kursen har inget sökbart datum kvar i ' +
+        'kurskatalogen. Vårens prövningar publiceras den 1 december och första ansökningsdag ' +
+        'är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_ENGELSKA,
     studyTips: TIPS_ENGELSKA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12373',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Engelska 7 (ENGENG07) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 22 september 2026 kl. 17.30–22.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Engelska 7 (ENGENG07) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens tillfälle är genomfört — vårens prövningar publiceras 1 december.',
     tags: ['engelska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'goteborg-enge1000x',
@@ -10742,20 +10821,19 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 25 augusti; provet skrivs tisdag 22 september 2026 kl. 17.30–22.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-25',
-      examWindowStart: '2026-09-22',
-      examWindowEnd: '2026-09-22',
-      confirmed: true,
+        'Höstens prövningstillfälle är genomfört och kursen har inget sökbart datum kvar i ' +
+        'kurskatalogen. Vårens prövningar publiceras den 1 december och första ansökningsdag ' +
+        'är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_ENGELSKA,
     studyTips: TIPS_ENGELSKA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/127894',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Engelska Nivå 3 (ENGE3000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 22 september 2026 kl. 17.30–22.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Engelska Nivå 3 (ENGE3000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens tillfälle är genomfört — vårens prövningar publiceras 1 december.',
     tags: ['engelska', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'goteborg-fiofio01',
@@ -14301,20 +14379,19 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 25 augusti; provet skrivs tisdag 22 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-25',
-      examWindowStart: '2026-09-22',
-      examWindowEnd: '2026-09-22',
-      confirmed: true,
+        'Höstens prövningstillfälle är genomfört och kursen har inget sökbart datum kvar i ' +
+        'kurskatalogen. Vårens prövningar publiceras den 1 december och första ansökningsdag ' +
+        'är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/135027',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Modersmål Nivå 2, Arabiska (MODE2000XARA) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 22 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Modersmål Nivå 2, Arabiska (MODE2000XARA) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens tillfälle är genomfört — vårens prövningar publiceras 1 december.',
     tags: ['modersmål', 'arabiska', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'goteborg-mode2000xpes',
@@ -14333,20 +14410,19 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 25 augusti; provet skrivs tisdag 22 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-25',
-      examWindowStart: '2026-09-22',
-      examWindowEnd: '2026-09-22',
-      confirmed: true,
+        'Höstens prövningstillfälle är genomfört och kursen har inget sökbart datum kvar i ' +
+        'kurskatalogen. Vårens prövningar publiceras den 1 december och första ansökningsdag ' +
+        'är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/135029',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Modersmål Nivå 2, Persiska (MODE2000XPES) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 22 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Modersmål Nivå 2, Persiska (MODE2000XPES) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens tillfälle är genomfört — vårens prövningar publiceras 1 december.',
     tags: ['modersmål', 'persiska', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'goteborg-mode2000xpol',
@@ -14365,20 +14441,19 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 25 augusti; provet skrivs tisdag 22 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-25',
-      examWindowStart: '2026-09-22',
-      examWindowEnd: '2026-09-22',
-      confirmed: true,
+        'Höstens prövningstillfälle är genomfört och kursen har inget sökbart datum kvar i ' +
+        'kurskatalogen. Vårens prövningar publiceras den 1 december och första ansökningsdag ' +
+        'är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/135030',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Modersmål Nivå 2, Polska (MODE2000XPOL) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 22 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Modersmål Nivå 2, Polska (MODE2000XPOL) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens tillfälle är genomfört — vårens prövningar publiceras 1 december.',
     tags: ['modersmål', 'polska', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'goteborg-mode2000xsom',
@@ -14397,20 +14472,19 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 25 augusti; provet skrivs tisdag 22 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-25',
-      examWindowStart: '2026-09-22',
-      examWindowEnd: '2026-09-22',
-      confirmed: true,
+        'Höstens prövningstillfälle är genomfört och kursen har inget sökbart datum kvar i ' +
+        'kurskatalogen. Vårens prövningar publiceras den 1 december och första ansökningsdag ' +
+        'är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/135028',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Modersmål Nivå 2, Somaliska (MODE2000XSOM) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 22 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Modersmål Nivå 2, Somaliska (MODE2000XSOM) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens tillfälle är genomfört — vårens prövningar publiceras 1 december.',
     tags: ['modersmål', 'somaliska', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'goteborg-nagnat01',
@@ -14557,20 +14631,19 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 25 augusti; provet skrivs tisdag 22 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-25',
-      examWindowStart: '2026-09-22',
-      examWindowEnd: '2026-09-22',
-      confirmed: true,
+        'Höstens prövningstillfälle är genomfört och kursen har inget sökbart datum kvar i ' +
+        'kurskatalogen. Vårens prövningar publiceras den 1 december och första ansökningsdag ' +
+        'är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_NATURKUNSKAP,
     studyTips: TIPS_NATURKUNSKAP,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12523',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Naturkunskap 2 (NAKNAK02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 22 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Naturkunskap 2 (NAKNAK02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens tillfälle är genomfört — vårens prövningar publiceras 1 december.',
     tags: ['naturkunskap', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: SEP_23_VERIFIED,
   },
   {
     id: 'goteborg-natu1a10x',
