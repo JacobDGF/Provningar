@@ -8,16 +8,18 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 **Filen är genererad.** Ändringar här skrivs över vid nästa körning; räkningen ändras i
 `collector/worker.js` och i `src/lib/analytics.ts`.
 
-## Senaste 30 dygnen (t.o.m. 2026-09-24)
+## Senaste 30 dygnen (t.o.m. 2026-09-25)
 
 | Besök | Sidvisningar | Till anmälan |
 | ----- | ------------ | ------------ |
-| 45 | 152 | 21 |
+| 48 | 155 | 22 |
 
 ### Per dygn
 
 | Dygn | Besök | Sidvisningar | Till anmälan |
 | ---- | ----- | ------------ | ------------ |
+| 2026-09-25 | 1 | 1 | 0 |
+| 2026-09-24 | 2 | 2 | 1 |
 | 2026-09-23 | 1 | 1 | 0 |
 | 2026-09-22 | 7 | 39 | 0 |
 | 2026-09-21 | 3 | 10 | 0 |
@@ -34,7 +36,7 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Upptäck | 88 |
+| Upptäck | 91 |
 | Mina prövningar | 18 |
 | Community | 15 |
 | AI-prövning | 12 |
@@ -45,15 +47,15 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Prövning öppnad | 73 |
-| Till anmälan | 21 |
+| Prövning öppnad | 75 |
+| Till anmälan | 22 |
 | Bevakning skapad | 2 |
 
 ### Kommuner i öppnade prövningar
 
 | Namn | Antal |
 | ---- | ----- |
-| Örebro | 34 |
+| Örebro | 37 |
 | Malmö | 17 |
 | Stockholm | 12 |
 | Göteborg | 6 |
@@ -72,10 +74,11 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | Svenska | 14 |
 | Engelska | 12 |
 | Matematik | 11 |
-| Fysik | 7 |
+| Fysik | 8 |
 | Psykologi | 3 |
 | Flera ämnen | 2 |
 | Juridik | 1 |
+| Naturkunskap | 1 |
 | Svenska som andraspråk | 1 |
 
 ## Vad som inte står här
@@ -86,4 +89,4 @@ besök går inte att skilja åt ens i råtabellen, och "besök" räknas en gång
 webbläsarsession utan något som följer med till nästa. Statistiken finns bara för dem som
 sagt ja i appens samtyckesruta.
 
-<sub>Uppdaterad 2026-09-24T07:39:07.618Z.</sub>
+<sub>Uppdaterad 2026-09-25T07:56:12.108Z.</sub>
