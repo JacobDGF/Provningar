@@ -91,7 +91,11 @@ describe('answerAsk', () => {
    * prints, and without it a list of closed rounds reads as a list of open ones.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    // NTI:s höstomgång, som stängde 20 augusti och ligger före `TODAY`. Exemplet
+    // var tidigare Historia 1b i Göteborg, men den omgången har hunnit skrivas
+    // och listningen står nu utan publicerat datum — och en listning utan datum
+    // är inte en stängd listning, så frågan slutade visa det den var till för.
+    const { matches, widened } = answerAsk('Bioteknik i Stockholm', EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
