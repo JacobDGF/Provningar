@@ -91,7 +91,10 @@ describe('answerAsk', () => {
    * prints, and without it a list of closed rounds reads as a list of open ones.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    // Karlskoga prövar Engelska 6 hos en enda anordnare, och den omgångens
+    // anmälan stängde 20 augusti — tio dagar före `TODAY`. Så det finns något
+    // att visa men inget att boka, vilket är precis fallet flaggan finns för.
+    const { matches, widened } = answerAsk('Engelska 6 i Karlskoga', EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
