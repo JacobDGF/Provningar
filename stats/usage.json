@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-09-25T07:56:12.108Z",
+  "uppdaterad": "2026-09-26T07:49:11.603Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -311,21 +311,30 @@
       }
     },
     "2026-09-25": {
-      "besök": 1,
+      "besök": 4,
       "sidvisningar": {
-        "/discover": 1
+        "/ai": 2,
+        "/discover": 4,
+        "/exams": 1
       },
       "händelser": {
-        "Prövning öppnad": 1
+        "AI-fråga ställd": 2,
+        "Prövning sparad": 1,
+        "Prövning öppnad": 5
       },
       "kommuner": {
-        "Örebro": 1
+        "Örebro": 6
       },
       "ämnen": {
-        "Fysik": 1
+        "Matematik": 4,
+        "Fysik": 1,
+        "Biologi": 1
       },
       "kurser": {
-        "FYSFYS01a": 1
+        "FYSFYS01a": 1,
+        "BIOG2000X": 1,
+        "MATMAT01c": 2,
+        "MATMAT02c": 1
       }
     }
   }
