@@ -89,9 +89,17 @@ describe('answerAsk', () => {
   /**
    * Widening is allowed; doing it quietly is not. The flag is what the tab
    * prints, and without it a list of closed rounds reads as a list of open ones.
+   *
+   * Fysik 1a i Stockholm is the fixture because its two listings are
+   * unactionable for the two different reasons `stillActionable` knows about:
+   * JENSEN's round is fullbokat and NTI's anmälan closed on 20 augusti. A case
+   * that only covered one of them would still pass if the other stopped
+   * counting. The previous fixture was Historia 1b i Göteborg, which stopped
+   * testing anything the day Göteborg's round lost its dates — an undated
+   * listing is actionable, so nothing was left to widen past.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    const { matches, widened } = answerAsk('Fysik 1a i Stockholm', EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
