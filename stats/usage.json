@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-09-26T07:49:11.603Z",
+  "uppdaterad": "2026-09-27T08:18:30.628Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -335,6 +335,32 @@
         "BIOG2000X": 1,
         "MATMAT01c": 2,
         "MATMAT02c": 1
+      }
+    },
+    "2026-09-26": {
+      "besök": 3,
+      "sidvisningar": {
+        "/discover": 3
+      },
+      "händelser": {
+        "Prövning öppnad": 7,
+        "Till anmälan": 3
+      },
+      "kommuner": {
+        "Stockholm": 3,
+        "Örebro": 6,
+        "Göteborg": 1
+      },
+      "ämnen": {
+        "Kemi": 2,
+        "Matematik": 1,
+        "Fysik": 4
+      },
+      "kurser": {
+        "KEMKEM01": 4,
+        "MATMAT01c": 2,
+        "FYSFYS02": 2,
+        "FYSK2000X": 2
       }
     }
   }
