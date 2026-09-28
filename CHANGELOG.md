@@ -4,6 +4,48 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-09-28 (datumsvep)
+
+**Datan: varje gången omgång är omläst hos anordnaren.** `check:dates` hade 55
+listningar vars publicerade omgång var helt förbi — länken levde, sidan
+laddade, och datumen kortet visade hörde till en omgång som stängt. Alla 55 är
+lästa om mot anordnarens egen sida, en i taget, och ingen av dem bär längre ett
+datum som varit.
+
+- **Prövningsenheten Göteborg hade ingen ny omgång att flytta fram till.** Alla
+  trettio kurserna vars enda tillfälle låg 11–24 september står som
+  `confirmed: false`, med enhetens egna ord om vad som gäller i stället:
+  "Vårens prövningar publiceras den 1 december och första ansökningsdag är
+  15 december." Varje kurssida i Alvis är kontrollerad separat — alla säger
+  `Antal Prövningstillfällen: 1`, och det tillfället har varit.
+- **Arton listningar hade en publicerad nästa omgång**, som nu står i datan i
+  stället för den gångna: Iris (Flemingsberg 11 december, Upplands Väsby
+  8 december) och Medlearn Täby (11 december) med sina anmälningsförmiddagar,
+  ABF Stockholms andra höstillfälle 9 november, Vux Huddinges 15 mars 2027,
+  Ljungbys andra höstdeadline 20 oktober, och vårens ansökningsfönster hos
+  Motala, Uddevalla, Kristinehamn, Viadidakt, Växjö, Värnamo och
+  Kunskapsförbundet Väst.
+- **Örebros grundskolekurser har fått sina provdatum.** Där kommunens tabell
+  sa "återkommer inom kort" står nu 2 november, med del 2 den 6 november i
+  engelska, svenska och svenska som andraspråk — så de fyra listningarna har
+  en prövningsperiod att visa och inte bara en stängd anmälan.
+- **`full` är en egenskap hos omgången, inte hos listningen.** Iris Upplands
+  Väsby bar `full: true` för septembertillfället; det tillfället är slut, och
+  flaggan är borta med det. ABF:s engelska nivå 1–2 bär den i stället nu,
+  eftersom ABF skriver "FULLT!" på höstens enda tillfälle i de nivåerna.
+- **Umevux och Härnösand har inget att flytta fram till** och står som
+  `confirmed: false`: Umeås tabell säger "STÄNGD" för båda höststarterna och
+  vårens datum läggs ut när de är fastställda, och Härnösands tabell för 2026
+  hade ett enda tillfälle, vecka 39.
+- **Motalas e-tjänst svarar 404 mellan perioderna.** Länken är kommunens egen
+  och står kvar, men kortet säger nu att den öppnar igen 2 januari 2027 i
+  stället för att skicka någon till en sida som inte finns än.
+
+Ett test bytte samtidigt fixtur: "Historia 1b i Göteborg" var exemplet på en
+fråga som måste vidga sökningen, och det höll bara så länge Göteborg hade en
+stängd omgång i den kursen. NTI:s höstomgång i Stockholm gör samma jobb och är
+inte beroende av den här sortens svep.
+
 ## 2026-09-11 (räknaren i drift)
 
 Räknaren står nu hos Cloudflare och appen är byggd mot den. Kedjan är

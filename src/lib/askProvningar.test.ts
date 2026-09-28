@@ -89,9 +89,14 @@ describe('answerAsk', () => {
   /**
    * Widening is allowed; doing it quietly is not. The flag is what the tab
    * prints, and without it a list of closed rounds reads as a list of open ones.
+   *
+   * Stockholm rather than Göteborg since 2026-09-28: NTI:s höstomgång stängde
+   * 20 augusti med provperioden kvar, vilket är precis den sortens listning som
+   * ska tvinga fram en vidgning vid den fasta `TODAY`. Göteborg dög tidigare,
+   * men de kurserna har ingen publicerad omgång alls längre.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    const { matches, widened } = answerAsk('Historia 1b i Stockholm', EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
