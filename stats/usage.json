@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-09-27T08:18:30.628Z",
+  "uppdaterad": "2026-09-28T08:45:58.070Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -361,6 +361,36 @@
         "MATMAT01c": 2,
         "FYSFYS02": 2,
         "FYSK2000X": 2
+      }
+    },
+    "2026-09-27": {
+      "besök": 6,
+      "sidvisningar": {
+        "/discover": 7,
+        "/history": 1
+      },
+      "händelser": {
+        "Prövning öppnad": 6,
+        "Till anmälan": 3
+      },
+      "kommuner": {
+        "Södertälje": 1,
+        "Göteborg": 2,
+        "Varberg": 2,
+        "Stockholm": 2,
+        "Laholm": 2
+      },
+      "ämnen": {
+        "Engelska": 1,
+        "Matematik": 2,
+        "Flera ämnen": 2,
+        "Kemi": 1
+      },
+      "kurser": {
+        "Varierar": 5,
+        "MATO2000X": 1,
+        "MATE2B00X": 1,
+        "KEMKEM01": 2
       }
     }
   }

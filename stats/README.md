@@ -8,16 +8,17 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 **Filen är genererad.** Ändringar här skrivs över vid nästa körning; räkningen ändras i
 `collector/worker.js` och i `src/lib/analytics.ts`.
 
-## Senaste 30 dygnen (t.o.m. 2026-09-27)
+## Senaste 30 dygnen (t.o.m. 2026-09-28)
 
 | Besök | Sidvisningar | Till anmälan |
 | ----- | ------------ | ------------ |
-| 54 | 164 | 25 |
+| 60 | 172 | 28 |
 
 ### Per dygn
 
 | Dygn | Besök | Sidvisningar | Till anmälan |
 | ---- | ----- | ------------ | ------------ |
+| 2026-09-27 | 6 | 8 | 3 |
 | 2026-09-26 | 3 | 3 | 3 |
 | 2026-09-25 | 4 | 7 | 0 |
 | 2026-09-24 | 2 | 2 | 1 |
@@ -37,19 +38,19 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Upptäck | 97 |
+| Upptäck | 104 |
 | Mina prövningar | 19 |
 | Community | 15 |
 | AI-prövning | 14 |
+| Historik | 10 |
 | Profil | 10 |
-| Historik | 9 |
 
 ### Händelser
 
 | Namn | Antal |
 | ---- | ----- |
-| Prövning öppnad | 86 |
-| Till anmälan | 25 |
+| Prövning öppnad | 92 |
+| Till anmälan | 28 |
 | AI-fråga ställd | 2 |
 | Bevakning skapad | 2 |
 | Prövning sparad | 1 |
@@ -60,26 +61,26 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | ---- | ----- |
 | Örebro | 48 |
 | Malmö | 17 |
-| Stockholm | 15 |
-| Göteborg | 7 |
+| Stockholm | 17 |
+| Göteborg | 9 |
 | Mora | 6 |
 | Norrköping | 5 |
 | Skellefteå | 5 |
 | Sollentuna | 5 |
+| Laholm | 2 |
 | Linköping | 2 |
-| Motala | 2 |
 
 ### Ämnen
 
 | Namn | Antal |
 | ---- | ----- |
-| Kemi | 24 |
-| Matematik | 16 |
+| Kemi | 25 |
+| Matematik | 18 |
 | Svenska | 14 |
-| Engelska | 12 |
+| Engelska | 13 |
 | Fysik | 12 |
+| Flera ämnen | 4 |
 | Psykologi | 3 |
-| Flera ämnen | 2 |
 | Biologi | 1 |
 | Juridik | 1 |
 | Naturkunskap | 1 |
@@ -92,4 +93,4 @@ besök går inte att skilja åt ens i råtabellen, och "besök" räknas en gång
 webbläsarsession utan något som följer med till nästa. Statistiken finns bara för dem som
 sagt ja i appens samtyckesruta.
 
-<sub>Uppdaterad 2026-09-27T08:18:30.628Z.</sub>
+<sub>Uppdaterad 2026-09-28T08:45:58.070Z.</sub>
