@@ -546,6 +546,49 @@ workern krävs den av exporten, och då måste nattjobbet få samma sträng som
 `STATS_TOKEN`. Utan den är exporten öppen — den lämnar ut exakt de summor som
 ändå publiceras i `stats/`, så det finns ingenting där att skydda.
 
+## Första skärmen ska rymmas i en telefon
+
+Upptäck öppnar på hela datasetet, och det gjorde den bokstavligt: 588 kort och
+588 kartnålar monterade innan någon hunnit läsa rubriken. Mätt i Chromium mot
+ett riktigt bygge blev förstasidan 10 856 DOM-noder och 1 178 klickbara element,
+och en av tre webbläsare i huset klarar inte det — iOS Safari dödar
+webbprocessen och svarar "A problem repeatedly occurred" i stället för att visa
+sidan. Det drabbar första skärmen, alltså alla.
+
+Två saker bar vikten, och båda hade ett billigare svar som redan var skrivet.
+
+- **Listan monterar en sida i taget.** `PAGE_SIZE` i
+  [`src/tabs/Discover.tsx`](src/tabs/Discover.tsx) är 24 — tre skärmar på en
+  telefon — och en `IntersectionObserver` hämtar nästa sida en skärm innan
+  kanten. Knappen "Visa fler prövningar" under listan är den riktiga vägen
+  vidare; observern trycker bara på den åt den som skrollar, så tangentbord och
+  webbläsare utan observer tappar ingenting. Antalet träffar räknas fortfarande
+  på hela träfflistan, så "588 träffar" säger samma sak som förut.
+- **Hjältekartan aggregerar per ort.** Där satt `MapView`, som ritar en egen
+  DOM-nod per prövning: 588 absolut positionerade, zoom-animerade divar med var
+  sin box-shadow och var sin bundna popup, alla i dokumentet oavsett vad som
+  syns i rutan. [`src/components/HeroMap.tsx`](src/components/HeroMap.tsx) fanns
+  redan i repot och säger i sin egen dokumentation att den är gjord för just den
+  här platsen — en cirkel per ort i ett enda SVG-lager, grön där något går att
+  boka, grå där inget gör det, och ett tryck filtrerar på orten. Ingen listning
+  försvinner från kartan; de slås ihop.
+
+Resultatet, samma mätning: 10 856 noder blir 743, 1 178 klickbara element blir
+26, och JS-heapen 12,3 MB blir 5,9 MB.
+
+Splashen fick en egen rättning i samma veva.
+[`src/components/LoadingScreen.tsx`](src/components/LoadingScreen.tsx) räknar upp
+en förloppsindikator med `setInterval`, och intervallet låg i en effekt som
+berodde på `onDone` — som `App` bygger om vid varje omrendering. Varje
+omrendering bakom splashen rev alltså intervallet och startade ett nytt, och ett
+tick landade bara när 80 ms råkade passera utan rendering. Den tvåsekunders
+splashen tog 12–13 sekunder. Återanropet ligger i en ref nu, så timern beror på
+ingenting. En förloppsindikator som fyller långsammare än den lovar är inte ett
+kosmetiskt fel: det är appen som håller sig undan någon som redan tittar på den.
+
+`MapView` ligger kvar i repot för den Kartvy-växel `HeroMap`:s kommentar
+beskriver men som aldrig byggdes.
+
 ## När appen går sönder
 
 Fem av sex flikar hämtas med `import()` första gången de öppnas, och varje

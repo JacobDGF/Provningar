@@ -1,4 +1,4 @@
-import { useState, useMemo, lazy, Suspense } from 'react';
+import { useState, useMemo, useRef, useEffect, lazy, Suspense } from 'react';
 import {
   Search,
   MapPin,
@@ -20,7 +20,22 @@ import { getStatusKey } from '../lib/examStatusColor';
 import { getRegistrationFlow } from '../lib/registrationFlow';
 import { useMinuteTick } from '../hooks/useMinuteTick';
 
-const MapView = lazy(() => import('../components/MapView').then((m) => ({ default: m.MapView })));
+/**
+ * Hjältekartan är ortsaggregerad, inte en nål per listning.
+ *
+ * Här satt MapView, som ritar en egen DOM-nod per prövning: 588 absolut
+ * positionerade, zoom-animerade divar med var sin box-shadow och var sin
+ * bundna popup, alla i dokumentet oavsett vad som syns i rutan. På första
+ * skärmen, som alla öppnar. HeroMap fanns redan i repot och säger i sin egen
+ * dokumentation att den är gjord för just den här platsen — den slår ihop
+ * listningarna till en cirkel per ort i ett enda SVG-lager, alltså ett par
+ * tiotal noder i stället för sex hundra, utan att någon listning försvinner
+ * från kartan.
+ *
+ * MapView ligger kvar i repot för den Kartvy-växel HeroMap:s kommentar
+ * beskriver men som aldrig byggdes.
+ */
+const HeroMap = lazy(() => import('../components/HeroMap').then((m) => ({ default: m.HeroMap })));
 
 function MapFallback() {
   return (
@@ -41,6 +56,23 @@ const SORTS = [
   { key: 'distance', label: 'Närmast mig' },
   { key: 'name', label: 'Skola A–Ö' },
 ] as const;
+
+/**
+ * How many kort the listan monterar åt gången.
+ *
+ * Upptäck ritade tidigare hela träfflistan i ett svep. Med 588 listningar blev
+ * förstasidan ~10 900 DOM-noder och 1 178 klickbara element innan någon hunnit
+ * läsa rubriken — och varje kort bär två lager gradient plus ett 9rem-tecken,
+ * alltså inte tomma noder utan yta att måla. Det är den profil iOS Safari
+ * svarar på genom att döda webbprocessen och säga "A problem repeatedly
+ * occurred", och det drabbar första skärmen, alltså alla.
+ *
+ * 24 är tre skärmars kort på en telefon: nog för att listan ska kännas hel och
+ * gå att skrolla i innan nästa hämtas, litet nog att förstapaketet blir en
+ * fyrtiondel av vad det var. Antalet träffar räknas fortfarande på hela
+ * `filtered`, så "588 träffar" säger samma sak som förut.
+ */
+const PAGE_SIZE = 24;
 
 /** One heading per filter row, so the block under the map reads as a panel
     rather than as four loose chip rows. */
@@ -156,6 +188,53 @@ export function Discover() {
 
   const cityCount = useMemo(() => new Set(filtered.map((e) => e.city)).size, [filtered]);
 
+  // A new search or filter is a new list, and a new list starts at the top with
+  // one page shown. Adjusted during render rather than in an effect — the same
+  // pattern App uses for visitedTabs — so the first paint after a filter change
+  // is already the short list, never a frame of the previous 588.
+  const [shownList, setShownList] = useState(filtered);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  if (shownList !== filtered) {
+    setShownList(filtered);
+    setVisibleCount(PAGE_SIZE);
+  }
+
+  const visible = useMemo(() => filtered.slice(0, visibleCount), [filtered, visibleCount]);
+  const hasMore = visibleCount < filtered.length;
+
+  const showMore = () => setVisibleCount((n) => Math.min(n + PAGE_SIZE, filtered.length));
+
+  /**
+   * Skrollning hämtar nästa sida, knappen finns för allt annat.
+   *
+   * Observern är bekvämligheten: den som skrollar ska inte behöva trycka. Men
+   * den som tabbar sig fram, kör med reducerad rörelse eller sitter i en
+   * webbläsare utan IntersectionObserver ska inte tappa 564 listningar, så
+   * knappen under listan är den riktiga vägen vidare och observern bara
+   * trycker på den åt den som skrollar.
+   */
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const node = sentinelRef.current;
+    if (!node || !hasMore || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) showMore();
+      },
+      // Börja hämta en skärm innan sentinel-raden syns, så listan hinner växa
+      // före kanten i stället för efter den.
+      { rootMargin: '600px' },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+    // `visibleCount` hör hit: en observer rapporterar bara när skärningen
+    // ändras, och på en bred skärm ligger sentinel-raden kvar innanför marginalen
+    // efter att en sida hämtats. Utan omobservering stannade listan på 48 kort
+    // tills någon tryckte på knappen. Omobserveringen fyller i stället på tills
+    // raden hamnat utanför marginalen — alltså tills det finns något att skrolla.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasMore, filtered, visibleCount]);
+
   const toggleNear = () => {
     if (near) setFilterSortBy('date');
     else if (userLocation) setFilterSortBy('distance');
@@ -250,7 +329,7 @@ export function Discover() {
           </div>
           <div className="h-[300px] bg-sand">
             <Suspense fallback={<MapFallback />}>
-              <MapView exams={filtered} className="w-full h-full" />
+              <HeroMap exams={filtered} onCityClick={setFilterCity} className="w-full h-full" />
             </Suspense>
           </div>
         </div>
@@ -371,11 +450,26 @@ export function Discover() {
             </button>
           </div>
         ) : (
-          <div className="grid gap-3.5 [grid-template-columns:repeat(auto-fill,minmax(280px,1fr))]">
-            {filtered.map((exam) => (
-              <ExamCard key={exam.id} exam={exam} showDistance={near} />
-            ))}
-          </div>
+          <>
+            <div className="grid gap-3.5 [grid-template-columns:repeat(auto-fill,minmax(280px,1fr))]">
+              {visible.map((exam) => (
+                <ExamCard key={exam.id} exam={exam} showDistance={near} />
+              ))}
+            </div>
+            {hasMore && (
+              <div ref={sentinelRef} className="flex flex-col items-center gap-3 pt-1">
+                <p className="text-[13px] text-ink-faint">
+                  Visar {visible.length} av {filtered.length}
+                </p>
+                <button
+                  onClick={showMore}
+                  className="inline-flex items-center gap-2 rounded-full border-[1.5px] border-line bg-surface px-[18px] py-2.5 text-[13.5px] font-bold text-ink-soft transition-transform hover:-translate-y-0.5 hover:border-ink"
+                >
+                  Visa fler prövningar
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
 

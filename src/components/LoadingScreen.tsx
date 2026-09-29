@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { STUDY_TIPS } from '../data/community';
 
 interface LoadingScreenProps {
@@ -9,19 +9,35 @@ export function LoadingScreen({ onDone }: LoadingScreenProps) {
   const [tip] = useState(() => STUDY_TIPS[Math.floor(Math.random() * STUDY_TIPS.length)]);
   const [progress, setProgress] = useState(0);
 
+  /**
+   * The callback is held in a ref so the timer below can depend on nothing.
+   *
+   * It used to sit in the effect's dependency list, and `App` builds a new
+   * `handleLoadingDone` on every render — so every re-render behind the splash
+   * tore down the interval and started a fresh one. A tick only landed when
+   * 80 ms happened to pass without a render, and the 2-second splash took
+   * 9–10 seconds in a throttled browser, longer on a phone. The bar filling
+   * slower than it should is not a cosmetic bug: it is the app withholding
+   * itself from someone who is already looking at it.
+   */
+  const onDoneRef = useRef(onDone);
+  useEffect(() => {
+    onDoneRef.current = onDone;
+  }, [onDone]);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setProgress((p) => {
         if (p >= 100) {
           clearInterval(interval);
-          setTimeout(onDone, 200);
+          setTimeout(() => onDoneRef.current(), 200);
           return 100;
         }
         return p + 4;
       });
     }, 80);
     return () => clearInterval(interval);
-  }, [onDone]);
+  }, []);
 
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-brand-600 via-brand-500 to-brand-700 flex flex-col items-center justify-center z-50 px-8">
