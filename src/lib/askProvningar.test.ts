@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { EXAMS } from '../data/exams';
 import { answerAsk, describeAsk, hasConstraints, readAsk } from './askProvningar';
+import { hasApplicationClosed, isFullyBooked } from './examStatus';
 
 /**
  * These run against the real dataset on purpose.
@@ -89,9 +90,23 @@ describe('answerAsk', () => {
   /**
    * Widening is allowed; doing it quietly is not. The flag is what the tab
    * prints, and without it a list of closed rounds reads as a list of open ones.
+   *
+   * The question is derived rather than written out. It used to name Historia
+   * 1b i Göteborg, which stopped widening the day that round was moved on —
+   * the dataset's job is to change, and a test that fails every time a
+   * deadline rolls over tests the calendar, not the flag. So: find a kurs och
+   * stad where every listing is closed as of `TODAY`, and ask for that.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    const openPairs = new Set(
+      EXAMS.filter((e) => !hasApplicationClosed(e, TODAY) && !isFullyBooked(e)).map(
+        (e) => `${e.course}|${e.city}`,
+      ),
+    );
+    const closed = EXAMS.find((e) => !openPairs.has(`${e.course}|${e.city}`));
+    expect(closed, 'no closed round left to widen from').toBeDefined();
+
+    const { matches, widened } = answerAsk(`${closed!.course} i ${closed!.city}`, EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
