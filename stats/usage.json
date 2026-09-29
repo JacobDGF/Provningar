@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-09-28T08:45:58.070Z",
+  "uppdaterad": "2026-09-29T08:39:22.641Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -391,6 +391,25 @@
         "MATO2000X": 1,
         "MATE2B00X": 1,
         "KEMKEM01": 2
+      }
+    },
+    "2026-09-28": {
+      "besök": 1,
+      "sidvisningar": {
+        "/discover": 2
+      },
+      "händelser": {
+        "Prövning öppnad": 2,
+        "Till anmälan": 1
+      },
+      "kommuner": {
+        "Göteborg": 3
+      },
+      "ämnen": {
+        "Psykologi": 2
+      },
+      "kurser": {
+        "PSYL1000X": 3
       }
     }
   }

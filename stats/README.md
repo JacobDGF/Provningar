@@ -8,16 +8,17 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 **Filen är genererad.** Ändringar här skrivs över vid nästa körning; räkningen ändras i
 `collector/worker.js` och i `src/lib/analytics.ts`.
 
-## Senaste 30 dygnen (t.o.m. 2026-09-28)
+## Senaste 30 dygnen (t.o.m. 2026-09-29)
 
 | Besök | Sidvisningar | Till anmälan |
 | ----- | ------------ | ------------ |
-| 60 | 172 | 28 |
+| 61 | 174 | 29 |
 
 ### Per dygn
 
 | Dygn | Besök | Sidvisningar | Till anmälan |
 | ---- | ----- | ------------ | ------------ |
+| 2026-09-28 | 1 | 2 | 1 |
 | 2026-09-27 | 6 | 8 | 3 |
 | 2026-09-26 | 3 | 3 | 3 |
 | 2026-09-25 | 4 | 7 | 0 |
@@ -38,7 +39,7 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Upptäck | 104 |
+| Upptäck | 106 |
 | Mina prövningar | 19 |
 | Community | 15 |
 | AI-prövning | 14 |
@@ -49,8 +50,8 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Prövning öppnad | 92 |
-| Till anmälan | 28 |
+| Prövning öppnad | 94 |
+| Till anmälan | 29 |
 | AI-fråga ställd | 2 |
 | Bevakning skapad | 2 |
 | Prövning sparad | 1 |
@@ -62,7 +63,7 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | Örebro | 48 |
 | Malmö | 17 |
 | Stockholm | 17 |
-| Göteborg | 9 |
+| Göteborg | 12 |
 | Mora | 6 |
 | Norrköping | 5 |
 | Skellefteå | 5 |
@@ -79,8 +80,8 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | Svenska | 14 |
 | Engelska | 13 |
 | Fysik | 12 |
+| Psykologi | 5 |
 | Flera ämnen | 4 |
-| Psykologi | 3 |
 | Biologi | 1 |
 | Juridik | 1 |
 | Naturkunskap | 1 |
@@ -93,4 +94,4 @@ besök går inte att skilja åt ens i råtabellen, och "besök" räknas en gång
 webbläsarsession utan något som följer med till nästa. Statistiken finns bara för dem som
 sagt ja i appens samtyckesruta.
 
-<sub>Uppdaterad 2026-09-28T08:45:58.070Z.</sub>
+<sub>Uppdaterad 2026-09-29T08:39:22.641Z.</sub>
