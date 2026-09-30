@@ -78,20 +78,34 @@ describe('answerAsk', () => {
     }
   });
 
+  /**
+   * The window is deliberately wider than the nearest round rather than tight
+   * against it. A cutoff a week after the only open omgång tests the same
+   * filter, but stops being a test the day that omgång moves — and the rounds
+   * in `EXAMS` move every term. `widened` is asserted false so the promise is
+   * actually being made here: a widened answer has dropped the cutoff on
+   * purpose, and the loop below would then pass by saying nothing.
+   */
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
+    const { matches, widened } = answerAsk('Matematik 1b innan november', EXAMS, TODAY);
+    expect(matches.length).toBeGreaterThan(0);
+    expect(widened).toBe(false);
     for (const m of matches) {
       const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
-      expect(when && when < '2026-10-01').toBe(true);
+      expect(when && when < '2026-11-01').toBe(true);
     }
   });
 
   /**
    * Widening is allowed; doing it quietly is not. The flag is what the tab
    * prints, and without it a list of closed rounds reads as a list of open ones.
+   *
+   * The cutoff is two days after `TODAY`, so nothing can satisfy it and the
+   * widening is forced by the question rather than by which Göteborgsrunda
+   * happens to be listed this term.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    const { matches, widened } = answerAsk('Historia 1b i Göteborg innan september', EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
