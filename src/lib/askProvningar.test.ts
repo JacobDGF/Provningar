@@ -78,12 +78,26 @@ describe('answerAsk', () => {
     }
   });
 
+  /**
+   * Checked across every course rather than one of them, because which courses
+   * happen to have a round before oktober changes every time a provider
+   * publishes a new termin — and the promise is not about any one course. What
+   * holds whatever the data says: an answer the tab does *not* flag as widened
+   * contains only rounds that really fall before the cutoff.
+   */
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
-    for (const m of matches) {
-      const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
-      expect(when && when < '2026-10-01').toBe(true);
+    let strictAnswers = 0;
+    for (const course of new Set(EXAMS.map((e) => e.course))) {
+      const { matches, widened } = answerAsk(`${course} innan oktober`, EXAMS, TODAY);
+      if (widened || !matches.length) continue;
+      strictAnswers += 1;
+      for (const m of matches) {
+        const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
+        expect(when && when < '2026-10-01').toBe(true);
+      }
     }
+    // Without this the loop above would pass by never running a single check.
+    expect(strictAnswers).toBeGreaterThan(0);
   });
 
   /**
@@ -91,7 +105,10 @@ describe('answerAsk', () => {
    * prints, and without it a list of closed rounds reads as a list of open ones.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    // Every Matematik 1b round in the dataset either closed before TODAY or
+    // falls after oktober, so both the deadline and "kan fortfarande sökas"
+    // have to be dropped for the question to return anything at all.
+    const { matches, widened } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
