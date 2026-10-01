@@ -8,16 +8,17 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 **Filen är genererad.** Ändringar här skrivs över vid nästa körning; räkningen ändras i
 `collector/worker.js` och i `src/lib/analytics.ts`.
 
-## Senaste 30 dygnen (t.o.m. 2026-09-30)
+## Senaste 30 dygnen (t.o.m. 2026-10-01)
 
 | Besök | Sidvisningar | Till anmälan |
 | ----- | ------------ | ------------ |
-| 61 | 174 | 29 |
+| 64 | 186 | 29 |
 
 ### Per dygn
 
 | Dygn | Besök | Sidvisningar | Till anmälan |
 | ---- | ----- | ------------ | ------------ |
+| 2026-09-30 | 3 | 12 | 0 |
 | 2026-09-28 | 1 | 2 | 1 |
 | 2026-09-27 | 6 | 8 | 3 |
 | 2026-09-26 | 3 | 3 | 3 |
@@ -39,20 +40,20 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Upptäck | 106 |
-| Mina prövningar | 19 |
-| Community | 15 |
-| AI-prövning | 14 |
-| Historik | 10 |
+| Upptäck | 112 |
+| Mina prövningar | 20 |
+| Community | 18 |
+| AI-prövning | 15 |
+| Historik | 11 |
 | Profil | 10 |
 
 ### Händelser
 
 | Namn | Antal |
 | ---- | ----- |
-| Prövning öppnad | 94 |
+| Prövning öppnad | 98 |
 | Till anmälan | 29 |
-| AI-fråga ställd | 2 |
+| AI-fråga ställd | 5 |
 | Bevakning skapad | 2 |
 | Prövning sparad | 1 |
 
@@ -61,25 +62,25 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | Namn | Antal |
 | ---- | ----- |
 | Örebro | 48 |
-| Malmö | 17 |
-| Stockholm | 17 |
+| Stockholm | 19 |
+| Malmö | 18 |
 | Göteborg | 12 |
 | Mora | 6 |
 | Norrköping | 5 |
 | Skellefteå | 5 |
 | Sollentuna | 5 |
+| Linköping | 3 |
 | Laholm | 2 |
-| Linköping | 2 |
 
 ### Ämnen
 
 | Namn | Antal |
 | ---- | ----- |
-| Kemi | 25 |
-| Matematik | 18 |
+| Kemi | 27 |
+| Matematik | 19 |
 | Svenska | 14 |
 | Engelska | 13 |
-| Fysik | 12 |
+| Fysik | 13 |
 | Psykologi | 5 |
 | Flera ämnen | 4 |
 | Biologi | 1 |
@@ -94,4 +95,4 @@ besök går inte att skilja åt ens i råtabellen, och "besök" räknas en gång
 webbläsarsession utan något som följer med till nästa. Statistiken finns bara för dem som
 sagt ja i appens samtyckesruta.
 
-<sub>Uppdaterad 2026-09-30T08:40:08.707Z.</sub>
+<sub>Uppdaterad 2026-10-01T09:02:38.505Z.</sub>

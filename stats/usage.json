@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-09-30T08:40:08.707Z",
+  "uppdaterad": "2026-10-01T09:02:38.505Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -410,6 +410,35 @@
       },
       "kurser": {
         "PSYL1000X": 3
+      }
+    },
+    "2026-09-30": {
+      "besök": 3,
+      "sidvisningar": {
+        "/ai": 1,
+        "/community": 3,
+        "/discover": 6,
+        "/exams": 1,
+        "/history": 1
+      },
+      "händelser": {
+        "AI-fråga ställd": 3,
+        "Prövning öppnad": 4
+      },
+      "kommuner": {
+        "Linköping": 1,
+        "Stockholm": 2,
+        "Malmö": 1
+      },
+      "ämnen": {
+        "Matematik": 1,
+        "Kemi": 2,
+        "Fysik": 1
+      },
+      "kurser": {
+        "MATMAT03b": 1,
+        "KEMKEM01": 2,
+        "FYSFYS02": 1
       }
     }
   }
