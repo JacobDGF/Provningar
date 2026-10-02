@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-10-01T09:02:38.505Z",
+  "uppdaterad": "2026-10-02T08:37:51.711Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -439,6 +439,43 @@
         "MATMAT03b": 1,
         "KEMKEM01": 2,
         "FYSFYS02": 1
+      }
+    },
+    "2026-10-01": {
+      "besök": 5,
+      "sidvisningar": {
+        "/ai": 2,
+        "/community": 1,
+        "/discover": 10,
+        "/exams": 2,
+        "/history": 1
+      },
+      "händelser": {
+        "AI-fråga ställd": 1,
+        "Prövning öppnad": 10,
+        "Till anmälan": 8
+      },
+      "kommuner": {
+        "Södertälje": 2,
+        "Eskilstuna": 2,
+        "Varberg": 2,
+        "Järfälla": 2,
+        "Ronneby": 2,
+        "Kristianstad": 2,
+        "Sandviken": 2,
+        "Göteborg": 3,
+        "Laholm": 1
+      },
+      "ämnen": {
+        "Engelska": 1,
+        "Flera ämnen": 7,
+        "Religionskunskap": 1,
+        "Svenska": 1
+      },
+      "kurser": {
+        "Varierar": 15,
+        "RELI1000X": 2,
+        "SVEN1000X": 1
       }
     }
   }
