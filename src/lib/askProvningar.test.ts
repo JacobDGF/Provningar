@@ -78,11 +78,25 @@ describe('answerAsk', () => {
     }
   });
 
+  /**
+   * The cutoff binds only the strict answer. When nothing survives the
+   * deadline, `answerAsk` drops it deliberately and says so through `widened`,
+   * and the matches are then the named set rather than a promise about dates —
+   * so this asserts `widened` is false first, and the cutoff on that answer.
+   *
+   * The cutoff is december rather than oktober because Göteborg's Matematik 1b
+   * now sits in the round that is still bookable on `TODAY` (provet 20 oktober,
+   * anmälan stängde 22 september). "innan oktober" has no open round left to
+   * find in any kommun, so it only exercised the widened path, where the
+   * assertion below is not something the function claims.
+   */
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
+    const { matches, widened } = answerAsk('Matematik 1b innan december', EXAMS, TODAY);
+    expect(widened).toBe(false);
+    expect(matches.length).toBeGreaterThan(0);
     for (const m of matches) {
       const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
-      expect(when && when < '2026-10-01').toBe(true);
+      expect(when && when < '2026-12-01').toBe(true);
     }
   });
 
@@ -91,7 +105,12 @@ describe('answerAsk', () => {
    * prints, and without it a list of closed rounds reads as a list of open ones.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    // Göteborgs Historia 1b är odaterad igen — höstens omgång skrevs 24
+    // september och vårens datum publiceras först 1 december. `fallsBefore`
+    // svarar alltid nej på en operiod utan datum, så en fråga med en deadline
+    // måste släppa den för att hitta något alls, och det är just den
+    // släppningen flaggan ska göra synlig.
+    const { matches, widened } = answerAsk('Historia 1b i Göteborg innan december', EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
