@@ -4,6 +4,64 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-10-03 (datumsvep)
+
+`check:dates` pekade ut 69 listningar vars omgång helt hade passerat — de åtta
+som förra omgången lämnade kvar, plus hela Prövningsenheten Göteborgs
+höstschema som hunnit skrivas. Alla 69 är lästa mot anordnarens egen sida,
+kurskatalog eller webbshop, inte mot etiketten i datan. Ingen listning är
+borttagen: en anordnare som finns kvar men inte har publicerat nästa omgång är
+en neutral listning, inte en tom plats på kartan.
+
+- **18 flyttades fram till en publicerad omgång.** Iris Flemingsberg och
+  Medlearn Täby prövar 11 december (anmälan öppnar 12 november), Iris Upplands
+  Väsby 8 december (anmälan 5 november), ABF Stockholm kör tillfälle 2 den
+  9 respektive 10 december med anmälan från 26 oktober, Vux Huddinge 15 mars
+  2027 med anmälan 25 januari–21 februari. Växjö, Värnamo, Kunskapsförbundet
+  Väst (Vänersborg och Trollhättan), Kristinehamn, Katrineholm, Motala,
+  Uddevalla och Ljungby kör fasta, utskrivna perioder — där är nästa
+  ansökningsdag ett datum anordnaren publicerar, inte ett vi räknar fram.
+- **Iris Upplands Väsby är inte fullbokad längre.** Versalraden om bokade
+  platser gäller tillfället 8 september, som är passerat, och webbshoppens
+  "Slut i lager" är normalläget innan ett anmälningsformulär öppnar. `full`
+  sätts av anordnarens ord om _den här_ omgången, så den är borta — och
+  anmälningsdagen 5 november ligger framför oss, vilket är den blå färgen.
+- **Örebros fyra grundskolekurser har fått sina provdatum.** Tabellen som förra
+  omgången sa "återkommer med datum inom kort" skriver nu 2 november (del 1)
+  och 6 november (del 2) för engelska, svenska och svenska som andraspråk,
+  2 november för matematik. Anmälan stängde 27 september, så de är omgångar i
+  gång — inte gången data.
+- **47 säger "se hos skolan" i stället för ett datum som varit.** Göteborgs 44
+  Gy11-kurser står kvar i Prövningsenhetens katalog som "Prövningstillfälle ej
+  sökbar" utan någon ny omgång; vårens prövningar publiceras först 1 december
+  med första ansökningsdag 15 december. Komvux Härnösands tabell för 2026 hade
+  en enda rad, och Umevux skriver rakt ut att vårens tillfällen "läggs ut när de
+  är fastställda". Ingen av dem får ett påhittat datum.
+- **Två nya listningar hos en anordnare som redan fanns.** ABF Stockholm
+  publicerar engelska nivå 3 och matematik nivå 1a–2c i egna datumblock
+  (11 december, respektive 9 och 11 december med närvaro båda dagarna). Två
+  kurser är två kort, också hos samma skola.
+- Kvar att göra: `check:links` hittar tre döda `registrationUrl`, och ingen av
+  dem är ändrad här — de behöver en läsning i webbläsare först.
+  `minasidor.kunskapsforbundet.se/179` (404) ersätts troligen av
+  <https://kunskapsforbundet.se/vuxenutbildningen/ansokningsblanketter/>, som
+  anordnarens egen sida numera länkar till. `etjanst.motala.se/provning` (404)
+  är den länk kommunen själv sätter ut, och sidan säger att blanketten "endast
+  är tillgänglig när vi har en öppen anmälningsperiod" — den bör antagligen bli
+  en `publishedOnPage`-anmälan som öppnar 2 januari i stället för en död
+  djuplänk. `vasteras.alvis.se/provning/amnesomrade` svarar 200 med "Oväntat fel
+  404"; hela `/provning`-grenen är borta ur Alvis och det som finns är
+  `/hittakurser`, som är stadens hela utbud och inte prövningskatalogen.
+
+**Produkt: ett datumsvep får inte göra sviten röd.** Två prov i
+`askProvningar.test.ts` namngav en enskild listning för att få fram ett stängt
+eller ett öppet läge — "Historia 1b i Göteborg" skulle vara ett breddat svar,
+"Matematik 1b innan oktober" ett strikt. Båda var sanna den 30 augusti och
+falska efter det här svepet, trots att biblioteket betett sig likadant hela
+tiden. De plockar nu sitt fall ur datan i stället för att peka på en rad, så det
+som testas är löftet (ett strikt svar håller sin deadline, ett breddat säger att
+det breddats) och inte vilken kommun som råkade ha stängt sin anmälan.
+
 ## 2026-09-11 (räknaren i drift)
 
 Räknaren står nu hos Cloudflare och appen är byggd mot den. Kedjan är
