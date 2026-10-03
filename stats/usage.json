@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-10-02T08:37:51.711Z",
+  "uppdaterad": "2026-10-03T08:14:24.559Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -476,6 +476,62 @@
         "Varierar": 15,
         "RELI1000X": 2,
         "SVEN1000X": 1
+      }
+    },
+    "2026-10-02": {
+      "besök": 5,
+      "sidvisningar": {
+        "/ai": 1,
+        "/community": 3,
+        "/discover": 8,
+        "/exams": 3,
+        "/history": 1,
+        "/profile": 1
+      },
+      "händelser": {
+        "AI-fråga ställd": 2,
+        "Prövning öppnad": 8,
+        "Till anmälan": 5
+      },
+      "kommuner": {
+        "Varberg": 2,
+        "Stockholm": 5,
+        "Linköping": 4,
+        "Göteborg": 2
+      },
+      "ämnen": {
+        "Flera ämnen": 1,
+        "Matematik": 3,
+        "Kemi": 3,
+        "Svenska": 1
+      },
+      "kurser": {
+        "Varierar": 2,
+        "MATMAT02b": 1,
+        "MATMAT03b": 4,
+        "KEMKEM01": 5,
+        "SVEN3000X": 1
+      }
+    },
+    "2026-10-03": {
+      "besök": 2,
+      "sidvisningar": {
+        "/discover": 2
+      },
+      "händelser": {
+        "Prövning öppnad": 2,
+        "Till anmälan": 2
+      },
+      "kommuner": {
+        "Kristianstad": 2,
+        "Lund": 2
+      },
+      "ämnen": {
+        "Flera ämnen": 1,
+        "Matematik": 1
+      },
+      "kurser": {
+        "Varierar": 4
       }
     }
   }
