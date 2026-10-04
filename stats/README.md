@@ -8,7 +8,7 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 **Filen är genererad.** Ändringar här skrivs över vid nästa körning; räkningen ändras i
 `collector/worker.js` och i `src/lib/analytics.ts`.
 
-## Senaste 30 dygnen (t.o.m. 2026-10-03)
+## Senaste 30 dygnen (t.o.m. 2026-10-04)
 
 | Besök | Sidvisningar | Till anmälan |
 | ----- | ------------ | ------------ |
@@ -98,4 +98,4 @@ besök går inte att skilja åt ens i råtabellen, och "besök" räknas en gång
 webbläsarsession utan något som följer med till nästa. Statistiken finns bara för dem som
 sagt ja i appens samtyckesruta.
 
-<sub>Uppdaterad 2026-10-03T08:14:24.559Z.</sub>
+<sub>Uppdaterad 2026-10-04T08:31:00.533Z.</sub>
