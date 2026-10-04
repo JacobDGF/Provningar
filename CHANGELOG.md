@@ -4,6 +4,46 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-10-04 (datumsvep)
+
+**Produkt: inget kort visar längre en omgång som är helt förbi.** `check:dates`
+pekade ut 69 listningar vars publicerade omgång hade runnit ut — den äldsta
+43 dagar gammal — och alla 69 är nu lästa mot anordnarens egen sida i stället
+för mot etiketten i datan. Efter svepet är avsnittet "listningar visar en
+omgång som är helt förbi" tomt.
+
+- **44 av dem var Göteborg**, och Prövningsenhetens kurssidor skiljer sig åt
+  kurs för kurs. Åtta matematiklistningar hade fått ett nytt provdatum (19 och
+  20 oktober) som datan aldrig hämtade; två kurser har inga prövningstillfällen
+  kvar alls; de övriga 34 visar bara den gångna omgången. De 34 och de två står
+  nu som `confirmed: false` med anordnarens egen mening i etiketten — _vårens
+  prövningar publiceras 1 december och första ansökningsdag är 15 december_ —
+  eftersom appen hellre säger "se hos skolan" än visar ett datum som varit.
+- **Hela Göteborgskatalogen svepte med**, alla 215 listningar mot sin egen
+  kurssida, för att svaret på "finns det en nyare omgång?" bara står där. Ingen
+  av de övriga 181 låg efter sidan.
+- **Örebros grundskolekurser hade fått sina datum.** Kommunen skrev i
+  september att prövningsdatumen "återkommer inom kort"; nu står de i tabellen
+  (2 november, del 2 den 6 november för engelska, svenska och sva), så de fyra
+  listningarna visar ett datum i stället för ett löfte om ett.
+- **Tolv anordnare har publicerat nästa omgång**, och de ligger nu i datan:
+  Huddinge (15 mars 2027), Iris Flemingsberg och Medlearn Täby (11 december),
+  Iris Upplands Väsby (8 december), ABF (9 november och 10 december), Uddevalla,
+  Kunskapsförbundet Väst och Trollhättan, Kristinehamn, Växjö, Katrineholm,
+  Värnamo, Ljungby och Motala. Umevux och Härnösand har tvärtom ingen omgång
+  ute, och säger det själva — de två är `confirmed: false`.
+- **Linvux period 4 var den enda omgång i datan som gick att söka till i dag
+  och inte syntes.** Perioden ger bara matematikkurserna, med anmälan 21
+  september – 16 oktober och skrivdag vecka 51, så de tre matematiklistningarna
+  som satt kvar på period 3 sa "anmälan stängde 4 september" medan Linvux tog
+  emot anmälningar till samma kurs.
+- **Två tester i `askProvningar.test.ts` var fixturer för en månad, inte
+  invarianter.** Det ena krävde att varje träff på "Matematik 1b innan oktober"
+  låg före oktober — vilket bara gäller det osvidgade svaret; dagen den sista
+  oktoberomgången gick ut gjorde läsaren rätt (vidgade och sa det) och testet
+  föll för det. Det andra namngav en anordnare som råkade ha en stängd omgång.
+  Båda läser nu datan i stället för att peka på en rad i den.
+
 ## 2026-09-11 (räknaren i drift)
 
 Räknaren står nu hos Cloudflare och appen är byggd mot den. Kedjan är

@@ -78,11 +78,21 @@ describe('answerAsk', () => {
     }
   });
 
+  /**
+   * The cutoff binds the unwidened answer, which is the only one that claims
+   * to honour it. Pinning it unconditionally made the test a fixture of the
+   * month instead: the day the last Matematik 1b round before oktober passed,
+   * the reader did the right thing — widened and said so — and the test failed
+   * for it.
+   */
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
-    for (const m of matches) {
-      const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
-      expect(when && when < '2026-10-01').toBe(true);
+    const { matches, widened } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
+    expect(matches.length).toBeGreaterThan(0);
+    if (!widened) {
+      for (const m of matches) {
+        const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
+        expect(when && when < '2026-10-01').toBe(true);
+      }
     }
   });
 
@@ -91,7 +101,18 @@ describe('answerAsk', () => {
    * prints, and without it a list of closed rounds reads as a list of open ones.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    // The listing is read out of the dataset rather than named, because which
+    // provider happens to have a closed round is a fact about this week. What
+    // has to hold every week is that asking for one is answered with the flag.
+    const closed = EXAMS.find(
+      (e) =>
+        e.nextPeriod.confirmed &&
+        !!e.nextPeriod.applicationEnd &&
+        e.nextPeriod.applicationEnd < '2026-08-30' &&
+        EXAMS.filter((o) => o.course === e.course && o.city === e.city).length === 1,
+    );
+    expect(closed).toBeDefined();
+    const { matches, widened } = answerAsk(`${closed!.course} i ${closed!.city}`, EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
