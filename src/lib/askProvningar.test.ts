@@ -78,11 +78,19 @@ describe('answerAsk', () => {
     }
   });
 
+  /**
+   * The leak this guards is a late round presented as an early one. Widening is
+   * the one legitimate way a match can sit past the cutoff, and it is never
+   * silent — so every match either honours the deadline or the answer says it
+   * had to drop it. Asserting the pair rather than the dates keeps the test
+   * about the promise, not about which rounds happen to be open this term.
+   */
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
+    const { matches, widened } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
+    expect(matches.length).toBeGreaterThan(0);
     for (const m of matches) {
       const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
-      expect(when && when < '2026-10-01').toBe(true);
+      expect((!!when && when < '2026-10-01') || widened).toBe(true);
     }
   });
 
@@ -91,7 +99,20 @@ describe('answerAsk', () => {
    * prints, and without it a list of closed rounds reads as a list of open ones.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    // The listing is read out of the dataset rather than named, because which
+    // rounds have closed changes every term: a hard-coded kurs och stad stops
+    // being a widening case the day its provider publishes the next date, and
+    // then the test passes while proving nothing. Picked so the pair matches
+    // exactly one listing, so nothing else can satisfy the constraints.
+    const closed = EXAMS.find(
+      (e) =>
+        e.nextPeriod.confirmed &&
+        !!e.nextPeriod.applicationEnd &&
+        e.nextPeriod.applicationEnd < '2026-08-30' &&
+        EXAMS.filter((o) => o.city === e.city && o.course === e.course).length === 1,
+    );
+    expect(closed).toBeDefined();
+    const { matches, widened } = answerAsk(`${closed!.course} i ${closed!.city}`, EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
