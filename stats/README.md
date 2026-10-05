@@ -8,16 +8,18 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 **Filen är genererad.** Ändringar här skrivs över vid nästa körning; räkningen ändras i
 `collector/worker.js` och i `src/lib/analytics.ts`.
 
-## Senaste 30 dygnen (t.o.m. 2026-10-04)
+## Senaste 30 dygnen (t.o.m. 2026-10-05)
 
 | Besök | Sidvisningar | Till anmälan |
 | ----- | ------------ | ------------ |
-| 76 | 221 | 44 |
+| 78 | 234 | 47 |
 
 ### Per dygn
 
 | Dygn | Besök | Sidvisningar | Till anmälan |
 | ---- | ----- | ------------ | ------------ |
+| 2026-10-05 | 1 | 6 | 3 |
+| 2026-10-04 | 1 | 7 | 0 |
 | 2026-10-03 | 2 | 2 | 2 |
 | 2026-10-02 | 5 | 17 | 5 |
 | 2026-10-01 | 5 | 16 | 8 |
@@ -43,19 +45,19 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Upptäck | 132 |
-| Mina prövningar | 25 |
-| Community | 22 |
-| AI-prövning | 18 |
-| Historik | 13 |
+| Upptäck | 137 |
+| Mina prövningar | 27 |
+| Community | 25 |
+| AI-prövning | 20 |
+| Historik | 14 |
 | Profil | 11 |
 
 ### Händelser
 
 | Namn | Antal |
 | ---- | ----- |
-| Prövning öppnad | 118 |
-| Till anmälan | 44 |
+| Prövning öppnad | 123 |
+| Till anmälan | 47 |
 | AI-fråga ställd | 8 |
 | Bevakning skapad | 2 |
 | Prövning sparad | 1 |
@@ -65,25 +67,25 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | Namn | Antal |
 | ---- | ----- |
 | Örebro | 48 |
-| Stockholm | 24 |
+| Stockholm | 25 |
 | Malmö | 18 |
 | Göteborg | 17 |
 | Linköping | 7 |
+| Södertälje | 7 |
+| Kristianstad | 6 |
 | Mora | 6 |
 | Varberg | 6 |
 | Norrköping | 5 |
-| Skellefteå | 5 |
-| Sollentuna | 5 |
 
 ### Ämnen
 
 | Namn | Antal |
 | ---- | ----- |
 | Kemi | 30 |
-| Matematik | 23 |
+| Matematik | 24 |
+| Engelska | 16 |
 | Svenska | 16 |
-| Engelska | 14 |
-| Flera ämnen | 13 |
+| Flera ämnen | 15 |
 | Fysik | 13 |
 | Psykologi | 5 |
 | Biologi | 1 |
@@ -98,4 +100,4 @@ besök går inte att skilja åt ens i råtabellen, och "besök" räknas en gång
 webbläsarsession utan något som följer med till nästa. Statistiken finns bara för dem som
 sagt ja i appens samtyckesruta.
 
-<sub>Uppdaterad 2026-10-04T08:31:00.533Z.</sub>
+<sub>Uppdaterad 2026-10-05T09:11:56.238Z.</sub>

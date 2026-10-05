@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-10-04T08:31:00.533Z",
+  "uppdaterad": "2026-10-05T09:11:56.238Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -532,6 +532,48 @@
       },
       "kurser": {
         "Varierar": 4
+      }
+    },
+    "2026-10-04": {
+      "besök": 1,
+      "sidvisningar": {
+        "/ai": 1,
+        "/community": 2,
+        "/discover": 2,
+        "/exams": 1,
+        "/history": 1
+      },
+      "händelser": {},
+      "kommuner": {},
+      "ämnen": {},
+      "kurser": {}
+    },
+    "2026-10-05": {
+      "besök": 1,
+      "sidvisningar": {
+        "/ai": 1,
+        "/community": 1,
+        "/discover": 3,
+        "/exams": 1
+      },
+      "händelser": {
+        "Prövning öppnad": 5,
+        "Till anmälan": 3
+      },
+      "kommuner": {
+        "Södertälje": 3,
+        "Sandviken": 2,
+        "Kristianstad": 2,
+        "Stockholm": 1
+      },
+      "ämnen": {
+        "Engelska": 2,
+        "Flera ämnen": 2,
+        "Matematik": 1
+      },
+      "kurser": {
+        "Varierar": 7,
+        "MATMAT02b": 1
       }
     }
   }
