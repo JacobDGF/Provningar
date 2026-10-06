@@ -8,17 +8,17 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 **Filen är genererad.** Ändringar här skrivs över vid nästa körning; räkningen ändras i
 `collector/worker.js` och i `src/lib/analytics.ts`.
 
-## Senaste 30 dygnen (t.o.m. 2026-10-05)
+## Senaste 30 dygnen (t.o.m. 2026-10-06)
 
 | Besök | Sidvisningar | Till anmälan |
 | ----- | ------------ | ------------ |
-| 78 | 234 | 47 |
+| 79 | 237 | 51 |
 
 ### Per dygn
 
 | Dygn | Besök | Sidvisningar | Till anmälan |
 | ---- | ----- | ------------ | ------------ |
-| 2026-10-05 | 1 | 6 | 3 |
+| 2026-10-05 | 2 | 9 | 7 |
 | 2026-10-04 | 1 | 7 | 0 |
 | 2026-10-03 | 2 | 2 | 2 |
 | 2026-10-02 | 5 | 17 | 5 |
@@ -45,10 +45,10 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Upptäck | 137 |
+| Upptäck | 139 |
 | Mina prövningar | 27 |
 | Community | 25 |
-| AI-prövning | 20 |
+| AI-prövning | 21 |
 | Historik | 14 |
 | Profil | 11 |
 
@@ -56,9 +56,9 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Prövning öppnad | 123 |
-| Till anmälan | 47 |
-| AI-fråga ställd | 8 |
+| Prövning öppnad | 127 |
+| Till anmälan | 51 |
+| AI-fråga ställd | 9 |
 | Bevakning skapad | 2 |
 | Prövning sparad | 1 |
 
@@ -68,13 +68,13 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | ---- | ----- |
 | Örebro | 48 |
 | Stockholm | 25 |
+| Göteborg | 19 |
 | Malmö | 18 |
-| Göteborg | 17 |
+| Södertälje | 9 |
+| Kristianstad | 8 |
+| Varberg | 8 |
 | Linköping | 7 |
-| Södertälje | 7 |
-| Kristianstad | 6 |
 | Mora | 6 |
-| Varberg | 6 |
 | Norrköping | 5 |
 
 ### Ämnen
@@ -83,14 +83,14 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | ---- | ----- |
 | Kemi | 30 |
 | Matematik | 24 |
-| Engelska | 16 |
+| Engelska | 17 |
+| Flera ämnen | 17 |
 | Svenska | 16 |
-| Flera ämnen | 15 |
 | Fysik | 13 |
 | Psykologi | 5 |
 | Biologi | 1 |
+| Historia | 1 |
 | Juridik | 1 |
-| Naturkunskap | 1 |
 
 ## Vad som inte står här
 
@@ -100,4 +100,4 @@ besök går inte att skilja åt ens i råtabellen, och "besök" räknas en gång
 webbläsarsession utan något som följer med till nästa. Statistiken finns bara för dem som
 sagt ja i appens samtyckesruta.
 
-<sub>Uppdaterad 2026-10-05T09:11:56.238Z.</sub>
+<sub>Uppdaterad 2026-10-06T09:04:35.356Z.</sub>
