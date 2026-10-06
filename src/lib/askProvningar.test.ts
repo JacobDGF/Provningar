@@ -59,6 +59,32 @@ describe('readAsk', () => {
   });
 });
 
+/**
+ * Two copies of a real listing with the period moved to fixed dates.
+ *
+ * The deadline tests are about what `answerAsk` promises, not about which
+ * rounds a provider happens to be running: pinning them to the dataset's own
+ * dates turns them red the week Göteborg publishes October instead of
+ * September, for reasons no commit caused. The vocabulary still comes from
+ * `EXAMS` — the row is a real one, and only its two periods are fixed.
+ */
+function datedPair(course: string, early: string, late: string) {
+  const row = EXAMS.find((e) => e.course === course);
+  if (!row) throw new Error(`no listing for ${course}`);
+  const on = (suffix: string, date: string) => ({
+    ...row,
+    id: `${row.id}-${suffix}`,
+    nextPeriod: {
+      label: date,
+      applicationEnd: date,
+      examWindowStart: date,
+      examWindowEnd: date,
+      confirmed: true,
+    },
+  });
+  return [on('tidig', early), on('sen', late)];
+}
+
 describe('answerAsk', () => {
   it('returns only listings in the city that was asked for', () => {
     const { matches } = answerAsk('Matematik 2b i Göteborg', EXAMS, TODAY);
@@ -79,11 +105,13 @@ describe('answerAsk', () => {
   });
 
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
-    for (const m of matches) {
-      const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
-      expect(when && when < '2026-10-01').toBe(true);
-    }
+    const { matches, widened } = answerAsk(
+      'Matematik 1b innan oktober',
+      datedPair('Matematik 1b', '2026-09-20', '2026-11-20'),
+      TODAY,
+    );
+    expect(widened).toBe(false);
+    expect(matches.map((m) => m.nextPeriod.examWindowStart)).toEqual(['2026-09-20']);
   });
 
   /**
@@ -91,7 +119,11 @@ describe('answerAsk', () => {
    * prints, and without it a list of closed rounds reads as a list of open ones.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    const { matches, widened } = answerAsk(
+      'Matematik 1b innan oktober',
+      datedPair('Matematik 1b', '2026-11-20', '2026-12-20'),
+      TODAY,
+    );
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
