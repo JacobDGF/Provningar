@@ -8,16 +8,17 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 **Filen är genererad.** Ändringar här skrivs över vid nästa körning; räkningen ändras i
 `collector/worker.js` och i `src/lib/analytics.ts`.
 
-## Senaste 30 dygnen (t.o.m. 2026-10-06)
+## Senaste 30 dygnen (t.o.m. 2026-10-07)
 
 | Besök | Sidvisningar | Till anmälan |
 | ----- | ------------ | ------------ |
-| 79 | 237 | 51 |
+| 81 | 245 | 51 |
 
 ### Per dygn
 
 | Dygn | Besök | Sidvisningar | Till anmälan |
 | ---- | ----- | ------------ | ------------ |
+| 2026-10-06 | 2 | 8 | 0 |
 | 2026-10-05 | 2 | 9 | 7 |
 | 2026-10-04 | 1 | 7 | 0 |
 | 2026-10-03 | 2 | 2 | 2 |
@@ -45,18 +46,18 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Upptäck | 139 |
-| Mina prövningar | 27 |
-| Community | 25 |
-| AI-prövning | 21 |
-| Historik | 14 |
+| Upptäck | 142 |
+| Mina prövningar | 29 |
+| Community | 26 |
+| AI-prövning | 22 |
+| Historik | 15 |
 | Profil | 11 |
 
 ### Händelser
 
 | Namn | Antal |
 | ---- | ----- |
-| Prövning öppnad | 127 |
+| Prövning öppnad | 128 |
 | Till anmälan | 51 |
 | AI-fråga ställd | 9 |
 | Bevakning skapad | 2 |
@@ -83,8 +84,8 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | ---- | ----- |
 | Kemi | 30 |
 | Matematik | 24 |
+| Flera ämnen | 18 |
 | Engelska | 17 |
-| Flera ämnen | 17 |
 | Svenska | 16 |
 | Fysik | 13 |
 | Psykologi | 5 |
@@ -100,4 +101,4 @@ besök går inte att skilja åt ens i råtabellen, och "besök" räknas en gång
 webbläsarsession utan något som följer med till nästa. Statistiken finns bara för dem som
 sagt ja i appens samtyckesruta.
 
-<sub>Uppdaterad 2026-10-06T09:04:35.356Z.</sub>
+<sub>Uppdaterad 2026-10-07T08:47:56.849Z.</sub>
