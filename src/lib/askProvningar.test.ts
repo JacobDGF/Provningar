@@ -78,11 +78,20 @@ describe('answerAsk', () => {
     }
   });
 
+  /**
+   * The cutoff has to be one the dataset can still satisfy as of `TODAY`,
+   * otherwise `answerAsk` widens and deliberately stops promising anything —
+   * which is the next test's subject, not this one's. "innan oktober" held
+   * while Göteborg's Matematik 1b sat on sin september-omgång; när anordnaren
+   * rullade fram den till 20 oktober fanns ingen omgång kvar före oktober att
+   * hålla löftet med. December håller så länge någon Matematik 1b är öppen.
+   */
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
+    const { matches, widened } = answerAsk('Matematik 1b innan december', EXAMS, TODAY);
+    expect(widened).toBe(false);
     for (const m of matches) {
       const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
-      expect(when && when < '2026-10-01').toBe(true);
+      expect(when && when < '2026-12-01').toBe(true);
     }
   });
 
@@ -91,7 +100,9 @@ describe('answerAsk', () => {
    * prints, and without it a list of closed rounds reads as a list of open ones.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    // Every Matematik 1b round that is open on 30 augusti sits in oktober or
+    // later, so the deadline cannot be met and the answer has to say so.
+    const { matches, widened } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
