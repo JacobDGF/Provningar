@@ -78,20 +78,35 @@ describe('answerAsk', () => {
     }
   });
 
+  /**
+   * The cutoff has to be one some round still falls before, or the filter keeps
+   * nothing, the tab widens, and the loop below asserts nothing at all — so
+   * `widened` is checked first. A datasvep that moves Matematik 1b's omgång
+   * forward is allowed to make this test pick a later month; it is not allowed
+   * to make it pass by having no rows left to check.
+   */
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
+    const { matches, widened } = answerAsk('Matematik 1b innan november', EXAMS, TODAY);
+    expect(widened).toBe(false);
+    expect(matches.length).toBeGreaterThan(0);
     for (const m of matches) {
       const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
-      expect(when && when < '2026-10-01').toBe(true);
+      expect(when && when < '2026-11-01').toBe(true);
     }
   });
 
   /**
    * Widening is allowed; doing it quietly is not. The flag is what the tab
    * prints, and without it a list of closed rounds reads as a list of open ones.
+   *
+   * Karlskogas Matematik 3b/3c is the only listing for that kurs, and the
+   * anordnare has marked the omgång fullbokad — so the one named row can never
+   * survive "kan fortfarande sökas", whatever the calendar says. A listing that
+   * widens only because its deadline has passed stops widening the day the
+   * next omgång is published, which is the wrong thing to pin a test to.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    const { matches, widened } = answerAsk('Matematik 3b/3c i Karlskoga', EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
