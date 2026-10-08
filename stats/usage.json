@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-10-07T08:47:56.849Z",
+  "uppdaterad": "2026-10-08T09:06:23.224Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -601,6 +601,27 @@
       },
       "kurser": {
         "Varierar": 1
+      }
+    },
+    "2026-10-07": {
+      "besök": 3,
+      "sidvisningar": {
+        "/community": 1,
+        "/discover": 3
+      },
+      "händelser": {
+        "Kalenderfil hämtad": 1,
+        "Prövning öppnad": 1,
+        "Till anmälan": 1
+      },
+      "kommuner": {
+        "Göteborg": 3
+      },
+      "ämnen": {
+        "Engelska": 1
+      },
+      "kurser": {
+        "ENGE2000X": 3
       }
     }
   }
