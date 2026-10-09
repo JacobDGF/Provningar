@@ -79,19 +79,27 @@ describe('answerAsk', () => {
   });
 
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
+    const { matches } = answerAsk('Matematik 1b innan november', EXAMS, TODAY);
+    expect(matches.length).toBeGreaterThan(0);
     for (const m of matches) {
       const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
-      expect(when && when < '2026-10-01').toBe(true);
+      expect(when && when < '2026-11-01').toBe(true);
     }
   });
 
   /**
    * Widening is allowed; doing it quietly is not. The flag is what the tab
    * prints, and without it a list of closed rounds reads as a list of open ones.
+   *
+   * The example belongs to the dataset, not to the logic: it has to be a kurs
+   * and a stad where every round is dated and already behind `TODAY`. Karlskogas
+   * Engelska 6 stängde 20 augusti 2026 and took the job over from Göteborgs
+   * Historia 1b on 2026-10-09, when Göteborgs höstomgång was written off and its
+   * listings stopped carrying a date to be behind at all. Same for the deadline
+   * test above, which needs a kurs with a round *inside* the cutoff.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    const { matches, widened } = answerAsk('Engelska 6 i Karlskoga', EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
