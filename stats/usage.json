@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-10-08T09:06:23.224Z",
+  "uppdaterad": "2026-10-09T09:12:57.765Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -622,6 +622,38 @@
       },
       "kurser": {
         "ENGE2000X": 3
+      }
+    },
+    "2026-10-08": {
+      "besök": 5,
+      "sidvisningar": {
+        "/community": 1,
+        "/discover": 6,
+        "/exams": 1
+      },
+      "händelser": {
+        "Prövning öppnad": 13,
+        "Till anmälan": 3
+      },
+      "kommuner": {
+        "Göteborg": 8,
+        "Linköping": 2,
+        "Stockholm": 4,
+        "Upplands Väsby": 1,
+        "Örebro": 1
+      },
+      "ämnen": {
+        "Matematik": 4,
+        "Fysik": 9
+      },
+      "kurser": {
+        "MATE1C00X": 1,
+        "MATO1C00X": 1,
+        "MATMAT03b": 2,
+        "FYSFYS02": 4,
+        "FYSK2000X": 6,
+        "FYSFYS01a": 1,
+        "FYSK1B00X": 1
       }
     }
   }
