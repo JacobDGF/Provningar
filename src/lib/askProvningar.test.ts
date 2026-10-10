@@ -78,20 +78,48 @@ describe('answerAsk', () => {
     }
   });
 
+  /**
+   * The promise is conditional, and the condition is the flag. A widened answer
+   * has dropped the deadline on purpose and says so, so it is the un-widened
+   * answer that owes the cutoff. Asserting it unconditionally passed only while
+   * the dataset happened to hold a bookable Matematik 1b before oktober — the
+   * day Göteborg's round moved to 20 oktober, the test failed over data that was
+   * correct.
+   */
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
-    for (const m of matches) {
-      const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
-      expect(when && when < '2026-10-01').toBe(true);
+    const { matches, widened } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
+    if (!widened) {
+      for (const m of matches) {
+        const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
+        expect(when && when < '2026-10-01').toBe(true);
+      }
     }
   });
 
   /**
    * Widening is allowed; doing it quietly is not. The flag is what the tab
    * prints, and without it a list of closed rounds reads as a list of open ones.
+   *
+   * The closed round is built here rather than fished out of `EXAMS`, so the
+   * test keeps asserting the flag instead of the dataset: it used to lean on
+   * Göteborg's Historia 1b being a round that had already run, and went quiet
+   * the moment that listing lost its dates.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    const exams = EXAMS.map((e) =>
+      e.city === 'Göteborg' && e.course === 'Historia 1b'
+        ? {
+            ...e,
+            nextPeriod: {
+              label: 'Anmälan stängde 1 augusti.',
+              applicationEnd: '2026-08-01',
+              examWindowStart: '2026-08-15',
+              confirmed: true,
+            },
+          }
+        : e,
+    );
+    const { matches, widened } = answerAsk('Historia 1b i Göteborg', exams, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
