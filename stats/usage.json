@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-10-09T09:12:57.765Z",
+  "uppdaterad": "2026-10-10T08:36:29.761Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -654,6 +654,25 @@
         "FYSK2000X": 6,
         "FYSFYS01a": 1,
         "FYSK1B00X": 1
+      }
+    },
+    "2026-10-09": {
+      "besök": 3,
+      "sidvisningar": {
+        "/discover": 11
+      },
+      "händelser": {
+        "Prövning öppnad": 2
+      },
+      "kommuner": {
+        "Ronneby": 1,
+        "Varberg": 1
+      },
+      "ämnen": {
+        "Flera ämnen": 2
+      },
+      "kurser": {
+        "Varierar": 2
       }
     }
   }

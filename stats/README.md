@@ -8,16 +8,17 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 **Filen är genererad.** Ändringar här skrivs över vid nästa körning; räkningen ändras i
 `collector/worker.js` och i `src/lib/analytics.ts`.
 
-## Senaste 30 dygnen (t.o.m. 2026-10-09)
+## Senaste 30 dygnen (t.o.m. 2026-10-10)
 
 | Besök | Sidvisningar | Till anmälan |
 | ----- | ------------ | ------------ |
-| 89 | 257 | 55 |
+| 92 | 268 | 55 |
 
 ### Per dygn
 
 | Dygn | Besök | Sidvisningar | Till anmälan |
 | ---- | ----- | ------------ | ------------ |
+| 2026-10-09 | 3 | 11 | 0 |
 | 2026-10-08 | 5 | 8 | 3 |
 | 2026-10-07 | 3 | 4 | 1 |
 | 2026-10-06 | 2 | 8 | 0 |
@@ -48,7 +49,7 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Upptäck | 151 |
+| Upptäck | 162 |
 | Mina prövningar | 30 |
 | Community | 28 |
 | AI-prövning | 22 |
@@ -59,7 +60,7 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Prövning öppnad | 142 |
+| Prövning öppnad | 144 |
 | Till anmälan | 55 |
 | AI-fråga ställd | 9 |
 | Bevakning skapad | 2 |
@@ -76,8 +77,8 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | Malmö | 18 |
 | Linköping | 9 |
 | Södertälje | 9 |
+| Varberg | 9 |
 | Kristianstad | 8 |
-| Varberg | 8 |
 | Mora | 6 |
 | Norrköping | 5 |
 
@@ -88,8 +89,8 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | Kemi | 30 |
 | Matematik | 28 |
 | Fysik | 22 |
+| Flera ämnen | 20 |
 | Engelska | 18 |
-| Flera ämnen | 18 |
 | Svenska | 16 |
 | Psykologi | 5 |
 | Biologi | 1 |
@@ -104,4 +105,4 @@ besök går inte att skilja åt ens i råtabellen, och "besök" räknas en gång
 webbläsarsession utan något som följer med till nästa. Statistiken finns bara för dem som
 sagt ja i appens samtyckesruta.
 
-<sub>Uppdaterad 2026-10-09T09:12:57.765Z.</sub>
+<sub>Uppdaterad 2026-10-10T08:36:29.761Z.</sub>
