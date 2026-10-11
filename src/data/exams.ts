@@ -5333,11 +5333,12 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
-    // Checked 2026-08-13: "Anmälan sker ENDAST via ett formulär på denna
-    // webbsida, formuläret syns först när anmälan öppnar." Höstens formulär
-    // läggs upp 24 augusti kl. 10, betalning senast 28 augusti. Först till
-    // kvarn, ingen reservlista — så sidan är bokningen, när den är bokningen.
-    registration: publishedOnPage('anmälningsformuläret', 'den 24 augusti kl. 10'),
+    // Läst om 2026-10-11: "Anmälan sker ENDAST via ett formulär på denna
+    // webbsida, formuläret syns först när anmälan öppnar." Tillfälle 2:s
+    // formulär läggs upp 26 oktober kl. 10, betalning senast 30 oktober.
+    // Först till kvarn, ingen reservlista — så sidan är bokningen, när den
+    // är bokningen.
+    registration: publishedOnPage('anmälningsformuläret', 'den 26 oktober kl. 10'),
     registrationUrl: 'https://abfstockholm.se/komvux/provning/',
     infoUrl: 'https://abfstockholm.se/komvux/provning/',
     description:
@@ -5350,8 +5351,13 @@ export const EXAMS: Exam[] = [
     schoolName: 'ABF Stockholm Komvux',
     provider: 'ABF Stockholm',
     subject: 'Engelska',
-    course: 'Engelska 6 (nivå 2)',
-    courseCode: 'ENGENG06',
+    // ABF skriver rakt ut att de bara prövar ämnesnivåer, inte hela kurser,
+    // och deras egen tabell har koden ENGE2000X. Listningen bar ENGENG06,
+    // alltså Gy11-kursen — en kod ABF inte prövar, och ett eget
+    // förberedelsedokument. Sökningen hittar den ändå på "Engelska 6", för
+    // paret står i courseSystems.ts.
+    course: 'Engelska Nivå 2',
+    courseCode: 'ENGE2000X',
     level: 'Komvux',
     city: 'Stockholm',
     region: 'Stockholm',
@@ -5373,15 +5379,19 @@ export const EXAMS: Exam[] = [
     },
     components: COMPONENTS_ENGELSKA,
     studyTips: TIPS_ENGELSKA,
-    // Checked 2026-08-13: "Anmälan sker ENDAST via ett formulär på denna
-    // webbsida, formuläret syns först när anmälan öppnar." Höstens formulär
-    // läggs upp 24 augusti kl. 10, betalning senast 28 augusti. Först till
-    // kvarn, ingen reservlista — så sidan är bokningen, när den är bokningen.
-    registration: publishedOnPage('anmälningsformuläret', 'den 24 augusti kl. 10'),
+    // Läst om 2026-10-11: "Anmälan sker ENDAST via ett formulär på denna
+    // webbsida, formuläret syns först när anmälan öppnar." Tillfälle 2:s
+    // formulär läggs upp 26 oktober kl. 10, betalning senast 30 oktober.
+    // Först till kvarn, ingen reservlista — så sidan är bokningen, när den
+    // är bokningen.
+    registration: publishedOnPage('anmälningsformuläret', 'den 26 oktober kl. 10'),
     registrationUrl: 'https://abfstockholm.se/komvux/provning/',
     infoUrl: 'https://abfstockholm.se/komvux/provning/',
     description:
-      'ABF Stockholm erbjuder prövning i engelska (nivå 1-3, två delar) endast för sökande folkbokförda utanför Stockholms kommun, bland annat Botkyrka, Huddinge, Nacka och Sollentuna.',
+      'ABF Stockholm prövar engelska som ämnesnivå 1–3, i två delar som båda måste ' +
+      'genomföras för att prövningen ska kunna bedömas, och tar endast emot sökande ' +
+      'folkbokförda utanför Stockholms kommun — bland annat Botkyrka, Huddinge, Nacka ' +
+      'och Sollentuna.',
     tags: ['komvux', 'engelska', 'storstockholm'],
     verifiedAt: OCT_11_VERIFIED,
   },
