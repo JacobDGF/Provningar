@@ -79,10 +79,16 @@ describe('answerAsk', () => {
   });
 
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
+    const { matches, widened } = answerAsk('Matematik 1b innan november', EXAMS, TODAY);
+    // The promise covers the un-widened answer only: a widened one shows
+    // everything on purpose and prints that it did. Asserting the flag keeps
+    // this test from passing vacuously the day the dataset stops holding a
+    // round before the cutoff — which is what happened when Göteborgs höstomgång
+    // was archived and the cutoff was oktober.
+    expect(widened).toBe(false);
     for (const m of matches) {
       const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
-      expect(when && when < '2026-10-01').toBe(true);
+      expect(when && when < '2026-11-01').toBe(true);
     }
   });
 
@@ -91,7 +97,11 @@ describe('answerAsk', () => {
    * prints, and without it a list of closed rounds reads as a list of open ones.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    // NTI:s Stockholmsutbud is the case in the data: every round matching the
+    // sentence has a closed anmälan, so nothing survives the two constraints.
+    // (Göteborg stood here until its passed rounds were archived — an
+    // undated listing is not closed, so it answers without widening.)
+    const { matches, widened } = answerAsk('Engelska 7 i Stockholm', EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
