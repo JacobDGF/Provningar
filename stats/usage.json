@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-10-10T08:36:29.761Z",
+  "uppdaterad": "2026-10-11T09:00:36.494Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -674,6 +674,43 @@
       "kurser": {
         "Varierar": 2
       }
+    },
+    "2026-10-10": {
+      "besök": 1,
+      "sidvisningar": {
+        "/ai": 1,
+        "/community": 1,
+        "/discover": 1,
+        "/exams": 1,
+        "/history": 1
+      },
+      "händelser": {
+        "AI-fråga ställd": 1,
+        "Prövning öppnad": 2,
+        "Till anmälan": 1
+      },
+      "kommuner": {
+        "Stockholm": 1,
+        "Skövde": 2
+      },
+      "ämnen": {
+        "Svenska": 1,
+        "Matematik": 1
+      },
+      "kurser": {
+        "AFFAFÄ00S": 1,
+        "MATMAT03b": 2
+      }
+    },
+    "2026-10-11": {
+      "besök": 1,
+      "sidvisningar": {
+        "/discover": 1
+      },
+      "händelser": {},
+      "kommuner": {},
+      "ämnen": {},
+      "kurser": {}
     }
   }
 }
