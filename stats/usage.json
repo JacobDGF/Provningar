@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-10-12T09:21:39.927Z",
+  "uppdaterad": "2026-10-13T09:31:32.536Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -714,14 +714,55 @@
       "kurser": {}
     },
     "2026-10-12": {
+      "besök": 6,
+      "sidvisningar": {
+        "/community": 3,
+        "/discover": 10,
+        "/exams": 3
+      },
+      "händelser": {
+        "Prövning öppnad": 2,
+        "Till anmälan": 1
+      },
+      "kommuner": {
+        "Stockholm": 1,
+        "Laholm": 2
+      },
+      "ämnen": {
+        "Kemi": 1,
+        "Flera ämnen": 1
+      },
+      "kurser": {
+        "KEMKEM01": 1,
+        "Varierar": 2
+      }
+    },
+    "2026-10-13": {
       "besök": 1,
       "sidvisningar": {
-        "/discover": 3
+        "/discover": 1
       },
-      "händelser": {},
-      "kommuner": {},
-      "ämnen": {},
-      "kurser": {}
+      "händelser": {
+        "Prövning öppnad": 8
+      },
+      "kommuner": {
+        "Skellefteå": 1,
+        "Malmö": 1,
+        "Linköping": 1,
+        "Halmstad": 1,
+        "Kristianstad": 1,
+        "Sollentuna": 1,
+        "Eskilstuna": 1,
+        "Vetlanda": 1
+      },
+      "ämnen": {
+        "Naturkunskap": 3,
+        "Flera ämnen": 5
+      },
+      "kurser": {
+        "NAKNAK02": 3,
+        "Varierar": 5
+      }
     }
   }
 }
