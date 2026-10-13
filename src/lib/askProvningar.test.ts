@@ -78,11 +78,22 @@ describe('answerAsk', () => {
     }
   });
 
+  /**
+   * The cutoff is a promise about the answer, so it only binds the answer that
+   * kept it. A widened answer has already said out loud that it dropped the
+   * constraint, and the test below is what holds it to that. Asserting the
+   * cutoff unconditionally made this test depend on some listing in the whole
+   * dataset happening to sit before the month named here — it went red when
+   * Göteborg moved Matematik 1b from 29 september to 20 oktober, which is the
+   * dataset telling the truth, not the reader getting it wrong.
+   */
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
+    const { matches, widened } = answerAsk('Matematik 1b innan december', EXAMS, TODAY);
+    expect(widened).toBe(false);
+    expect(matches.length).toBeGreaterThan(0);
     for (const m of matches) {
       const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
-      expect(when && when < '2026-10-01').toBe(true);
+      expect(when && when < '2026-12-01').toBe(true);
     }
   });
 
@@ -91,7 +102,10 @@ describe('answerAsk', () => {
    * prints, and without it a list of closed rounds reads as a list of open ones.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    // A cutoff is the one constraint an undated round can never satisfy — it
+    // has no date to fall before — so Göteborgs enda Historia 1b-listning
+    // forces the widening whether or not its round happens to be open today.
+    const { matches, widened } = answerAsk('Historia 1b i Göteborg innan oktober', EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
