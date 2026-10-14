@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-10-13T09:31:32.536Z",
+  "uppdaterad": "2026-10-14T07:44:57.240Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -738,30 +738,54 @@
       }
     },
     "2026-10-13": {
-      "besök": 1,
+      "besök": 4,
       "sidvisningar": {
-        "/discover": 1
+        "/ai": 1,
+        "/community": 2,
+        "/discover": 7,
+        "/exams": 3,
+        "/history": 3
       },
       "händelser": {
-        "Prövning öppnad": 8
+        "Bevakning skapad": 1,
+        "Prövning öppnad": 28,
+        "Till anmälan": 2
       },
       "kommuner": {
+        "hela landet": 1,
         "Skellefteå": 1,
         "Malmö": 1,
         "Linköping": 1,
         "Halmstad": 1,
         "Kristianstad": 1,
-        "Sollentuna": 1,
+        "Sollentuna": 2,
         "Eskilstuna": 1,
-        "Vetlanda": 1
+        "Vetlanda": 1,
+        "Solna": 2,
+        "Kalmar": 1,
+        "Nyköping": 1,
+        "Haninge": 1,
+        "Östersund": 1,
+        "Enköping": 1,
+        "Landskrona": 1,
+        "Köping": 1,
+        "Göteborg": 5,
+        "Laholm": 1,
+        "Stockholm": 5,
+        "Järfälla": 1
       },
       "ämnen": {
+        "Fysik": 8,
         "Naturkunskap": 3,
-        "Flera ämnen": 5
+        "Flera ämnen": 17,
+        "Matematik": 1
       },
       "kurser": {
         "NAKNAK02": 3,
-        "Varierar": 5
+        "Varierar": 17,
+        "MATO2000X": 1,
+        "FYSFYS02": 6,
+        "FYSK2000X": 3
       }
     }
   }
