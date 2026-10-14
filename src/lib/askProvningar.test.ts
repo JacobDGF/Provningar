@@ -78,20 +78,34 @@ describe('answerAsk', () => {
     }
   });
 
+  /**
+   * The promise only binds an answer that survived the filter, so the cutoff
+   * has to be one the dataset can still meet — `widened: false` is half the
+   * assertion. A cutoff nothing reaches drops through to the widened branch
+   * below, where the matches are everything in the kurs and the before-date
+   * promises nothing.
+   */
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
+    const { matches, widened } = answerAsk('Matematik 1b innan november', EXAMS, TODAY);
+    expect(widened).toBe(false);
     for (const m of matches) {
       const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
-      expect(when && when < '2026-10-01').toBe(true);
+      expect(when && when < '2026-11-01').toBe(true);
     }
   });
 
   /**
    * Widening is allowed; doing it quietly is not. The flag is what the tab
    * prints, and without it a list of closed rounds reads as a list of open ones.
+   *
+   * The fixture is a kurs whose only listing in that stad had its anmälan close
+   * before `TODAY` — Karlskogas Engelska 6 stängde 20 augusti. Any such fixture
+   * has a shelf life: the day a datumsvep gives that listning new dates, or
+   * strips the gångna ones, the answer stops widening and this test needs
+   * another closed round to point at.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    const { matches, widened } = answerAsk('Engelska 6 i Karlskoga', EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });

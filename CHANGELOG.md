@@ -4,6 +4,68 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-10-14 (datumsvep)
+
+**Data: 151 listningar lästa om mot anordnarens egen sida.** `check:dates`
+pekade ut 129 listningar vars omgång var helt förbi — datan hade inte rörts
+sedan 10 september, medan statistiken committades varje natt. Efter svepet är
+den siffran 0.
+
+| Anordnare                  | Listningar | Vad sidan sa                                               |
+| -------------------------- | ---------- | ---------------------------------------------------------- |
+| Prövningsenheten Göteborg  | 98         | Omgången står som "Prövningstillfälle ej sökbar" i Alvis   |
+| Linvux (Linköping)         | 23         | Period 1 2027 publicerad: anmälan 12 jan, prov vecka 10–11 |
+| Vux Huddinge               | 4          | Nästa tillfälle 15 mars 2027, anmälan 25 jan – 21 feb      |
+| Komvux Örebro (Risbergska) | 4          | Provdatumen som "återkom inom kort" står nu: 2 och 6 nov   |
+| Iris Hadar + Medlearn      | 3          | Decemberomgångarna och vårens 2027-datum publicerade       |
+| 17 övriga anordnare        | 19         | En anordnare i taget, mot anordnarens egen sida            |
+
+- **Göteborg tappar sina datum, inte sina kort.** Hela prövningsenhetens
+  katalog lades in 30 augusti med provdatum per kurs, och 98 av dem har skrivits
+  sedan dess. Alvis visar fortfarande bara den gångna omgången, märkt
+  "Prövningstillfälle ej sökbar" — inget nytt tillfälle är publicerat. Datumen
+  ryker därför enligt regeln i [README](README.md#datan-är-produkten), och
+  etiketten säger i stället det anordnaren faktiskt lovar: vårens kursutbud
+  publiceras 1 december, första ansökningsdag 15 december. Beskrivningarnas
+  "Provet skrivs tisdag 6 oktober" står i preteritum nu — ett kort fick inte
+  säga i futurum vad som redan hänt.
+- **19 anordnare hade publicerat nästa omgång**, och de listningarna flyttades
+  fram i stället för att tömmas: ABF Stockholms 9 november och Engelska nivå 2:s
+  10 december, Iris Flemingsberg 11 december och Upplands Väsby 8 december
+  (`full` lyfts — den fullbokade omgången finns inte längre), Medlearn Täby
+  11 december, Folkuniversitetet Södertälje 11–14 december, Örnsköldsviks VT27
+  (18 mars och 15 april), Härnösands vecka 15, Huddinges 15 mars,
+  Kunskapsförbundets och Trollhättans 1 februari, Uddevallas 10 december –
+  28 februari, Kristinehamns 1 februari – 1 mars, Motalas 2 januari –
+  15 februari, Katrineholms 1–26 januari, Värnamos 29 januari och Ljungbys
+  20 oktober — den sista en omgång som fortfarande går att söka.
+- **Fem listningar utanför Göteborg hade ingenting kvar att söka** och är
+  odaterade nu, med etiketten som säger varför: Umevux' två (vårens datum
+  "läggs ut när de är fastställda"), Falun ("datum kommer i början av 2027"),
+  Växjö (period 2 ska vara genomförd senast 30 december, och period 1 2027 är
+  inte publicerad) och Ystad.
+- **Blindfläcken kostar mer än de 129.** `check:dates` läser datan som text och
+  kan inte följa en listning som bygger sin period i en funktion — 186 gör det,
+  och de rapporteras vid namn i stället för att tigande hoppas över. Linvux'
+  22 kurser låg där med en period som gick ut 11 oktober, osedd av skriptet
+  eftersom `linvuxPeriod3()` inte går att läsa ur källtexten. Helpern heter
+  `linvuxPeriod1()` nu och pekar på period 1 2027; period 4 duger inte, för den
+  har bara matematik. NTI:s och Malmös omgångar är lästa och ligger rätt.
+- **Två tester var fästa i Göteborgsdatum som nu är borta.** `answerAsk`-testet
+  som lovade att en deadline-fråga bara ger omgångar före gränsen vilade på en
+  Matematik 1b-omgång 29 september; det frågar efter "innan november" nu och
+  kräver `widened: false`, så löftet prövas på det svar löftet gäller. Testet
+  som kräver att en breddad sökning säger det högt pekade på Historia 1b i
+  Göteborg, som inte längre behöver breddas — det pekar på Karlskogas
+  Engelska 6, vars anmälan stängde 20 augusti, med en kommentar om att varje
+  sådan fixtur har bäst-före-datum.
+- Kvar att göra: tre döda länkar (Motalas e-tjänst, som bara finns under en
+  öppen anmälningsperiod; Västerås Alvis-väg, som svarar 404; Viadidakts
+  domän, som inte längre slår upp — innehållet ligger på
+  `larknuten.katrineholm.se`), Landskronas 503 som sweepen inte kan avgöra, och
+  `sthlmAutumn2026()`-trion (Södermalm, Hermods), vars halvöppna fönster saknar
+  slutdatum och vars sidor svarade 503 vid svepet.
+
 ## 2026-09-11 (räknaren i drift)
 
 Räknaren står nu hos Cloudflare och appen är byggd mot den. Kedjan är
