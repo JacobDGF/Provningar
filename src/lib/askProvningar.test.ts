@@ -78,11 +78,20 @@ describe('answerAsk', () => {
     }
   });
 
+  /**
+   * The cutoff is november rather than oktober because the promise only binds
+   * an answer that was not widened — and "innan oktober" no longer has a
+   * Matematik 1b to satisfy it, so it widens, which drops the deadline by
+   * design. Asserting `widened` is false is what keeps the loop from passing
+   * vacuously on an empty or widened result.
+   */
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
+    const { matches, widened } = answerAsk('Matematik 1b innan november', EXAMS, TODAY);
+    expect(matches.length).toBeGreaterThan(0);
+    expect(widened).toBe(false);
     for (const m of matches) {
       const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
-      expect(when && when < '2026-10-01').toBe(true);
+      expect(when && when < '2026-11-01').toBe(true);
     }
   });
 
@@ -91,7 +100,13 @@ describe('answerAsk', () => {
    * prints, and without it a list of closed rounds reads as a list of open ones.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    // Stockholm rather than Göteborg: NTI's one ansökningstillfälle closed
+    // 20 augusti, which is behind the fixed TODAY, so this pair widens from a
+    // date written in code and cannot stop widening when the dataset moves on.
+    // The Göteborg round this used to read has since been rewritten as
+    // undated — and an undated listing is not a closed one, so it no longer
+    // forces a widening.
+    const { matches, widened } = answerAsk('Engelska 6 i Stockholm', EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
