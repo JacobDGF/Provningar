@@ -78,20 +78,35 @@ describe('answerAsk', () => {
     }
   });
 
+  /**
+   * `widened` is asserted first on purpose. The promise only exists on the
+   * strict answer, so a question that quietly widened would satisfy the loop
+   * below with an undated listing and prove nothing — which is exactly what
+   * happened when "innan oktober" lost its last dated round to the datumsvep
+   * 2026-10-16 and the test kept passing right up to the day it didn't.
+   */
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
+    const { matches, widened } = answerAsk('Matematik 1b innan januari', EXAMS, TODAY);
+    expect(widened).toBe(false);
+    expect(matches.length).toBeGreaterThan(0);
     for (const m of matches) {
       const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
-      expect(when && when < '2026-10-01').toBe(true);
+      expect(when && when < '2027-01-01').toBe(true);
     }
   });
 
   /**
    * Widening is allowed; doing it quietly is not. The flag is what the tab
    * prints, and without it a list of closed rounds reads as a list of open ones.
+   *
+   * Biologi 1 i Stockholm is NTI's single autumn round, whose anmälan closed
+   * 20 augusti — the one shape that forces a widening: a kurs that exists in
+   * the stad, with nothing left to apply to. Göteborg stood here until
+   * 2026-10-16, when the hela katalogen went back to "inga datum publicerade"
+   * and stopped being a closed round at all.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    const { matches, widened } = answerAsk('Biologi 1 i Stockholm', EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });

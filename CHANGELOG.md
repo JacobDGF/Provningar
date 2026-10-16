@@ -4,6 +4,40 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-10-16 (datumsvepet)
+
+`check:dates` sa att **188 listningar visade en omgång som var helt förbi** —
+backloggen efter fem veckor utan datasvep. Varje anordnare är läst om mot sin
+egen sida, och svaret skiljer sig åt, vilket är hela skälet att läsa dem en för
+en i stället för att flytta fram ett datum på rutin:
+
+- **Prövningsenheten Göteborg (156 listningar)** har inget nytt publicerat.
+  Kurskatalogen i Alvis svarar "Antal träffar: 0" på prövningssökningen och de
+  enskilda tillfällena säger "Prövningstillfälle ej sökbar", så hela katalogen
+  utom matematiken står utan sökbart datum. De får `confirmed: false` med en
+  etikett som säger just det — inte ett framflyttat datum ingen publicerat.
+- **Åtta anordnare hade nästa omgång uppe**, och de får riktiga datum i stället:
+  Huddinge (15 mars 2027), Örnsköldsvik (18 mars och 15 april 2027), Härnösand
+  (vecka 15 2027), ABF Stockholm (9 november och 10 december), Medlearn Täby
+  (11 december), Iris i Upplands Väsby (8 december) och Flemingsberg
+  (11 december), Folkuniversitetet Södertälje (11–14 december).
+- **Komvux Örebro hade publicerat provdagarna** som datan sa "återkommer inom
+  kort" om: del 1 den 2 november, del 2 den 6 november.
+- **Umevux, Falun och Ystad säger själva att datumen inte är satta.** Umevux
+  skriver ut det ("läggs ut när de är fastställda"), Falun skriver "Datum kommer
+  i början av 2027". Då är `confirmed: false` det sanna svaret, inte ett fel.
+- **Linvux låg kvar i prövningsperiod 3** — 23 listningar som skriptet inte kan
+  se, eftersom de bygger sin period i kod. `linvuxPeriod3` är nu
+  `linvuxPeriod4`: anmälan 21 september – 16 oktober, skrivdag vecka 51.
+
+Två tester i [`askProvningar.test.ts`](src/lib/askProvningar.test.ts) föll på
+svepet, och det var testerna som hade fel på ett lärorikt sätt: båda läste den
+riktiga datan, och båda valde Göteborg som exempel på "en stängd omgång". När
+Göteborg blev odaterat fanns det ingen stängd omgång kvar att läsa. Deadline-
+testet fick dessutom en `widened`-kontroll först — utan den kunde en tyst
+vidgning låta en odaterad listning passera en kontroll som påstår att varje
+träff ligger före gränsen.
+
 ## 2026-09-11 (räknaren i drift)
 
 Räknaren står nu hos Cloudflare och appen är byggd mot den. Kedjan är
