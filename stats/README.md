@@ -8,11 +8,11 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 **Filen är genererad.** Ändringar här skrivs över vid nästa körning; räkningen ändras i
 `collector/worker.js` och i `src/lib/analytics.ts`.
 
-## Senaste 30 dygnen (t.o.m. 2026-10-15)
+## Senaste 30 dygnen (t.o.m. 2026-10-16)
 
 | Besök | Sidvisningar | Till anmälan |
 | ----- | ------------ | ------------ |
-| 81 | 245 | 43 |
+| 80 | 240 | 43 |
 
 ### Per dygn
 
@@ -44,17 +44,16 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | 2026-09-20 | 1 | 15 | 0 |
 | 2026-09-18 | 4 | 8 | 3 |
 | 2026-09-17 | 2 | 2 | 2 |
-| 2026-09-16 | 1 | 5 | 0 |
 
 ### Flikar
 
 | Namn | Antal |
 | ---- | ----- |
-| Upptäck | 137 |
-| Mina prövningar | 34 |
-| Community | 28 |
+| Upptäck | 135 |
+| Mina prövningar | 33 |
+| Community | 27 |
 | AI-prövning | 21 |
-| Historik | 17 |
+| Historik | 16 |
 | Profil | 8 |
 
 ### Händelser
@@ -106,4 +105,4 @@ besök går inte att skilja åt ens i råtabellen, och "besök" räknas en gång
 webbläsarsession utan något som följer med till nästa. Statistiken finns bara för dem som
 sagt ja i appens samtyckesruta.
 
-<sub>Uppdaterad 2026-10-15T07:32:18.353Z.</sub>
+<sub>Uppdaterad 2026-10-16T07:17:39.583Z.</sub>
