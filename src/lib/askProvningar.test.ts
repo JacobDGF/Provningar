@@ -96,12 +96,18 @@ describe('answerAsk', () => {
    * prints, and without it a list of closed rounds reads as a list of open ones.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    // Upplands Väsby's only Fysik 1a is one the provider itself has marked
-    // fullbokad, so the strict answer is empty wherever the calendar stands.
-    // A query that widened only because its round had passed stops widening
-    // the day the dataset archives that round, which is the rot this file's
-    // fixed TODAY exists to avoid.
-    const { matches, widened } = answerAsk('Fysik 1a i Upplands Väsby', EXAMS, TODAY);
+    // A query that widens only because its round has passed stops widening the
+    // day the dataset archives that round — the rot this file's fixed TODAY
+    // exists to avoid. Fullbokat is the provider's own word and doesn't move
+    // with the calendar, so it holds the strict answer empty instead. The
+    // premise is asserted rather than assumed: if Karlskoga ever opens a
+    // second Matematik 3b/3c, or that round stops being full, this says so
+    // instead of quietly passing for another reason.
+    const karlskoga = EXAMS.filter((e) => e.city === 'Karlskoga' && e.course === 'Matematik 3b/3c');
+    expect(karlskoga).toHaveLength(1);
+    expect(karlskoga[0].nextPeriod.full).toBe(true);
+
+    const { matches, widened } = answerAsk('Matematik 3b/3c i Karlskoga', EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
