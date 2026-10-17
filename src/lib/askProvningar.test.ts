@@ -79,10 +79,15 @@ describe('answerAsk', () => {
   });
 
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
+    const { matches, widened } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
+    expect(matches.length).toBeGreaterThan(0);
     for (const m of matches) {
       const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
-      expect(when && when < '2026-10-01').toBe(true);
+      const before = Boolean(m.nextPeriod.confirmed && when && when < '2026-10-01');
+      // The cutoff binds the strict answer. A widened one may show everything,
+      // but only because it says so — that flag is the whole promise, so it is
+      // the other half of this assertion rather than a reason to skip it.
+      expect(before || widened).toBe(true);
     }
   });
 
@@ -91,7 +96,12 @@ describe('answerAsk', () => {
    * prints, and without it a list of closed rounds reads as a list of open ones.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    // Upplands Väsby's only Fysik 1a is one the provider itself has marked
+    // fullbokad, so the strict answer is empty wherever the calendar stands.
+    // A query that widened only because its round had passed stops widening
+    // the day the dataset archives that round, which is the rot this file's
+    // fixed TODAY exists to avoid.
+    const { matches, widened } = answerAsk('Fysik 1a i Upplands Väsby', EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
