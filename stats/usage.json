@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-10-16T07:17:39.583Z",
+  "uppdaterad": "2026-10-17T07:01:21.965Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -800,6 +800,39 @@
       "kommuner": {},
       "ämnen": {},
       "kurser": {}
+    },
+    "2026-10-16": {
+      "besök": 1,
+      "sidvisningar": {
+        "/discover": 1
+      },
+      "händelser": {
+        "Prövning öppnad": 11,
+        "Till anmälan": 11
+      },
+      "kommuner": {
+        "Stockholm": 5,
+        "Södertälje": 2,
+        "Sollentuna": 3,
+        "Eskilstuna": 2,
+        "Solna": 2,
+        "Kalmar": 2,
+        "Haninge": 2,
+        "Enköping": 2,
+        "Lund": 2
+      },
+      "ämnen": {
+        "Kemi": 1,
+        "Engelska": 2,
+        "Fysik": 1,
+        "Flera ämnen": 6,
+        "Matematik": 1
+      },
+      "kurser": {
+        "KEMKEM01": 3,
+        "Varierar": 17,
+        "FYSFYS02": 2
+      }
     }
   }
 }
