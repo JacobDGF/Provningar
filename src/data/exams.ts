@@ -7065,12 +7065,18 @@ export const EXAMS: Exam[] = [
     priceNote: FREE_IF_PRIOR_F + ' Avgiften betalas innan anmälan och kvittot bifogas i ansökan.',
     nextPeriod: {
       label:
-        'Komvux Katrineholms prövningsanmälan svarar "Det finns inga aktuella prövningar just ' +
-        'nu". Nästa periods datum är inte publicerade.',
-      confirmed: false,
+        'Anmälningsperioder är 1–26 januari och 1 augusti–1 september. Nästa är 1–26 januari ' +
+        '2027. Prövningen startar två veckor efter att ansökan stänger och pågår i cirka fem veckor.',
+      applicationStart: '2027-01-01',
+      applicationEnd: '2027-01-26',
+      confirmed: true,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
+    // Läst 2026-10-18: viadidakt.se är nedlagt (ingen DNS), men sidan finns kvar
+    // på katrineholm.se med exakt samma sökväg —
+    // /vuxenutbildning/start/komvux/validering-och-provning.html — och det är
+    // där anmälningsperioderna ovan står. infoUrl är orörd i väntan på besked.
     registrationUrl: 'https://katrineholm.alvis.se/provning/amnesomrade',
     infoUrl: 'https://www.viadidakt.se/vuxenutbildning/start/komvux/validering-och-provning.html',
     description:
