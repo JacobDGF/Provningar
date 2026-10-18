@@ -293,25 +293,6 @@ function publishedOnPage(what: string, when: string): Exam['registration'] {
 }
 
 /**
- * Stockholms stad's autumn 2026 prövningsomgång.
- *
- * The city moved to one opening day per school, staggered across weeks 33–35
- * (Jensen 11 aug, Komvux Södermalm 13 aug, NTI 17 aug, Hermods 26 aug), and no
- * school publishes a closing date — registration shuts when the seats are gone.
- * So the window is encoded half-open: a real start, no invented end.
- */
-function sthlmAutumn2026(opensOn: string, opensLabel: string): NextPeriod {
-  return {
-    label:
-      `Anmälan öppnar ${opensLabel} och stänger så snart platserna är fullbokade. ` +
-      'Prövningen genomförs under hösten 2026, planerad så att betyget hinner fram till sista ' +
-      'kompletteringsdagen i början av december. Nästa möjlighet därefter är i början av 2027.',
-    applicationStart: opensOn,
-    confirmed: true,
-  };
-}
-
-/**
  * Komvux Malmös period 4 2026.
  *
  * Malmö is one of the few providers that publishes the whole skrivschema
@@ -342,23 +323,44 @@ function malmoPeriod4(skrivdag: string): NextPeriod {
 }
 
 /**
- * Linvux prövningsperiod 3 2026.
+ * Linvux nästa prövningsperiod, läst 2026-10-18.
  *
  * Linvux dates the anmälan to the day and the writing to the week ("Vecka
  * 40-41. Vissa prövningar kan påbörjas tidigare/senare"), so the window is
- * those two weeks read as dates, with the provider's own caveat kept in the
- * label rather than dropped for a tidier card.
+ * those weeks read as dates, with the provider's own caveat kept in the label
+ * rather than dropped for a tidier card.
+ *
+ * Which period is next depends on the course, and that is the whole reason
+ * these are two functions. Period 4 lists matematik and nothing else, so for
+ * every other course the next chance is period 1 next spring — a matematik
+ * card that borrowed period 1's dates would send its reader to an anmälan four
+ * months later than the one they can actually make, and the other way round
+ * sends them to a period their course is not in at all.
  */
-function linvuxPeriod3(): NextPeriod {
+function linvuxPeriod4Matematik(): NextPeriod {
   return {
     label:
-      'Prövningsperiod 3 2026: anmälan öppnade 10 augusti klockan 8 och stänger 4 september. ' +
-      'Proven skrivs vecka 40–41, det vill säga 28 september – 11 oktober; vissa prövningar ' +
-      'kan påbörjas tidigare eller senare. Du kan bli antagen till högst tre kurser per period.',
-    applicationStart: '2026-08-10',
-    applicationEnd: '2026-09-04',
-    examWindowStart: '2026-09-28',
-    examWindowEnd: '2026-10-11',
+      'Prövningsperiod 4 2026, som bara omfattar matematik: anmälan öppnade 21 september klockan 8 ' +
+      'och stängde 16 oktober. Proven skrivs vecka 51, det vill säga 14–20 december; vissa ' +
+      'prövningar kan påbörjas tidigare eller senare.',
+    applicationStart: '2026-09-21',
+    applicationEnd: '2026-10-16',
+    examWindowStart: '2026-12-14',
+    examWindowEnd: '2026-12-20',
+    confirmed: true,
+  };
+}
+
+function linvuxPeriod1Spring2027(): NextPeriod {
+  return {
+    label:
+      'Prövningsperiod 1 2027: ansökan öppnar 12 januari och stänger 6 februari. Proven skrivs ' +
+      'vecka 10–11, det vill säga 8–21 mars; vissa prövningar kan påbörjas tidigare eller senare. ' +
+      'Du kan bli antagen till högst tre kurser per period.',
+    applicationStart: '2027-01-12',
+    applicationEnd: '2027-02-06',
+    examWindowStart: '2027-03-08',
+    examWindowEnd: '2027-03-21',
     confirmed: true,
   };
 }
@@ -521,21 +523,26 @@ export const EXAMS: Exam[] = [
     lng: 18.0735,
     price: 500,
     priceNote: FREE_IF_PRIOR_F,
-    nextPeriod: sthlmAutumn2026('2026-08-13', 'torsdag 13 augusti 2026'),
+    nextPeriod: {
+      label:
+        'Komvux Södermalm skriver att nästa möjlighet att anmäla sig till en prövning är i början av ' +
+        '2027. Höstens återstående tillfällen gäller bara yrkesämnen.',
+      confirmed: false,
+    },
     components: COMPONENTS_KEMI,
     studyTips: TIPS_KEMI,
     // Checked 2026-08-13: anmälan is a form published on this page when the
     // school's window opens — "anmälan blir tillgänglig på den dag och tid som
     // anges i prövningsschemat", först till kvarn, ingen reservlista och ingen
     // efteranmälan. No deeper link exists to point at in the meantime.
-    registration: publishedOnPage('anmälningsformuläret', 'den 13 augusti kl. 10'),
+    registration: publishedOnPage('anmälningsformuläret', 'i början av 2027'),
     registrationUrl: 'https://komvuxsodermalm.stockholm/provningar/anmalan-till-provning/',
     infoUrl:
       'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/kemi-laroplan-gy11gy25/provning-i-kemi-1/',
     description:
       'Prövning i Kemi 1 hos Komvux Södermalm, en av Stockholms stads vuxenutbildningar. Avgiften följer det nationella pristaket på 500 kr.',
     tags: ['kemi', 'naturvetenskap', 'stockholm'],
-    verifiedAt: LINK_SWEEP_VERIFIED,
+    verifiedAt: OCT_18_VERIFIED,
   },
   {
     id: 'sodermalm-fysik2',
@@ -552,21 +559,26 @@ export const EXAMS: Exam[] = [
     lng: 18.0735,
     price: 500,
     priceNote: FREE_IF_PRIOR_F,
-    nextPeriod: sthlmAutumn2026('2026-08-13', 'torsdag 13 augusti 2026'),
+    nextPeriod: {
+      label:
+        'Komvux Södermalm skriver att nästa möjlighet att anmäla sig till en prövning är i början av ' +
+        '2027. Höstens återstående tillfällen gäller bara yrkesämnen.',
+      confirmed: false,
+    },
     components: COMPONENTS_FYSIK,
     studyTips: TIPS_FYSIK,
     // Checked 2026-08-13: anmälan is a form published on this page when the
     // school's window opens — "anmälan blir tillgänglig på den dag och tid som
     // anges i prövningsschemat", först till kvarn, ingen reservlista och ingen
     // efteranmälan. No deeper link exists to point at in the meantime.
-    registration: publishedOnPage('anmälningsformuläret', 'den 13 augusti kl. 10'),
+    registration: publishedOnPage('anmälningsformuläret', 'i början av 2027'),
     registrationUrl: 'https://komvuxsodermalm.stockholm/provningar/anmalan-till-provning/',
     infoUrl:
       'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/fysik-laroplan-gy11gy25/provning-i-fysik-2/',
     description:
       'Prövning i Fysik 2 hos Komvux Södermalm. Krävs ofta för tekniska och naturvetenskapliga högskoleutbildningar.',
     tags: ['fysik', 'naturvetenskap', 'stockholm'],
-    verifiedAt: LINK_SWEEP_VERIFIED,
+    verifiedAt: OCT_18_VERIFIED,
   },
   {
     id: 'taby-flera',
@@ -620,7 +632,12 @@ export const EXAMS: Exam[] = [
     lng: 18.0125,
     price: 500,
     priceNote: FREE_IF_PRIOR_F + ' Förutsätter att din hemkommun har avtal med Hermods.',
-    nextPeriod: sthlmAutumn2026('2026-08-26', 'onsdag 26 augusti 2026'),
+    nextPeriod: {
+      label:
+        'Hermods bokade båda höstens prövningstillfällen vid ett och samma tillfälle, som öppnade ' +
+        '26 augusti 2026 och är stängt. Datum för 2027 är inte publicerade.',
+      confirmed: false,
+    },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
     registrationUrl: 'https://sites.google.com/edu.hermods.se/provning-stockholms-stad',
@@ -628,7 +645,7 @@ export const EXAMS: Exam[] = [
     description:
       'Hermods erbjuder prövning i Matematik 2b på kontrakt åt anslutna kommuner, med skriftligt prov på plats i Liljeholmen.',
     tags: ['matematik', 'stockholm', 'hermods'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: OCT_18_VERIFIED,
   },
   {
     id: 'nti-affafa00s',
@@ -8934,7 +8951,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1Spring2027(),
     components: [
       {
         name: 'Del 1 – skriftlig produktion och interaktion',
@@ -8974,7 +8991,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['engelska', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_18_VERIFIED,
   },
   {
     id: 'linvux-linkoping-engelska-7',
@@ -8993,7 +9010,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1Spring2027(),
     components: [
       {
         name: 'Del 1 – skriftlig produktion och interaktion',
@@ -9028,7 +9045,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['engelska', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_18_VERIFIED,
   },
   {
     id: 'linvux-linkoping-svenska-1',
@@ -9047,7 +9064,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1Spring2027(),
     components: [
       {
         name: 'Del 1 – läsförståelse',
@@ -9084,7 +9101,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['svenska', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_18_VERIFIED,
   },
   {
     id: 'linvux-linkoping-svenska-2',
@@ -9103,7 +9120,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1Spring2027(),
     components: [
       {
         name: 'Del 1 – litteraturhistoria och satslära',
@@ -9140,7 +9157,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['svenska', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_18_VERIFIED,
   },
   {
     id: 'linvux-linkoping-svenska-3',
@@ -9159,7 +9176,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1Spring2027(),
     components: [
       {
         name: 'Del 1 – uppsatsskrivning',
@@ -9199,7 +9216,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['svenska', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_18_VERIFIED,
   },
   {
     id: 'linvux-linkoping-svenska-som-andrasprak-1',
@@ -9218,7 +9235,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1Spring2027(),
     components: [
       {
         name: 'Del 1 – läsförståelse',
@@ -9253,7 +9270,7 @@ export const EXAMS: Exam[] = [
       'inte bo i Linköpings kommun för att pröva här, och du kan bli antagen till högst tre ' +
       'kurser per period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['sva', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_18_VERIFIED,
   },
   {
     id: 'linvux-linkoping-svenska-som-andrasprak-2',
@@ -9272,7 +9289,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1Spring2027(),
     components: [
       {
         name: 'Del 1 – läsförståelse',
@@ -9310,7 +9327,7 @@ export const EXAMS: Exam[] = [
       'inte bo i Linköpings kommun för att pröva här, och du kan bli antagen till högst tre ' +
       'kurser per period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['sva', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_18_VERIFIED,
   },
   {
     id: 'linvux-linkoping-biologi-1',
@@ -9329,7 +9346,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1Spring2027(),
     components: [
       {
         name: 'Del 1 – skriftligt prov',
@@ -9353,7 +9370,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['biologi', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_18_VERIFIED,
   },
   {
     id: 'linvux-linkoping-biologi-2',
@@ -9372,7 +9389,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1Spring2027(),
     components: [
       {
         name: 'Del 1 – skriftligt prov',
@@ -9396,7 +9413,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['biologi', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_18_VERIFIED,
   },
   {
     id: 'linvux-linkoping-fysik-1a',
@@ -9415,7 +9432,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1Spring2027(),
     components: [
       {
         name: 'Del 1 – skriftligt prov',
@@ -9439,7 +9456,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['fysik', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_18_VERIFIED,
   },
   {
     id: 'linvux-linkoping-fysik-2',
@@ -9458,7 +9475,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1Spring2027(),
     components: [
       {
         name: 'Del 1 – skriftligt prov',
@@ -9482,7 +9499,7 @@ export const EXAMS: Exam[] = [
       'kommun för att pröva här, och du kan bli antagen till högst tre kurser per period. ' +
       'Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['fysik', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_18_VERIFIED,
   },
   {
     id: 'linvux-linkoping-kemi-1',
@@ -9501,7 +9518,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1Spring2027(),
     components: [
       {
         name: 'Del 1 – skriftligt prov',
@@ -9531,7 +9548,7 @@ export const EXAMS: Exam[] = [
       'kommun för att pröva här, och du kan bli antagen till högst tre kurser per period. ' +
       'Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['kemi', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_18_VERIFIED,
   },
   {
     id: 'linvux-linkoping-kemi-2',
@@ -9550,7 +9567,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1Spring2027(),
     components: [
       {
         name: 'Del 1 – skriftligt prov',
@@ -9580,7 +9597,7 @@ export const EXAMS: Exam[] = [
       'kommun för att pröva här, och du kan bli antagen till högst tre kurser per period. ' +
       'Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['kemi', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_18_VERIFIED,
   },
   {
     id: 'linvux-linkoping-naturkunskap-1b',
@@ -9599,7 +9616,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1Spring2027(),
     components: [
       {
         name: 'Del 1 – skriftligt prov',
@@ -9627,7 +9644,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['naturkunskap', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_18_VERIFIED,
   },
   {
     id: 'linvux-linkoping-naturkunskap-2',
@@ -9646,7 +9663,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1Spring2027(),
     components: [
       {
         name: 'Del 1 och 2 – skriftliga prov',
@@ -9671,7 +9688,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['naturkunskap', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_18_VERIFIED,
   },
   {
     id: 'linvux-linkoping-psykologi-1',
@@ -9690,7 +9707,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1Spring2027(),
     components: [
       {
         name: 'Skriftligt prov',
@@ -9710,7 +9727,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['psykologi', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_18_VERIFIED,
   },
   {
     id: 'linvux-linkoping-religionskunskap-1',
@@ -9729,7 +9746,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1Spring2027(),
     components: [
       {
         name: 'Skriftligt prov',
@@ -9749,7 +9766,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['religionskunskap', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_18_VERIFIED,
   },
   {
     id: 'linvux-linkoping-samhallskunskap-1a1',
@@ -9768,7 +9785,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1Spring2027(),
     components: [
       {
         name: 'Del 1 – statskunskap',
@@ -9796,7 +9813,7 @@ export const EXAMS: Exam[] = [
       'i Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser ' +
       'per period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['samhällskunskap', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_18_VERIFIED,
   },
   {
     id: 'linvux-linkoping-samhallskunskap-1b',
@@ -9815,7 +9832,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1Spring2027(),
     components: [
       {
         name: 'Del 1 – statskunskap',
@@ -9845,7 +9862,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['samhällskunskap', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_18_VERIFIED,
   },
   {
     id: 'linvux-linkoping-matematik-1c',
@@ -9864,7 +9881,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod4Matematik(),
     components: [
       {
         name: 'Skriftligt prov',
@@ -9882,7 +9899,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['matematik', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_18_VERIFIED,
   },
   {
     id: 'linvux-linkoping-matematik-2c',
@@ -9901,7 +9918,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod4Matematik(),
     components: [
       {
         name: 'Skriftligt prov',
@@ -9924,7 +9941,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['matematik', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_18_VERIFIED,
   },
   {
     id: 'linvux-linkoping-matematik-5',
@@ -9943,7 +9960,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod4Matematik(),
     components: [
       {
         name: 'Skriftligt prov',
@@ -9966,7 +9983,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['matematik', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_18_VERIFIED,
   },
   {
     id: 'goteborg-anoana01',
