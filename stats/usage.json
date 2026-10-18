@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-10-17T07:01:21.965Z",
+  "uppdaterad": "2026-10-18T07:16:57.942Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -833,6 +833,16 @@
         "Varierar": 17,
         "FYSFYS02": 2
       }
+    },
+    "2026-10-17": {
+      "besök": 0,
+      "sidvisningar": {
+        "/discover": 1
+      },
+      "händelser": {},
+      "kommuner": {},
+      "ämnen": {},
+      "kurser": {}
     }
   }
 }
