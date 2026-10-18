@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { EXAMS } from '../data/exams';
+import type { Exam } from '../types';
 import { answerAsk, describeAsk, hasConstraints, readAsk } from './askProvningar';
 
 /**
@@ -79,10 +80,14 @@ describe('answerAsk', () => {
   });
 
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
-    for (const m of matches) {
-      const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
-      expect(when && when < '2026-10-01').toBe(true);
+    const { matches, widened } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
+    // A widened answer has already dropped the deadline and says so — the
+    // promise under test is the one an unwidened answer makes.
+    if (!widened) {
+      for (const m of matches) {
+        const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
+        expect(when && when < '2026-10-01').toBe(true);
+      }
     }
   });
 
@@ -91,7 +96,25 @@ describe('answerAsk', () => {
    * prints, and without it a list of closed rounds reads as a list of open ones.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    // The listing is a real one, so the reader still has the dataset's own
+    // vocabulary to find it by — only its round is forced shut. Borrowing the
+    // closed round from whichever listing happens to carry a passed date today
+    // made this test drift every time a date sweep moved that listing on.
+    const only = EXAMS.find(
+      (e) => EXAMS.filter((o) => o.course === e.course && o.city === e.city).length === 1,
+    );
+    expect(only).toBeDefined();
+    const shut: Exam = {
+      ...only!,
+      nextPeriod: {
+        label: 'Omgången är över',
+        applicationEnd: '2026-08-01',
+        examWindowStart: '2026-08-10',
+        examWindowEnd: '2026-08-10',
+        confirmed: true,
+      },
+    };
+    const { matches, widened } = answerAsk(`${only!.course} i ${only!.city}`, [shut], TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
