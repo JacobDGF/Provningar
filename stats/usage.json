@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-10-18T07:16:57.942Z",
+  "uppdaterad": "2026-10-19T07:53:19.588Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -843,6 +843,26 @@
       "kommuner": {},
       "ämnen": {},
       "kurser": {}
+    },
+    "2026-10-18": {
+      "besök": 1,
+      "sidvisningar": {
+        "/discover": 1
+      },
+      "händelser": {
+        "Prövning öppnad": 2
+      },
+      "kommuner": {
+        "Södertälje": 1,
+        "Göteborg": 1
+      },
+      "ämnen": {
+        "Engelska": 2
+      },
+      "kurser": {
+        "Varierar": 1,
+        "ENGE2000X": 1
+      }
     }
   }
 }

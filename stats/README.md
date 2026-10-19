@@ -8,16 +8,17 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 **Filen är genererad.** Ändringar här skrivs över vid nästa körning; räkningen ändras i
 `collector/worker.js` och i `src/lib/analytics.ts`.
 
-## Senaste 30 dygnen (t.o.m. 2026-10-18)
+## Senaste 30 dygnen (t.o.m. 2026-10-19)
 
 | Besök | Sidvisningar | Till anmälan |
 | ----- | ------------ | ------------ |
-| 75 | 232 | 49 |
+| 76 | 233 | 49 |
 
 ### Per dygn
 
 | Dygn | Besök | Sidvisningar | Till anmälan |
 | ---- | ----- | ------------ | ------------ |
+| 2026-10-18 | 1 | 1 | 0 |
 | 2026-10-17 | 0 | 1 | 0 |
 | 2026-10-16 | 1 | 1 | 11 |
 | 2026-10-14 | 1 | 6 | 0 |
@@ -49,7 +50,7 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Upptäck | 131 |
+| Upptäck | 132 |
 | Mina prövningar | 31 |
 | Community | 27 |
 | AI-prövning | 21 |
@@ -60,7 +61,7 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Prövning öppnad | 131 |
+| Prövning öppnad | 133 |
 | Till anmälan | 49 |
 | AI-fråga ställd | 10 |
 | Bevakning skapad | 1 |
@@ -71,10 +72,10 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Göteborg | 34 |
+| Göteborg | 35 |
 | Stockholm | 33 |
 | Örebro | 23 |
-| Södertälje | 10 |
+| Södertälje | 11 |
 | Kristianstad | 9 |
 | Varberg | 9 |
 | Linköping | 8 |
@@ -89,8 +90,8 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | Flera ämnen | 42 |
 | Matematik | 29 |
 | Fysik | 28 |
+| Engelska | 10 |
 | Kemi | 10 |
-| Engelska | 8 |
 | Svenska | 6 |
 | Naturkunskap | 4 |
 | Psykologi | 2 |
@@ -105,4 +106,4 @@ besök går inte att skilja åt ens i råtabellen, och "besök" räknas en gång
 webbläsarsession utan något som följer med till nästa. Statistiken finns bara för dem som
 sagt ja i appens samtyckesruta.
 
-<sub>Uppdaterad 2026-10-18T07:16:57.942Z.</sub>
+<sub>Uppdaterad 2026-10-19T07:53:19.588Z.</sub>
