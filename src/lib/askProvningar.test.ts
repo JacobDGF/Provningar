@@ -78,11 +78,22 @@ describe('answerAsk', () => {
     }
   });
 
+  /**
+   * The cutoff is a promise the unwidened answer makes, so the assertion has to
+   * hold `widened` to false — a widened answer has dropped the deadline by
+   * design, and says so. The odaterade listningar are the case that matters
+   * here: "innan december" cannot be promised about a round whose datum the
+   * anordnare has not published, so they stay out even though nothing about
+   * them has closed.
+   */
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
+    const { matches, widened } = answerAsk('Matematik 1b innan december', EXAMS, TODAY);
+    expect(matches.length).toBeGreaterThan(0);
+    expect(widened).toBe(false);
     for (const m of matches) {
+      expect(m.nextPeriod.confirmed).toBe(true);
       const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
-      expect(when && when < '2026-10-01').toBe(true);
+      expect(when && when < '2026-12-01').toBe(true);
     }
   });
 
@@ -91,7 +102,10 @@ describe('answerAsk', () => {
    * prints, and without it a list of closed rounds reads as a list of open ones.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    // No Matematik 1b-omgång faller före oktober: de daterade ligger i slutet
+    // av oktober och Göteborgs är odaterad. Kursen finns, deadlinen gör den
+    // omöjlig — alltså släpps deadlinen, och flaggan säger det.
+    const { matches, widened } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
