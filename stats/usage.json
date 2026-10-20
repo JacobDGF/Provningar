@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-10-19T07:53:19.588Z",
+  "uppdaterad": "2026-10-20T07:41:52.295Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -862,6 +862,34 @@
       "kurser": {
         "Varierar": 1,
         "ENGE2000X": 1
+      }
+    },
+    "2026-10-19": {
+      "besök": 3,
+      "sidvisningar": {
+        "/discover": 5,
+        "/exams": 2,
+        "/history": 1
+      },
+      "händelser": {
+        "Prövning öppnad": 7,
+        "Till anmälan": 5
+      },
+      "kommuner": {
+        "Göteborg": 1,
+        "Stockholm": 9,
+        "Sollentuna": 2
+      },
+      "ämnen": {
+        "Fysik": 2,
+        "Matematik": 4,
+        "Flera ämnen": 1
+      },
+      "kurser": {
+        "FYSK2000X": 1,
+        "FYSFYS02": 2,
+        "MATMAT02b": 7,
+        "Varierar": 2
       }
     }
   }
