@@ -78,11 +78,24 @@ describe('answerAsk', () => {
     }
   });
 
+  /**
+   * The promise only exists on the strict path. A widened answer has already
+   * said out loud that it dropped the cutoff, and it is allowed to return an
+   * undated round — "se hos skolan" is the honest answer when no dated round
+   * fits. Asserting the cutoff over `matches` without reading `widened` tested
+   * the strict promise only for as long as the dataset happened to hold a
+   * Matematik 1b round before October; the day that round was read as gången
+   * and lost its dates, the test started failing on a widened answer that was
+   * behaving correctly.
+   */
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
-    for (const m of matches) {
-      const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
-      expect(when && when < '2026-10-01').toBe(true);
+    const { matches, widened } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
+    expect(matches.length).toBeGreaterThan(0);
+    if (!widened) {
+      for (const m of matches) {
+        const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
+        expect(when && when < '2026-10-01').toBe(true);
+      }
     }
   });
 
@@ -91,7 +104,13 @@ describe('answerAsk', () => {
    * prints, and without it a list of closed rounds reads as a list of open ones.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    // A cutoff behind the frozen `TODAY` is the one constraint no listing can
+    // satisfy, now or after any future sweep: a round that falls before
+    // 1 September 2026 cannot also still be open on 30 August. "Historia 1b i
+    // Göteborg" used to widen too, but only because every Göteborg round for
+    // that kurs had a closed deadline — once one was read as gången and became
+    // undated, it counted as actionable again and the answer stopped widening.
+    const { matches, widened } = answerAsk('Historia 1b innan september', EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
