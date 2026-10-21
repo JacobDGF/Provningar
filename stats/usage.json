@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-10-20T07:41:52.295Z",
+  "uppdaterad": "2026-10-21T07:46:18.114Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -890,6 +890,62 @@
         "FYSFYS02": 2,
         "MATMAT02b": 7,
         "Varierar": 2
+      }
+    },
+    "2026-10-20": {
+      "besök": 5,
+      "sidvisningar": {
+        "/ai": 1,
+        "/discover": 6,
+        "/exams": 1
+      },
+      "händelser": {
+        "AI-fråga ställd": 1,
+        "Prövning öppnad": 9,
+        "Till anmälan": 4
+      },
+      "kommuner": {
+        "Stockholm": 6,
+        "Göteborg": 3,
+        "Södertälje": 3,
+        "Mora": 1
+      },
+      "ämnen": {
+        "Kemi": 4,
+        "Matematik": 2,
+        "Engelska": 2,
+        "Svenska": 1
+      },
+      "kurser": {
+        "KEMKEM01": 6,
+        "MATO2000X": 1,
+        "Varierar": 3,
+        "MATE1B00X": 2,
+        "SVESVE03": 1
+      }
+    },
+    "2026-10-21": {
+      "besök": 1,
+      "sidvisningar": {
+        "/discover": 2
+      },
+      "händelser": {
+        "Prövning öppnad": 3,
+        "Till anmälan": 3
+      },
+      "kommuner": {
+        "Stockholm": 2,
+        "Södertälje": 2,
+        "Laholm": 2
+      },
+      "ämnen": {
+        "Matematik": 1,
+        "Engelska": 1,
+        "Flera ämnen": 1
+      },
+      "kurser": {
+        "MATMAT02b": 2,
+        "Varierar": 4
       }
     }
   }
