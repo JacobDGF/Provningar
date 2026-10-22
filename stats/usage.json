@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-10-21T07:46:18.114Z",
+  "uppdaterad": "2026-10-22T07:41:56.573Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -925,27 +925,57 @@
       }
     },
     "2026-10-21": {
-      "besök": 1,
+      "besök": 9,
+      "sidvisningar": {
+        "/community": 2,
+        "/discover": 12,
+        "/exams": 2,
+        "/history": 2
+      },
+      "händelser": {
+        "Bevakning skapad": 1,
+        "Prövning öppnad": 11,
+        "Till anmälan": 8
+      },
+      "kommuner": {
+        "hela landet": 1,
+        "Stockholm": 4,
+        "Södertälje": 2,
+        "Laholm": 5,
+        "Örebro": 2,
+        "Linköping": 3,
+        "Sollentuna": 2,
+        "Eskilstuna": 1
+      },
+      "ämnen": {
+        "Matematik": 6,
+        "Engelska": 1,
+        "Flera ämnen": 5
+      },
+      "kurser": {
+        "MATMAT02b": 2,
+        "Varierar": 10,
+        "MATMAT05": 5,
+        "MATF1000X": 2
+      }
+    },
+    "2026-10-22": {
+      "besök": 2,
       "sidvisningar": {
         "/discover": 2
       },
       "händelser": {
-        "Prövning öppnad": 3,
-        "Till anmälan": 3
+        "Prövning öppnad": 1,
+        "Till anmälan": 2
       },
       "kommuner": {
-        "Stockholm": 2,
-        "Södertälje": 2,
-        "Laholm": 2
+        "Eskilstuna": 3
       },
       "ämnen": {
-        "Matematik": 1,
-        "Engelska": 1,
         "Flera ämnen": 1
       },
       "kurser": {
-        "MATMAT02b": 2,
-        "Varierar": 4
+        "Varierar": 3
       }
     }
   }
