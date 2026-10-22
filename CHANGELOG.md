@@ -4,6 +4,42 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-10-22 (datumsvepet)
+
+**Datan: 191 gångna omgångar bytta mot anordnarens egna nästa datum.**
+`check:dates` hade hunnit samla sex veckors förfall — 191 listningar visade en
+omgång som var helt förbi, och 23 av de 186 som bygger sin period i kod låg i
+samma läge utan att rapporten kunde se det. Varje anordnare lästes om mot sin
+egen sida.
+
+- **Prövningsenheten Göteborg (157 listningar) har ingen period kvar.**
+  Kurskatalogen i Alvis listar 183 prövningstillfällen, alla med startdatum
+  2026-10-01 till 2026-11-24 och inget vårdatum; antalen per datum stämmer kurs
+  för kurs med datan, och de tillfällen som skrivits står kvar som
+  "Prövningstillfälle ej sökbar". De 157 kurser vars tillfälle är skrivet säger
+  därför "sök på kurskoden i kurskatalogen" i stället för ett datum som varit.
+- **22 anordnare hade publicerat nästa omgång**, och den står nu i datan: ABF
+  Stockholm (9 nov–17 dec), Folkuniversitetet Södertälje (11–14 dec), Iris och
+  Medlearn (11 dec, med anmälan som öppnar 12 november), Vux Huddinge (15 mars
+  2027), Örnsköldsvik och Härnösand (vår 2027), Nässjö (14 april 2027), Motala,
+  Växjö, Kristinehamn, Ljungby, Uddevalla, Värnamo, Kunskapsförbundet Väst.
+- **Örebros fyra grundläggande kurser fick sina provdatum.** Kommunen skrev
+  "återkommer inom kort" i september; nu står 2 och 6 november i tabellen.
+- **Linvux flyttade från prövningsperiod 3 till 4** (skrivning vecka 51), och
+  Komvux Södermalm från "anmälan öppnade 13 augusti" till skolans egen nästa
+  anmälningsdag, 15 januari 2027. Båda byggde perioden i kod, så båda låg
+  utanför det `check:dates` kan läsa — ett kort som sa "anmälan är öppen" elva
+  veckor efter att den öppnade.
+- **Sju anordnare hade inget att publicera**, och de listningarna har ingen
+  period: Katrineholm, Falun, Ystad, Umevux (två kurser) och Hermods. Alla
+  skriver själva att vårens datum inte är fastställda.
+- Två dataset-tester i `askProvningar.test.ts` bytte exempel. De läser den
+  riktiga datan med flit, och de två meningar de ställde frågan med slutade
+  pröva sin egen regel när omgångarna bakom dem gick ut — "innan oktober" har
+  inga öppna träffar kvar, och Historia 1b i Göteborg är inte längre en stängd
+  omgång utan en odaterad. Det ena testet kräver nu att svaret inte är vidgat,
+  så det inte kan bli tomt igen utan att säga till.
+
 ## 2026-09-11 (räknaren i drift)
 
 Räknaren står nu hos Cloudflare och appen är byggd mot den. Kedjan är

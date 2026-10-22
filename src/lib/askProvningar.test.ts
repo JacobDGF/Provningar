@@ -79,10 +79,14 @@ describe('answerAsk', () => {
   });
 
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
+    const { matches, widened } = answerAsk('Matematik 1b innan november', EXAMS, TODAY);
+    // The promise only holds while the constraints held: a widened answer says
+    // so out loud, and the assertion below would then prove nothing.
+    expect(widened).toBe(false);
+    expect(matches.length).toBeGreaterThan(0);
     for (const m of matches) {
       const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
-      expect(when && when < '2026-10-01').toBe(true);
+      expect(when && when < '2026-11-01').toBe(true);
     }
   });
 
@@ -91,7 +95,10 @@ describe('answerAsk', () => {
    * prints, and without it a list of closed rounds reads as a list of open ones.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    // NTI takes Stockholm's teoretiska prövningar and its anmälan closed
+    // 20 augusti, so every Biologi 1 i Stockholm there is to show is a round
+    // that can no longer be applied to.
+    const { matches, widened } = answerAsk('Biologi 1 i Stockholm', EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
