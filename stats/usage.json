@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-10-22T07:41:56.573Z",
+  "uppdaterad": "2026-10-23T07:39:10.668Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -960,22 +960,29 @@
       }
     },
     "2026-10-22": {
-      "besök": 2,
+      "besök": 5,
       "sidvisningar": {
-        "/discover": 2
+        "/ai": 1,
+        "/community": 1,
+        "/discover": 6,
+        "/exams": 2,
+        "/history": 1
       },
       "händelser": {
-        "Prövning öppnad": 1,
+        "Prövning öppnad": 2,
         "Till anmälan": 2
       },
       "kommuner": {
-        "Eskilstuna": 3
+        "Eskilstuna": 3,
+        "Göteborg": 1
       },
       "ämnen": {
-        "Flera ämnen": 1
+        "Flera ämnen": 1,
+        "Matematik": 1
       },
       "kurser": {
-        "Varierar": 3
+        "Varierar": 3,
+        "MATO1B00X": 1
       }
     }
   }

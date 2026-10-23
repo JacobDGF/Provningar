@@ -8,17 +8,17 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 **Filen är genererad.** Ändringar här skrivs över vid nästa körning; räkningen ändras i
 `collector/worker.js` och i `src/lib/analytics.ts`.
 
-## Senaste 30 dygnen (t.o.m. 2026-10-22)
+## Senaste 30 dygnen (t.o.m. 2026-10-23)
 
 | Besök | Sidvisningar | Till anmälan |
 | ----- | ------------ | ------------ |
-| 84 | 205 | 68 |
+| 86 | 213 | 68 |
 
 ### Per dygn
 
 | Dygn | Besök | Sidvisningar | Till anmälan |
 | ---- | ----- | ------------ | ------------ |
-| 2026-10-22 | 2 | 2 | 2 |
+| 2026-10-22 | 5 | 11 | 2 |
 | 2026-10-21 | 9 | 18 | 8 |
 | 2026-10-20 | 5 | 8 | 4 |
 | 2026-10-19 | 3 | 8 | 5 |
@@ -45,17 +45,16 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | 2026-09-26 | 3 | 3 | 3 |
 | 2026-09-25 | 4 | 7 | 0 |
 | 2026-09-24 | 2 | 2 | 1 |
-| 2026-09-23 | 1 | 1 | 0 |
 
 ### Flikar
 
 | Namn | Antal |
 | ---- | ----- |
-| Upptäck | 127 |
-| Mina prövningar | 26 |
-| Community | 23 |
-| Historik | 15 |
-| AI-prövning | 13 |
+| Upptäck | 130 |
+| Mina prövningar | 28 |
+| Community | 24 |
+| Historik | 16 |
+| AI-prövning | 14 |
 | Profil | 1 |
 
 ### Händelser
@@ -89,7 +88,7 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | Namn | Antal |
 | ---- | ----- |
 | Flera ämnen | 49 |
-| Matematik | 32 |
+| Matematik | 33 |
 | Fysik | 26 |
 | Kemi | 14 |
 | Engelska | 13 |
@@ -107,4 +106,4 @@ besök går inte att skilja åt ens i råtabellen, och "besök" räknas en gång
 webbläsarsession utan något som följer med till nästa. Statistiken finns bara för dem som
 sagt ja i appens samtyckesruta.
 
-<sub>Uppdaterad 2026-10-22T07:41:56.573Z.</sub>
+<sub>Uppdaterad 2026-10-23T07:39:10.668Z.</sub>
