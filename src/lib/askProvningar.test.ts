@@ -78,11 +78,20 @@ describe('answerAsk', () => {
     }
   });
 
+  /**
+   * The promise only binds an answer that kept the deadline. `widened` is
+   * asserted alongside it for that reason: a widened answer has printed that
+   * it dropped the constraint, and an undated listing in it is the point
+   * rather than a leak — so without pinning the flag this would pass on a
+   * dataset where nothing survived the cutoff at all.
+   */
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
+    const { matches, widened } = answerAsk('Matematik 1b innan december', EXAMS, TODAY);
+    expect(widened).toBe(false);
+    expect(matches.length).toBeGreaterThan(0);
     for (const m of matches) {
       const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
-      expect(when && when < '2026-10-01').toBe(true);
+      expect(when && when < '2026-12-01').toBe(true);
     }
   });
 
@@ -91,7 +100,10 @@ describe('answerAsk', () => {
    * prints, and without it a list of closed rounds reads as a list of open ones.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    // Matematik 1b prövas på flera håll, men ingen omgång som fortfarande gick
+    // att söka 30 augusti låg före oktober — den närmaste skrevs 26 oktober.
+    // Alltså finns det träffar att visa, men bara utan deadlinen.
+    const { matches, widened } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
