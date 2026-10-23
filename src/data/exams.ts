@@ -5310,27 +5310,34 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per prövning; kostnadsfritt om tidigare betyg F/IG i kursen på komvux, styrks med betygskopia.',
     nextPeriod: {
+      // Checked 2026-10-23: tillfälle 1 den 7 september är skrivet, och ABF:s
+      // datumblock har tillfälle 2 den 9 november med "Anmälan öppnar 26 okt
+      // kl 10" och "Sista betaldag 30 okt". Betaldagen är slutdagen här, som
+      // för tillfälle 1 — platsen är inte en plats förrän den är betald.
       label:
-        'Prövningsdatum hösten 2026: 7 sep (ev. del 2 den 11 sep) och 9 nov (ev. del 2 den 13 nov)',
-      applicationStart: '2026-08-24',
-      applicationEnd: '2026-08-28',
-      examWindowStart: '2026-09-07',
-      examWindowEnd: '2026-09-07',
+        'Tillfälle 2: prövning 9 november 2026 (ev. del 2 den 13 november). Anmälan öppnar ' +
+        '26 oktober kl. 10 och sista betaldag är 30 oktober. Tillfälle 1 den 7 september är ' +
+        'skrivet.',
+      applicationStart: '2026-10-26',
+      applicationEnd: '2026-10-30',
+      examWindowStart: '2026-11-09',
+      examWindowEnd: '2026-11-13',
       confirmed: true,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
-    // Checked 2026-08-13: "Anmälan sker ENDAST via ett formulär på denna
-    // webbsida, formuläret syns först när anmälan öppnar." Höstens formulär
-    // läggs upp 24 augusti kl. 10, betalning senast 28 augusti. Först till
-    // kvarn, ingen reservlista — så sidan är bokningen, när den är bokningen.
-    registration: publishedOnPage('anmälningsformuläret', 'den 24 augusti kl. 10'),
+    // Checked 2026-10-23: "Anmälan sker ENDAST via ett formulär på denna
+    // webbsida, formuläret syns först när anmälan öppnar." Tillfälle 2:s
+    // formulär läggs upp 26 oktober kl. 10, betalning senast 30 oktober.
+    // Först till kvarn, ingen reservlista — så sidan är bokningen, när den
+    // är bokningen.
+    registration: publishedOnPage('anmälningsformuläret', 'den 26 oktober kl. 10'),
     registrationUrl: 'https://abfstockholm.se/komvux/provning/',
     infoUrl: 'https://abfstockholm.se/komvux/provning/',
     description:
       'ABF Stockholm erbjuder prövning i ämnesnivåer inom undersköterskeutbildningen (t.ex. Hälso- och sjukvård, Psykiatri, Social omsorg) för folkbokförda i bl.a. Botkyrka, Huddinge, Nacka, Sollentuna, Solna, Sundbyberg och Södertälje. Anmälan sker via formulär på skolans webbplats när det öppnar.',
     tags: ['komvux', 'vård och omsorg', 'storstockholm'],
-    verifiedAt: LINK_SWEEP_VERIFIED,
+    verifiedAt: OCT_23_VERIFIED,
   },
   {
     id: 'abf-stockholm-komvux-stockholm-engelska-6-niva-2',
@@ -5348,31 +5355,35 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per prövning; kostnadsfritt om tidigare betyg F/IG i kursen på komvux.',
     nextPeriod: {
-      // Checked 2026-08-13: ABF lists engelska nivå 1–3 under one datumblock —
-      // tillfälle 1 den 7 september (ev. del 2 den 11 september) med anmälan
-      // 24 augusti kl. 10 och sista betaldag 28 augusti, tillfälle 2 den
-      // 9 november med anmälan 26 oktober.
+      // Checked 2026-10-23: tillfälle 1 är skrivet, och ABF:s rad för
+      // engelska nivå 1 och 2 ger tillfälle 2 som "10 dec + del 2 17 dec",
+      // med anmälan 26 oktober kl. 10 och sista betaldag 30 oktober. Det är
+      // ett annat datum än de övriga ämnenas 9 november, som etiketten
+      // tidigare lånade — engelskan har sitt eget block.
       label:
-        'Tillfälle 1: prövning 7 september 2026 (ev. del 2 den 11 september). Anmälan öppnar 24 augusti kl. 10 och sista betaldag är 28 augusti. Tillfälle 2 är 9 november med anmälan från 26 oktober.',
-      applicationStart: '2026-08-24',
-      applicationEnd: '2026-08-28',
-      examWindowStart: '2026-09-07',
-      examWindowEnd: '2026-09-11',
+        'Tillfälle 2: prövning 10 december 2026 med del 2 den 17 december. Anmälan öppnar ' +
+        '26 oktober kl. 10 och sista betaldag är 30 oktober. Tillfälle 1 den 7 september är ' +
+        'skrivet.',
+      applicationStart: '2026-10-26',
+      applicationEnd: '2026-10-30',
+      examWindowStart: '2026-12-10',
+      examWindowEnd: '2026-12-17',
       confirmed: true,
     },
     components: COMPONENTS_ENGELSKA,
     studyTips: TIPS_ENGELSKA,
-    // Checked 2026-08-13: "Anmälan sker ENDAST via ett formulär på denna
-    // webbsida, formuläret syns först när anmälan öppnar." Höstens formulär
-    // läggs upp 24 augusti kl. 10, betalning senast 28 augusti. Först till
-    // kvarn, ingen reservlista — så sidan är bokningen, när den är bokningen.
-    registration: publishedOnPage('anmälningsformuläret', 'den 24 augusti kl. 10'),
+    // Checked 2026-10-23: "Anmälan sker ENDAST via ett formulär på denna
+    // webbsida, formuläret syns först när anmälan öppnar." Tillfälle 2:s
+    // formulär läggs upp 26 oktober kl. 10, betalning senast 30 oktober.
+    // Först till kvarn, ingen reservlista — så sidan är bokningen, när den
+    // är bokningen.
+    registration: publishedOnPage('anmälningsformuläret', 'den 26 oktober kl. 10'),
     registrationUrl: 'https://abfstockholm.se/komvux/provning/',
     infoUrl: 'https://abfstockholm.se/komvux/provning/',
     description:
       'ABF Stockholm erbjuder prövning i engelska (nivå 1-3, två delar) endast för sökande folkbokförda utanför Stockholms kommun, bland annat Botkyrka, Huddinge, Nacka och Sollentuna.',
     tags: ['komvux', 'engelska', 'storstockholm'],
-    verifiedAt: LINK_SWEEP_VERIFIED,
+    verifiedAt: OCT_23_VERIFIED,
   },
   {
     id: 'folkuniversitetet-komvux-sodertalje-sodertalje-flera-kurser-',
