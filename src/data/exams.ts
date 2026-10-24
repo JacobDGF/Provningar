@@ -435,6 +435,15 @@ function ntiAutumn2026(): NextPeriod {
 // årets omgång är fullbokad.
 const SEP_10_VERIFIED = '2026-09-10';
 
+/**
+ * Dagens svep. Alvis svarade 500 hos samtliga kommuner, så Göteborgs 215
+ * listningar gick inte att kontrollera mot anordnarens egen bokning — de står
+ * kvar orörda tills plattformen svarar igen, eftersom ett datum vi inte kunnat
+ * läsa inte är ett datum vi får ändra. Det som gick att läsa direkt hos
+ * anordnaren är uppdaterat och bär det här datumet.
+ */
+const OCT_24_VERIFIED = '2026-10-24';
+
 const OREBRO_PRICE_NOTE =
   '500 kr per kurs. Avgiftsfritt om du har F eller IG i kursen från komvux — betygskopian ska ' +
   'bifogas direkt i anmälan, som inte går att komplettera i efterhand. Anmälan är bindande från ' +
@@ -4012,30 +4021,24 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: FREE_IF_PRIOR_F,
     nextPeriod: {
-      // Checked 2026-08-20: JENSEN's Typeform now answers with
-      // `"isFormClosed":true` and the close screen "Formuläret är just nu
-      // stängt … vi redan har fått in det maximala antalet ansökningar för
-      // denna prövningsperiod". Their own page states the rule — "formuläret
-      // kommer automatiskt att stängas när vi har uppnått max antal
-      // ansökningar", ingen reservlista — so the closed form *is* JENSEN
-      // saying fullbokat. Leaving this as a half-open window kept the card
-      // green for a booking that lasted five minutes on 11 August.
+      // Checked 2026-10-24: höstens andra prövningsfönster (12–23 oktober)
+      // stängde i går, så "fullbokat" beskriver inte längre något man kan
+      // missa — omgången är genomförd. JENSEN skriver att vårens datum
+      // "kommer att publiceras här under hösten 2026", alltså finns inget
+      // datum att flytta fram till. Utan confirmed skulle kortet annars bära
+      // ett anmälningsdatum från augusti som ingen kan använda.
       label:
-        'Anmälan öppnade 11 augusti 2026 kl. 11:00 och är redan stängd — formuläret stänger automatiskt när max antal ansökningar nåtts, och JENSEN har ingen reservlista. Höstens prövningar genomförs 7–18 september eller 12–23 oktober för dem som kom in. Nästa möjlighet att anmäla sig är i början av 2027.',
-      applicationStart: '2026-08-11',
-      examWindowStart: '2026-09-07',
-      examWindowEnd: '2026-10-23',
-      confirmed: true,
-      full: true,
+        'Höstens båda prövningsperioder (7–18 september och 12–23 oktober 2026) är genomförda. JENSEN har ännu inte publicerat datum för våren 2027 — de utlovas på prövningssidan under hösten. Anmälan sker via ett formulär som öppnar en bestämd dag och stänger automatiskt när platserna är slut, utan reservlista, så det lönar sig att bevaka sidan.',
+      confirmed: false,
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
     registrationUrl: 'https://form.typeform.com/to/Nitj2W7p',
     infoUrl: 'https://www.jensenkomvux.se/provning',
     description:
-      'JENSEN vuxenutbildning erbjuder prövning i Matematik 2b i Stockholm. Missar du höstens omgång är nästa tillfälle i början av 2027.',
+      'JENSEN vuxenutbildning erbjuder prövning i Matematik 2b i Stockholm. Höstens omgångar är genomförda och vårens datum är inte publicerade än.',
     tags: ['matematik', 'stockholm', 'jensen'],
-    verifiedAt: FULL_SWEEP_VERIFIED,
+    verifiedAt: OCT_24_VERIFIED,
   },
   {
     id: 'jensen-fysik1a',
@@ -4053,21 +4056,15 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: FREE_IF_PRIOR_F + ' Laborativa moment genomförs på plats, inte på distans.',
     nextPeriod: {
-      // Checked 2026-08-20: JENSEN's Typeform now answers with
-      // `"isFormClosed":true` and the close screen "Formuläret är just nu
-      // stängt … vi redan har fått in det maximala antalet ansökningar för
-      // denna prövningsperiod". Their own page states the rule — "formuläret
-      // kommer automatiskt att stängas när vi har uppnått max antal
-      // ansökningar", ingen reservlista — so the closed form *is* JENSEN
-      // saying fullbokat. Leaving this as a half-open window kept the card
-      // green for a booking that lasted five minutes on 11 August.
+      // Checked 2026-10-24: höstens andra prövningsfönster (12–23 oktober)
+      // stängde i går, så "fullbokat" beskriver inte längre något man kan
+      // missa — omgången är genomförd. JENSEN skriver att vårens datum
+      // "kommer att publiceras här under hösten 2026", alltså finns inget
+      // datum att flytta fram till. Utan confirmed skulle kortet annars bära
+      // ett anmälningsdatum från augusti som ingen kan använda.
       label:
-        'Anmälan öppnade 11 augusti 2026 kl. 11:00 och är redan stängd — formuläret stänger automatiskt när max antal ansökningar nåtts, och JENSEN har ingen reservlista. Höstens prövningar genomförs 7–18 september eller 12–23 oktober för dem som kom in. Nästa möjlighet att anmäla sig är i början av 2027.',
-      applicationStart: '2026-08-11',
-      examWindowStart: '2026-09-07',
-      examWindowEnd: '2026-10-23',
-      confirmed: true,
-      full: true,
+        'Höstens båda prövningsperioder (7–18 september och 12–23 oktober 2026) är genomförda. JENSEN har ännu inte publicerat datum för våren 2027 — de utlovas på prövningssidan under hösten. Anmälan sker via ett formulär som öppnar en bestämd dag och stänger automatiskt när platserna är slut, utan reservlista, så det lönar sig att bevaka sidan.',
+      confirmed: false,
     },
     components: COMPONENTS_FYSIK,
     studyTips: TIPS_FYSIK,
@@ -4076,7 +4073,7 @@ export const EXAMS: Exam[] = [
     description:
       'JENSEN vuxenutbildning erbjuder prövning i Fysik 1a i Stockholm, med laborativa moment på plats.',
     tags: ['fysik', 'stockholm', 'jensen'],
-    verifiedAt: FULL_SWEEP_VERIFIED,
+    verifiedAt: OCT_24_VERIFIED,
   },
   {
     id: 'jensen-kemi1',
@@ -4094,21 +4091,15 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: FREE_IF_PRIOR_F,
     nextPeriod: {
-      // Checked 2026-08-20: JENSEN's Typeform now answers with
-      // `"isFormClosed":true` and the close screen "Formuläret är just nu
-      // stängt … vi redan har fått in det maximala antalet ansökningar för
-      // denna prövningsperiod". Their own page states the rule — "formuläret
-      // kommer automatiskt att stängas när vi har uppnått max antal
-      // ansökningar", ingen reservlista — so the closed form *is* JENSEN
-      // saying fullbokat. Leaving this as a half-open window kept the card
-      // green for a booking that lasted five minutes on 11 August.
+      // Checked 2026-10-24: höstens andra prövningsfönster (12–23 oktober)
+      // stängde i går, så "fullbokat" beskriver inte längre något man kan
+      // missa — omgången är genomförd. JENSEN skriver att vårens datum
+      // "kommer att publiceras här under hösten 2026", alltså finns inget
+      // datum att flytta fram till. Utan confirmed skulle kortet annars bära
+      // ett anmälningsdatum från augusti som ingen kan använda.
       label:
-        'Anmälan öppnade 11 augusti 2026 kl. 11:00 och är redan stängd — formuläret stänger automatiskt när max antal ansökningar nåtts, och JENSEN har ingen reservlista. Höstens prövningar genomförs 7–18 september eller 12–23 oktober för dem som kom in. Nästa möjlighet att anmäla sig är i början av 2027.',
-      applicationStart: '2026-08-11',
-      examWindowStart: '2026-09-07',
-      examWindowEnd: '2026-10-23',
-      confirmed: true,
-      full: true,
+        'Höstens båda prövningsperioder (7–18 september och 12–23 oktober 2026) är genomförda. JENSEN har ännu inte publicerat datum för våren 2027 — de utlovas på prövningssidan under hösten. Anmälan sker via ett formulär som öppnar en bestämd dag och stänger automatiskt när platserna är slut, utan reservlista, så det lönar sig att bevaka sidan.',
+      confirmed: false,
     },
     components: COMPONENTS_KEMI,
     studyTips: TIPS_KEMI,
@@ -4116,7 +4107,7 @@ export const EXAMS: Exam[] = [
     infoUrl: 'https://www.jensenkomvux.se/provning',
     description: 'JENSEN vuxenutbildning erbjuder prövning i Kemi 1 i Stockholm.',
     tags: ['kemi', 'stockholm', 'jensen'],
-    verifiedAt: FULL_SWEEP_VERIFIED,
+    verifiedAt: OCT_24_VERIFIED,
   },
   {
     id: 'iris-upplandsvasby-fysik1a',
@@ -4350,14 +4341,13 @@ export const EXAMS: Exam[] = [
       FREE_IF_PRIOR_F +
       ' Kräver folkbokföring i en Västerbottens-kommun. Endast ett ämne per prövningsperiod.',
     nextPeriod: {
-      // Umevux publicerar ansökningsfönstret men inte provdatumet: prövningen
-      // startar i oktober och pågår i cirka tre veckor, och det exakta datumet
-      // får man med antagningsbeskedet. Därför ingen examWindow.
+      // Checked 2026-10-24: höstens båda ansökningsfönster står som STÄNGD
+      // och sidan skriver rakt ut att "Anmälan till prövningstillfällen för
+      // våren 2027 kommer att läggas ut när de är fastställda". Det finns
+      // alltså inget datum att flytta fram till, bara ett löfte om ett.
       label:
-        'Ansökan till höstens prövningar öppnade 21 augusti 2026 och stänger 18 september. Prövningen startar i oktober och pågår i cirka tre veckor.',
-      applicationStart: '2026-08-21',
-      applicationEnd: '2026-09-18',
-      confirmed: true,
+        'Höstens prövningsomgångar är stängda. Umevux skriver att anmälan till vårens 2027 prövningstillfällen läggs ut när datumen är fastställda — bevaka kommunens prövningssida.',
+      confirmed: false,
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
@@ -4367,7 +4357,7 @@ export const EXAMS: Exam[] = [
     description:
       'Umevux erbjuder betygsprövning i gymnasiekurser för folkbokförda i Västerbottens kommuner, minst fyra gånger per år.',
     tags: ['matematik', 'umea'],
-    verifiedAt: AUG_18_VERIFIED,
+    verifiedAt: OCT_24_VERIFIED,
   },
   {
     id: 'umea-eng6',
@@ -4387,14 +4377,13 @@ export const EXAMS: Exam[] = [
       FREE_IF_PRIOR_F +
       ' Kräver folkbokföring i en Västerbottens-kommun. Endast ett ämne per prövningsperiod.',
     nextPeriod: {
-      // Umevux publicerar ansökningsfönstret men inte provdatumet: prövningen
-      // startar i oktober och pågår i cirka tre veckor, och det exakta datumet
-      // får man med antagningsbeskedet. Därför ingen examWindow.
+      // Checked 2026-10-24: höstens båda ansökningsfönster står som STÄNGD
+      // och sidan skriver rakt ut att "Anmälan till prövningstillfällen för
+      // våren 2027 kommer att läggas ut när de är fastställda". Det finns
+      // alltså inget datum att flytta fram till, bara ett löfte om ett.
       label:
-        'Ansökan till höstens prövningar öppnade 21 augusti 2026 och stänger 18 september. Prövningen startar i oktober och pågår i cirka tre veckor.',
-      applicationStart: '2026-08-21',
-      applicationEnd: '2026-09-18',
-      confirmed: true,
+        'Höstens prövningsomgångar är stängda. Umevux skriver att anmälan till vårens 2027 prövningstillfällen läggs ut när datumen är fastställda — bevaka kommunens prövningssida.',
+      confirmed: false,
     },
     components: COMPONENTS_ENGELSKA,
     studyTips: TIPS_ENGELSKA,
@@ -4404,7 +4393,7 @@ export const EXAMS: Exam[] = [
     description:
       'Umevux erbjuder betygsprövning i Engelska 6 för folkbokförda i Västerbottens kommuner.',
     tags: ['engelska', 'umea'],
-    verifiedAt: AUG_18_VERIFIED,
+    verifiedAt: OCT_24_VERIFIED,
   },
   {
     id: 'lulea-kemi1',
@@ -5028,24 +5017,24 @@ export const EXAMS: Exam[] = [
     lng: 12.5335,
     price: 500,
     priceNote:
-      '500 kr enligt förordning (1991:1124); betalning senast 18 september 2026 för höstens tillfälle.',
+      '500 kr enligt förordning (1991:1124); betalas efter antagningsbesked, inför det tillfälle du antas till.',
     nextPeriod: {
+      // Höstens enda tillfälle skrevs 23 oktober 2026 och är förbi. Campus
+      // Alingsås publicerar inget datum för nästa omgång — sidan hänvisar
+      // till receptionen — så listningen länkar vidare i stället för att bära
+      // en omgång som varit.
       label:
-        'Betygsprövning 23 oktober 2026: ansökan öppen 10 augusti–11 september 2026, antagningsbesked senast 25 september 2026',
-      applicationStart: '2026-08-10',
-      applicationEnd: '2026-09-11',
-      examWindowStart: '2026-10-23',
-      examWindowEnd: '2026-10-23',
-      confirmed: true,
+        'Höstens prövning (23 oktober 2026) är genomförd. Campus Alingsås har ännu inte publicerat datum för nästa omgång — ring receptionen på 0322-61 65 60 eller läs på kommunens prövningssida.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://minasidor.alingsas.se/betygsprovning',
     infoUrl: 'https://www.alingsas.se/campus/provning',
     description:
-      'Alingsås kommun (Campus Alingsås) erbjuder ämnesbetygsprövning enligt Gy25; själva provtillfället genomförs hos Hermods i Göteborg (Fabriksgatan 25). Nästa tillfälle är fredag 23 oktober 2026.',
+      'Alingsås kommun (Campus Alingsås) erbjuder ämnesbetygsprövning enligt Gy25; själva provtillfället genomförs hos Hermods i Göteborg (Fabriksgatan 25). Höstens tillfälle (23 oktober 2026) är genomfört och nästa datum är inte publicerat än.',
     tags: ['komvux', 'alingsas', 'gy25'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: OCT_24_VERIFIED,
   },
   {
     id: 'campus-molndal-vuxenutbildningen-molndal-flera-kurser-kontak',
@@ -6755,10 +6744,15 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per kurs/ämnesnivå; kostnadsfritt vid F/IG-betyg inom ett år från betygssättning',
     nextPeriod: {
+      // Växjö publicerar ingen kalender per år utan samma två perioder om
+      // och om igen, så perioden flyttas fram ett steg när anmälan stängt.
+      // Slutdatumet (30 juni) står i kommunens tabell, men inget startdatum
+      // för själva prövningen gör det — därför bara anmälningsfönstret här,
+      // och prövningens bortre gräns i texten.
       label:
-        'Period 2 2026: anmälan öppnar 15 augusti, sista anmälningsdag 22 augusti, prövning ska vara genomförd senast 30 december',
-      applicationStart: '2026-08-15',
-      applicationEnd: '2026-08-22',
+        'Period 1 2027: anmälan öppnar 15 februari, sista anmälningsdag 22 februari, komplettering med betyg senast 28 februari och betalning senast 7 mars. Prövningen ska vara genomförd senast 30 juni.',
+      applicationStart: '2027-02-15',
+      applicationEnd: '2027-02-22',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -6768,7 +6762,7 @@ export const EXAMS: Exam[] = [
     description:
       'Växjö kommun har två anmälningsperioder per år för prövning, max två kurser/ämnesnivåer per tillfälle, med betalning via e-tjänst efter godkänd anmälan.',
     tags: ['komvux', 'växjö', 'småland'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: OCT_24_VERIFIED,
   },
   {
     id: 'axel-weudelskolan-kunskapsnavet-kalmar-flera-kurser-kontakta',
@@ -6856,12 +6850,13 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr enligt Skolverkets regler för prövningsavgift (ej specificerat separat på sidan)',
     nextPeriod: {
-      label: 'Höstens prövningsdag 7 oktober 2026, anmälan 10-28 augusti 2026',
-      applicationStart: '2026-08-10',
-      applicationEnd: '2026-08-28',
-      examWindowStart: '2026-10-07',
-      examWindowEnd: '2026-10-07',
-      confirmed: true,
+      // Höstens enda prövningsdag (7 oktober 2026) är förbi. Ystads
+      // ansökningssida publicerar inga prövningsdatum alls — se anteckningen
+      // om infoUrl i dagens rapport — så listningen länkar vidare i stället
+      // för att visa en dag som varit.
+      label:
+        'Höstens prövningsdag (7 oktober 2026) är genomförd. Ystad har inte publicerat datum för nästa omgång — kontakta vuxenutbildningen för att få veta när nästa prövningsdag läggs ut.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
@@ -6885,7 +6880,7 @@ export const EXAMS: Exam[] = [
     description:
       'Vuxenutbildningen Ystad anordnar en gemensam prövningsdag per termin; anmälan görs via e-post till ansvarig studie- och yrkesvägledare. Sidan uppdaterades 2026-07-01.',
     tags: ['komvux', 'ystad', 'skåne'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: OCT_24_VERIFIED,
   },
   {
     id: 'vuxenutbildningen-gotland-visby-flera-kurser-kontakta-skolan',
@@ -6903,15 +6898,17 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per kurs/ämnesnivå och skrivtillfälle; gratis vid IG/F-betyg i kursen',
     nextPeriod: {
-      // Höstens skrivtillfällen är onsdagar i vecka 36, 42 och 46 (2 september,
-      // 14 oktober, 11 november 2026), och anmälan ska vara inne fem veckor
-      // innan. Tillfället i vecka 36 är därför redan stängt; nästa som går att
-      // söka är 14 oktober, med anmälan senast 9 september.
+      // Gotland publicerar skrivtillfällena som veckonummer — onsdagar kl.
+      // 09.00 i vecka 4, 12, 20, 36, 42 och 46 — med anmälan fem veckor
+      // innan. Vecka 36 och 42 är genomförda, och vecka 46 (11 november
+      // 2026) stängde sin anmälan 7 oktober. Nästa som faktiskt går att söka
+      // är vecka 4, onsdag 27 januari 2027, med anmälan senast 23 december.
+      // Veckorna 36/42/46 låg bevisligen i 2026, så 4/12/20 är 2027.
       label:
-        'Nästa skrivtillfälle är onsdag 14 oktober 2026 kl. 09.00, och anmälan ska vara inne senast fem veckor innan (9 september). Därefter skrivs prövningar onsdag 11 november.',
-      applicationEnd: '2026-09-09',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
+        'Vecka 46 (onsdag 11 november 2026) är fullt bokningsbar bara för den som anmälde sig senast 7 oktober. Nästa skrivtillfälle att söka är onsdag 27 januari 2027 kl. 09.00 (vecka 4), med anmälan senast fem veckor innan — 23 december 2026.',
+      applicationEnd: '2026-12-23',
+      examWindowStart: '2027-01-27',
+      examWindowEnd: '2027-01-27',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -6922,7 +6919,7 @@ export const EXAMS: Exam[] = [
     description:
       'Vuxenutbildningen Gotland håller skriftliga prövningar på plats i Visby varannan onsdag (jämna veckor) med muntlig del 1-2 veckor senare digitalt; anmälan sker på blankett i mån av lediga platser.',
     tags: ['komvux', 'gotland', 'visby'],
-    verifiedAt: AUG_18_VERIFIED,
+    verifiedAt: OCT_24_VERIFIED,
   },
   {
     id: 'jarfalla-larcentrum-flera-kurser',
@@ -7533,11 +7530,11 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per kurs, betalas efter att anmälan godkänts och innan prövningen startar.',
     nextPeriod: {
-      // Ansökan sägs vara "öppen i augusti" utan startdatum, så bara sista
+      // Ansökan sägs vara "öppen i januari" utan startdatum, så bara sista
       // dagen står här — ett påhittat startdatum vore ett sämre svar än inget.
       label:
-        'Hösten 2026: ansökan är öppen i augusti och sista dag att ansöka är 28 augusti. Prövningsdatum får du besked om när ansökan har bedömts. (Våren 2027: sista ansökningsdag 29 januari.)',
-      applicationEnd: '2026-08-28',
+        'Våren 2027: ansökan är öppen i januari och sista dag att ansöka är 29 januari. Prövningsdatum får du besked om när ansökan har bedömts.',
+      applicationEnd: '2027-01-29',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -7560,7 +7557,7 @@ export const EXAMS: Exam[] = [
     description:
       'Värnamo tar emot prövningsansökningar på papper hos studie- och yrkesvägledarna, även för de kurser som prövas på Finnvedens gymnasium. Du kan bara pröva kurser som finns i Värnamos eller Finnvedens utbud, och först efter godkänd ansökan betalar du avgiften.',
     tags: ['komvux', 'värnamo', 'jönköping', 'småland'],
-    verifiedAt: THIN_LAN_VERIFIED,
+    verifiedAt: OCT_24_VERIFIED,
   },
   {
     id: 'vuxenutbildningen-ljungby-flera-kurser',
