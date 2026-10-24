@@ -4482,11 +4482,11 @@ export const EXAMS: Exam[] = [
       '500 kr per kurs, betalas via Swish (123 562 2162) vid anmälan. Kostnadsfritt om man läst samma/motsvarande kurs hos kommunal vuxenutbildning och fått betyg F eller IG.',
     nextPeriod: {
       label:
-        'Anmälan för HT26 är öppen 17 augusti – 11 september. Prövningarna hålls 7 och 8 oktober kl. 11.30.',
-      applicationStart: '2026-08-17',
-      applicationEnd: '2026-09-11',
-      examWindowStart: '2026-10-07',
-      examWindowEnd: '2026-10-08',
+        'Anmälan för VT27 öppnar 25 januari och sista anmälningsdag är 2 februari. Prövningarna hålls 18 mars och 15 april kl. 11.30.',
+      applicationStart: '2027-01-25',
+      applicationEnd: '2027-02-02',
+      examWindowStart: '2027-03-18',
+      examWindowEnd: '2027-04-15',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -4503,7 +4503,7 @@ export const EXAMS: Exam[] = [
     description:
       'Prövning erbjuds endast i nya GY25-ämnesnivåer, med fyra fasta datum per år; höstens tillfällen är 7 och 8 oktober 2026 kl. 11:30 i Studielänkens lokaler. Anmälan görs till Arena utbildning på arenautbildning@arenakoncernen.se eller 010-788 00 39, och avgiften på 500 kr swishas till 123 562 2162.',
     tags: ['kommun', 'gymnasial', 'gy25'],
-    verifiedAt: LATE_SUMMER_VERIFIED,
+    verifiedAt: OCT_24_VERIFIED,
   },
   {
     id: 'vuxenutbildningen-harnosand-harnosand-flera-kurser-kontakta-',
@@ -5285,12 +5285,17 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per prövning; kostnadsfritt om tidigare betyg F/IG i kursen på komvux, styrks med betygskopia.',
     nextPeriod: {
+      // Tillfälle 1 (7 september) är genomfört. Tillfälle 2 öppnar anmälan
+      // 26 oktober kl. 10 — ABF skriver ut öppningsdag och sista betaldag,
+      // inte någon sista anmälningsdag, eftersom omgången stänger när
+      // platserna är slut. Sista betaldag står därför som applicationEnd,
+      // precis som för tillfälle 1. Ingen reservlista.
       label:
-        'Prövningsdatum hösten 2026: 7 sep (ev. del 2 den 11 sep) och 9 nov (ev. del 2 den 13 nov)',
-      applicationStart: '2026-08-24',
-      applicationEnd: '2026-08-28',
-      examWindowStart: '2026-09-07',
-      examWindowEnd: '2026-09-07',
+        'Tillfälle 2 hösten 2026: anmälan öppnar 26 oktober kl. 10 och sista betaldag är 30 oktober. Prövningarna skrivs 9 november (ev. del 2 den 13 november) och framåt i december beroende på kurs. Platserna tar slut snabbt och ABF har ingen reservlista.',
+      applicationStart: '2026-10-26',
+      applicationEnd: '2026-10-30',
+      examWindowStart: '2026-11-09',
+      examWindowEnd: '2026-11-13',
       confirmed: true,
     },
     components: COMPONENTS_VARD,
@@ -5305,7 +5310,7 @@ export const EXAMS: Exam[] = [
     description:
       'ABF Stockholm erbjuder prövning i ämnesnivåer inom undersköterskeutbildningen (t.ex. Hälso- och sjukvård, Psykiatri, Social omsorg) för folkbokförda i bl.a. Botkyrka, Huddinge, Nacka, Sollentuna, Solna, Sundbyberg och Södertälje. Anmälan sker via formulär på skolans webbplats när det öppnar.',
     tags: ['komvux', 'vård och omsorg', 'storstockholm'],
-    verifiedAt: LINK_SWEEP_VERIFIED,
+    verifiedAt: OCT_24_VERIFIED,
   },
   {
     id: 'abf-stockholm-komvux-stockholm-engelska-6-niva-2',
@@ -5323,16 +5328,19 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per prövning; kostnadsfritt om tidigare betyg F/IG i kursen på komvux.',
     nextPeriod: {
-      // Checked 2026-08-13: ABF lists engelska nivå 1–3 under one datumblock —
-      // tillfälle 1 den 7 september (ev. del 2 den 11 september) med anmälan
-      // 24 augusti kl. 10 och sista betaldag 28 augusti, tillfälle 2 den
-      // 9 november med anmälan 26 oktober.
+      // Checked 2026-10-24: engelskan har en egen rad i ABF:s tabell och
+      // följer inte längre det gemensamma datumblocket. Engelska nivå 1 och 2
+      // (ENGE1000X, ENGE2000X) skrivs 10 december med del 2 den 17 december —
+      // alltså inte 9 november, som den gamla etiketten gissade utifrån
+      // samlingsraden. Anmälan öppnar 26 oktober kl. 10, sista betaldag
+      // 30 oktober. ABF prövar inte engelska för den som är folkbokförd i
+      // Stockholms kommun.
       label:
-        'Tillfälle 1: prövning 7 september 2026 (ev. del 2 den 11 september). Anmälan öppnar 24 augusti kl. 10 och sista betaldag är 28 augusti. Tillfälle 2 är 9 november med anmälan från 26 oktober.',
-      applicationStart: '2026-08-24',
-      applicationEnd: '2026-08-28',
-      examWindowStart: '2026-09-07',
-      examWindowEnd: '2026-09-11',
+        'Tillfälle 2 hösten 2026: prövning 10 december (del 2 den 17 december). Anmälan öppnar 26 oktober kl. 10 och sista betaldag är 30 oktober. ABF erbjuder inte engelskaprövning till dig som är folkbokförd i Stockholms kommun.',
+      applicationStart: '2026-10-26',
+      applicationEnd: '2026-10-30',
+      examWindowStart: '2026-12-10',
+      examWindowEnd: '2026-12-17',
       confirmed: true,
     },
     components: COMPONENTS_ENGELSKA,
@@ -5347,7 +5355,7 @@ export const EXAMS: Exam[] = [
     description:
       'ABF Stockholm erbjuder prövning i engelska (nivå 1-3, två delar) endast för sökande folkbokförda utanför Stockholms kommun, bland annat Botkyrka, Huddinge, Nacka och Sollentuna.',
     tags: ['komvux', 'engelska', 'storstockholm'],
-    verifiedAt: LINK_SWEEP_VERIFIED,
+    verifiedAt: OCT_24_VERIFIED,
   },
   {
     id: 'folkuniversitetet-komvux-sodertalje-sodertalje-flera-kurser-',
@@ -5483,11 +5491,16 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per kurs/ämnesnivå; kostnadsfritt vid tidigare betyg F eller IG i kursen på Komvux (styrks med betygskopia).',
     nextPeriod: {
-      label: 'Nästa prövningstillfälle är 14 september 2026, anmälan öppen 27 juli - 23 augusti',
-      applicationStart: '2026-07-27',
-      applicationEnd: '2026-08-23',
-      examWindowStart: '2026-09-14',
-      examWindowEnd: '2026-09-14',
+      // Vux Huddinge prövar två gånger om året, vår och höst. Höstens
+      // tillfälle (14 september 2026) är genomfört och vårens står nu
+      // publicerat. Skolan varnar för att anmälan kan stänga i förtid när
+      // platserna tar slut, så sista betaldag är inte en garanterad frist.
+      label:
+        'Nästa prövningstillfälle är 15 mars 2027, med anmälan öppen 25 januari–21 februari och sista betaldag 21 februari. Platserna är begränsade och anmälan kan stänga tidigare än så.',
+      applicationStart: '2027-01-25',
+      applicationEnd: '2027-02-21',
+      examWindowStart: '2027-03-15',
+      examWindowEnd: '2027-03-15',
       confirmed: true,
     },
     components: COMPONENTS_SVENSKA,
@@ -5498,7 +5511,7 @@ export const EXAMS: Exam[] = [
     description:
       'Vux Huddinge erbjuder prövning två gånger per år i svenska som andraspråk. Prövningen tar två dagar: skriftlig examination första dagen och muntlig examination andra dagen. Betalning sker via Swish.',
     tags: ['komvux', 'svenska som andraspråk', 'huddinge', 'gy11'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: OCT_24_VERIFIED,
   },
   {
     id: 'vux-huddinge-huddinge-svenska-som-andrasprak-1',
@@ -5517,11 +5530,16 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per kurs/ämnesnivå; kostnadsfritt vid tidigare betyg F eller IG i kursen på Komvux (styrks med betygskopia).',
     nextPeriod: {
-      label: 'Nästa prövningstillfälle är 14 september 2026, anmälan öppen 27 juli - 23 augusti',
-      applicationStart: '2026-07-27',
-      applicationEnd: '2026-08-23',
-      examWindowStart: '2026-09-14',
-      examWindowEnd: '2026-09-14',
+      // Vux Huddinge prövar två gånger om året, vår och höst. Höstens
+      // tillfälle (14 september 2026) är genomfört och vårens står nu
+      // publicerat. Skolan varnar för att anmälan kan stänga i förtid när
+      // platserna tar slut, så sista betaldag är inte en garanterad frist.
+      label:
+        'Nästa prövningstillfälle är 15 mars 2027, med anmälan öppen 25 januari–21 februari och sista betaldag 21 februari. Platserna är begränsade och anmälan kan stänga tidigare än så.',
+      applicationStart: '2027-01-25',
+      applicationEnd: '2027-02-21',
+      examWindowStart: '2027-03-15',
+      examWindowEnd: '2027-03-15',
       confirmed: true,
     },
     components: COMPONENTS_SVENSKA,
@@ -5532,7 +5550,7 @@ export const EXAMS: Exam[] = [
     description:
       'Vux Huddinge erbjuder också prövning i Svenska som andraspråk 1, samma anmälningsperiod och villkor som nivå 3. Begränsat antal platser, principen är först till kvarn.',
     tags: ['komvux', 'svenska som andraspråk', 'huddinge', 'gy11'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: OCT_24_VERIFIED,
   },
   // Huddinge listar fyra kurser, inte två: SVASVA01/SVASVA03 enligt Gy11 och
   // SVEA1000X/SVEA3000X enligt Gy25, var och en med sitt eget
@@ -5557,11 +5575,16 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per kurs/ämnesnivå; kostnadsfritt vid tidigare betyg F eller IG i kursen på Komvux (styrks med betygskopia).',
     nextPeriod: {
-      label: 'Nästa prövningstillfälle är 14 september 2026, anmälan öppen 27 juli - 23 augusti',
-      applicationStart: '2026-07-27',
-      applicationEnd: '2026-08-23',
-      examWindowStart: '2026-09-14',
-      examWindowEnd: '2026-09-14',
+      // Vux Huddinge prövar två gånger om året, vår och höst. Höstens
+      // tillfälle (14 september 2026) är genomfört och vårens står nu
+      // publicerat. Skolan varnar för att anmälan kan stänga i förtid när
+      // platserna tar slut, så sista betaldag är inte en garanterad frist.
+      label:
+        'Nästa prövningstillfälle är 15 mars 2027, med anmälan öppen 25 januari–21 februari och sista betaldag 21 februari. Platserna är begränsade och anmälan kan stänga tidigare än så.',
+      applicationStart: '2027-01-25',
+      applicationEnd: '2027-02-21',
+      examWindowStart: '2027-03-15',
+      examWindowEnd: '2027-03-15',
       confirmed: true,
     },
     components: COMPONENTS_SVENSKA,
@@ -5572,7 +5595,7 @@ export const EXAMS: Exam[] = [
     description:
       'Gy25-motsvarigheten till Svenska som andraspråk 1, med eget förberedelsedokument hos Huddinge. Samma anmälningsperiod, avgift och upplägg som de andra tre: två dagar, skriftlig examination först och muntlig dagen efter, betalning via Swish. Kontrollera med din vägledare vilken läroplan ditt betyg ska följa innan du anmäler dig.',
     tags: ['komvux', 'svenska som andraspråk', 'huddinge', 'gy25'],
-    verifiedAt: AUG_26_VERIFIED,
+    verifiedAt: OCT_24_VERIFIED,
   },
   {
     id: 'vux-huddinge-huddinge-svenska-som-andrasprak-niva-3',
@@ -5591,11 +5614,16 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per kurs/ämnesnivå; kostnadsfritt vid tidigare betyg F eller IG i kursen på Komvux (styrks med betygskopia).',
     nextPeriod: {
-      label: 'Nästa prövningstillfälle är 14 september 2026, anmälan öppen 27 juli - 23 augusti',
-      applicationStart: '2026-07-27',
-      applicationEnd: '2026-08-23',
-      examWindowStart: '2026-09-14',
-      examWindowEnd: '2026-09-14',
+      // Vux Huddinge prövar två gånger om året, vår och höst. Höstens
+      // tillfälle (14 september 2026) är genomfört och vårens står nu
+      // publicerat. Skolan varnar för att anmälan kan stänga i förtid när
+      // platserna tar slut, så sista betaldag är inte en garanterad frist.
+      label:
+        'Nästa prövningstillfälle är 15 mars 2027, med anmälan öppen 25 januari–21 februari och sista betaldag 21 februari. Platserna är begränsade och anmälan kan stänga tidigare än så.',
+      applicationStart: '2027-01-25',
+      applicationEnd: '2027-02-21',
+      examWindowStart: '2027-03-15',
+      examWindowEnd: '2027-03-15',
       confirmed: true,
     },
     components: COMPONENTS_SVENSKA,
@@ -5606,7 +5634,7 @@ export const EXAMS: Exam[] = [
     description:
       'Gy25-motsvarigheten till Svenska som andraspråk 3, med eget förberedelsedokument hos Huddinge. Anmälan är bindande och platsen är inte garanterad förrän avgiften är betald — kommunen skriver själva att anmälan kan behöva stänga före sista anmälningsdag när platserna tar slut.',
     tags: ['komvux', 'svenska som andraspråk', 'huddinge', 'gy25'],
-    verifiedAt: AUG_26_VERIFIED,
+    verifiedAt: OCT_24_VERIFIED,
   },
   {
     id: 'vuxenutbildningen-kunskapsparken-sollentuna-sollentuna-flera',
@@ -7416,12 +7444,15 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: 'Avgiften betalas med Swish direkt vid anmälan (123 562 2162).',
     nextPeriod: {
+      // Örnsköldsvik skriver ut terminerna som VT27 och HT27 och datumen
+      // utan årtal; årtalet kommer alltså från deras egen terminsetikett.
+      // Höstens tillfällen (7–8 oktober 2026) är genomförda.
       label:
-        'Anmälan till höstens prövningar öppnade 17 augusti 2026 och stänger 11 september. Prövningarna skrivs onsdag 7 oktober och torsdag 8 oktober kl. 11.30 hos Studielänken.',
-      applicationStart: '2026-08-17',
-      applicationEnd: '2026-09-11',
-      examWindowStart: '2026-10-07',
-      examWindowEnd: '2026-10-08',
+        'Anmälan till vårens prövningar (VT27) öppnar 25 januari och sista anmälningsdag är 2 februari. Prövningarna skrivs 18 mars och 15 april kl. 11.30 på Torggatan 10, plan 3 — inga andra datum går att boka.',
+      applicationStart: '2027-01-25',
+      applicationEnd: '2027-02-02',
+      examWindowStart: '2027-03-18',
+      examWindowEnd: '2027-04-15',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -7436,7 +7467,7 @@ export const EXAMS: Exam[] = [
     description:
       'Vuxenutbildningen i Örnsköldsvik håller två skrivdagar per termin i Studielänkens lokaler på Torggatan 10. Anmälan görs i formuläret på kommunens sida och avgiften swishas samtidigt — betalningen är det som gör anmälan giltig. Frågor: vuxenutbildningen@ornskoldsvik.se eller 0660-789 10, tisdagar 10.00–11.30.',
     tags: ['komvux', 'flera ämnen', 'örnsköldsvik', 'västernorrland'],
-    verifiedAt: AUG_18_VERIFIED,
+    verifiedAt: OCT_24_VERIFIED,
   },
   {
     id: 'koping-kompetenscenter-flera-kurser',
