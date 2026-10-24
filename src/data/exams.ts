@@ -19840,11 +19840,15 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: OREBRO_PRICE_NOTE,
     nextPeriod: {
+      // Checked 2026-10-24: datumen som "återkommer inom kort" har kommit.
+      // Kommunens tabell "Prövningar grundskolekurser hösten 2026" skriver ut
+      // dem per kurskod; årtalet står i rubriken, inte på raderna.
       label:
-        'Anmälan är öppen 14–27 september 2026. Prövningarna görs under oktober/november — ' +
-        'kommunen skriver att datumen "återkommer inom kort" och har inte publicerat dem än.',
+        'Anmälan var öppen 14–27 september 2026 och är stängd. Prövningen skrivs i två delar: del 1 den 2 november 2026 och del 2 den 6 november.',
       applicationStart: '2026-09-14',
       applicationEnd: '2026-09-27',
+      examWindowStart: '2026-11-02',
+      examWindowEnd: '2026-11-06',
       confirmed: true,
     },
     components: COMPONENTS_OREBRO_KOMVUX,
@@ -19858,7 +19862,7 @@ export const EXAMS: Exam[] = [
       'säger oktober/november och "återkommer med datum inom kort". Antagningsbesked skickas 1 ' +
       'oktober och du måste tacka ja senast 6 oktober.',
     tags: ['engelska', 'grundläggande', 'örebro'],
-    verifiedAt: SEP_10_VERIFIED,
+    verifiedAt: OCT_24_VERIFIED,
   },
   {
     id: 'orebro-grnmat2',
@@ -19876,11 +19880,15 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: OREBRO_PRICE_NOTE,
     nextPeriod: {
+      // Checked 2026-10-24: datumen som "återkommer inom kort" har kommit.
+      // Kommunens tabell "Prövningar grundskolekurser hösten 2026" skriver ut
+      // dem per kurskod; årtalet står i rubriken, inte på raderna.
       label:
-        'Anmälan är öppen 14–27 september 2026. Prövningarna görs under oktober/november — ' +
-        'kommunen skriver att datumen "återkommer inom kort" och har inte publicerat dem än.',
+        'Anmälan var öppen 14–27 september 2026 och är stängd. Prövningen skrivs 2 november 2026; kommunen anger ingen del 2 för matematiken.',
       applicationStart: '2026-09-14',
       applicationEnd: '2026-09-27',
+      examWindowStart: '2026-11-02',
+      examWindowEnd: '2026-11-02',
       confirmed: true,
     },
     components: COMPONENTS_OREBRO_KOMVUX,
@@ -19894,7 +19902,7 @@ export const EXAMS: Exam[] = [
       'säger oktober/november och "återkommer med datum inom kort". Antagningsbesked skickas 1 ' +
       'oktober och du måste tacka ja senast 6 oktober.',
     tags: ['matematik', 'grundläggande', 'örebro'],
-    verifiedAt: SEP_10_VERIFIED,
+    verifiedAt: OCT_24_VERIFIED,
   },
   {
     id: 'orebro-grnsve2',
@@ -19912,11 +19920,15 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: OREBRO_PRICE_NOTE,
     nextPeriod: {
+      // Checked 2026-10-24: datumen som "återkommer inom kort" har kommit.
+      // Kommunens tabell "Prövningar grundskolekurser hösten 2026" skriver ut
+      // dem per kurskod; årtalet står i rubriken, inte på raderna.
       label:
-        'Anmälan är öppen 14–27 september 2026. Prövningarna görs under oktober/november — ' +
-        'kommunen skriver att datumen "återkommer inom kort" och har inte publicerat dem än.',
+        'Anmälan var öppen 14–27 september 2026 och är stängd. Prövningen skrivs i två delar: del 1 den 2 november 2026 och del 2 den 6 november.',
       applicationStart: '2026-09-14',
       applicationEnd: '2026-09-27',
+      examWindowStart: '2026-11-02',
+      examWindowEnd: '2026-11-06',
       confirmed: true,
     },
     components: COMPONENTS_OREBRO_KOMVUX,
@@ -19930,7 +19942,7 @@ export const EXAMS: Exam[] = [
       'säger oktober/november och "återkommer med datum inom kort". Antagningsbesked skickas 1 ' +
       'oktober och du måste tacka ja senast 6 oktober.',
     tags: ['svenska', 'grundläggande', 'örebro'],
-    verifiedAt: SEP_10_VERIFIED,
+    verifiedAt: OCT_24_VERIFIED,
   },
   {
     id: 'orebro-grnsva2',
@@ -19948,11 +19960,15 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: OREBRO_PRICE_NOTE,
     nextPeriod: {
+      // Checked 2026-10-24: datumen som "återkommer inom kort" har kommit.
+      // Kommunens tabell "Prövningar grundskolekurser hösten 2026" skriver ut
+      // dem per kurskod; årtalet står i rubriken, inte på raderna.
       label:
-        'Anmälan är öppen 14–27 september 2026. Prövningarna görs under oktober/november — ' +
-        'kommunen skriver att datumen "återkommer inom kort" och har inte publicerat dem än.',
+        'Anmälan var öppen 14–27 september 2026 och är stängd. Prövningen skrivs i två delar: del 1 den 2 november 2026 och del 2 den 6 november.',
       applicationStart: '2026-09-14',
       applicationEnd: '2026-09-27',
+      examWindowStart: '2026-11-02',
+      examWindowEnd: '2026-11-06',
       confirmed: true,
     },
     components: COMPONENTS_OREBRO_KOMVUX,
@@ -19966,7 +19982,7 @@ export const EXAMS: Exam[] = [
       'kommunens tabell säger oktober/november och "återkommer med datum inom kort". ' +
       'Antagningsbesked skickas 1 oktober och du måste tacka ja senast 6 oktober.',
     tags: ['svenska som andraspråk', 'grundläggande', 'örebro'],
-    verifiedAt: SEP_10_VERIFIED,
+    verifiedAt: OCT_24_VERIFIED,
   },
   {
     id: 'orebro-sfikub92',
