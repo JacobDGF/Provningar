@@ -5932,9 +5932,15 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per kurs/ämnesnivå, kostnadsfritt vid tidigare betyg F/IG',
     nextPeriod: {
-      label: 'Höstens anmälningsperiod 2026',
-      applicationStart: '2026-08-03',
-      applicationEnd: '2026-09-15',
+      // Motala publicerar blanketten bara medan en period är öppen —
+      // "Blanketten är endast tillgänglig när vi har en öppen anmälningsperiod"
+      // — vilket är exakt varför registrationUrl svarar 404 i dag. Det är
+      // alltså inte en flyttad länk utan en borttagen blankett, och den
+      // kommer tillbaka när vårens period öppnar 2 januari.
+      label:
+        'Höstens period är stängd för anmälan. Vårens anmälningsperiod är 2 januari–15 februari 2027. Anmälan görs på en blankett som kommunen lägger upp först när perioden öppnar, och prövningen tar oftast cirka sex veckor utan fasta provdatum.',
+      applicationStart: '2027-01-02',
+      applicationEnd: '2027-02-15',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -5943,9 +5949,9 @@ export const EXAMS: Exam[] = [
     infoUrl:
       'https://www.motala.se/skola-och-forskola/vuxenutbildning/provning-pa-vuxenutbildningen/',
     description:
-      'Motala vuxenutbildning tar emot anmälningar till höstens prövningsperiod 3 augusti–15 september 2026; prövningen tar oftast cirka sex veckor och saknar fasta provdatum.',
+      'Motala vuxenutbildning tar emot anmälningar till vårens prövningsperiod 2 januari–15 februari 2027; prövningen tar oftast cirka sex veckor och saknar fasta provdatum. Du kan anmäla dig till högst två kurser per period.',
     tags: ['flera ämnen', 'gymnasial', 'östergötland'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: OCT_24_VERIFIED,
   },
   {
     id: 'vuxenutbildningen-eskilstuna-eskilstuna-flera-kurser-kontakt',
