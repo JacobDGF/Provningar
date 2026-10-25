@@ -78,11 +78,20 @@ describe('answerAsk', () => {
     }
   });
 
+  /**
+   * The promise only exists while the answer is the strict one. A widened
+   * answer has dropped the deadline and says so, so asserting the cutoff
+   * without first pinning `widened` would quietly test a different rule —
+   * that is how this test used to pass on a Göteborg round that has since
+   * gone undated.
+   */
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
+    const { matches, widened } = answerAsk('Matematik 1b innan december', EXAMS, TODAY);
+    expect(widened).toBe(false);
+    expect(matches.length).toBeGreaterThan(0);
     for (const m of matches) {
       const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
-      expect(when && when < '2026-10-01').toBe(true);
+      expect(when && when < '2026-12-01').toBe(true);
     }
   });
 
@@ -91,7 +100,11 @@ describe('answerAsk', () => {
    * prints, and without it a list of closed rounds reads as a list of open ones.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    // Bioteknik is prövad in one place only, and NTI's hösten 2026 window
+    // closed 20 augusti — ten days before TODAY. So the strict filter finds
+    // nothing, the widened one finds that single listing, and the flag is the
+    // only thing standing between the two.
+    const { matches, widened } = answerAsk('Bioteknik i Stockholm', EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
