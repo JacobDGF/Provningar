@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-10-24T07:23:05.708Z",
+  "uppdaterad": "2026-10-25T07:39:06.702Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -995,6 +995,24 @@
       "kommuner": {},
       "ämnen": {},
       "kurser": {}
+    },
+    "2026-10-24": {
+      "besök": 1,
+      "sidvisningar": {
+        "/discover": 1
+      },
+      "händelser": {
+        "Prövning öppnad": 1
+      },
+      "kommuner": {
+        "Stockholm": 1
+      },
+      "ämnen": {
+        "Matematik": 1
+      },
+      "kurser": {
+        "MATMAT02b": 1
+      }
     }
   }
 }

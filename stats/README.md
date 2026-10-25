@@ -8,16 +8,17 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 **Filen är genererad.** Ändringar här skrivs över vid nästa körning; räkningen ändras i
 `collector/worker.js` och i `src/lib/analytics.ts`.
 
-## Senaste 30 dygnen (t.o.m. 2026-10-24)
+## Senaste 30 dygnen (t.o.m. 2026-10-25)
 
 | Besök | Sidvisningar | Till anmälan |
 | ----- | ------------ | ------------ |
-| 85 | 214 | 67 |
+| 82 | 208 | 67 |
 
 ### Per dygn
 
 | Dygn | Besök | Sidvisningar | Till anmälan |
 | ---- | ----- | ------------ | ------------ |
+| 2026-10-24 | 1 | 1 | 0 |
 | 2026-10-23 | 1 | 3 | 0 |
 | 2026-10-22 | 5 | 11 | 2 |
 | 2026-10-21 | 9 | 18 | 8 |
@@ -44,42 +45,40 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | 2026-09-28 | 1 | 2 | 1 |
 | 2026-09-27 | 6 | 8 | 3 |
 | 2026-09-26 | 3 | 3 | 3 |
-| 2026-09-25 | 4 | 7 | 0 |
 
 ### Flikar
 
 | Namn | Antal |
 | ---- | ----- |
-| Upptäck | 130 |
-| Mina prövningar | 28 |
+| Upptäck | 127 |
+| Mina prövningar | 27 |
 | Community | 25 |
 | Historik | 16 |
-| AI-prövning | 14 |
+| AI-prövning | 12 |
 | Profil | 1 |
 
 ### Händelser
 
 | Namn | Antal |
 | ---- | ----- |
-| Prövning öppnad | 144 |
+| Prövning öppnad | 140 |
 | Till anmälan | 67 |
-| AI-fråga ställd | 11 |
+| AI-fråga ställd | 9 |
 | Bevakning skapad | 2 |
 | Kalenderfil hämtad | 1 |
-| Prövning sparad | 1 |
 
 ### Kommuner i öppnade prövningar
 
 | Namn | Antal |
 | ---- | ----- |
-| Stockholm | 48 |
+| Stockholm | 49 |
 | Göteborg | 35 |
 | Södertälje | 16 |
-| Örebro | 15 |
 | Laholm | 11 |
 | Linköping | 11 |
 | Eskilstuna | 9 |
 | Kristianstad | 9 |
+| Örebro | 9 |
 | Sollentuna | 9 |
 | Varberg | 9 |
 
@@ -88,15 +87,15 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | Namn | Antal |
 | ---- | ----- |
 | Flera ämnen | 49 |
-| Matematik | 33 |
-| Fysik | 26 |
+| Matematik | 30 |
+| Fysik | 25 |
 | Kemi | 14 |
 | Engelska | 13 |
 | Svenska | 4 |
 | Naturkunskap | 3 |
 | Psykologi | 2 |
-| Biologi | 1 |
 | Historia | 1 |
+| Religionskunskap | 1 |
 
 ## Vad som inte står här
 
@@ -106,4 +105,4 @@ besök går inte att skilja åt ens i råtabellen, och "besök" räknas en gång
 webbläsarsession utan något som följer med till nästa. Statistiken finns bara för dem som
 sagt ja i appens samtyckesruta.
 
-<sub>Uppdaterad 2026-10-24T07:23:05.708Z.</sub>
+<sub>Uppdaterad 2026-10-25T07:39:06.702Z.</sub>
