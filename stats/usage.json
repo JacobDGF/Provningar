@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-10-25T07:39:06.702Z",
+  "uppdaterad": "2026-10-26T07:52:58.552Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -1013,6 +1013,36 @@
       "kurser": {
         "MATMAT02b": 1
       }
+    },
+    "2026-10-25": {
+      "besök": 1,
+      "sidvisningar": {
+        "/discover": 2
+      },
+      "händelser": {
+        "Prövning öppnad": 2,
+        "Till anmälan": 1
+      },
+      "kommuner": {
+        "Stockholm": 2,
+        "Göteborg": 1
+      },
+      "ämnen": {
+        "Vård och omsorg": 2
+      },
+      "kurser": {
+        "ANOANA01": 3
+      }
+    },
+    "2026-10-26": {
+      "besök": 1,
+      "sidvisningar": {
+        "/discover": 1
+      },
+      "händelser": {},
+      "kommuner": {},
+      "ämnen": {},
+      "kurser": {}
     }
   }
 }
