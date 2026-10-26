@@ -4,6 +4,41 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-10-26 (höstens omgångar lästes om)
+
+**Datan: 195 av 199 gångna omgångar är rättade.** `check:dates` hade vuxit till
+199 listningar som visade en omgång där både anmälan och provdagen låg bakom
+oss — exams.ts var orörd sedan 11 september. Varje anordnare lästes om mot sin
+egen sida, en i taget, och resultatet gick åt två håll.
+
+- **Där anordnaren publicerat nästa omgång står den nu i datan.** Huddinge
+  (15 mars 2027), Härnösand (vecka 15 2027), Nässjö (14 april 2027), Motala
+  (ansökan 2 januari–15 februari 2027), Örnsköldsvik/Arken (18 mars och
+  15 april 2027), Falun (vecka 13 2027), Karlskoga (ansökan 10–20 februari
+  2027), Värnamo (29 januari 2027), ABF Stockholm (9 november respektive
+  10 december 2026), Iris Upplands Väsby (8 december), Iris Flemingsberg och
+  Medlearn Täby (11 december) samt Folkuniversitetet Södertälje
+  (11–14 december). Örebros fyra grundskolekurser fick provdagen 2 november,
+  som kommunen hade skrivit ut sedan sist, och Gotland flyttades fram till
+  skrivtillfället 11 november.
+- **Där anordnaren inte publicerat något står det ingenting.** 157 listningar
+  hos Prövningsenheten Göteborg, plus Växjö, Kunskapsförbundet Väst, Uddevalla,
+  Kristinehamn, Umevux, Ljungby, Ystad, Alingsås, JENSEN, Kungsbacka och
+  Linvux Engelska 6, har `confirmed: false` och en etikett som säger vad som
+  gällde och vad anordnaren skriver i stället. Göteborgs hela katalog i Alvis
+  står på "Stängd för anmälan" utan något nytt tillfälle upplagt — ett datum
+  som varit ska inte stå kvar som appens svar på när du kan boka.
+
+Fyra listningar är kvar att läsa för hand: Katrineholm (Viadidakt är upplöst
+och `viadidakt.se` svarar inte längre), Örnsköldsvik, Kristianstad — vars
+period startar 9 november men saknar publicerat slutdatum — och Sundsvall.
+
+De två exemplen i `askProvningar.test.ts` byttes samtidigt. Testerna läser den
+riktiga datan med flit, så när Göteborgs höstomgång tog slut fanns det inte
+längre någon öppen "Matematik 1b" före oktober att hålla löftet mot, och inget
+stängt "Historia 1b i Göteborg" att tvinga fram en vidgning. Samma två regler
+prövas nu mot Svenska 1 och Biologi 1.
+
 ## 2026-09-11 (räknaren i drift)
 
 Räknaren står nu hos Cloudflare och appen är byggd mot den. Kedjan är

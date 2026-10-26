@@ -78,8 +78,16 @@ describe('answerAsk', () => {
     }
   });
 
+  /**
+   * The promise only binds an answer that kept the constraints. A widened one
+   * says so and may show anything, so the course here has to be one with a
+   * round still open before the cutoff — `Matematik 1b` was that course until
+   * Göteborgs höstomgång ran out.
+   */
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
+    const { matches, widened } = answerAsk('Svenska 1 innan oktober', EXAMS, TODAY);
+    expect(widened).toBe(false);
+    expect(matches.length).toBeGreaterThan(0);
     for (const m of matches) {
       const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
       expect(when && when < '2026-10-01').toBe(true);
@@ -91,7 +99,7 @@ describe('answerAsk', () => {
    * prints, and without it a list of closed rounds reads as a list of open ones.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    const { matches, widened } = answerAsk('Biologi 1 i Stockholm', EXAMS, TODAY);
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
