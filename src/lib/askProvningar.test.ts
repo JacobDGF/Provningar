@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { EXAMS } from '../data/exams';
 import { answerAsk, describeAsk, hasConstraints, readAsk } from './askProvningar';
+import { hasApplicationClosed, isFullyBooked } from './examStatus';
 
 /**
  * These run against the real dataset on purpose.
@@ -78,20 +79,52 @@ describe('answerAsk', () => {
     }
   });
 
+  /**
+   * The cutoff is only promised on the strict path. A widened answer has
+   * dropped it on purpose and says so, so asserting it over a widened list
+   * would be asserting the opposite of what the tab printed. `widened` is
+   * therefore checked first: if the dataset ever moves far enough that this
+   * sentence starts widening, the test says so out loud and the query gets
+   * re-picked — rather than passing over an empty loop.
+   */
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
+    const { matches, widened } = answerAsk('Matematik 1b innan november', EXAMS, TODAY);
+    expect(widened).toBe(false);
+    expect(matches.length).toBeGreaterThan(0);
     for (const m of matches) {
       const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
-      expect(when && when < '2026-10-01').toBe(true);
+      expect(when && when < '2026-11-01').toBe(true);
     }
   });
 
   /**
    * Widening is allowed; doing it quietly is not. The flag is what the tab
    * prints, and without it a list of closed rounds reads as a list of open ones.
+   *
+   * The case is read out of the dataset rather than written down as one city
+   * and one kurs: a listing that is closed today is retired to `confirmed:
+   * false` the moment the anordnare stops publishing dates, and a hard-coded
+   * sentence would then quietly stop widening and take the assertion with it.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
+    const dead = EXAMS.filter((e) => hasApplicationClosed(e, TODAY) || isFullyBooked(e));
+    const candidate = dead.find(
+      (e) =>
+        !EXAMS.some(
+          (other) =>
+            other.course === e.course &&
+            other.city === e.city &&
+            !hasApplicationClosed(other, TODAY) &&
+            !isFullyBooked(other),
+        ),
+    );
+    expect(candidate, 'datasetet har ingen helt stängd kurs-och-ort att vidga ifrån').toBeDefined();
+
+    const { matches, widened } = answerAsk(
+      `${candidate!.course} i ${candidate!.city}`,
+      EXAMS,
+      TODAY,
+    );
     expect(matches.length).toBeGreaterThan(0);
     expect(widened).toBe(true);
   });
