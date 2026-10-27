@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-10-26T07:52:58.552Z",
+  "uppdaterad": "2026-10-27T07:58:45.386Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -1035,14 +1035,31 @@
       }
     },
     "2026-10-26": {
-      "besök": 1,
+      "besök": 4,
       "sidvisningar": {
-        "/discover": 1
+        "/community": 2,
+        "/discover": 10,
+        "/exams": 1,
+        "/history": 2
       },
-      "händelser": {},
-      "kommuner": {},
-      "ämnen": {},
-      "kurser": {}
+      "händelser": {
+        "Prövning öppnad": 4
+      },
+      "kommuner": {
+        "Stockholm": 1,
+        "Göteborg": 2,
+        "Laholm": 1
+      },
+      "ämnen": {
+        "Matematik": 3,
+        "Flera ämnen": 1
+      },
+      "kurser": {
+        "MATMAT02b": 1,
+        "MATE1C00X": 1,
+        "Varierar": 1,
+        "MATE2C00X": 1
+      }
     }
   }
 }
