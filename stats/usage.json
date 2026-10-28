@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-10-27T07:58:45.386Z",
+  "uppdaterad": "2026-10-28T08:41:11.753Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -1059,6 +1059,37 @@
         "MATE1C00X": 1,
         "Varierar": 1,
         "MATE2C00X": 1
+      }
+    },
+    "2026-10-27": {
+      "besök": 4,
+      "sidvisningar": {
+        "/discover": 5,
+        "/history": 1
+      },
+      "händelser": {
+        "Prövning öppnad": 11,
+        "Till anmälan": 4
+      },
+      "kommuner": {
+        "Landskrona": 1,
+        "Göteborg": 11,
+        "Halmstad": 1,
+        "Södertälje": 2
+      },
+      "ämnen": {
+        "Flera ämnen": 2,
+        "Matematik": 6,
+        "Engelska": 3
+      },
+      "kurser": {
+        "Varierar": 4,
+        "MATE2C00X": 1,
+        "MATMAT01b": 1,
+        "MATMAT02c": 2,
+        "ENGE2000X": 3,
+        "MATE1B00X": 2,
+        "MATE2B00X": 2
       }
     }
   }
