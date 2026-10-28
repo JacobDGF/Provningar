@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { EXAMS } from '../data/exams';
 import { answerAsk, describeAsk, hasConstraints, readAsk } from './askProvningar';
+import { hasApplicationClosed, isFullyBooked } from './examStatus';
 
 /**
  * These run against the real dataset on purpose.
@@ -78,12 +79,28 @@ describe('answerAsk', () => {
     }
   });
 
+  /**
+   * The cutoff binds the answer that still claims to honour it, and only that
+   * one. Once the constraints find nothing the tab widens and says so, and the
+   * list under a widened answer is allowed to hold anything the stad and kursen
+   * matched. Naming one question here pinned the test to a round that happened
+   * to have strict hits on the day it was written — 'Matematik 1b innan
+   * oktober' widens now that Göteborgs omgång har lapsed — so the promise is
+   * checked wherever it is still made, across every kurs in the data.
+   */
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
-    for (const m of matches) {
-      const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
-      expect(when && when < '2026-10-01').toBe(true);
+    let kept = 0;
+    for (const course of new Set(EXAMS.map((e) => e.course))) {
+      const { matches, widened } = answerAsk(`${course} innan december`, EXAMS, TODAY);
+      if (widened || !matches.length) continue;
+      kept++;
+      for (const m of matches) {
+        const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
+        expect(m.nextPeriod.confirmed && when && when < '2026-12-01').toBe(true);
+      }
     }
+    // A vacuous pass would mean every question widened, which is its own bug.
+    expect(kept).toBeGreaterThan(0);
   });
 
   /**
@@ -91,9 +108,22 @@ describe('answerAsk', () => {
    * prints, and without it a list of closed rounds reads as a list of open ones.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
-    expect(matches.length).toBeGreaterThan(0);
-    expect(widened).toBe(true);
+    // Asked of the data rather than of one named listning, for the same reason
+    // as above: the round that was stängd when this was written is ofastställd
+    // today, and an undated listning is not something the search dropped. The
+    // rule that has to keep holding is the one the flag exists for — if every
+    // listning it shows is one nobody can book, it has to say it widened.
+    let flagged = 0;
+    for (const pair of new Set(EXAMS.map((e) => `${e.course}\u0000${e.city}`))) {
+      const [course, city] = pair.split('\u0000');
+      const { matches, widened } = answerAsk(`${course} i ${city}`, EXAMS, TODAY);
+      if (!matches.length) continue;
+      const allShut = matches.every((m) => hasApplicationClosed(m, TODAY) || isFullyBooked(m));
+      if (!allShut) continue;
+      expect(widened).toBe(true);
+      flagged++;
+    }
+    expect(flagged).toBeGreaterThan(0);
   });
 
   it('finds nothing, and says nothing, for a course nobody offers there', () => {
