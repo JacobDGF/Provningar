@@ -8,16 +8,18 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 **Filen är genererad.** Ändringar här skrivs över vid nästa körning; räkningen ändras i
 `collector/worker.js` och i `src/lib/analytics.ts`.
 
-## Senaste 30 dygnen (t.o.m. 2026-10-28)
+## Senaste 30 dygnen (t.o.m. 2026-10-29)
 
 | Besök | Sidvisningar | Till anmälan |
 | ----- | ------------ | ------------ |
-| 81 | 218 | 65 |
+| 89 | 255 | 70 |
 
 ### Per dygn
 
 | Dygn | Besök | Sidvisningar | Till anmälan |
 | ---- | ----- | ------------ | ------------ |
+| 2026-10-29 | 1 | 3 | 0 |
+| 2026-10-28 | 7 | 34 | 5 |
 | 2026-10-27 | 4 | 6 | 4 |
 | 2026-10-26 | 4 | 15 | 0 |
 | 2026-10-25 | 1 | 2 | 1 |
@@ -50,20 +52,20 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Upptäck | 132 |
-| Mina prövningar | 28 |
-| Community | 27 |
-| Historik | 18 |
-| AI-prövning | 12 |
-| Profil | 1 |
+| Upptäck | 147 |
+| Community | 34 |
+| Mina prövningar | 32 |
+| Historik | 25 |
+| AI-prövning | 15 |
+| Profil | 2 |
 
 ### Händelser
 
 | Namn | Antal |
 | ---- | ----- |
-| Prövning öppnad | 142 |
-| Till anmälan | 65 |
-| AI-fråga ställd | 9 |
+| Prövning öppnad | 152 |
+| Till anmälan | 70 |
+| AI-fråga ställd | 12 |
 | Bevakning skapad | 2 |
 | Kalenderfil hämtad | 1 |
 
@@ -71,25 +73,25 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Stockholm | 47 |
-| Göteborg | 43 |
-| Södertälje | 17 |
-| Linköping | 11 |
+| Stockholm | 50 |
+| Göteborg | 44 |
+| Södertälje | 19 |
+| Eskilstuna | 12 |
+| Linköping | 12 |
+| Sollentuna | 11 |
 | Laholm | 10 |
-| Eskilstuna | 9 |
 | Kristianstad | 9 |
-| Sollentuna | 9 |
 | Varberg | 7 |
-| Sandviken | 5 |
+| Solna | 6 |
 
 ### Ämnen
 
 | Namn | Antal |
 | ---- | ----- |
-| Flera ämnen | 50 |
-| Matematik | 36 |
+| Flera ämnen | 54 |
+| Matematik | 41 |
 | Fysik | 21 |
-| Engelska | 15 |
+| Engelska | 16 |
 | Kemi | 11 |
 | Svenska | 4 |
 | Naturkunskap | 3 |
@@ -105,4 +107,4 @@ besök går inte att skilja åt ens i råtabellen, och "besök" räknas en gång
 webbläsarsession utan något som följer med till nästa. Statistiken finns bara för dem som
 sagt ja i appens samtyckesruta.
 
-<sub>Uppdaterad 2026-10-28T08:41:11.753Z.</sub>
+<sub>Uppdaterad 2026-10-29T08:37:06.200Z.</sub>

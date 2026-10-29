@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-10-28T08:41:11.753Z",
+  "uppdaterad": "2026-10-29T08:37:06.200Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -1091,6 +1091,54 @@
         "MATE1B00X": 2,
         "MATE2B00X": 2
       }
+    },
+    "2026-10-28": {
+      "besök": 7,
+      "sidvisningar": {
+        "/ai": 3,
+        "/community": 7,
+        "/discover": 13,
+        "/exams": 3,
+        "/history": 7,
+        "/profile": 1
+      },
+      "händelser": {
+        "AI-fråga ställd": 3,
+        "Prövning öppnad": 10,
+        "Till anmälan": 5
+      },
+      "kommuner": {
+        "Linköping": 1,
+        "Södertälje": 2,
+        "Sollentuna": 2,
+        "Solna": 2,
+        "Eskilstuna": 3,
+        "Göteborg": 1,
+        "Stockholm": 3,
+        "Halmstad": 1
+      },
+      "ämnen": {
+        "Matematik": 5,
+        "Engelska": 1,
+        "Flera ämnen": 4
+      },
+      "kurser": {
+        "MATMAT03b": 1,
+        "Varierar": 10,
+        "MATE2B00X": 1,
+        "MATMAT02b": 3
+      }
+    },
+    "2026-10-29": {
+      "besök": 1,
+      "sidvisningar": {
+        "/discover": 2,
+        "/exams": 1
+      },
+      "händelser": {},
+      "kommuner": {},
+      "ämnen": {},
+      "kurser": {}
     }
   }
 }
