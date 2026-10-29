@@ -225,21 +225,12 @@ const AUTUMN_VERIFIED = '2026-08-11';
 const LATE_SUMMER_VERIFIED = '2026-08-12';
 // Link sweep of the listings that still landed on an information page (#21).
 const LINK_SWEEP_VERIFIED = '2026-08-13';
-// Sweep for the län the dataset barely covered — Kronoberg, Jönköping and
-// Halland each had a single town, so someone outside it saw an empty map.
-const THIN_LAN_VERIFIED = '2026-08-15';
 // Checked 2026-08-18, against each provider's own page.
 const AUG_18_VERIFIED = '2026-08-18';
 // Second thin-län sweep (2026-08-19): Jämtland had one listing, Värmland,
 // Västmanland and Jönköping two apiece — a map with one dot on it reads as
 // "there is nothing here", which for these four län was never true.
 const THIN_LAN_2_VERIFIED = '2026-08-19';
-// Fullbokat-svep 2026-08-20: läste alla 95 nåbara anordnarsidor efter
-// anordnarens egna ord för "det finns inga platser kvar".
-const FULL_SWEEP_VERIFIED = '2026-08-20';
-// Datasvep 2026-08-26 (#45): de listningar check:dates pekade ut som gångna,
-// lästa mot anordnarens egen sida i stället för mot etiketten i datan.
-const AUG_26_VERIFIED = '2026-08-26';
 // Malmö- och Linköpingssvep 2026-08-29: de två anordnare i prioritetsordningen
 // som publicerar hela sitt utbud och skrivschema i förväg, lästa kurs för kurs
 // mot skolans egen sida i stället för som ett kort per skola.
@@ -248,6 +239,18 @@ const AUG_29_VERIFIED = '2026-08-29';
 // för kurs ur anordnarens egen kurslista, med provdatum och sista
 // anmälningsdag från varje kurssida.
 const GOTEBORG_VERIFIED = '2026-08-30';
+
+// Datumsvep 2026-10-29: de listningar check:dates pekade ut som gångna, lästa
+// mot anordnarens egen sida. De flesta hade hunnit publicera nästa omgång;
+// de som inte hade det står utan datum, med anordnarens egna ord om varför.
+const OCT_29_VERIFIED = '2026-10-29';
+
+// Göteborgskontroll 2026-10-29: höstens omgångar är skrivna och Prövningsenhetens
+// egen katalog (provningsenheten.alvis.se) har inga vårdatum än — startsidan säger
+// "Vårens prövningar publiceras den 1 december och första ansökningsdag är 15
+// december". De skrivna omgångarna står därför utan datum i stället för med ett
+// som varit.
+const GOTEBORG_SPRING_PENDING = '2026-10-29';
 
 const GBG_PRICE_NOTE =
   'Avgiften är 500 kr per kurs eller ämnesnivå och prövningstillfälle, betalas senast fyra ' +
@@ -283,20 +286,24 @@ function publishedOnPage(what: string, when: string): Exam['registration'] {
 }
 
 /**
- * Stockholms stad's autumn 2026 prövningsomgång.
+ * Komvux Södermalms nästa anmälningsdag.
  *
- * The city moved to one opening day per school, staggered across weeks 33–35
- * (Jensen 11 aug, Komvux Södermalm 13 aug, NTI 17 aug, Hermods 26 aug), and no
- * school publishes a closing date — registration shuts when the seats are gone.
- * So the window is encoded half-open: a real start, no invented end.
+ * Stockholms stad tar prövningsanmälan en dag per skola och termin, och skolan
+ * publicerar formuläret den dagen. Höstens omgång öppnade 13 augusti och stängde
+ * när platserna var slut, utan publicerad slutdag — kodat som ett halvöppet
+ * fönster lyste kortet grönt "öppen för anmälan" i elva veckor efter att
+ * formuläret var borta, vilket är precis det en halvöppen period gör. Nästa dag
+ * står utskriven på skolans egen sida, så perioden är den dagen och ingenting
+ * mer: ett datum framåt säger "anmälan har inte öppnat än", vilket är sant.
  */
-function sthlmAutumn2026(opensOn: string, opensLabel: string): NextPeriod {
+function sodermalmSpring2027(): NextPeriod {
   return {
     label:
-      `Anmälan öppnar ${opensLabel} och stänger så snart platserna är fullbokade. ` +
-      'Prövningen genomförs under hösten 2026, planerad så att betyget hinner fram till sista ' +
-      'kompletteringsdagen i början av december. Nästa möjlighet därefter är i början av 2027.',
-    applicationStart: opensOn,
+      'Nästa möjlighet att anmäla sig är fredag 15 januari 2027, och anmälningsformuläret ' +
+      'publiceras på skolans sida den dagen. Anmälan stänger så snart platserna är ' +
+      'fullbokade — skolan publicerar ingen slutdag. Vårens prövningsschema läggs upp på ' +
+      'samma sida.',
+    applicationStart: '2027-01-15',
     confirmed: true,
   };
 }
@@ -332,23 +339,50 @@ function malmoPeriod4(skrivdag: string): NextPeriod {
 }
 
 /**
- * Linvux prövningsperiod 3 2026.
+ * Linvux prövningsperiod 1 2027.
  *
  * Linvux dates the anmälan to the day and the writing to the week ("Vecka
- * 40-41. Vissa prövningar kan påbörjas tidigare/senare"), so the window is
+ * 10-11. Vissa prövningar kan påbörjas tidigare/senare"), so the window is
  * those two weeks read as dates, with the provider's own caveat kept in the
  * label rather than dropped for a tidier card.
+ *
+ * Period 1 är också den period som *inte* erbjuder matematik. Perioderna 2 och
+ * 3 gör det, och period 4 är matematik och ingenting annat, så en
+ * matematiklistning som lånade den här perioden hade lovat en anmälan Linvux
+ * inte tar emot. Kurslistan per period står utskriven på anordnarens sida.
  */
-function linvuxPeriod3(): NextPeriod {
+function linvuxPeriod1(): NextPeriod {
   return {
     label:
-      'Prövningsperiod 3 2026: anmälan öppnade 10 augusti klockan 8 och stänger 4 september. ' +
-      'Proven skrivs vecka 40–41, det vill säga 28 september – 11 oktober; vissa prövningar ' +
-      'kan påbörjas tidigare eller senare. Du kan bli antagen till högst tre kurser per period.',
-    applicationStart: '2026-08-10',
-    applicationEnd: '2026-09-04',
-    examWindowStart: '2026-09-28',
-    examWindowEnd: '2026-10-11',
+      'Prövningsperiod 1 2027: ansökan öppnar 11 januari klockan 8 och stänger 5 februari. ' +
+      'Proven skrivs vecka 10–11, det vill säga 8–21 mars; vissa prövningar kan påbörjas ' +
+      'tidigare eller senare. Du kan bli antagen till högst tre kurser per period.',
+    applicationStart: '2027-01-11',
+    applicationEnd: '2027-02-05',
+    examWindowStart: '2027-03-08',
+    examWindowEnd: '2027-03-21',
+    confirmed: true,
+  };
+}
+
+/**
+ * Linvux prövningsperiod 4 2026 — matematik och ingenting annat.
+ *
+ * Höstens andra matematikomgång, och den enda period vars kurslista bara
+ * innehåller matematik. Ansökan stängde 22 oktober men skrivveckorna 49–51
+ * ligger kvar framför oss, så listningen är en stängd anmälan till en prövning
+ * som ännu inte är skriven — inte en gången omgång.
+ */
+function linvuxPeriod4(): NextPeriod {
+  return {
+    label:
+      'Prövningsperiod 4 2026, som bara erbjuder matematik: ansökan var öppen 27 september – ' +
+      '22 oktober och är stängd. Proven skrivs vecka 49–51, det vill säga 30 november – ' +
+      '20 december. Nästa matematikomgång är period 2 2027, med ansökan 1–26 mars.',
+    applicationStart: '2026-09-27',
+    applicationEnd: '2026-10-22',
+    examWindowStart: '2026-11-30',
+    examWindowEnd: '2026-12-20',
     confirmed: true,
   };
 }
@@ -511,21 +545,23 @@ export const EXAMS: Exam[] = [
     lng: 18.0735,
     price: 500,
     priceNote: FREE_IF_PRIOR_F,
-    nextPeriod: sthlmAutumn2026('2026-08-13', 'torsdag 13 augusti 2026'),
+    nextPeriod: sodermalmSpring2027(),
     components: COMPONENTS_KEMI,
     studyTips: TIPS_KEMI,
-    // Checked 2026-08-13: anmälan is a form published on this page when the
+    // Checked 2026-10-29: anmälan is a form published on this page when the
     // school's window opens — "anmälan blir tillgänglig på den dag och tid som
     // anges i prövningsschemat", först till kvarn, ingen reservlista och ingen
-    // efteranmälan. No deeper link exists to point at in the meantime.
-    registration: publishedOnPage('anmälningsformuläret', 'den 13 augusti kl. 10'),
+    // efteranmälan. No deeper link exists to point at in the meantime. Skolan
+    // skriver nu "Nästa möjlighet att anmäla sig till en prövning är fredag den
+    // 15 januari 2027".
+    registration: publishedOnPage('anmälningsformuläret', 'fredag den 15 januari 2027'),
     registrationUrl: 'https://komvuxsodermalm.stockholm/provningar/anmalan-till-provning/',
     infoUrl:
       'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/kemi-laroplan-gy11gy25/provning-i-kemi-1/',
     description:
       'Prövning i Kemi 1 hos Komvux Södermalm, en av Stockholms stads vuxenutbildningar. Avgiften följer det nationella pristaket på 500 kr.',
     tags: ['kemi', 'naturvetenskap', 'stockholm'],
-    verifiedAt: LINK_SWEEP_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'sodermalm-fysik2',
@@ -542,21 +578,23 @@ export const EXAMS: Exam[] = [
     lng: 18.0735,
     price: 500,
     priceNote: FREE_IF_PRIOR_F,
-    nextPeriod: sthlmAutumn2026('2026-08-13', 'torsdag 13 augusti 2026'),
+    nextPeriod: sodermalmSpring2027(),
     components: COMPONENTS_FYSIK,
     studyTips: TIPS_FYSIK,
-    // Checked 2026-08-13: anmälan is a form published on this page when the
+    // Checked 2026-10-29: anmälan is a form published on this page when the
     // school's window opens — "anmälan blir tillgänglig på den dag och tid som
     // anges i prövningsschemat", först till kvarn, ingen reservlista och ingen
-    // efteranmälan. No deeper link exists to point at in the meantime.
-    registration: publishedOnPage('anmälningsformuläret', 'den 13 augusti kl. 10'),
+    // efteranmälan. No deeper link exists to point at in the meantime. Skolan
+    // skriver nu "Nästa möjlighet att anmäla sig till en prövning är fredag den
+    // 15 januari 2027".
+    registration: publishedOnPage('anmälningsformuläret', 'fredag den 15 januari 2027'),
     registrationUrl: 'https://komvuxsodermalm.stockholm/provningar/anmalan-till-provning/',
     infoUrl:
       'https://komvuxsodermalm.stockholm/provningar/obligatorisk-forberedelse-infor-provning/fysik-laroplan-gy11gy25/provning-i-fysik-2/',
     description:
       'Prövning i Fysik 2 hos Komvux Södermalm. Krävs ofta för tekniska och naturvetenskapliga högskoleutbildningar.',
     tags: ['fysik', 'naturvetenskap', 'stockholm'],
-    verifiedAt: LINK_SWEEP_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'taby-flera',
@@ -579,12 +617,13 @@ export const EXAMS: Exam[] = [
     // inte en period.
     nextPeriod: {
       label:
-        'Provtillfälle 25 september 2026. Anmälan öppnar torsdag 27 augusti kl. 9:00 och stänger ' +
-        'samma förmiddag — formuläret visas bara den dagen. Max 10 platser i Täby.',
-      applicationStart: '2026-08-27',
-      applicationEnd: '2026-08-27',
-      examWindowStart: '2026-09-25',
-      examWindowEnd: '2026-09-25',
+        'Provtillfälle fredag 11 december 2026 kl. 9–16. Anmälan öppnar torsdag 12 november ' +
+        'kl. 9:00 och stänger samma förmiddag när de tio platserna är fullbokade — formuläret ' +
+        'visas bara den dagen. Därefter 12 februari 2027, med anmälan från 10 december.',
+      applicationStart: '2026-11-12',
+      applicationEnd: '2026-11-12',
+      examWindowStart: '2026-12-11',
+      examWindowEnd: '2026-12-11',
       confirmed: true,
     },
     components: COMPONENTS_MATEMATIK,
@@ -594,7 +633,7 @@ export const EXAMS: Exam[] = [
     description:
       'Medlearn genomför betygsprövning för KCNO (Täby, Danderyd, Vallentuna, Vaxholm, Österåker) minst två gånger per termin. Matematik och svenska är vanliga ämnen, men kontakta skolan för exakt kurskod inför din anmälan.',
     tags: ['matematik', 'taby', 'kcno'],
-    verifiedAt: FULL_SWEEP_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'hermods-liljeholmen-ma2b',
@@ -611,7 +650,20 @@ export const EXAMS: Exam[] = [
     lng: 18.0125,
     price: 500,
     priceNote: FREE_IF_PRIOR_F + ' Förutsätter att din hemkommun har avtal med Hermods.',
-    nextPeriod: sthlmAutumn2026('2026-08-26', 'onsdag 26 augusti 2026'),
+    // Läst 2026-10-29: Hermods egen prövningssida för Stockholms stad skriver
+    // "Vi genomför normalt sett prövningar vid fyra tillfällen varje år, två på
+    // våren och två på hösten" och att båda terminens tillfällen bokas samtidigt —
+    // men publicerar inget datum. Höstens anmälningsdag (26 augusti) är passerad,
+    // och som halvöppen period lyste kortet grönt "öppen för anmälan" i veckor
+    // efter att bokningen stängde.
+    nextPeriod: {
+      label:
+        'Höstens anmälningsdag 26 augusti 2026 är passerad. Hermods genomför normalt ' +
+        'fyra prövningstillfällen per år, två på våren och två på hösten, och båda ' +
+        'terminens tillfällen bokas vid samma tillfälle — men inga vårdatum är ' +
+        'publicerade än.',
+      confirmed: false,
+    },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
     registrationUrl: 'https://sites.google.com/edu.hermods.se/provning-stockholms-stad',
@@ -619,7 +671,7 @@ export const EXAMS: Exam[] = [
     description:
       'Hermods erbjuder prövning i Matematik 2b på kontrakt åt anslutna kommuner, med skriftligt prov på plats i Liljeholmen.',
     tags: ['matematik', 'stockholm', 'hermods'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'nti-affafa00s',
@@ -4012,21 +4064,11 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: FREE_IF_PRIOR_F,
     nextPeriod: {
-      // Checked 2026-08-20: JENSEN's Typeform now answers with
-      // `"isFormClosed":true` and the close screen "Formuläret är just nu
-      // stängt … vi redan har fått in det maximala antalet ansökningar för
-      // denna prövningsperiod". Their own page states the rule — "formuläret
-      // kommer automatiskt att stängas när vi har uppnått max antal
-      // ansökningar", ingen reservlista — so the closed form *is* JENSEN
-      // saying fullbokat. Leaving this as a half-open window kept the card
-      // green for a booking that lasted five minutes on 11 August.
       label:
-        'Anmälan öppnade 11 augusti 2026 kl. 11:00 och är redan stängd — formuläret stänger automatiskt när max antal ansökningar nåtts, och JENSEN har ingen reservlista. Höstens prövningar genomförs 7–18 september eller 12–23 oktober för dem som kom in. Nästa möjlighet att anmäla sig är i början av 2027.',
-      applicationStart: '2026-08-11',
-      examWindowStart: '2026-09-07',
-      examWindowEnd: '2026-10-23',
-      confirmed: true,
-      full: true,
+        'Ansökan till höstens prövningar är stängd och omgångarna är genomförda. JENSEN ' +
+        'skriver att nästa prövningsperiod är under vårterminen 2027, och att ansöknings- ' +
+        'och prövningsdatum publiceras på sidan under hösten 2026.',
+      confirmed: false,
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
@@ -4035,7 +4077,7 @@ export const EXAMS: Exam[] = [
     description:
       'JENSEN vuxenutbildning erbjuder prövning i Matematik 2b i Stockholm. Missar du höstens omgång är nästa tillfälle i början av 2027.',
     tags: ['matematik', 'stockholm', 'jensen'],
-    verifiedAt: FULL_SWEEP_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'jensen-fysik1a',
@@ -4053,21 +4095,11 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: FREE_IF_PRIOR_F + ' Laborativa moment genomförs på plats, inte på distans.',
     nextPeriod: {
-      // Checked 2026-08-20: JENSEN's Typeform now answers with
-      // `"isFormClosed":true` and the close screen "Formuläret är just nu
-      // stängt … vi redan har fått in det maximala antalet ansökningar för
-      // denna prövningsperiod". Their own page states the rule — "formuläret
-      // kommer automatiskt att stängas när vi har uppnått max antal
-      // ansökningar", ingen reservlista — so the closed form *is* JENSEN
-      // saying fullbokat. Leaving this as a half-open window kept the card
-      // green for a booking that lasted five minutes on 11 August.
       label:
-        'Anmälan öppnade 11 augusti 2026 kl. 11:00 och är redan stängd — formuläret stänger automatiskt när max antal ansökningar nåtts, och JENSEN har ingen reservlista. Höstens prövningar genomförs 7–18 september eller 12–23 oktober för dem som kom in. Nästa möjlighet att anmäla sig är i början av 2027.',
-      applicationStart: '2026-08-11',
-      examWindowStart: '2026-09-07',
-      examWindowEnd: '2026-10-23',
-      confirmed: true,
-      full: true,
+        'Ansökan till höstens prövningar är stängd och omgångarna är genomförda. JENSEN ' +
+        'skriver att nästa prövningsperiod är under vårterminen 2027, och att ansöknings- ' +
+        'och prövningsdatum publiceras på sidan under hösten 2026.',
+      confirmed: false,
     },
     components: COMPONENTS_FYSIK,
     studyTips: TIPS_FYSIK,
@@ -4076,7 +4108,7 @@ export const EXAMS: Exam[] = [
     description:
       'JENSEN vuxenutbildning erbjuder prövning i Fysik 1a i Stockholm, med laborativa moment på plats.',
     tags: ['fysik', 'stockholm', 'jensen'],
-    verifiedAt: FULL_SWEEP_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'jensen-kemi1',
@@ -4094,21 +4126,11 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: FREE_IF_PRIOR_F,
     nextPeriod: {
-      // Checked 2026-08-20: JENSEN's Typeform now answers with
-      // `"isFormClosed":true` and the close screen "Formuläret är just nu
-      // stängt … vi redan har fått in det maximala antalet ansökningar för
-      // denna prövningsperiod". Their own page states the rule — "formuläret
-      // kommer automatiskt att stängas när vi har uppnått max antal
-      // ansökningar", ingen reservlista — so the closed form *is* JENSEN
-      // saying fullbokat. Leaving this as a half-open window kept the card
-      // green for a booking that lasted five minutes on 11 August.
       label:
-        'Anmälan öppnade 11 augusti 2026 kl. 11:00 och är redan stängd — formuläret stänger automatiskt när max antal ansökningar nåtts, och JENSEN har ingen reservlista. Höstens prövningar genomförs 7–18 september eller 12–23 oktober för dem som kom in. Nästa möjlighet att anmäla sig är i början av 2027.',
-      applicationStart: '2026-08-11',
-      examWindowStart: '2026-09-07',
-      examWindowEnd: '2026-10-23',
-      confirmed: true,
-      full: true,
+        'Ansökan till höstens prövningar är stängd och omgångarna är genomförda. JENSEN ' +
+        'skriver att nästa prövningsperiod är under vårterminen 2027, och att ansöknings- ' +
+        'och prövningsdatum publiceras på sidan under hösten 2026.',
+      confirmed: false,
     },
     components: COMPONENTS_KEMI,
     studyTips: TIPS_KEMI,
@@ -4116,7 +4138,7 @@ export const EXAMS: Exam[] = [
     infoUrl: 'https://www.jensenkomvux.se/provning',
     description: 'JENSEN vuxenutbildning erbjuder prövning i Kemi 1 i Stockholm.',
     tags: ['kemi', 'stockholm', 'jensen'],
-    verifiedAt: FULL_SWEEP_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'iris-upplandsvasby-fysik1a',
@@ -4133,22 +4155,23 @@ export const EXAMS: Exam[] = [
     lng: 17.91,
     price: 500,
     priceNote: NON_REFUNDABLE,
-    // Checked 2026-08-20: Iris egen produktsida skriver i versaler "ALLA
-    // PRÖVNINGSPLATSER FÖR TISDAG DEN 8 SEPTEMBER I UPPLANDS VÄSBY ÄR
-    // BOKADE!" och webbshoppen står som "Slut i lager". Datumen såg öppna ut
-    // och kortet lyste grönt "Öppen nu" — vilket är exakt det `full` finns
-    // för: anordnarens ord slår kalendern.
+    // Checked 2026-10-29: tillfället 8 september är över, och `full` är därmed
+    // borta — det var anordnarens ord om just den omgången, inte om kursen. Iris
+    // sida listar nu 8 december som nästa tillfälle i Upplands Väsby, med
+    // anmälan 5 november. Rubriken "ALLA PRÖVNINGSPLATSER FÖR TISDAG DEN 8
+    // SEPTEMBER … ÄR BOKADE!" står kvar högst upp på sidan och gäller den
+    // gångna omgången; webbshoppen släpper nästa produkt på anmälningsdagen.
     nextPeriod: {
       label:
-        'Alla platser till provtillfället 8 september 2026 är bokade — Iris skriver "slut i lager". ' +
-        'Nästa tillfälle är tisdag 8 december kl. 9–12, med anmälan som öppnar torsdag 5 november ' +
-        'kl. 9:00 och stänger så snart platserna är fullbokade. Formuläret visas bara den dagen, ' +
-        'och platserna brukar gå åt på minuter.',
-      applicationStart: '2026-08-06',
-      examWindowStart: '2026-09-08',
-      examWindowEnd: '2026-09-08',
+        'Provtillfälle tisdag 8 december 2026 kl. 9–12. Anmälan öppnar torsdag 5 november ' +
+        'kl. 9:00 och stänger så snart platserna är fullbokade — formuläret visas bara den ' +
+        'dagen, och platserna brukar gå åt på minuter. Därefter 16 februari 2027, med ' +
+        'anmälan från 10 december.',
+      applicationStart: '2026-11-05',
+      applicationEnd: '2026-11-05',
+      examWindowStart: '2026-12-08',
+      examWindowEnd: '2026-12-08',
       confirmed: true,
-      full: true,
     },
     components: COMPONENTS_FYSIK,
     studyTips: TIPS_FYSIK,
@@ -4158,7 +4181,7 @@ export const EXAMS: Exam[] = [
     description:
       'Iris Hadar genomför betygsprövning i naturvetenskapliga ämnen i Upplands Väsby ett par gånger per termin.',
     tags: ['fysik', 'upplands-vasby', 'iris'],
-    verifiedAt: FULL_SWEEP_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'iris-flemingsberg-ma',
@@ -4182,13 +4205,13 @@ export const EXAMS: Exam[] = [
     // slutdagen är samma dag som öppningsdagen.
     nextPeriod: {
       label:
-        'Provtillfälle 25 september 2026 kl. 8–17. Anmälan öppnar torsdag 27 augusti kl. 9:00 och ' +
-        'stänger samma förmiddag — formuläret visas bara den dagen och avaktiveras när platserna ' +
-        'är fullbokade.',
-      applicationStart: '2026-08-27',
-      applicationEnd: '2026-08-27',
-      examWindowStart: '2026-09-25',
-      examWindowEnd: '2026-09-25',
+        'Provtillfälle fredag 11 december 2026 kl. 8–17. Anmälan öppnar torsdag 12 november ' +
+        'kl. 9:00 och stänger samma förmiddag — formuläret visas bara den dagen och ' +
+        'avaktiveras när platserna är fullbokade.',
+      applicationStart: '2026-11-12',
+      applicationEnd: '2026-11-12',
+      examWindowStart: '2026-12-11',
+      examWindowEnd: '2026-12-11',
       confirmed: true,
     },
     components: COMPONENTS_MATEMATIK,
@@ -4198,7 +4221,7 @@ export const EXAMS: Exam[] = [
     description:
       'Iris Hadar genomför betygsprövning i Flemingsberg, bland annat i matematik. Ange exakt kurs och kurskod vid anmälan.',
     tags: ['matematik', 'flemingsberg', 'iris'],
-    verifiedAt: FULL_SWEEP_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'malmo-svenska3',
@@ -4350,14 +4373,11 @@ export const EXAMS: Exam[] = [
       FREE_IF_PRIOR_F +
       ' Kräver folkbokföring i en Västerbottens-kommun. Endast ett ämne per prövningsperiod.',
     nextPeriod: {
-      // Umevux publicerar ansökningsfönstret men inte provdatumet: prövningen
-      // startar i oktober och pågår i cirka tre veckor, och det exakta datumet
-      // får man med antagningsbeskedet. Därför ingen examWindow.
       label:
-        'Ansökan till höstens prövningar öppnade 21 augusti 2026 och stänger 18 september. Prövningen startar i oktober och pågår i cirka tre veckor.',
-      applicationStart: '2026-08-21',
-      applicationEnd: '2026-09-18',
-      confirmed: true,
+        'Höstens båda ansökningsperioder är stängda. Umevux skriver "Just nu har vi ingen ' +
+        'aktuell prövningsperiod att anmäla sig till", och att anmälan till ' +
+        'prövningstillfällen för våren 2027 läggs ut när de är fastställda.',
+      confirmed: false,
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
@@ -4367,7 +4387,7 @@ export const EXAMS: Exam[] = [
     description:
       'Umevux erbjuder betygsprövning i gymnasiekurser för folkbokförda i Västerbottens kommuner, minst fyra gånger per år.',
     tags: ['matematik', 'umea'],
-    verifiedAt: AUG_18_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'umea-eng6',
@@ -4387,14 +4407,11 @@ export const EXAMS: Exam[] = [
       FREE_IF_PRIOR_F +
       ' Kräver folkbokföring i en Västerbottens-kommun. Endast ett ämne per prövningsperiod.',
     nextPeriod: {
-      // Umevux publicerar ansökningsfönstret men inte provdatumet: prövningen
-      // startar i oktober och pågår i cirka tre veckor, och det exakta datumet
-      // får man med antagningsbeskedet. Därför ingen examWindow.
       label:
-        'Ansökan till höstens prövningar öppnade 21 augusti 2026 och stänger 18 september. Prövningen startar i oktober och pågår i cirka tre veckor.',
-      applicationStart: '2026-08-21',
-      applicationEnd: '2026-09-18',
-      confirmed: true,
+        'Höstens båda ansökningsperioder är stängda. Umevux skriver "Just nu har vi ingen ' +
+        'aktuell prövningsperiod att anmäla sig till", och att anmälan till ' +
+        'prövningstillfällen för våren 2027 läggs ut när de är fastställda.',
+      confirmed: false,
     },
     components: COMPONENTS_ENGELSKA,
     studyTips: TIPS_ENGELSKA,
@@ -4404,7 +4421,7 @@ export const EXAMS: Exam[] = [
     description:
       'Umevux erbjuder betygsprövning i Engelska 6 för folkbokförda i Västerbottens kommuner.',
     tags: ['engelska', 'umea'],
-    verifiedAt: AUG_18_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'lulea-kemi1',
@@ -4452,11 +4469,14 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per ämne, betalas vid anmälan och återbetalas ej. Kostnadsfritt om registrerat F/IG i ämnet satt senast 12 månader innan prövningsdatumet.',
     nextPeriod: {
-      label: 'Provperiod 2026-10-21 – 2026-10-24',
-      applicationStart: '2026-08-17',
-      applicationEnd: '2026-09-20',
-      examWindowStart: '2026-10-21',
-      examWindowEnd: '2026-10-24',
+      label:
+        'Prövning 17 eller 20 februari 2027 — 17 februari för de ämnen som skrivs hos Arena, ' +
+        '20 februari för dem som skrivs hos Jensen. Anmälan öppnar 7 december och sista ' +
+        'ansökningsdag är 10 januari 2027.',
+      applicationStart: '2026-12-07',
+      applicationEnd: '2027-01-10',
+      examWindowStart: '2027-02-17',
+      examWindowEnd: '2027-02-20',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -4466,14 +4486,14 @@ export const EXAMS: Exam[] = [
     // (flowoverview/2659) answers "E-tjänsten är inte längre tillgänglig".
     // Their own prövningssida carries the live link whenever it opens, so that
     // is the honest target. Re-checked 2026-08-13.
-    registration: publishedOnPage('länken till kommunens e-tjänst', 'den 17 augusti'),
+    registration: publishedOnPage('länken till kommunens e-tjänst', 'den 7 december'),
     registrationUrl:
       'https://sundsvall.se/kommun/utbildning-och-forskola/vuxenutbildning/ansokan/provning',
     infoUrl: 'https://sundsvall.se/kommun/utbildning-och-forskola/vuxenutbildning/ansokan',
     description:
       'Vuxenutbildningen Sundsvall erbjuder prövning fyra gånger per år i ämnen ur den ordinarie kurskatalogen (Alvis). E-tjänsten för oktoberperioden öppnar 17 augusti 2026 med sista anmälningsdag 20 september; prövningstillfällena är 21 och 24 oktober beroende på skolenhet (Arena/Jensen).',
     tags: ['kommun', 'gymnasial', 'flera-amnen'],
-    verifiedAt: LINK_SWEEP_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'vuxenutbildningen-ornskoldsvik-komvux-arken-ornskoldsvik-fle',
@@ -4493,11 +4513,12 @@ export const EXAMS: Exam[] = [
       '500 kr per kurs, betalas via Swish (123 562 2162) vid anmälan. Kostnadsfritt om man läst samma/motsvarande kurs hos kommunal vuxenutbildning och fått betyg F eller IG.',
     nextPeriod: {
       label:
-        'Anmälan för HT26 är öppen 17 augusti – 11 september. Prövningarna hålls 7 och 8 oktober kl. 11.30.',
-      applicationStart: '2026-08-17',
-      applicationEnd: '2026-09-11',
-      examWindowStart: '2026-10-07',
-      examWindowEnd: '2026-10-08',
+        'Anmälan till vårens prövningar öppnar 25 januari 2027 och sista anmälningsdag är ' +
+        '2 februari. Prövningarna skrivs 18 mars och 15 april kl. 11.30.',
+      applicationStart: '2027-01-25',
+      applicationEnd: '2027-02-02',
+      examWindowStart: '2027-03-18',
+      examWindowEnd: '2027-04-15',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -4514,7 +4535,7 @@ export const EXAMS: Exam[] = [
     description:
       'Prövning erbjuds endast i nya GY25-ämnesnivåer, med fyra fasta datum per år; höstens tillfällen är 7 och 8 oktober 2026 kl. 11:30 i Studielänkens lokaler. Anmälan görs till Arena utbildning på arenautbildning@arenakoncernen.se eller 010-788 00 39, och avgiften på 500 kr swishas till 123 562 2162.',
     tags: ['kommun', 'gymnasial', 'gy25'],
-    verifiedAt: LATE_SUMMER_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'vuxenutbildningen-harnosand-harnosand-flera-kurser-kontakta-',
@@ -4533,10 +4554,10 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr om kursen inte lästs tidigare eller redan har godkänt betyg; kostnadsfritt om F/IG satts i kursen tidigare (styrks med betygskopia).',
     nextPeriod: {
-      label: 'Provperiod 2026-09-21 – 2026-09-27',
-      applicationEnd: '2026-08-05',
-      examWindowStart: '2026-09-21',
-      examWindowEnd: '2026-09-27',
+      label: 'Vårens prövning 2027 skrivs vecka 15 och sista ansökningsdag är 2 februari.',
+      applicationEnd: '2027-02-02',
+      examWindowStart: '2027-04-12',
+      examWindowEnd: '2027-04-18',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -4558,7 +4579,7 @@ export const EXAMS: Exam[] = [
     description:
       'Nästa prövningstillfälle startar vecka 39 2026 (21-27 september), med sista ansökningsdag 5 augusti 2026 — det enda tillfälle kommunen har kvar i sin tabell för 2026. Legitimationskontroll måste göras på plats hos studerandeservice under vecka 34 efter antagningsbesked, och du kan bara söka en kurs per prövningstillfälle.',
     tags: ['kommun', 'gymnasial', 'flera-amnen'],
-    verifiedAt: AUG_26_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'jamtlands-gymnasium-provning-for-vuxenstuderande-ostersund-f',
@@ -4861,8 +4882,10 @@ export const EXAMS: Exam[] = [
       '500 kr, lagstadgad avgift. Avgiftsfritt bl.a. för den som har betyget F i kursen och samtidigt studerar andra kurser på vuxenutbildningen.',
     nextPeriod: {
       label:
-        'Ansökan till höstens studieperiod 2026 ska vara inlämnad senast 1 september 2026 (vårens period senast 1 februari)',
-      applicationEnd: '2026-09-01',
+        'Ansökan till vårens studieperiod 2027 ska vara inlämnad senast 1 februari. ' +
+        'Handläggningen tar cirka tre veckor efter sista ansökningsdag, och provdatum sätts ' +
+        'därefter. (Höstens period stänger 1 september.)',
+      applicationEnd: '2027-02-01',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -4872,7 +4895,7 @@ export const EXAMS: Exam[] = [
     description:
       'Kunskapsförbundet Väst (Trollhättan/Vänersborg) erbjuder prövning i SFI samt kurser på grundläggande och gymnasial nivå. Ansökan för höstens studieperiod ska lämnas senast 1 september via blankett eller e-tjänst.',
     tags: ['komvux', 'trollhattan', 'vanersborg'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'vuxenutbildning-skovde-skovde-matematik-3b',
@@ -4986,9 +5009,10 @@ export const EXAMS: Exam[] = [
       '500 kr, lagstadgad avgift, återbetalas ej. Gratis vid F på grundläggande/gymnasial nivå, eller vid SFI-prövning för folkbokförda i Uddevalla.',
     nextPeriod: {
       label:
-        'Ansökan öppen 10 juni–10 september (prövning genomförs i november) samt 10 december–28 februari (prövning i april-juni)',
-      applicationStart: '2026-06-10',
-      applicationEnd: '2026-09-10',
+        'Ansökan är öppen 10 december 2026–28 februari 2027, och prövningen genomförs i ' +
+        'april–juni. (Perioden därefter: ansökan 10 juni–10 september, prövning i november.)',
+      applicationStart: '2026-12-10',
+      applicationEnd: '2027-02-28',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -5010,7 +5034,7 @@ export const EXAMS: Exam[] = [
     description:
       'Uddevalla Vuxenutbildning erbjuder prövning i grundläggande och gymnasiala kurser under två återkommande ansökningsperioder per år, med max två prövningar per period.',
     tags: ['komvux', 'uddevalla', 'flera-amnen'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'campus-alingsas-vuxenutbildningen-alingsas-flera-kurser-kont',
@@ -5031,12 +5055,10 @@ export const EXAMS: Exam[] = [
       '500 kr enligt förordning (1991:1124); betalning senast 18 september 2026 för höstens tillfälle.',
     nextPeriod: {
       label:
-        'Betygsprövning 23 oktober 2026: ansökan öppen 10 augusti–11 september 2026, antagningsbesked senast 25 september 2026',
-      applicationStart: '2026-08-10',
-      applicationEnd: '2026-09-11',
-      examWindowStart: '2026-10-23',
-      examWindowEnd: '2026-10-23',
-      confirmed: true,
+        'Höstens betygsprövning 23 oktober 2026 är genomförd och ansökan stängde ' +
+        '11 september. Campus Alingsås har inte publicerat något prövningsdatum eller någon ' +
+        'ansökningsperiod för våren 2027.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
@@ -5045,7 +5067,7 @@ export const EXAMS: Exam[] = [
     description:
       'Alingsås kommun (Campus Alingsås) erbjuder ämnesbetygsprövning enligt Gy25; själva provtillfället genomförs hos Hermods i Göteborg (Fabriksgatan 25). Nästa tillfälle är fredag 23 oktober 2026.',
     tags: ['komvux', 'alingsas', 'gy25'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'campus-molndal-vuxenutbildningen-molndal-flera-kurser-kontak',
@@ -5105,15 +5127,12 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per kurs/ämnesnivå och prövningstillfälle; avgiftsfritt vid tidigare F/IG samt pågående studier på vuxenutbildningen.',
     nextPeriod: {
-      // Kungsbacka publicerar perioderna i veckonummer, inte datum. Det är
-      // skolans egna uppgifter omräknade till kalender (2026 års veckor), inte
-      // gissade datum: sista ansökningsdag söndag v. 36 = 6 september,
-      // prövningsveckorna 42–43 = 12–25 oktober.
       label:
-        'Period 4: prövning vecka 42–43 (12–25 oktober 2026), sista ansökningsdag söndag vecka 36 (6 september).',
-      applicationEnd: '2026-09-06',
-      examWindowStart: '2026-10-12',
-      examWindowEnd: '2026-10-25',
+        'Period 1: prövning vecka 7–8 (15–28 februari 2027), sista ansökningsdag söndag ' +
+        'vecka 1 (10 januari 2027).',
+      applicationEnd: '2027-01-10',
+      examWindowStart: '2027-02-15',
+      examWindowEnd: '2027-02-28',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -5124,7 +5143,7 @@ export const EXAMS: Exam[] = [
     description:
       'Kungsbacka kommun erbjuder fyra prövningsperioder per år (veckoangivna) med anmälan i kurskatalogen; max två prövningar per period och betalning senast fyra veckor före perioden.',
     tags: ['komvux', 'kungsbacka', 'flera-amnen'],
-    verifiedAt: AUG_18_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'vuxenutbildningen-halmstad-halmstad-flera-kurser-kontakta-sk',
@@ -5263,9 +5282,11 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per kurs (bankgiro 110-0213); kostnadsfritt för studerande på vuxenutbildningen med IG/F i kursen.',
     nextPeriod: {
-      label: 'Höstprövning 2026: ansökan öppen 1 augusti–1 september, betalning senast 1 september',
-      applicationStart: '2026-08-01',
-      applicationEnd: '2026-09-01',
+      label:
+        'Vårprövning: ansökan är öppen 1 februari–1 mars 2027 och avgiften ska vara betald ' +
+        'senast 1 mars. (SFI har egen period: 1 april–1 maj.)',
+      applicationStart: '2027-02-01',
+      applicationEnd: '2027-03-01',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -5277,7 +5298,7 @@ export const EXAMS: Exam[] = [
     description:
       'Kristinehamns kommun erbjuder prövning i svenska, svenska som andraspråk, engelska och matematik samt SFI, med max två ansökningar per person och termin.',
     tags: ['komvux', 'kristinehamn', 'flera-amnen'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'abf-stockholm-komvux-stockholm-flera-kurser-kontakta-skolan-',
@@ -5297,11 +5318,12 @@ export const EXAMS: Exam[] = [
       '500 kr per prövning; kostnadsfritt om tidigare betyg F/IG i kursen på komvux, styrks med betygskopia.',
     nextPeriod: {
       label:
-        'Prövningsdatum hösten 2026: 7 sep (ev. del 2 den 11 sep) och 9 nov (ev. del 2 den 13 nov)',
-      applicationStart: '2026-08-24',
-      applicationEnd: '2026-08-28',
-      examWindowStart: '2026-09-07',
-      examWindowEnd: '2026-09-07',
+        'Prövning 9 november 2026 (ev. del 2 den 13 november). Anmälan öppnade 26 oktober ' +
+        'kl. 10 och sista betaldag är 30 oktober.',
+      applicationStart: '2026-10-26',
+      applicationEnd: '2026-10-30',
+      examWindowStart: '2026-11-09',
+      examWindowEnd: '2026-11-13',
       confirmed: true,
     },
     components: COMPONENTS_VARD,
@@ -5310,13 +5332,13 @@ export const EXAMS: Exam[] = [
     // webbsida, formuläret syns först när anmälan öppnar." Höstens formulär
     // läggs upp 24 augusti kl. 10, betalning senast 28 augusti. Först till
     // kvarn, ingen reservlista — så sidan är bokningen, när den är bokningen.
-    registration: publishedOnPage('anmälningsformuläret', 'den 24 augusti kl. 10'),
+    registration: publishedOnPage('anmälningsformuläret', 'den 26 oktober kl. 10'),
     registrationUrl: 'https://abfstockholm.se/komvux/provning/',
     infoUrl: 'https://abfstockholm.se/komvux/provning/',
     description:
       'ABF Stockholm erbjuder prövning i ämnesnivåer inom undersköterskeutbildningen (t.ex. Hälso- och sjukvård, Psykiatri, Social omsorg) för folkbokförda i bl.a. Botkyrka, Huddinge, Nacka, Sollentuna, Solna, Sundbyberg och Södertälje. Anmälan sker via formulär på skolans webbplats när det öppnar.',
     tags: ['komvux', 'vård och omsorg', 'storstockholm'],
-    verifiedAt: LINK_SWEEP_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'abf-stockholm-komvux-stockholm-engelska-6-niva-2',
@@ -5334,16 +5356,13 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per prövning; kostnadsfritt om tidigare betyg F/IG i kursen på komvux.',
     nextPeriod: {
-      // Checked 2026-08-13: ABF lists engelska nivå 1–3 under one datumblock —
-      // tillfälle 1 den 7 september (ev. del 2 den 11 september) med anmälan
-      // 24 augusti kl. 10 och sista betaldag 28 augusti, tillfälle 2 den
-      // 9 november med anmälan 26 oktober.
       label:
-        'Tillfälle 1: prövning 7 september 2026 (ev. del 2 den 11 september). Anmälan öppnar 24 augusti kl. 10 och sista betaldag är 28 augusti. Tillfälle 2 är 9 november med anmälan från 26 oktober.',
-      applicationStart: '2026-08-24',
-      applicationEnd: '2026-08-28',
-      examWindowStart: '2026-09-07',
-      examWindowEnd: '2026-09-11',
+        'Tillfälle 2: prövning 10 december 2026 (del 2 den 17 december). Anmälan öppnade ' +
+        '26 oktober kl. 10 och sista betaldag är 30 oktober.',
+      applicationStart: '2026-10-26',
+      applicationEnd: '2026-10-30',
+      examWindowStart: '2026-12-10',
+      examWindowEnd: '2026-12-17',
       confirmed: true,
     },
     components: COMPONENTS_ENGELSKA,
@@ -5352,13 +5371,13 @@ export const EXAMS: Exam[] = [
     // webbsida, formuläret syns först när anmälan öppnar." Höstens formulär
     // läggs upp 24 augusti kl. 10, betalning senast 28 augusti. Först till
     // kvarn, ingen reservlista — så sidan är bokningen, när den är bokningen.
-    registration: publishedOnPage('anmälningsformuläret', 'den 24 augusti kl. 10'),
+    registration: publishedOnPage('anmälningsformuläret', 'den 26 oktober kl. 10'),
     registrationUrl: 'https://abfstockholm.se/komvux/provning/',
     infoUrl: 'https://abfstockholm.se/komvux/provning/',
     description:
       'ABF Stockholm erbjuder prövning i engelska (nivå 1-3, två delar) endast för sökande folkbokförda utanför Stockholms kommun, bland annat Botkyrka, Huddinge, Nacka och Sollentuna.',
     tags: ['komvux', 'engelska', 'storstockholm'],
-    verifiedAt: LINK_SWEEP_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'folkuniversitetet-komvux-sodertalje-sodertalje-flera-kurser-',
@@ -5376,27 +5395,28 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr, återbetalas ej vid återbud eller utebliven närvaro.',
     nextPeriod: {
-      // Folkuniversitetet publishes the anmälningslänk on the day the window
-      // opens, so there is nothing deeper to link to until 31 augusti.
       label:
-        'Prövningsperiod hösten 2026: 2–5 oktober. Anmälan öppnar 31 augusti 2026, och anmälningslänken publiceras på skolans sida samma dag. Endast för dig som är folkbokförd i Södertälje, Botkyrka, Huddinge, Salem eller Nykvarn.',
-      applicationStart: '2026-08-31',
-      examWindowStart: '2026-10-02',
-      examWindowEnd: '2026-10-05',
+        'Prövningsperiod 4–14 december 2026. Anmälan öppnar måndag 9 november kl. 08.00 och ' +
+        'stänger 12 november, eller tidigare om platserna tar slut. Endast för dig som är ' +
+        'folkbokförd i Södertälje, Botkyrka, Huddinge, Salem eller Nykvarn.',
+      applicationStart: '2026-11-09',
+      applicationEnd: '2026-11-12',
+      examWindowStart: '2026-12-04',
+      examWindowEnd: '2026-12-14',
       confirmed: true,
     },
     components: COMPONENTS_ENGELSKA,
     studyTips: TIPS_ENGELSKA,
     // Checked 2026-08-13: "Håll utkik – mer information och anmälningslänk
     // publiceras då!" — the link goes up on this page when the window opens.
-    registration: publishedOnPage('anmälningslänken', 'den 31 augusti'),
+    registration: publishedOnPage('anmälningslänken', 'den 9 november kl. 08'),
     registrationUrl:
       'https://www.folkuniversitetet.se/vara-skolor/komvux/komvux-sodertalje/provning/',
     infoUrl: 'https://www.folkuniversitetet.se/vara-skolor/komvux/komvux-sodertalje/provning/',
     description:
       'Folkuniversitetet Komvux Södertälje erbjuder prövning i bland annat Engelska, Matematik, Naturkunskap, Historia/Religion/Samhällskunskap och Svenska/Svenska som andraspråk. Endast sökande folkbokförda i Södertälje, Botkyrka, Huddinge, Salem eller Nykvarn tas emot; prövningsperioden är 4 veckor.',
     tags: ['komvux', 'flera ämnen', 'södertälje'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'akadeva-vuxenutbildning-sollentuna-flera-kurser-kontakta-sko',
@@ -5494,11 +5514,13 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per kurs/ämnesnivå; kostnadsfritt vid tidigare betyg F eller IG i kursen på Komvux (styrks med betygskopia).',
     nextPeriod: {
-      label: 'Nästa prövningstillfälle är 14 september 2026, anmälan öppen 27 juli - 23 augusti',
-      applicationStart: '2026-07-27',
-      applicationEnd: '2026-08-23',
-      examWindowStart: '2026-09-14',
-      examWindowEnd: '2026-09-14',
+      label:
+        'Nästa prövningstillfälle är 15 mars 2027. Anmälan är öppen 25 januari–21 februari, ' +
+        'och sista dag att betala är 21 februari.',
+      applicationStart: '2027-01-25',
+      applicationEnd: '2027-02-21',
+      examWindowStart: '2027-03-15',
+      examWindowEnd: '2027-03-15',
       confirmed: true,
     },
     components: COMPONENTS_SVENSKA,
@@ -5509,7 +5531,7 @@ export const EXAMS: Exam[] = [
     description:
       'Vux Huddinge erbjuder prövning två gånger per år i svenska som andraspråk. Prövningen tar två dagar: skriftlig examination första dagen och muntlig examination andra dagen. Betalning sker via Swish.',
     tags: ['komvux', 'svenska som andraspråk', 'huddinge', 'gy11'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'vux-huddinge-huddinge-svenska-som-andrasprak-1',
@@ -5528,11 +5550,13 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per kurs/ämnesnivå; kostnadsfritt vid tidigare betyg F eller IG i kursen på Komvux (styrks med betygskopia).',
     nextPeriod: {
-      label: 'Nästa prövningstillfälle är 14 september 2026, anmälan öppen 27 juli - 23 augusti',
-      applicationStart: '2026-07-27',
-      applicationEnd: '2026-08-23',
-      examWindowStart: '2026-09-14',
-      examWindowEnd: '2026-09-14',
+      label:
+        'Nästa prövningstillfälle är 15 mars 2027. Anmälan är öppen 25 januari–21 februari, ' +
+        'och sista dag att betala är 21 februari.',
+      applicationStart: '2027-01-25',
+      applicationEnd: '2027-02-21',
+      examWindowStart: '2027-03-15',
+      examWindowEnd: '2027-03-15',
       confirmed: true,
     },
     components: COMPONENTS_SVENSKA,
@@ -5543,7 +5567,7 @@ export const EXAMS: Exam[] = [
     description:
       'Vux Huddinge erbjuder också prövning i Svenska som andraspråk 1, samma anmälningsperiod och villkor som nivå 3. Begränsat antal platser, principen är först till kvarn.',
     tags: ['komvux', 'svenska som andraspråk', 'huddinge', 'gy11'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   // Huddinge listar fyra kurser, inte två: SVASVA01/SVASVA03 enligt Gy11 och
   // SVEA1000X/SVEA3000X enligt Gy25, var och en med sitt eget
@@ -5568,11 +5592,13 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per kurs/ämnesnivå; kostnadsfritt vid tidigare betyg F eller IG i kursen på Komvux (styrks med betygskopia).',
     nextPeriod: {
-      label: 'Nästa prövningstillfälle är 14 september 2026, anmälan öppen 27 juli - 23 augusti',
-      applicationStart: '2026-07-27',
-      applicationEnd: '2026-08-23',
-      examWindowStart: '2026-09-14',
-      examWindowEnd: '2026-09-14',
+      label:
+        'Nästa prövningstillfälle är 15 mars 2027. Anmälan är öppen 25 januari–21 februari, ' +
+        'och sista dag att betala är 21 februari.',
+      applicationStart: '2027-01-25',
+      applicationEnd: '2027-02-21',
+      examWindowStart: '2027-03-15',
+      examWindowEnd: '2027-03-15',
       confirmed: true,
     },
     components: COMPONENTS_SVENSKA,
@@ -5583,7 +5609,7 @@ export const EXAMS: Exam[] = [
     description:
       'Gy25-motsvarigheten till Svenska som andraspråk 1, med eget förberedelsedokument hos Huddinge. Samma anmälningsperiod, avgift och upplägg som de andra tre: två dagar, skriftlig examination först och muntlig dagen efter, betalning via Swish. Kontrollera med din vägledare vilken läroplan ditt betyg ska följa innan du anmäler dig.',
     tags: ['komvux', 'svenska som andraspråk', 'huddinge', 'gy25'],
-    verifiedAt: AUG_26_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'vux-huddinge-huddinge-svenska-som-andrasprak-niva-3',
@@ -5602,11 +5628,13 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per kurs/ämnesnivå; kostnadsfritt vid tidigare betyg F eller IG i kursen på Komvux (styrks med betygskopia).',
     nextPeriod: {
-      label: 'Nästa prövningstillfälle är 14 september 2026, anmälan öppen 27 juli - 23 augusti',
-      applicationStart: '2026-07-27',
-      applicationEnd: '2026-08-23',
-      examWindowStart: '2026-09-14',
-      examWindowEnd: '2026-09-14',
+      label:
+        'Nästa prövningstillfälle är 15 mars 2027. Anmälan är öppen 25 januari–21 februari, ' +
+        'och sista dag att betala är 21 februari.',
+      applicationStart: '2027-01-25',
+      applicationEnd: '2027-02-21',
+      examWindowStart: '2027-03-15',
+      examWindowEnd: '2027-03-15',
       confirmed: true,
     },
     components: COMPONENTS_SVENSKA,
@@ -5617,7 +5645,7 @@ export const EXAMS: Exam[] = [
     description:
       'Gy25-motsvarigheten till Svenska som andraspråk 3, med eget förberedelsedokument hos Huddinge. Anmälan är bindande och platsen är inte garanterad förrän avgiften är betald — kommunen skriver själva att anmälan kan behöva stänga före sista anmälningsdag när platserna tar slut.',
     tags: ['komvux', 'svenska som andraspråk', 'huddinge', 'gy25'],
-    verifiedAt: AUG_26_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'vuxenutbildningen-kunskapsparken-sollentuna-sollentuna-flera',
@@ -5776,11 +5804,13 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per kurs, kostnadsfritt vid tidigare betyg F/IG i kursen (betygsutdrag krävs)',
     nextPeriod: {
-      label: 'Prövningsperiod 3, hösten 2026',
-      applicationStart: '2026-08-10',
-      applicationEnd: '2026-09-04',
-      examWindowStart: '2026-09-28',
-      examWindowEnd: '2026-10-11',
+      label:
+        'Prövningsperiod 1, våren 2027: ansökan öppnar 11 januari och stänger 5 februari, ' +
+        'skrivdagar vecka 10–11.',
+      applicationStart: '2027-01-11',
+      applicationEnd: '2027-02-05',
+      examWindowStart: '2027-03-08',
+      examWindowEnd: '2027-03-21',
       confirmed: true,
     },
     components: COMPONENTS_ENGELSKA,
@@ -5795,7 +5825,7 @@ export const EXAMS: Exam[] = [
     description:
       'Linvux erbjuder prövning i Engelska 6 under prövningsperiod 3 hösten 2026, med skrivdagar vecka 40–41 på Kunskapsgallerian i Linköping. Ansökan öppnar 10 augusti och stänger 4 september 2026.',
     tags: ['engelska', 'gymnasial', 'östergötland'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'linvux-linkopings-vuxenutbildning-linkoping-matematik-3b-3c',
@@ -5812,28 +5842,21 @@ export const EXAMS: Exam[] = [
     lng: 15.6214,
     price: 500,
     priceNote: '500 kr per kurs, kostnadsfritt vid tidigare betyg F/IG i kursen',
-    nextPeriod: {
-      label: 'Prövningsperiod 4, hösten 2026',
-      applicationStart: '2026-09-21',
-      applicationEnd: '2026-10-16',
-      examWindowStart: '2026-12-14',
-      examWindowEnd: '2026-12-20',
-      confirmed: true,
-    },
+    nextPeriod: linvuxPeriod4(),
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
     // Linvux publishes a separate "Ansök här"-formulär per prövningsperiod.
     // This listing sits in period 4, whose form isn't published yet — the
     // page is where it will appear. (The period 3 listing links its form.)
-    registration: publishedOnPage('anmälningsformuläret för prövningsperiod 4', 'den 21 september'),
+    registration: publishedOnPage('anmälningsformuläret för prövningsperiod 4', 'den 27 september'),
     registrationUrl:
       'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildning/komvux/alla-skolor-inom-komvux-i-linkoping/linvux/provning/provning---gymnasiala-kurser',
     infoUrl:
       'https://www.linkoping.se/forskola-och-utbildning/vuxenutbildning/komvux/alla-skolor-inom-komvux-i-linkoping/linvux/provning/provning---gymnasiala-kurser',
     description:
-      'Matematikprövningar (bland annat Matematik 3b/3c) ges av Linvux under prövningsperiod 4 med skrivdag vecka 51 hösten 2026. Provet sker på Kunskapsgallerian i Linköping och kostar 500 kr.',
+      'Matematikprövningar (bland annat Matematik 3b/3c) ges av Linvux under prövningsperiod 4 med skrivdagar vecka 49–51 hösten 2026. Provet sker på Kunskapsgallerian i Linköping och kostar 500 kr.',
     tags: ['matematik', 'gymnasial', 'östergötland'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'kallvindsskolan-komvux-norrkoping-norrkoping-kemi-1',
@@ -5915,9 +5938,12 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per kurs/ämnesnivå, kostnadsfritt vid tidigare betyg F/IG',
     nextPeriod: {
-      label: 'Höstens anmälningsperiod 2026',
-      applicationStart: '2026-08-03',
-      applicationEnd: '2026-09-15',
+      label:
+        'Vårens anmälningsperiod är 2 januari–15 februari 2027. Blanketten ligger på ' +
+        'Motalas prövningssida bara när perioden är öppen; provdatum sätts efter beslutet ' +
+        'om prövningen, och en prövning tar oftast sex veckor.',
+      applicationStart: '2027-01-02',
+      applicationEnd: '2027-02-15',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -5928,7 +5954,7 @@ export const EXAMS: Exam[] = [
     description:
       'Motala vuxenutbildning tar emot anmälningar till höstens prövningsperiod 3 augusti–15 september 2026; prövningen tar oftast cirka sex veckor och saknar fasta provdatum.',
     tags: ['flera ämnen', 'gymnasial', 'östergötland'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'vuxenutbildningen-eskilstuna-eskilstuna-flera-kurser-kontakt',
@@ -6113,11 +6139,11 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per kurs, oavsett tidigare betyg',
     nextPeriod: {
-      label: 'Prövning hösten 2026',
-      applicationStart: '2026-08-10',
-      applicationEnd: '2026-08-20',
-      examWindowStart: '2026-09-14',
-      examWindowEnd: '2026-10-25',
+      label:
+        'Anmälan till vårens prövningar är öppen 10–20 februari 2027. Skrivveckorna ' +
+        'publiceras av Vuxnas lärande inför perioden.',
+      applicationStart: '2027-02-10',
+      applicationEnd: '2027-02-20',
       confirmed: true,
     },
     components: COMPONENTS_ENGELSKA,
@@ -6130,7 +6156,7 @@ export const EXAMS: Exam[] = [
     description:
       'Karlskoga erbjuder prövning i Engelska 6 med obligatoriska prövningsveckor 38–39 och 43; ansökan är öppen 10–20 augusti 2026 och prövningen sker på Vuxnas lärande i Karlskoga.',
     tags: ['engelska', 'gymnasial', 'örebro'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'vuxnas-larande-karlskoga-karlskoga-matematik-3b-3c',
@@ -6148,19 +6174,12 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per kurs, oavsett tidigare betyg',
     nextPeriod: {
-      label: 'Prövning hösten 2026',
-      applicationStart: '2026-08-10',
-      applicationEnd: '2026-08-20',
-      examWindowStart: '2026-10-05',
-      examWindowEnd: '2026-10-25',
+      label:
+        'Anmälan till vårens prövningar är öppen 10–20 februari 2027. Skrivveckorna ' +
+        'publiceras av Vuxnas lärande inför perioden.',
+      applicationStart: '2027-02-10',
+      applicationEnd: '2027-02-20',
       confirmed: true,
-      // Karlskoga sätter ut fullbokat i sin egen kurstabell, och säger själva
-      // vad märket betyder: "Prövningarna har begränsat antal platser. När en
-      // prövningskurs är fulltecknad kommer vi att markera den i listan nedan
-      // med Ej sökbar." Matematik 3b/3c (Gy11) står med EJ SÖKBAR där
-      // 2026-08-26; Engelska 6 på samma sida gör det inte, så bara den ena av
-      // kommunens två listningar är stängd.
-      full: true,
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
@@ -6172,7 +6191,7 @@ export const EXAMS: Exam[] = [
     description:
       'Prövning i Matematik 3b/3c på Vuxnas lärande Karlskoga har obligatoriska prövningsveckor 41–43 hösten 2026; ansökan var öppen 10–20 augusti 2026, avgift 500 kr. Kursen står som EJ SÖKBAR i kommunens kurstabell, vilket enligt sidan betyder att den är fulltecknad.',
     tags: ['matematik', 'gymnasial', 'örebro'],
-    verifiedAt: AUG_26_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'vuxenutbildningen-falun-falu-larcentrum-falun-flera-kurser-k',
@@ -6191,14 +6210,14 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr anmälningsavgift, kostnadsfritt vid tidigare F/IG i kursen. Prövning i Gy11-kurser erbjuds fram till 2030.',
     nextPeriod: {
-      // Anmälan sker på plats under två timmar en enda dag — därför är
-      // applicationStart och applicationEnd samma datum.
       label:
-        'Anmälan sker på plats tisdag 1 september 2026 kl. 13.00–15.00 på Åsgatan 15, och prövningen genomförs vecka 41 i Falun. Ta med kvitto på betald avgift (bankgiro 218-0289).',
-      applicationStart: '2026-09-01',
-      applicationEnd: '2026-09-01',
-      examWindowStart: '2026-10-05',
-      examWindowEnd: '2026-10-11',
+        'Anmälan sker på plats tisdag 23 februari 2027 kl. 13.00–14.00 på Åsgatan 15, och ' +
+        'prövningen genomförs vecka 13 i Falun. Ta med kvitto på betald avgift ' +
+        '(bankgiro 218-0289).',
+      applicationStart: '2027-02-23',
+      applicationEnd: '2027-02-23',
+      examWindowStart: '2027-03-29',
+      examWindowEnd: '2027-04-04',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -6208,7 +6227,7 @@ export const EXAMS: Exam[] = [
     description:
       'Vuxenutbildningen i Falun erbjuder prövning i alla ämnen som finns i det egna kursutbudet, mot en anmälningsavgift på 500 kr; exakt datum för höstens anmälningsperiod meddelas separat.',
     tags: ['flera ämnen', 'gymnasial', 'dalarna'],
-    verifiedAt: AUG_18_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'vuxenutbildningen-borlange-borlange-flera-kurser-kontakta-sk',
@@ -6365,13 +6384,11 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr per prövning; gratis om du saknar betyg eller har F i kursen (alltid 500 kr för dig som är folkbokförd i annan kommun)',
     nextPeriod: {
-      // Perioden startar 9 november och löper i tio veckor, men Kristianstad
-      // publicerar inget slutdatum och ämnesläraren sätter provdagen efter
-      // antagningsbeskedet. Ett uträknat slutdatum vore vår gissning, inte
-      // deras uppgift, så perioden står bara i texten.
       label:
-        'Ansökan till prövningsperioden som startar 9 november 2026 är öppen nu och stänger 18 oktober. Perioden löper i tio veckor, och ditt provdatum sätts av ämnesläraren efter antagningsbeskedet.',
-      applicationEnd: '2026-10-18',
+        'Nästa prövningsperiod startar 18 januari 2027 och ansökan stänger 6 december. ' +
+        'Perioden löper i tio veckor, och ditt provdatum sätts av ämnesläraren efter ' +
+        'antagningsbeskedet. (Perioden därefter startar 29 mars, ansökan senast 7 mars.)',
+      applicationEnd: '2026-12-06',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -6383,7 +6400,7 @@ export const EXAMS: Exam[] = [
     description:
       'Kristianstads kommun erbjuder betygsprövning i gymnasiala kurser via webbansökan med BankID, max två prövningar per period. Prövning kan inte sökas med CSN-studiemedel.',
     tags: ['komvux', 'kommunal', 'skåne'],
-    verifiedAt: AUG_18_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'campus-trelleborg-trelleborg-engelska-6',
@@ -6756,9 +6773,10 @@ export const EXAMS: Exam[] = [
       '500 kr per kurs/ämnesnivå; kostnadsfritt vid F/IG-betyg inom ett år från betygssättning',
     nextPeriod: {
       label:
-        'Period 2 2026: anmälan öppnar 15 augusti, sista anmälningsdag 22 augusti, prövning ska vara genomförd senast 30 december',
-      applicationStart: '2026-08-15',
-      applicationEnd: '2026-08-22',
+        'Period 1 2027: anmälan öppnar 15 februari och sista anmälningsdag är 22 februari. ' +
+        '(Period 2: anmälan 15–22 augusti.)',
+      applicationStart: '2027-02-15',
+      applicationEnd: '2027-02-22',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -6768,7 +6786,7 @@ export const EXAMS: Exam[] = [
     description:
       'Växjö kommun har två anmälningsperioder per år för prövning, max två kurser/ämnesnivåer per tillfälle, med betalning via e-tjänst efter godkänd anmälan.',
     tags: ['komvux', 'växjö', 'småland'],
-    verifiedAt: NATIONWIDE_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'axel-weudelskolan-kunskapsnavet-kalmar-flera-kurser-kontakta',
@@ -6856,12 +6874,10 @@ export const EXAMS: Exam[] = [
     priceNote:
       '500 kr enligt Skolverkets regler för prövningsavgift (ej specificerat separat på sidan)',
     nextPeriod: {
-      label: 'Höstens prövningsdag 7 oktober 2026, anmälan 10-28 augusti 2026',
-      applicationStart: '2026-08-10',
-      applicationEnd: '2026-08-28',
-      examWindowStart: '2026-10-07',
-      examWindowEnd: '2026-10-07',
-      confirmed: true,
+      label:
+        'Höstens prövningsdag 7 oktober 2026 är genomförd. Ystad skriver "Datum för vårens ' +
+        'prövning är inte fastställd".',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
@@ -6885,7 +6901,7 @@ export const EXAMS: Exam[] = [
     description:
       'Vuxenutbildningen Ystad anordnar en gemensam prövningsdag per termin; anmälan görs via e-post till ansvarig studie- och yrkesvägledare. Sidan uppdaterades 2026-07-01.',
     tags: ['komvux', 'ystad', 'skåne'],
-    verifiedAt: AUTUMN_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'vuxenutbildningen-gotland-visby-flera-kurser-kontakta-skolan',
@@ -6903,15 +6919,14 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per kurs/ämnesnivå och skrivtillfälle; gratis vid IG/F-betyg i kursen',
     nextPeriod: {
-      // Höstens skrivtillfällen är onsdagar i vecka 36, 42 och 46 (2 september,
-      // 14 oktober, 11 november 2026), och anmälan ska vara inne fem veckor
-      // innan. Tillfället i vecka 36 är därför redan stängt; nästa som går att
-      // söka är 14 oktober, med anmälan senast 9 september.
       label:
-        'Nästa skrivtillfälle är onsdag 14 oktober 2026 kl. 09.00, och anmälan ska vara inne senast fem veckor innan (9 september). Därefter skrivs prövningar onsdag 11 november.',
-      applicationEnd: '2026-09-09',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
+        'Höstens sista skrivtillfälle är onsdag 11 november 2026, men anmälan till det ' +
+        'stängde 7 oktober. Nästa tillfälle att anmäla sig till är onsdag 27 januari 2027 ' +
+        'kl. 09.00 (vecka 4), och anmälan ska vara inne senast fem veckor innan — ' +
+        '23 december.',
+      applicationEnd: '2026-12-23',
+      examWindowStart: '2027-01-27',
+      examWindowEnd: '2027-01-27',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -6922,7 +6937,7 @@ export const EXAMS: Exam[] = [
     description:
       'Vuxenutbildningen Gotland håller skriftliga prövningar på plats i Visby varannan onsdag (jämna veckor) med muntlig del 1-2 veckor senare digitalt; anmälan sker på blankett i mån av lediga platser.',
     tags: ['komvux', 'gotland', 'visby'],
-    verifiedAt: AUG_18_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'jarfalla-larcentrum-flera-kurser',
@@ -7037,11 +7052,17 @@ export const EXAMS: Exam[] = [
     lng: 16.2062,
     price: 500,
     priceNote: FREE_IF_PRIOR_F + ' Avgiften betalas innan anmälan och kvittot bifogas i ansökan.',
+    // Läst 2026-10-29: viadidakt.se, dit infoUrl pekar, svarar inte längre på
+    // DNS — Katrineholms egen prövningssida har flyttat till
+    // katrineholm.se/vuxenutbildning/start/komvux/validering-och-provning.html,
+    // och det är den sidan datumen nedan är lästa ur.
     nextPeriod: {
       label:
-        'Höstens ansökningsperiod 2026: 1 augusti – 1 september. Prövning erbjuds på både grundläggande och gymnasial nivå.',
-      applicationStart: '2026-08-01',
-      applicationEnd: '2026-09-01',
+        'Vårens ansökningsperiod är 1–26 januari 2027. Prövningen startar två veckor efter ' +
+        'att ansökan stängt och pågår i ungefär fem veckor; ditt eget provdatum får du när ' +
+        'perioden stängt. (Höstens period är 1 augusti–1 september.)',
+      applicationStart: '2027-01-01',
+      applicationEnd: '2027-01-26',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -7051,7 +7072,7 @@ export const EXAMS: Exam[] = [
     description:
       'Viadidakt tar emot prövningsanmälningar i två perioder per år, i januari och i augusti. Prövning erbjuds i svenska, svenska som andraspråk, engelska och matematik på både grundläggande och gymnasial nivå.',
     tags: ['komvux', 'katrineholm', 'viadidakt'],
-    verifiedAt: STHLM_LAN_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'arena-utbildning-solna-flera-kurser',
@@ -7218,8 +7239,10 @@ export const EXAMS: Exam[] = [
       ' Du kan pröva högst två kurser per studieperiod, och avgiften betalas per kurs.',
     nextPeriod: {
       label:
-        'Ansökan till höstens studieperiod ska vara inne senast 1 september 2026. Vårens period stänger 1 februari.',
-      applicationEnd: '2026-09-01',
+        'Ansökan till vårens studieperiod 2027 ska vara inne senast 1 februari. ' +
+        'Handläggningen tar cirka tre veckor efter sista ansökningsdag. (Höstens period ' +
+        'stänger 1 september.)',
+      applicationEnd: '2027-02-01',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -7229,7 +7252,7 @@ export const EXAMS: Exam[] = [
     description:
       'Kunskapsförbundet Väst är Trollhättans och Vänersborgs gemensamma vuxenutbildning och prövar alla kurser och ämnesnivåer det sätts betyg i — sfi, grundläggande och gymnasial nivå. Prövningen görs på Gärdhemsvägen 27 i Trollhättan eller på Vänerparken 5 i Vänersborg. Anmälan går via e-tjänsten, eller på blankett som skickas till Box 317, 462 24 Vänersborg.',
     tags: ['komvux', 'trollhättan', 'kunskapsförbundet'],
-    verifiedAt: LATE_SUMMER_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'landskrona-komvux-flera-kurser',
@@ -7278,18 +7301,25 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote:
       'Kostnadsfritt om du läst kursen i Laholm det senaste året och fick F. Anmälan är bindande och avgiften ska vara betald senast sista anmälningsdagen.',
+    // Läst 2026-10-29: höstens samtliga rader står som "Fullt" hos kommunen och
+    // provdagarna 19–27 oktober är passerade. Som halvöppen period (en
+    // startdag, ingen slutdag) lyste kortet grönt "öppen för anmälan" i tio
+    // veckor efter att platserna tog slut. Våren öppnar "i Januari 2027" —
+    // utan datum, så listningen står utan datum.
     nextPeriod: {
       label:
-        'Höstens anmälan öppnar 17 augusti 2026. Prövningarna i svenska, svenska som andraspråk, engelska och matematik genomförs i oktober; övriga ämnen prövas hos Hermods i Falkenberg 7 och 27 oktober.',
-      applicationStart: '2026-08-17',
-      confirmed: true,
+        'Höstens prövningar är genomförda och kommunen har markerat samtliga ämnen som ' +
+        '"Fullt". Anmälan till prövningarna våren 2027 öppnar i januari 2027, och ' +
+        'anmälningslänken publiceras på kommunens prövningssida då — något exakt datum ' +
+        'är inte satt.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     // The kommun publishes the anmälningslänk on this page when the window
     // opens (17/8) — until then the page itself is the only real destination,
     // so that is what we link to rather than a URL we've guessed.
-    registration: publishedOnPage('anmälningslänken', 'den 17 augusti'),
+    registration: publishedOnPage('anmälningslänken', 'i januari 2027'),
     registrationUrl:
       'https://www.laholm.se/forskola-skola-och-utbildning/vuxenutbildning/provning-och-validering',
     infoUrl:
@@ -7297,7 +7327,7 @@ export const EXAMS: Exam[] = [
     description:
       'Campus Laholm prövar svenska, svenska som andraspråk, matematik och engelska på plats i Laholm. Övriga gymnasiekurser hänvisas till Hermods i Falkenberg. Anmälningslänken publiceras på kommunens prövningssida när perioden öppnar — går det inte att vänta når du vuxenutbildningen på vuxenutbildning@laholm.se eller 0430-265 09.',
     tags: ['komvux', 'laholm', 'halland'],
-    verifiedAt: LATE_SUMMER_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'jutus-vux-sollentuna-svenska',
@@ -7316,10 +7346,12 @@ export const EXAMS: Exam[] = [
     priceNote: FREE_IF_PRIOR_F + ' Betyget F ska ha satts inom komvux.',
     nextPeriod: {
       label:
-        'Höstens andra omgång: anmälan stänger 27 september 2026 kl. 23.59 och prövningen genomförs 26–28 oktober. (Den första omgången stängde 16 augusti.)',
-      applicationEnd: '2026-09-27',
-      examWindowStart: '2026-10-26',
-      examWindowEnd: '2026-10-28',
+        'Höstens sista omgång: anmälan stänger 8 november 2026 kl. 23.59 och prövningen ' +
+        'genomförs 30 november–1 december. Jutus planerar två omgångar våren 2027 och ' +
+        'publicerar datumen i mitten av november 2026.',
+      applicationEnd: '2026-11-08',
+      examWindowStart: '2026-11-30',
+      examWindowEnd: '2026-12-01',
       confirmed: true,
     },
     components: COMPONENTS_SVENSKA,
@@ -7332,7 +7364,7 @@ export const EXAMS: Exam[] = [
     description:
       'Jutus Vux i Sollentuna kör prövningar i tätt schemalagda omgångar: anmälan är öppen i tre dygn, sedan genomförs prövningen några veckor senare. Frågor besvaras på provningar@jutusvux.se.',
     tags: ['svenska', 'sollentuna', 'stockholm'],
-    verifiedAt: AUG_18_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'jutus-vux-sollentuna-engelska',
@@ -7351,10 +7383,12 @@ export const EXAMS: Exam[] = [
     priceNote: FREE_IF_PRIOR_F + ' Betyget F ska ha satts inom komvux.',
     nextPeriod: {
       label:
-        'Höstens andra omgång: anmälan stänger 27 september 2026 kl. 23.59 och prövningen genomförs 26–28 oktober. (Den första omgången stängde 16 augusti.)',
-      applicationEnd: '2026-09-27',
-      examWindowStart: '2026-10-26',
-      examWindowEnd: '2026-10-28',
+        'Höstens sista omgång: anmälan stänger 8 november 2026 kl. 23.59 och prövningen ' +
+        'genomförs 30 november–1 december. Jutus planerar två omgångar våren 2027 och ' +
+        'publicerar datumen i mitten av november 2026.',
+      applicationEnd: '2026-11-08',
+      examWindowStart: '2026-11-30',
+      examWindowEnd: '2026-12-01',
       confirmed: true,
     },
     components: COMPONENTS_ENGELSKA,
@@ -7365,7 +7399,7 @@ export const EXAMS: Exam[] = [
     description:
       'Prövning i Engelska hos Jutus Vux i Sollentuna. Skolan prövar nivå 1–3 i svenska, svenska som andraspråk och engelska; anmälningsfönstret är kort, så sätt en påminnelse när det öppnar.',
     tags: ['engelska', 'sollentuna', 'stockholm'],
-    verifiedAt: AUG_18_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'jutus-vux-sollentuna-sva',
@@ -7384,10 +7418,12 @@ export const EXAMS: Exam[] = [
     priceNote: FREE_IF_PRIOR_F + ' Betyget F ska ha satts inom komvux.',
     nextPeriod: {
       label:
-        'Höstens andra omgång: anmälan stänger 27 september 2026 kl. 23.59 och prövningen genomförs 26–28 oktober. (Den första omgången stängde 16 augusti.)',
-      applicationEnd: '2026-09-27',
-      examWindowStart: '2026-10-26',
-      examWindowEnd: '2026-10-28',
+        'Höstens sista omgång: anmälan stänger 8 november 2026 kl. 23.59 och prövningen ' +
+        'genomförs 30 november–1 december. Jutus planerar två omgångar våren 2027 och ' +
+        'publicerar datumen i mitten av november 2026.',
+      applicationEnd: '2026-11-08',
+      examWindowStart: '2026-11-30',
+      examWindowEnd: '2026-12-01',
       confirmed: true,
     },
     components: COMPONENTS_SVENSKA,
@@ -7398,7 +7434,7 @@ export const EXAMS: Exam[] = [
     description:
       'Prövning i Svenska som andraspråk hos Jutus Vux i Sollentuna, höstens andra omgång. Anmälan görs i formuläret på skolans prövningssida och stänger sista anmälningsdagen kl. 23.59.',
     tags: ['svenska som andraspråk', 'sollentuna', 'stockholm'],
-    verifiedAt: AUG_18_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   // Two providers added 2026-08-18, each read off its own page, in län the
   // dataset barely covered: Västernorrland had three schools and Västmanland
@@ -7420,11 +7456,13 @@ export const EXAMS: Exam[] = [
     priceNote: 'Avgiften betalas med Swish direkt vid anmälan (123 562 2162).',
     nextPeriod: {
       label:
-        'Anmälan till höstens prövningar öppnade 17 augusti 2026 och stänger 11 september. Prövningarna skrivs onsdag 7 oktober och torsdag 8 oktober kl. 11.30 hos Studielänken.',
-      applicationStart: '2026-08-17',
-      applicationEnd: '2026-09-11',
-      examWindowStart: '2026-10-07',
-      examWindowEnd: '2026-10-08',
+        'Anmälan till vårens prövningar öppnar 25 januari 2027 och sista anmälningsdag är ' +
+        '2 februari. Prövningarna skrivs onsdag 18 mars och torsdag 15 april kl. 11.30 hos ' +
+        'Studielänken — andra dagar går inte att boka.',
+      applicationStart: '2027-01-25',
+      applicationEnd: '2027-02-02',
+      examWindowStart: '2027-03-18',
+      examWindowEnd: '2027-04-15',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -7439,7 +7477,7 @@ export const EXAMS: Exam[] = [
     description:
       'Vuxenutbildningen i Örnsköldsvik håller två skrivdagar per termin i Studielänkens lokaler på Torggatan 10. Anmälan görs i formuläret på kommunens sida och avgiften swishas samtidigt — betalningen är det som gör anmälan giltig. Frågor: vuxenutbildningen@ornskoldsvik.se eller 0660-789 10, tisdagar 10.00–11.30.',
     tags: ['komvux', 'flera ämnen', 'örnsköldsvik', 'västernorrland'],
-    verifiedAt: AUG_18_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'koping-kompetenscenter-flera-kurser',
@@ -7498,11 +7536,12 @@ export const EXAMS: Exam[] = [
       ' Återbetalning sker bara mot läkarintyg.',
     nextPeriod: {
       label:
-        'Hösten 2026: anmälan 9 september (kl. 10.00) – 23 september. Prövningen görs 7 oktober eller 27 oktober — du väljer ett av tillfällena vid anmälan.',
-      applicationStart: '2026-09-09',
-      applicationEnd: '2026-09-23',
-      examWindowStart: '2026-10-07',
-      examWindowEnd: '2026-10-27',
+        'Våren 2027: anmälan 9 februari (kl. 10.00) – 23 februari. Prövningen görs 23 mars ' +
+        'eller 6 april — du väljer ett av tillfällena vid anmälan. (Arabiska skrivs 10 mars.)',
+      applicationStart: '2027-02-09',
+      applicationEnd: '2027-02-23',
+      examWindowStart: '2027-03-23',
+      examWindowEnd: '2027-04-06',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -7515,7 +7554,7 @@ export const EXAMS: Exam[] = [
     description:
       'Falkenberg kör två prövningstillfällen i höst med ett gemensamt anmälningsfönster i september. De flesta prövningar hanteras av Hermods men görs på plats i Falkenberg. Du kan anmäla dig till högst en prövning per termin, och betalningen är bindande.',
     tags: ['komvux', 'falkenberg', 'halland'],
-    verifiedAt: THIN_LAN_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'varnamo-vuxenutbildning-flera-kurser',
@@ -7533,11 +7572,10 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: '500 kr per kurs, betalas efter att anmälan godkänts och innan prövningen startar.',
     nextPeriod: {
-      // Ansökan sägs vara "öppen i augusti" utan startdatum, så bara sista
-      // dagen står här — ett påhittat startdatum vore ett sämre svar än inget.
       label:
-        'Hösten 2026: ansökan är öppen i augusti och sista dag att ansöka är 28 augusti. Prövningsdatum får du besked om när ansökan har bedömts. (Våren 2027: sista ansökningsdag 29 januari.)',
-      applicationEnd: '2026-08-28',
+        'Våren 2027: ansökan är öppen i januari och sista dag att ansöka är 29 januari. ' +
+        'Prövningsdatum får du besked om när ansökan har bedömts.',
+      applicationEnd: '2027-01-29',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -7560,7 +7598,7 @@ export const EXAMS: Exam[] = [
     description:
       'Värnamo tar emot prövningsansökningar på papper hos studie- och yrkesvägledarna, även för de kurser som prövas på Finnvedens gymnasium. Du kan bara pröva kurser som finns i Värnamos eller Finnvedens utbud, och först efter godkänd ansökan betalar du avgiften.',
     tags: ['komvux', 'värnamo', 'jönköping', 'småland'],
-    verifiedAt: THIN_LAN_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'vuxenutbildningen-ljungby-flera-kurser',
@@ -7581,8 +7619,9 @@ export const EXAMS: Exam[] = [
       'Kostnadsfritt om du redan har betyget F/IG i kursen.',
     nextPeriod: {
       label:
-        'Hösten 2026 har två prövningstillfällen. Anmäl dig senast 20 september eller 20 oktober. (Våren: senast 20 februari eller 1 april.)',
-      applicationEnd: '2026-09-20',
+        'Våren 2027 har två prövningstillfällen. Anmäl dig senast 20 februari eller 1 april. ' +
+        '(Hösten: senast 20 september eller 20 oktober.)',
+      applicationEnd: '2027-02-20',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -7603,7 +7642,7 @@ export const EXAMS: Exam[] = [
     description:
       'Ljungby har två prövningstillfällen per termin och tar anmälan via blankett efter kontakt med vägledaren. Vuxenutbildningen nås på 0372-78 40 60 och vuxenutbildningen@skola.ljungby.se.',
     tags: ['komvux', 'ljungby', 'kronoberg', 'småland'],
-    verifiedAt: THIN_LAN_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'ostersund-larcentrum-gymnasiala',
@@ -7628,14 +7667,10 @@ export const EXAMS: Exam[] = [
     // har redan stängt (8/7 respektive 17/8), så nästa omgång är 27/10.
     nextPeriod: {
       label:
-        'Prövningsdatum 27 oktober 2026, anmälan 26 augusti – 22 september. Därefter 3 november ' +
-        '(anmälan 1 september – 1 oktober). Max 30 platser per tillfälle — anmälan stänger när ' +
-        'det är fullsatt, och efteranmälan handläggs inte.',
-      applicationStart: '2026-08-26',
-      applicationEnd: '2026-09-22',
-      examWindowStart: '2026-10-27',
-      examWindowEnd: '2026-10-27',
-      confirmed: true,
+        'Höstens tillfällen är genomförda och Lärcentrum skriver "Prövningsdatum för 2027 ' +
+        'är inte fastställda". Hermods erbjuder inga fler tillfällen under 2026, och ' +
+        'efteranmälningar tas inte emot.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
@@ -7646,7 +7681,7 @@ export const EXAMS: Exam[] = [
       'kl. 8.45–14.00. Du kan anmäla dig till en kurs per prövningstillfälle, och skolan hör av sig ' +
       'ungefär 3,5 veckor innan. Vård- och omsorgskurser hanteras manuellt av KUI utan fasta datum.',
     tags: ['komvux', 'östersund', 'jämtland', 'hermods'],
-    verifiedAt: THIN_LAN_2_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'ostersund-larcentrum-grundlaggande',
@@ -7710,12 +7745,13 @@ export const EXAMS: Exam[] = [
     // hösten 2026 med utskriven anmälningsperiod.
     nextPeriod: {
       label:
-        'Prövning 16 oktober 2026, anmälningsperiod 17 augusti – 18 september. Endast de 16 ' +
-        'första kompletta anmälningarna erbjuds plats.',
-      applicationStart: '2026-08-17',
-      applicationEnd: '2026-09-18',
-      examWindowStart: '2026-10-16',
-      examWindowEnd: '2026-10-16',
+        'Prövning 14 april 2027, anmälningsperiod 22 februari – 19 mars. Anmälan och ' +
+        'betalning görs på plats i Höglandsvux reception, Rådhusgatan 20 (mån, tis och tors ' +
+        'kl. 13–15). Endast de 16 första kompletta anmälningarna erbjuds plats.',
+      applicationStart: '2027-02-22',
+      applicationEnd: '2027-03-19',
+      examWindowStart: '2027-04-14',
+      examWindowEnd: '2027-04-14',
       confirmed: true,
     },
     components: COMPONENTS_FLERA,
@@ -7738,7 +7774,7 @@ export const EXAMS: Exam[] = [
       'elevkonto, gör inlämningarna på egen hand och avslutar med ett slutprov på Träcentrum. ' +
       'Antagningsbesked kommer senast en vecka efter att anmälningsperioden stängt.',
     tags: ['komvux', 'nässjö', 'jönköping', 'höglandet', 'småland'],
-    verifiedAt: THIN_LAN_2_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'vetlanda-larcentrum-flera-kurser',
@@ -8925,7 +8961,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1(),
     components: [
       {
         name: 'Del 1 – skriftlig produktion och interaktion',
@@ -8965,7 +9001,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['engelska', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'linvux-linkoping-engelska-7',
@@ -8984,7 +9020,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1(),
     components: [
       {
         name: 'Del 1 – skriftlig produktion och interaktion',
@@ -9019,7 +9055,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['engelska', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'linvux-linkoping-svenska-1',
@@ -9038,7 +9074,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1(),
     components: [
       {
         name: 'Del 1 – läsförståelse',
@@ -9075,7 +9111,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['svenska', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'linvux-linkoping-svenska-2',
@@ -9094,7 +9130,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1(),
     components: [
       {
         name: 'Del 1 – litteraturhistoria och satslära',
@@ -9131,7 +9167,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['svenska', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'linvux-linkoping-svenska-3',
@@ -9150,7 +9186,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1(),
     components: [
       {
         name: 'Del 1 – uppsatsskrivning',
@@ -9190,7 +9226,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['svenska', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'linvux-linkoping-svenska-som-andrasprak-1',
@@ -9209,7 +9245,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1(),
     components: [
       {
         name: 'Del 1 – läsförståelse',
@@ -9244,7 +9280,7 @@ export const EXAMS: Exam[] = [
       'inte bo i Linköpings kommun för att pröva här, och du kan bli antagen till högst tre ' +
       'kurser per period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['sva', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'linvux-linkoping-svenska-som-andrasprak-2',
@@ -9263,7 +9299,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1(),
     components: [
       {
         name: 'Del 1 – läsförståelse',
@@ -9301,7 +9337,7 @@ export const EXAMS: Exam[] = [
       'inte bo i Linköpings kommun för att pröva här, och du kan bli antagen till högst tre ' +
       'kurser per period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['sva', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'linvux-linkoping-biologi-1',
@@ -9320,7 +9356,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1(),
     components: [
       {
         name: 'Del 1 – skriftligt prov',
@@ -9344,7 +9380,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['biologi', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'linvux-linkoping-biologi-2',
@@ -9363,7 +9399,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1(),
     components: [
       {
         name: 'Del 1 – skriftligt prov',
@@ -9387,7 +9423,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['biologi', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'linvux-linkoping-fysik-1a',
@@ -9406,7 +9442,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1(),
     components: [
       {
         name: 'Del 1 – skriftligt prov',
@@ -9430,7 +9466,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['fysik', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'linvux-linkoping-fysik-2',
@@ -9449,7 +9485,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1(),
     components: [
       {
         name: 'Del 1 – skriftligt prov',
@@ -9473,7 +9509,7 @@ export const EXAMS: Exam[] = [
       'kommun för att pröva här, och du kan bli antagen till högst tre kurser per period. ' +
       'Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['fysik', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'linvux-linkoping-kemi-1',
@@ -9492,7 +9528,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1(),
     components: [
       {
         name: 'Del 1 – skriftligt prov',
@@ -9522,7 +9558,7 @@ export const EXAMS: Exam[] = [
       'kommun för att pröva här, och du kan bli antagen till högst tre kurser per period. ' +
       'Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['kemi', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'linvux-linkoping-kemi-2',
@@ -9541,7 +9577,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1(),
     components: [
       {
         name: 'Del 1 – skriftligt prov',
@@ -9571,7 +9607,7 @@ export const EXAMS: Exam[] = [
       'kommun för att pröva här, och du kan bli antagen till högst tre kurser per period. ' +
       'Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['kemi', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'linvux-linkoping-naturkunskap-1b',
@@ -9590,7 +9626,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1(),
     components: [
       {
         name: 'Del 1 – skriftligt prov',
@@ -9618,7 +9654,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['naturkunskap', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'linvux-linkoping-naturkunskap-2',
@@ -9637,7 +9673,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1(),
     components: [
       {
         name: 'Del 1 och 2 – skriftliga prov',
@@ -9662,7 +9698,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['naturkunskap', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'linvux-linkoping-psykologi-1',
@@ -9681,7 +9717,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1(),
     components: [
       {
         name: 'Skriftligt prov',
@@ -9701,7 +9737,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['psykologi', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'linvux-linkoping-religionskunskap-1',
@@ -9720,7 +9756,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1(),
     components: [
       {
         name: 'Skriftligt prov',
@@ -9740,7 +9776,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['religionskunskap', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'linvux-linkoping-samhallskunskap-1a1',
@@ -9759,7 +9795,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1(),
     components: [
       {
         name: 'Del 1 – statskunskap',
@@ -9787,7 +9823,7 @@ export const EXAMS: Exam[] = [
       'i Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser ' +
       'per period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['samhällskunskap', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'linvux-linkoping-samhallskunskap-1b',
@@ -9806,7 +9842,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod1(),
     components: [
       {
         name: 'Del 1 – statskunskap',
@@ -9836,7 +9872,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['samhällskunskap', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'linvux-linkoping-matematik-1c',
@@ -9855,7 +9891,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod4(),
     components: [
       {
         name: 'Skriftligt prov',
@@ -9873,7 +9909,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['matematik', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'linvux-linkoping-matematik-2c',
@@ -9892,7 +9928,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod4(),
     components: [
       {
         name: 'Skriftligt prov',
@@ -9915,7 +9951,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['matematik', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'linvux-linkoping-matematik-5',
@@ -9934,7 +9970,7 @@ export const EXAMS: Exam[] = [
     priceNote:
       'Kostnadsfritt om du har betyget F eller IG i kursen — betygsutdrag ska bifogas ' +
       'anmälan. Avgiften betalas inte tillbaka och kan inte flyttas till ett annat datum.',
-    nextPeriod: linvuxPeriod3(),
+    nextPeriod: linvuxPeriod4(),
     components: [
       {
         name: 'Skriftligt prov',
@@ -9957,7 +9993,7 @@ export const EXAMS: Exam[] = [
       'Linköpings kommun för att pröva här, och du kan bli antagen till högst tre kurser per ' +
       'period. Alla provtillfällen genomförs på Kunskapsgallerian.',
     tags: ['matematik', 'linköping', 'östergötland', 'gy11'],
-    verifiedAt: AUG_29_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'goteborg-anoana01',
@@ -9976,20 +10012,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/78293',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Anatomi och fysiologi 1 (ANOANA01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Anatomi och fysiologi 1 (ANOANA01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-anoana02',
@@ -10008,20 +10042,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/78294',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Anatomi och fysiologi 2 (ANOANA02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Anatomi och fysiologi 2 (ANOANA02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-anat1a10x',
@@ -10040,20 +10072,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/127881',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Anatomi och fysiologi Nivå 1a1 (ANAT1A10X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Anatomi och fysiologi Nivå 1a1 (ANAT1A10X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-anat1a20x',
@@ -10072,20 +10102,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/130339',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Anatomi och fysiologi Nivå 1a2 (ANAT1A20X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Anatomi och fysiologi Nivå 1a2 (ANAT1A20X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-frit1000x',
@@ -10104,20 +10132,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/130344',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Fritidskunskap Nivå 1 (FRIT1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Fritidskunskap Nivå 1 (FRIT1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['fritidskunskap', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-forf1000x',
@@ -10136,20 +10162,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/130346',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Förskolans och fritidshemmets arbete Nivå 1 (FORF1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Förskolans och fritidshemmets arbete Nivå 1 (FORF1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['pedagogiskt arbete', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-gero1000x',
@@ -10168,20 +10192,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/130340',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Gerontologi och geriatrik Nivå 1 (GERO1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Gerontologi och geriatrik Nivå 1 (GERO1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-grugrd0',
@@ -10200,20 +10222,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/130350',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Grundläggande vård och omsorg (GRUGRD0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Grundläggande vård och omsorg (GRUGRD0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-grun1000x',
@@ -10232,20 +10252,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/130343',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Grundläggande vård och omsorg Nivå 1 (GRUN1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Grundläggande vård och omsorg Nivå 1 (GRUN1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-koso1000x',
@@ -10264,20 +10282,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/130345',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Kost och hälsa Nivå 1 (KOSO1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Kost och hälsa Nivå 1 (KOSO1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-socsoc02',
@@ -10296,20 +10312,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/130349',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Socialt arbete 2 (SOCSOC02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Socialt arbete 2 (SOCSOC02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-soca1000x',
@@ -10328,20 +10342,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/130347',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Socialt arbete Nivå 1 (SOCA1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Socialt arbete Nivå 1 (SOCA1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-soca2000x',
@@ -10360,20 +10372,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/130348',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Socialt arbete Nivå 2 (SOCA2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Socialt arbete Nivå 2 (SOCA2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-biobio01',
@@ -10392,20 +10402,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–21.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_NATURKUNSKAP,
     studyTips: TIPS_BIOLOGI,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12369',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Biologi 1 (BIOBIO01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Biologi 1 (BIOBIO01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['biologi', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-biobio02',
@@ -10455,20 +10463,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–21.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_NATURKUNSKAP,
     studyTips: TIPS_BIOLOGI,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/127890',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Biologi Nivå 1 (BIOG1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Biologi Nivå 1 (BIOG1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['biologi', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-biog2000x',
@@ -10518,20 +10524,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 14 augusti; provet skrivs fredag 11 september 2026 kl. 15.00–17.00. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-14',
-      examWindowStart: '2026-09-11',
-      examWindowEnd: '2026-09-11',
-      confirmed: true,
+        'Höstens prövning skrevs fredag 11 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_PROGRAMMERING,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/35981',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Programmering 1 (PRRPRR01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs fredag 11 september 2026 kl. 15.00–17.00 på Lindholmens tekniska gymnasium.',
+      'Betygsprövning i Programmering 1 (PRRPRR01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs fredag 11 september 2026 på Lindholmens tekniska gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['programmering', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-prog1000x',
@@ -10550,20 +10554,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 14 augusti; provet skrivs fredag 11 september 2026 kl. 15.00–17.00. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-14',
-      examWindowStart: '2026-09-11',
-      examWindowEnd: '2026-09-11',
-      confirmed: true,
+        'Höstens prövning skrevs fredag 11 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_PROGRAMMERING,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/130229',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Programmering Nivå 1 (PROG1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs fredag 11 september 2026 kl. 15.00–17.00 på Lindholmens tekniska gymnasium.',
+      'Betygsprövning i Programmering Nivå 1 (PROG1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs fredag 11 september 2026 på Lindholmens tekniska gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['programmering', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-engeng05',
@@ -10582,20 +10584,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 13 oktober 2026 kl. 17.30–22.00. Anmälan stänger 15 september.',
-      applicationEnd: '2026-09-15',
-      examWindowStart: '2026-10-13',
-      examWindowEnd: '2026-10-13',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 13 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_ENGELSKA,
     studyTips: TIPS_ENGELSKA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12356',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Engelska 5 (ENGENG05) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 13 oktober 2026 kl. 17.30–22.00 på Burgårdens gymnasium.',
+      'Betygsprövning i Engelska 5 (ENGENG05) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 13 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['engelska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-eng6',
@@ -10614,20 +10614,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 13 oktober 2026 kl. 17.30–22.00. Anmälan stänger 15 september.',
-      applicationEnd: '2026-09-15',
-      examWindowStart: '2026-10-13',
-      examWindowEnd: '2026-10-13',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 13 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_ENGELSKA,
     studyTips: TIPS_ENGELSKA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12372',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Engelska 6 (ENGENG06) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 13 oktober 2026 kl. 17.30–22.00 på Burgårdens gymnasium.',
+      'Betygsprövning i Engelska 6 (ENGENG06) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 13 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['engelska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-engeng07',
@@ -10646,20 +10644,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 25 augusti; provet skrivs tisdag 22 september 2026 kl. 17.30–22.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-25',
-      examWindowStart: '2026-09-22',
-      examWindowEnd: '2026-09-22',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 22 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_ENGELSKA,
     studyTips: TIPS_ENGELSKA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12373',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Engelska 7 (ENGENG07) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 22 september 2026 kl. 17.30–22.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Engelska 7 (ENGENG07) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 22 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['engelska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-enge1000x',
@@ -10742,20 +10738,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 25 augusti; provet skrivs tisdag 22 september 2026 kl. 17.30–22.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-25',
-      examWindowStart: '2026-09-22',
-      examWindowEnd: '2026-09-22',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 22 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_ENGELSKA,
     studyTips: TIPS_ENGELSKA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/127894',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Engelska Nivå 3 (ENGE3000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 22 september 2026 kl. 17.30–22.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Engelska Nivå 3 (ENGE3000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 22 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['engelska', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-fiofio01',
@@ -10774,20 +10768,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 27 augusti; provet skrivs torsdag 24 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-27',
-      examWindowStart: '2026-09-24',
-      examWindowEnd: '2026-09-24',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 24 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12374',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Filosofi 1 (FIOFIO01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 24 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Filosofi 1 (FIOFIO01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 24 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['filosofi', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-fiofio02',
@@ -10806,20 +10798,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 27 augusti; provet skrivs torsdag 24 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-27',
-      examWindowStart: '2026-09-24',
-      examWindowEnd: '2026-09-24',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 24 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12375',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Filosofi 2 (FIOFIO02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 24 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Filosofi 2 (FIOFIO02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 24 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['filosofi', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-fils1000x',
@@ -10900,20 +10890,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/78585',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Funktionsförmåga och funktionsnedsättning 1 (FUTFUN01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Funktionsförmåga och funktionsnedsättning 1 (FUTFUN01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-futfun02',
@@ -10932,20 +10920,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/78586',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Funktionsförmåga och funktionsnedsättning 2 (FUTFUN02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Funktionsförmåga och funktionsnedsättning 2 (FUTFUN02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-funk1000x',
@@ -10964,20 +10950,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/127899',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Funktionsförmåga och funktionsnedsättning Nivå 1 (FUNK1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Funktionsförmåga och funktionsnedsättning Nivå 1 (FUNK1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-funk2000x',
@@ -10996,20 +10980,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/127900',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Funktionsförmåga och funktionsnedsättning Nivå 2 (FUNK2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Funktionsförmåga och funktionsnedsättning Nivå 2 (FUNK2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-fysik1a',
@@ -11028,20 +11010,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 8 oktober 2026 kl. 17.30–22.30. Anmälan stänger 10 september.',
-      applicationEnd: '2026-09-10',
-      examWindowStart: '2026-10-08',
-      examWindowEnd: '2026-10-08',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 8 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FYSIK,
     studyTips: TIPS_FYSIK,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12376',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Fysik 1a (FYSFYS01a) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 8 oktober 2026 kl. 17.30–22.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Fysik 1a (FYSFYS01a) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 8 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['fysik', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-fysfys02',
@@ -11060,20 +11040,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 8 oktober 2026 kl. 17.30–21.30. Anmälan stänger 10 september.',
-      applicationEnd: '2026-09-10',
-      examWindowStart: '2026-10-08',
-      examWindowEnd: '2026-10-08',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 8 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FYSIK,
     studyTips: TIPS_FYSIK,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/15043',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Fysik 2 (FYSFYS02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 8 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Fysik 2 (FYSFYS02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 8 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['fysik', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-fysk1b00x',
@@ -11156,20 +11134,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–21.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12380',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Företagsekonomi 1 (FÖRFÖR01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Företagsekonomi 1 (FÖRFÖR01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['företagsekonomi', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-forfor02',
@@ -11188,20 +11164,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–21.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12383',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Företagsekonomi 2 (FÖRFÖR02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Företagsekonomi 2 (FÖRFÖR02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['företagsekonomi', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-foet1000x',
@@ -11220,20 +11194,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–21.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/127897',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Företagsekonomi Nivå 1 (FOET1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Företagsekonomi Nivå 1 (FOET1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['företagsekonomi', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-foet2000x',
@@ -11252,20 +11224,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–21.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/127898',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Företagsekonomi Nivå 2 (FOET2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Företagsekonomi Nivå 2 (FOET2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['företagsekonomi', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-formad0',
@@ -11284,20 +11254,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–21.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12389',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Marknadsföring (FÖRMAD0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Marknadsföring (FÖRMAD0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['företagsekonomi', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-mark1000x',
@@ -11316,20 +11284,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–21.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/128476',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Marknadsföring Nivå 1 (MARK1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Marknadsföring Nivå 1 (MARK1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['företagsekonomi', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-forred02',
@@ -11348,20 +11314,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–21.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12550',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Redovisning 2 (FÖRRED02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Redovisning 2 (FÖRRED02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['företagsekonomi', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-redo2000x',
@@ -11380,20 +11344,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–21.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/128519',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Redovisning Nivå 2 (REDO2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Redovisning Nivå 2 (REDO2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['företagsekonomi', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-geogeo01',
@@ -11412,20 +11374,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–21.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12391',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Geografi 1 (GEOGEO01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Geografi 1 (GEOGEO01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['geografi', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-geog1000x',
@@ -11444,20 +11404,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–21.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/127903',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Geografi Nivå 1 (GEOG1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Geografi Nivå 1 (GEOG1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['geografi', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-gerger0',
@@ -11476,20 +11434,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/78587',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Gerontologi och geriatrik (GERGER0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Gerontologi och geriatrik (GERGER0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-hishis01a1',
@@ -11508,20 +11464,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 27 augusti; provet skrivs torsdag 24 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-27',
-      examWindowStart: '2026-09-24',
-      examWindowEnd: '2026-09-24',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 24 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12392',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Historia 1a1 (HISHIS01a1) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 24 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Historia 1a1 (HISHIS01a1) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 24 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['historia', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-hishis01a2',
@@ -11540,20 +11494,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 27 augusti; provet skrivs torsdag 24 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-27',
-      examWindowStart: '2026-09-24',
-      examWindowEnd: '2026-09-24',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 24 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/38287',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Historia 1a2 (HISHIS01a2) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 24 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Historia 1a2 (HISHIS01a2) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 24 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['historia', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-hishis01b',
@@ -11572,20 +11524,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 27 augusti; provet skrivs torsdag 24 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-27',
-      examWindowStart: '2026-09-24',
-      examWindowEnd: '2026-09-24',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 24 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12394',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Historia 1b (HISHIS01b) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 24 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Historia 1b (HISHIS01b) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 24 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['historia', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-hishis02a',
@@ -11604,20 +11554,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 27 augusti; provet skrivs torsdag 24 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-27',
-      examWindowStart: '2026-09-24',
-      examWindowEnd: '2026-09-24',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 24 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12395',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Historia 2a (HISHIS02a) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 24 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Historia 2a (HISHIS02a) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 24 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['historia', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-hishis03',
@@ -11636,20 +11584,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 27 augusti; provet skrivs torsdag 24 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-27',
-      examWindowStart: '2026-09-24',
-      examWindowEnd: '2026-09-24',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 24 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12396',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Historia 3 (HISHIS03) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 24 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Historia 3 (HISHIS03) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 24 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['historia', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-hist1a10x',
@@ -11823,20 +11769,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/33867',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Hälsopedagogik (HALHAL0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Hälsopedagogik (HALHAL0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-hals1000x',
@@ -11855,20 +11799,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/128461',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Hälsopedagogik Nivå 1 (HALS1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Hälsopedagogik Nivå 1 (HALS1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-haohal01',
@@ -11887,20 +11829,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/78291',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Hälso- och sjukvård 1 (HAOHAL01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Hälso- och sjukvård 1 (HAOHAL01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-haohal02',
@@ -11919,20 +11859,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/78292',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Hälso- och sjukvård 2 (HAOHAL02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Hälso- och sjukvård 2 (HAOHAL02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-halc1000x',
@@ -11951,20 +11889,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/128460',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Hälso- och sjukvård Nivå 1 (HALC1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Hälso- och sjukvård Nivå 1 (HALC1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-halc2000x',
@@ -11983,20 +11919,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/130341',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Hälso- och sjukvård Nivå 2 (HALC2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Hälso- och sjukvård Nivå 2 (HALC2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-idridr01',
@@ -12015,20 +11949,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 1 oktober 2026 kl. 16.00–18.00. Anmälan stänger 3 september.',
-      applicationEnd: '2026-09-03',
-      examWindowStart: '2026-10-01',
-      examWindowEnd: '2026-10-01',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 1 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/22802',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Idrott och hälsa 1 (IDRIDR01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 1 oktober 2026 kl. 16.00–18.00 på Burgårdens gymnasium.',
+      'Betygsprövning i Idrott och hälsa 1 (IDRIDR01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 1 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['idrott och hälsa', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-idridr02',
@@ -12047,20 +11979,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 1 oktober 2026 kl. 16.00–18.00. Anmälan stänger 3 september.',
-      applicationEnd: '2026-09-03',
-      examWindowStart: '2026-10-01',
-      examWindowEnd: '2026-10-01',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 1 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/39296',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Idrott och hälsa 2 (IDRIDR02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 1 oktober 2026 kl. 16.00–18.00 på Burgårdens gymnasium.',
+      'Betygsprövning i Idrott och hälsa 2 (IDRIDR02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 1 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['idrott och hälsa', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-idro1000x',
@@ -12079,20 +12009,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 1 oktober 2026 kl. 16.00–18.00. Anmälan stänger 3 september.',
-      applicationEnd: '2026-09-03',
-      examWindowStart: '2026-10-01',
-      examWindowEnd: '2026-10-01',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 1 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/128467',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Idrott och hälsa Nivå 1 (IDRO1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 1 oktober 2026 kl. 16.00–18.00 på Burgårdens gymnasium.',
+      'Betygsprövning i Idrott och hälsa Nivå 1 (IDRO1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 1 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['idrott och hälsa', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-idro2000x',
@@ -12111,20 +12039,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 1 oktober 2026 kl. 16.00–18.00. Anmälan stänger 3 september.',
-      applicationEnd: '2026-09-03',
-      examWindowStart: '2026-10-01',
-      examWindowEnd: '2026-10-01',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 1 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/130221',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Idrott och hälsa Nivå 2 (IDRO2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 1 oktober 2026 kl. 16.00–18.00 på Burgårdens gymnasium.',
+      'Betygsprövning i Idrott och hälsa Nivå 2 (IDRO2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 1 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['idrott och hälsa', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-juraff0',
@@ -12143,20 +12069,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–21.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12397',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Affärsjuridik (JURAFF0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Affärsjuridik (JURAFF0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['juridik', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-juri1000x',
@@ -12175,20 +12099,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–21.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/128468',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Juridik Nivå 1 (JURI1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Juridik Nivå 1 (JURI1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['juridik', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-juri2000x',
@@ -12207,20 +12129,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–21.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/128469',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Juridik Nivå 2 (JURI2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Juridik Nivå 2 (JURI2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['juridik', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-juri3000x',
@@ -12239,20 +12159,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–21.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/130215',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Juridik Nivå 3 (JURI3000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Juridik Nivå 3 (JURI3000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['juridik', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-jurpri0',
@@ -12271,20 +12189,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–21.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/13878',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Privatjuridik (JURPRI0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Privatjuridik (JURPRI0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['juridik', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-jurrat0',
@@ -12303,20 +12219,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–21.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/15883',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Rätten och samhället (JURRÄT0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Rätten och samhället (JURRÄT0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['juridik', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-kemi1',
@@ -12335,20 +12249,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 29 september 2026 kl. 09.00–12.00. Anmälan stänger 1 september.',
-      applicationEnd: '2026-09-01',
-      examWindowStart: '2026-09-29',
-      examWindowEnd: '2026-09-29',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 29 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_KEMI,
     studyTips: TIPS_KEMI,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12401',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Kemi 1 (KEMKEM01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 29 september 2026 kl. 09.00–12.00 på Burgårdens gymnasium.',
+      'Betygsprövning i Kemi 1 (KEMKEM01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 29 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['kemi', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-kemkem02',
@@ -12367,20 +12279,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 09.00–12.00. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_KEMI,
     studyTips: TIPS_KEMI,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12411',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Kemi 2 (KEMKEM02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 09.00–12.00 på Burgårdens gymnasium.',
+      'Betygsprövning i Kemi 2 (KEMKEM02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['kemi', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-kemi1000x',
@@ -12399,20 +12309,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 29 september 2026 kl. 09.00–12.00. Anmälan stänger 1 september.',
-      applicationEnd: '2026-09-01',
-      examWindowStart: '2026-09-29',
-      examWindowEnd: '2026-09-29',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 29 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_KEMI,
     studyTips: TIPS_KEMI,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/128470',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Kemi Nivå 1 (KEMI1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 29 september 2026 kl. 09.00–12.00 på Burgårdens gymnasium.',
+      'Betygsprövning i Kemi Nivå 1 (KEMI1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 29 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['kemi', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-kemi2000x',
@@ -12431,20 +12339,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 09.00–12.00. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_KEMI,
     studyTips: TIPS_KEMI,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/130228',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Kemi Nivå 2 (KEMI2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 09.00–12.00 på Burgårdens gymnasium.',
+      'Betygsprövning i Kemi Nivå 2 (KEMI2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['kemi', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-ledled0',
@@ -12463,20 +12369,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–21.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/40359',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Ledarskap och organisation (LEDLED0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Ledarskap och organisation (LEDLED0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['ledarskap och organisation', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-leda1000x',
@@ -12495,20 +12399,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–21.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/128475',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Ledarskap och organisation Nivå 1 (LEDA1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Ledarskap och organisation Nivå 1 (LEDA1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['ledarskap och organisation', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-matmat01b',
@@ -12527,20 +12429,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 29 september 2026 kl. 17.30–21.30. Anmälan stänger 1 september. Fler provdatum finns i kurslistan.',
-      applicationEnd: '2026-09-01',
-      examWindowStart: '2026-09-29',
-      examWindowEnd: '2026-09-29',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 29 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12458',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Matematik 1b (MATMAT01b) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 29 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Matematik 1b (MATMAT01b) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 29 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['matematik', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-matmat01c',
@@ -12559,20 +12459,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 29 september 2026 kl. 17.30–21.30. Anmälan stänger 1 september. Fler provdatum finns i kurslistan.',
-      applicationEnd: '2026-09-01',
-      examWindowStart: '2026-09-29',
-      examWindowEnd: '2026-09-29',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 29 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12459',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Matematik 1c (MATMAT01c) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 29 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Matematik 1c (MATMAT01c) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 29 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['matematik', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-ma2b',
@@ -12591,20 +12489,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 29 september 2026 kl. 17.30–21.30. Anmälan stänger 1 september. Fler provdatum finns i kurslistan.',
-      applicationEnd: '2026-09-01',
-      examWindowStart: '2026-09-29',
-      examWindowEnd: '2026-09-29',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 29 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12465',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Matematik 2b (MATMAT02b) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 29 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Matematik 2b (MATMAT02b) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 29 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['matematik', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-matmat02c',
@@ -12623,20 +12519,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 29 september 2026 kl. 17.30–21.30. Anmälan stänger 1 september. Fler provdatum finns i kurslistan.',
-      applicationEnd: '2026-09-01',
-      examWindowStart: '2026-09-29',
-      examWindowEnd: '2026-09-29',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 29 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12466',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Matematik 2c (MATMAT02c) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 29 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Matematik 2c (MATMAT02c) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 29 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['matematik', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-matmat03b',
@@ -12655,20 +12549,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 29 september 2026 kl. 17.30–21.30. Anmälan stänger 1 september. Fler provdatum finns i kurslistan.',
-      applicationEnd: '2026-09-01',
-      examWindowStart: '2026-09-29',
-      examWindowEnd: '2026-09-29',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 29 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12467',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Matematik 3b (MATMAT03b) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 29 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Matematik 3b (MATMAT03b) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 29 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['matematik', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-matmat03c',
@@ -12687,20 +12579,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 29 september 2026 kl. 17.30–21.30. Anmälan stänger 1 september. Fler provdatum finns i kurslistan.',
-      applicationEnd: '2026-09-01',
-      examWindowStart: '2026-09-29',
-      examWindowEnd: '2026-09-29',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 29 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12468',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Matematik 3c (MATMAT03c) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 29 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Matematik 3c (MATMAT03c) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 29 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['matematik', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-matmat04',
@@ -12719,20 +12609,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 29 september 2026 kl. 17.30–21.30. Anmälan stänger 1 september. Fler provdatum finns i kurslistan.',
-      applicationEnd: '2026-09-01',
-      examWindowStart: '2026-09-29',
-      examWindowEnd: '2026-09-29',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 29 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12486',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Matematik 4 (MATMAT04) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 29 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Matematik 4 (MATMAT04) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 29 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['matematik', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-matmat05',
@@ -12751,20 +12639,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 29 september 2026 kl. 17.30–21.30. Anmälan stänger 1 september. Fler provdatum finns i kurslistan.',
-      applicationEnd: '2026-09-01',
-      examWindowStart: '2026-09-29',
-      examWindowEnd: '2026-09-29',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 29 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12488',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Matematik 5 (MATMAT05) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 29 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Matematik 5 (MATMAT05) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 29 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['matematik', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-mate1b00x',
@@ -12911,20 +12797,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 8 oktober 2026 kl. 17.30–21.30. Anmälan stänger 10 september.',
-      applicationEnd: '2026-09-10',
-      examWindowStart: '2026-10-08',
-      examWindowEnd: '2026-10-08',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 8 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/78810',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Matematik specialisering, inriktning diskret matematik (MATMAT00S) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 8 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Matematik specialisering, inriktning diskret matematik (MATMAT00S) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 8 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['matematik', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-matmat00s-e',
@@ -12943,20 +12827,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 8 oktober 2026 kl. 17.30–21.30. Anmälan stänger 10 september.',
-      applicationEnd: '2026-09-10',
-      examWindowStart: '2026-10-08',
-      examWindowEnd: '2026-10-08',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 8 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/78811',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Matematik specialisering, inriktning envariabelanalys (MATMAT00S) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 8 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Matematik specialisering, inriktning envariabelanalys (MATMAT00S) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 8 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['matematik', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-matmat00s-la',
@@ -12975,20 +12857,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 8 oktober 2026 kl. 17.30–21.30. Anmälan stänger 10 september.',
-      applicationEnd: '2026-09-10',
-      examWindowStart: '2026-10-08',
-      examWindowEnd: '2026-10-08',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 8 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_MATEMATIK,
     studyTips: TIPS_MATEMATIK,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/78809',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Matematik specialisering, inriktning linjär algebra (MATMAT00S) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 8 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Matematik specialisering, inriktning linjär algebra (MATMAT00S) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 8 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['matematik', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-mato1b00x',
@@ -13135,20 +13015,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 8 oktober 2026 kl. 17.30–21.30. Anmälan stänger 10 september.',
-      applicationEnd: '2026-09-10',
-      examWindowStart: '2026-10-08',
-      examWindowEnd: '2026-10-08',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 8 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12496',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Moderna språk 1, Franska (MODFRA01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 8 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Moderna språk 1, Franska (MODFRA01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 8 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['moderna språk', 'franska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-modita01',
@@ -13167,20 +13045,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 8 oktober 2026 kl. 17.30–21.30. Anmälan stänger 10 september.',
-      applicationEnd: '2026-09-10',
-      examWindowStart: '2026-10-08',
-      examWindowEnd: '2026-10-08',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 8 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12527',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Moderna språk 1, Italienska (MODITA01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 8 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Moderna språk 1, Italienska (MODITA01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 8 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['moderna språk', 'italienska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-modspa01',
@@ -13199,20 +13075,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 8 oktober 2026 kl. 17.30–21.30. Anmälan stänger 10 september.',
-      applicationEnd: '2026-09-10',
-      examWindowStart: '2026-10-08',
-      examWindowEnd: '2026-10-08',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 8 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12504',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Moderna språk 1, Spanska (MODSPA01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 8 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Moderna språk 1, Spanska (MODSPA01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 8 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['moderna språk', 'spanska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-moddeu01',
@@ -13231,20 +13105,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 8 oktober 2026 kl. 17.30–21.30. Anmälan stänger 10 september.',
-      applicationEnd: '2026-09-10',
-      examWindowStart: '2026-10-08',
-      examWindowEnd: '2026-10-08',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 8 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/98793',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Moderna språk 1, Tyska (MODDEU01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 8 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Moderna språk 1, Tyska (MODDEU01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 8 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['moderna språk', 'tyska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-modfra02',
@@ -13263,20 +13135,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 8 oktober 2026 kl. 17.30–21.30. Anmälan stänger 10 september.',
-      applicationEnd: '2026-09-10',
-      examWindowStart: '2026-10-08',
-      examWindowEnd: '2026-10-08',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 8 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12497',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Moderna språk 2, Franska (MODFRA02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 8 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Moderna språk 2, Franska (MODFRA02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 8 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['moderna språk', 'franska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-modita02',
@@ -13295,20 +13165,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 8 oktober 2026 kl. 17.30–21.30. Anmälan stänger 10 september.',
-      applicationEnd: '2026-09-10',
-      examWindowStart: '2026-10-08',
-      examWindowEnd: '2026-10-08',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 8 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12528',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Moderna språk 2, Italienska (MODITA02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 8 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Moderna språk 2, Italienska (MODITA02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 8 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['moderna språk', 'italienska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-modspa02',
@@ -13327,20 +13195,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 8 oktober 2026 kl. 17.30–21.30. Anmälan stänger 10 september.',
-      applicationEnd: '2026-09-10',
-      examWindowStart: '2026-10-08',
-      examWindowEnd: '2026-10-08',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 8 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12505',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Moderna språk 2, Spanska (MODSPA02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 8 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Moderna språk 2, Spanska (MODSPA02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 8 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['moderna språk', 'spanska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-moddeu02',
@@ -13359,20 +13225,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 8 oktober 2026 kl. 17.30–21.30. Anmälan stänger 10 september.',
-      applicationEnd: '2026-09-10',
-      examWindowStart: '2026-10-08',
-      examWindowEnd: '2026-10-08',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 8 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12501',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Moderna språk 2, Tyska (MODDEU02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 8 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Moderna språk 2, Tyska (MODDEU02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 8 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['moderna språk', 'tyska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-modfra03',
@@ -13391,20 +13255,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 8 oktober 2026 kl. 17.30–21.30. Anmälan stänger 10 september.',
-      applicationEnd: '2026-09-10',
-      examWindowStart: '2026-10-08',
-      examWindowEnd: '2026-10-08',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 8 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12498',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Moderna språk 3, Franska (MODFRA03) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 8 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Moderna språk 3, Franska (MODFRA03) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 8 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['moderna språk', 'franska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-modita03',
@@ -13423,20 +13285,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 8 oktober 2026 kl. 17.30–21.30. Anmälan stänger 10 september.',
-      applicationEnd: '2026-09-10',
-      examWindowStart: '2026-10-08',
-      examWindowEnd: '2026-10-08',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 8 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12529',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Moderna språk 3, Italienska (MODITA03) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 8 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Moderna språk 3, Italienska (MODITA03) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 8 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['moderna språk', 'italienska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-modspa03',
@@ -13455,20 +13315,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 8 oktober 2026 kl. 17.30–21.30. Anmälan stänger 10 september.',
-      applicationEnd: '2026-09-10',
-      examWindowStart: '2026-10-08',
-      examWindowEnd: '2026-10-08',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 8 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12506',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Moderna språk 3, Spanska (MODSPA03) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 8 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Moderna språk 3, Spanska (MODSPA03) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 8 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['moderna språk', 'spanska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-moddeu03',
@@ -13487,20 +13345,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 8 oktober 2026 kl. 17.30–21.30. Anmälan stänger 10 september.',
-      applicationEnd: '2026-09-10',
-      examWindowStart: '2026-10-08',
-      examWindowEnd: '2026-10-08',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 8 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12502',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Moderna språk 3, Tyska (MODDEU03) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 8 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Moderna språk 3, Tyska (MODDEU03) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 8 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['moderna språk', 'tyska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-modfra04',
@@ -13519,20 +13375,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 8 oktober 2026 kl. 17.30–21.30. Anmälan stänger 10 september.',
-      applicationEnd: '2026-09-10',
-      examWindowStart: '2026-10-08',
-      examWindowEnd: '2026-10-08',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 8 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12499',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Moderna språk 4, Franska (MODFRA04) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 8 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Moderna språk 4, Franska (MODFRA04) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 8 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['moderna språk', 'franska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-modita04',
@@ -13551,20 +13405,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 8 oktober 2026 kl. 17.30–21.30. Anmälan stänger 10 september.',
-      applicationEnd: '2026-09-10',
-      examWindowStart: '2026-10-08',
-      examWindowEnd: '2026-10-08',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 8 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12530',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Moderna språk 4, Italienska (MODITA04) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 8 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Moderna språk 4, Italienska (MODITA04) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 8 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['moderna språk', 'italienska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-modspa04',
@@ -13583,20 +13435,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 8 oktober 2026 kl. 17.30–21.30. Anmälan stänger 10 september.',
-      applicationEnd: '2026-09-10',
-      examWindowStart: '2026-10-08',
-      examWindowEnd: '2026-10-08',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 8 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12507',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Moderna språk 4, Spanska (MODSPA04) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 8 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Moderna språk 4, Spanska (MODSPA04) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 8 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['moderna språk', 'spanska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-moddeu04',
@@ -13615,20 +13465,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 8 oktober 2026 kl. 17.30–21.30. Anmälan stänger 10 september.',
-      applicationEnd: '2026-09-10',
-      examWindowStart: '2026-10-08',
-      examWindowEnd: '2026-10-08',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 8 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12503',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Moderna språk 4, Tyska (MODDEU04) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 8 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Moderna språk 4, Tyska (MODDEU04) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 8 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['moderna språk', 'tyska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-modfra05',
@@ -13647,20 +13495,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 8 oktober 2026 kl. 17.30–21.30. Anmälan stänger 10 september.',
-      applicationEnd: '2026-09-10',
-      examWindowStart: '2026-10-08',
-      examWindowEnd: '2026-10-08',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 8 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12524',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Moderna språk 5, Franska (MODFRA05) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 8 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Moderna språk 5, Franska (MODFRA05) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 8 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['moderna språk', 'franska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-modspa05',
@@ -13679,20 +13525,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 8 oktober 2026 kl. 17.30–21.30. Anmälan stänger 10 september.',
-      applicationEnd: '2026-09-10',
-      examWindowStart: '2026-10-08',
-      examWindowEnd: '2026-10-08',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 8 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12521',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Moderna språk 5, Spanska (MODSPA05) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 8 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Moderna språk 5, Spanska (MODSPA05) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 8 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['moderna språk', 'spanska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-moddeu05',
@@ -13711,20 +13555,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 8 oktober 2026 kl. 17.30–21.30. Anmälan stänger 10 september.',
-      applicationEnd: '2026-09-10',
-      examWindowStart: '2026-10-08',
-      examWindowEnd: '2026-10-08',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 8 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12525',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Moderna språk 5, Tyska (MODDEU05) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 8 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Moderna språk 5, Tyska (MODDEU05) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 8 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['moderna språk', 'tyska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-modo1000xfra',
@@ -14301,20 +14143,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 25 augusti; provet skrivs tisdag 22 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-25',
-      examWindowStart: '2026-09-22',
-      examWindowEnd: '2026-09-22',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 22 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/135027',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Modersmål Nivå 2, Arabiska (MODE2000XARA) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 22 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Modersmål Nivå 2, Arabiska (MODE2000XARA) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 22 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['modersmål', 'arabiska', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-mode2000xpes',
@@ -14333,20 +14173,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 25 augusti; provet skrivs tisdag 22 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-25',
-      examWindowStart: '2026-09-22',
-      examWindowEnd: '2026-09-22',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 22 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/135029',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Modersmål Nivå 2, Persiska (MODE2000XPES) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 22 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Modersmål Nivå 2, Persiska (MODE2000XPES) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 22 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['modersmål', 'persiska', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-mode2000xpol',
@@ -14365,20 +14203,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 25 augusti; provet skrivs tisdag 22 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-25',
-      examWindowStart: '2026-09-22',
-      examWindowEnd: '2026-09-22',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 22 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/135030',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Modersmål Nivå 2, Polska (MODE2000XPOL) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 22 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Modersmål Nivå 2, Polska (MODE2000XPOL) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 22 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['modersmål', 'polska', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-mode2000xsom',
@@ -14397,20 +14233,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 25 augusti; provet skrivs tisdag 22 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-25',
-      examWindowStart: '2026-09-22',
-      examWindowEnd: '2026-09-22',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 22 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/135028',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Modersmål Nivå 2, Somaliska (MODE2000XSOM) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 22 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Modersmål Nivå 2, Somaliska (MODE2000XSOM) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 22 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['modersmål', 'somaliska', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-nagnat01',
@@ -14429,20 +14263,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/15794',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Naturguidning 1 (NAGNAT01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Naturguidning 1 (NAGNAT01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['naturguidning', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-naknak01a1',
@@ -14461,20 +14293,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 27 augusti; provet skrivs torsdag 24 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-27',
-      examWindowStart: '2026-09-24',
-      examWindowEnd: '2026-09-24',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 24 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_NATURKUNSKAP,
     studyTips: TIPS_NATURKUNSKAP,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12511',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Naturkunskap 1a1 (NAKNAK01a1) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 24 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Naturkunskap 1a1 (NAKNAK01a1) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 24 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['naturkunskap', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-naknak01a2',
@@ -14493,20 +14323,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 27 augusti; provet skrivs torsdag 24 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-27',
-      examWindowStart: '2026-09-24',
-      examWindowEnd: '2026-09-24',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 24 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_NATURKUNSKAP,
     studyTips: TIPS_NATURKUNSKAP,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/27109',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Naturkunskap 1a2 (NAKNAK01a2) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 24 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Naturkunskap 1a2 (NAKNAK01a2) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 24 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['naturkunskap', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-naknak01b',
@@ -14525,20 +14353,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 27 augusti; provet skrivs torsdag 24 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-27',
-      examWindowStart: '2026-09-24',
-      examWindowEnd: '2026-09-24',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 24 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_NATURKUNSKAP,
     studyTips: TIPS_NATURKUNSKAP,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12516',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Naturkunskap 1b (NAKNAK01b) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 24 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Naturkunskap 1b (NAKNAK01b) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 24 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['naturkunskap', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-naknak02',
@@ -14557,20 +14383,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 25 augusti; provet skrivs tisdag 22 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-25',
-      examWindowStart: '2026-09-22',
-      examWindowEnd: '2026-09-22',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 22 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_NATURKUNSKAP,
     studyTips: TIPS_NATURKUNSKAP,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12523',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Naturkunskap 2 (NAKNAK02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 22 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Naturkunskap 2 (NAKNAK02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 22 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['naturkunskap', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-natu1a10x',
@@ -14589,20 +14413,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 15 oktober 2026 kl. 17.30–21.30. Anmälan stänger 17 september.',
-      applicationEnd: '2026-09-17',
-      examWindowStart: '2026-10-15',
-      examWindowEnd: '2026-10-15',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 15 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_NATURKUNSKAP,
     studyTips: TIPS_NATURKUNSKAP,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/128505',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Naturkunskap Nivå 1a1 (NATU1A10X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 15 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Naturkunskap Nivå 1a1 (NATU1A10X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 15 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['naturkunskap', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-natu1a20x',
@@ -14621,20 +14443,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 15 oktober 2026 kl. 17.30–21.30. Anmälan stänger 17 september.',
-      applicationEnd: '2026-09-17',
-      examWindowStart: '2026-10-15',
-      examWindowEnd: '2026-10-15',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 15 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_NATURKUNSKAP,
     studyTips: TIPS_NATURKUNSKAP,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/128506',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Naturkunskap Nivå 1a2 (NATU1A20X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 15 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Naturkunskap Nivå 1a2 (NATU1A20X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 15 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['naturkunskap', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-natu1b00x',
@@ -14653,20 +14473,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 15 oktober 2026 kl. 17.30–21.30. Anmälan stänger 17 september.',
-      applicationEnd: '2026-09-17',
-      examWindowStart: '2026-10-15',
-      examWindowEnd: '2026-10-15',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 15 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_NATURKUNSKAP,
     studyTips: TIPS_NATURKUNSKAP,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/128507',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Naturkunskap Nivå 1b (NATU1B00X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 15 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Naturkunskap Nivå 1b (NATU1B00X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 15 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['naturkunskap', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-natu2000x',
@@ -14685,20 +14503,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs torsdag 15 oktober 2026 kl. 17.30–21.30. Anmälan stänger 17 september.',
-      applicationEnd: '2026-09-17',
-      examWindowStart: '2026-10-15',
-      examWindowEnd: '2026-10-15',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 15 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_NATURKUNSKAP,
     studyTips: TIPS_NATURKUNSKAP,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/130255',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Naturkunskap Nivå 2 (NATU2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 15 oktober 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Naturkunskap Nivå 2 (NATU2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 15 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['naturkunskap', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-omvomv01',
@@ -14717,20 +14533,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/78295',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Omvårdnad 1 (OMVOMV01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Omvårdnad 1 (OMVOMV01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-omvomv02',
@@ -14749,20 +14563,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/78296',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Omvårdnad 2 (OMVOMV02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Omvårdnad 2 (OMVOMV02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-omvr1000x',
@@ -14781,20 +14593,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/128508',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Omvårdnad Nivå 1 (OMVR1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Omvårdnad Nivå 1 (OMVR1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-omvr2000x',
@@ -14813,20 +14623,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/128509',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Omvårdnad Nivå 2 (OMVR2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Omvårdnad Nivå 2 (OMVR2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-pedbas0',
@@ -14845,20 +14653,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/15792',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Barns lärande och växande (PEDBAS0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Barns lärande och växande (PEDBAS0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['pedagogik', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-pedkou0',
@@ -14877,20 +14683,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/15404',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Kommunikation (PEDKOU0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Kommunikation (PEDKOU0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['pedagogik', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-pedlar0',
@@ -14909,20 +14713,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/15405',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Lärande och utveckling (PEDLÄR0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Lärande och utveckling (PEDLÄR0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['pedagogik', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-pedmai0',
@@ -14941,20 +14743,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/15406',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Människors miljöer (PEDMÄI0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Människors miljöer (PEDMÄI0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['pedagogik', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-pedg1000x',
@@ -14973,20 +14773,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/128511',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Pedagogik Nivå 1 (PEDG1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Pedagogik Nivå 1 (PEDG1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['pedagogik', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-pedg2000x',
@@ -15005,20 +14803,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/128512',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Pedagogik Nivå 2 (PEDG2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Pedagogik Nivå 2 (PEDG2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['pedagogik', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-pedg3000x',
@@ -15037,20 +14833,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/128513',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Pedagogik Nivå 3 (PEDG3000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Pedagogik Nivå 3 (PEDG3000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['pedagogik', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-pedped0',
@@ -15069,20 +14863,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/15788',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Pedagogiska teorier och praktiker (PEDPED0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Pedagogiska teorier och praktiker (PEDPED0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['pedagogik', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-pedpeg0',
@@ -15101,20 +14893,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/15789',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Pedagogiskt ledarskap (PEDPEG0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Pedagogiskt ledarskap (PEDPEG0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['pedagogik', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-pegpea0',
@@ -15133,20 +14923,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/15787',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Pedagogiskt arbete (PEGPEA0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Pedagogiskt arbete (PEGPEA0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['pedagogiskt arbete', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-peda1000x',
@@ -15165,20 +14953,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/128510',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Pedagogiskt arbete Nivå 1 (PEDA1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Pedagogiskt arbete Nivå 1 (PEDA1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['pedagogiskt arbete', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-pegskp0',
@@ -15197,20 +14983,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/15790',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Skapande verksamhet (PEGSKP0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Skapande verksamhet (PEGSKP0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['pedagogiskt arbete', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-psypsy01',
@@ -15229,20 +15013,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/13984',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Psykiatri 1 (PSYPSY01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Psykiatri 1 (PSYPSY01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-psypsk02',
@@ -15261,20 +15043,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/78581',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Psykiatri 2 (PSYPSK02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Psykiatri 2 (PSYPSK02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-psyk1000x',
@@ -15293,20 +15073,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/128515',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Psykiatri Nivå 1 (PSYK1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Psykiatri Nivå 1 (PSYK1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-psyk2000x',
@@ -15325,20 +15103,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/128516',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Psykiatri Nivå 2 (PSYK2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Psykiatri Nivå 2 (PSYK2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-pskpsy01',
@@ -15357,20 +15133,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 27 augusti; provet skrivs torsdag 24 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-27',
-      examWindowStart: '2026-09-24',
-      examWindowEnd: '2026-09-24',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 24 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_PSYKOLOGI,
     studyTips: TIPS_PSYKOLOGI,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12532',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Psykologi 1 (PSKPSY01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 24 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Psykologi 1 (PSKPSY01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 24 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['psykologi', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-pskpsy02a',
@@ -15389,20 +15163,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 27 augusti; provet skrivs torsdag 24 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-27',
-      examWindowStart: '2026-09-24',
-      examWindowEnd: '2026-09-24',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 24 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_PSYKOLOGI,
     studyTips: TIPS_PSYKOLOGI,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12533',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Psykologi 2a (PSKPSY02a) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 24 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Psykologi 2a (PSKPSY02a) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 24 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['psykologi', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-psyl1000x',
@@ -15483,20 +15255,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 27 augusti; provet skrivs torsdag 24 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-27',
-      examWindowStart: '2026-09-24',
-      examWindowEnd: '2026-09-24',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 24 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_RELIGION,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12534',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Religionskunskap 1 (RELREL01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 24 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Religionskunskap 1 (RELREL01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 24 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['religionskunskap', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-relrel02',
@@ -15515,20 +15285,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 27 augusti; provet skrivs torsdag 24 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-27',
-      examWindowStart: '2026-09-24',
-      examWindowEnd: '2026-09-24',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 24 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_RELIGION,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12535',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Religionskunskap 2 (RELREL02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 24 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Religionskunskap 2 (RELREL02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 24 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['religionskunskap', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-reli1000x',
@@ -15609,20 +15377,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 27 augusti; provet skrivs torsdag 24 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-27',
-      examWindowStart: '2026-09-24',
-      examWindowEnd: '2026-09-24',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 24 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_SAMHALLSKUNSKAP,
     studyTips: TIPS_SAMHALLSKUNSKAP,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12538',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Samhällskunskap 1a1 (SAMSAM01a1) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 24 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Samhällskunskap 1a1 (SAMSAM01a1) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 24 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['samhällskunskap', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-samsam01a2',
@@ -15641,20 +15407,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 27 augusti; provet skrivs torsdag 24 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-27',
-      examWindowStart: '2026-09-24',
-      examWindowEnd: '2026-09-24',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 24 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_SAMHALLSKUNSKAP,
     studyTips: TIPS_SAMHALLSKUNSKAP,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/16346',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Samhällskunskap 1a2 (SAMSAM01a2) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 24 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Samhällskunskap 1a2 (SAMSAM01a2) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 24 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['samhällskunskap', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-samsam01b',
@@ -15673,20 +15437,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 27 augusti; provet skrivs torsdag 24 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-27',
-      examWindowStart: '2026-09-24',
-      examWindowEnd: '2026-09-24',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 24 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_SAMHALLSKUNSKAP,
     studyTips: TIPS_SAMHALLSKUNSKAP,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12539',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Samhällskunskap 1b (SAMSAM01b) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 24 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Samhällskunskap 1b (SAMSAM01b) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 24 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['samhällskunskap', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-samsam02',
@@ -15705,20 +15467,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 27 augusti; provet skrivs torsdag 24 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-27',
-      examWindowStart: '2026-09-24',
-      examWindowEnd: '2026-09-24',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 24 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_SAMHALLSKUNSKAP,
     studyTips: TIPS_SAMHALLSKUNSKAP,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12540',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Samhällskunskap 2 (SAMSAM02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 24 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Samhällskunskap 2 (SAMSAM02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 24 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['samhällskunskap', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-samsam03',
@@ -15737,20 +15497,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 27 augusti; provet skrivs torsdag 24 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-27',
-      examWindowStart: '2026-09-24',
-      examWindowEnd: '2026-09-24',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 24 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_SAMHALLSKUNSKAP,
     studyTips: TIPS_SAMHALLSKUNSKAP,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12541',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Samhällskunskap 3 (SAMSAM03) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 24 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Samhällskunskap 3 (SAMSAM03) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 24 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['samhällskunskap', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-samh1a10x',
@@ -15924,20 +15682,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/78582',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Social omsorg 1 (SOASOC01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Social omsorg 1 (SOASOC01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-soasoc02',
@@ -15956,20 +15712,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/78584',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Social omsorg 2 (SOASOC02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Social omsorg 2 (SOASOC02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-socl1000x',
@@ -15988,20 +15742,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/128529',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Social omsorg Nivå 1 (SOCL1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Social omsorg Nivå 1 (SOCL1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-socl2000x',
@@ -16020,20 +15772,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/128530',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Social omsorg Nivå 2 (SOCL2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Social omsorg Nivå 2 (SOCL2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-socsoc01',
@@ -16052,20 +15802,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/127611',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Socialt arbete 1 (SOCSOC01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Socialt arbete 1 (SOCSOC01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-soietn0',
@@ -16084,20 +15832,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 27 augusti; provet skrivs torsdag 24 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-27',
-      examWindowStart: '2026-09-24',
-      examWindowEnd: '2026-09-24',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 24 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/40034',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Etnicitet och kulturmöten (SOIETN0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 24 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Etnicitet och kulturmöten (SOIETN0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 24 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['sociologi', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-soisoo0',
@@ -16116,20 +15862,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan stängde 27 augusti; provet skrivs torsdag 24 september 2026 kl. 17.30–21.30. Vårens prövningar publiceras 1 december och första ansökningsdag är 15 december.',
-      applicationEnd: '2026-08-27',
-      examWindowStart: '2026-09-24',
-      examWindowEnd: '2026-09-24',
-      confirmed: true,
+        'Höstens prövning skrevs torsdag 24 september 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_FLERA,
     studyTips: TIPS_FLERA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/39297',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Sociologi (SOISOO0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs torsdag 24 september 2026 kl. 17.30–21.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Sociologi (SOISOO0) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs torsdag 24 september 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['sociologi', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-soci1000x',
@@ -16210,20 +15954,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/15799',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Specialpedagogik 1 (SPCSPE01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Specialpedagogik 1 (SPCSPE01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-spcspe02',
@@ -16242,20 +15984,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/38288',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Specialpedagogik 2 (SPCSPE02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Specialpedagogik 2 (SPCSPE02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-spei1000x',
@@ -16274,20 +16014,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/128531',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Specialpedagogik Nivå 1 (SPEI1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Specialpedagogik Nivå 1 (SPEI1000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-spei2000x',
@@ -16306,20 +16044,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs onsdag 14 oktober 2026 kl. 16.00–16.30. Anmälan stänger 16 september.',
-      applicationEnd: '2026-09-16',
-      examWindowStart: '2026-10-14',
-      examWindowEnd: '2026-10-14',
-      confirmed: true,
+        'Höstens prövning skrevs onsdag 14 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_VARD,
     studyTips: TIPS_VARD,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/130342',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Specialpedagogik Nivå 2 (SPEI2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs onsdag 14 oktober 2026 kl. 16.00–16.30 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Specialpedagogik Nivå 2 (SPEI2000X) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs onsdag 14 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['vård och omsorg', 'göteborg', 'västra götaland', 'gy25'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-svesve01',
@@ -16338,20 +16074,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–22.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_SVENSKA,
     studyTips: TIPS_SVENSKA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12546',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Svenska 1 (SVESVE01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–22.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Svenska 1 (SVESVE01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['svenska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-svesve02',
@@ -16370,20 +16104,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–22.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_SVENSKA,
     studyTips: TIPS_SVENSKA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12547',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Svenska 2 (SVESVE02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–22.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Svenska 2 (SVESVE02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['svenska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-svesve03',
@@ -16402,20 +16134,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–22.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_SVENSKA,
     studyTips: TIPS_SVENSKA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12548',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Svenska 3 (SVESVE03) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–22.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Svenska 3 (SVESVE03) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['svenska', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-sven1000x',
@@ -16682,20 +16412,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–22.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_SVENSKA,
     studyTips: TIPS_SVA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12542',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Svenska som andraspråk 1 (SVASVA01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–22.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Svenska som andraspråk 1 (SVASVA01) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['svenska som andraspråk', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-svasva02',
@@ -16714,20 +16442,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–22.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_SVENSKA,
     studyTips: TIPS_SVA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12543',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Svenska som andraspråk 2 (SVASVA02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–22.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Svenska som andraspråk 2 (SVASVA02) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['svenska som andraspråk', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-svasva03',
@@ -16746,20 +16472,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs tisdag 6 oktober 2026 kl. 17.30–22.30. Anmälan stänger 8 september.',
-      applicationEnd: '2026-09-08',
-      examWindowStart: '2026-10-06',
-      examWindowEnd: '2026-10-06',
-      confirmed: true,
+        'Höstens prövning skrevs tisdag 6 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_SVENSKA,
     studyTips: TIPS_SVA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12544',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Svenska som andraspråk 3 (SVASVA03) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs tisdag 6 oktober 2026 kl. 17.30–22.30 på Burgårdens gymnasium.',
+      'Betygsprövning i Svenska som andraspråk 3 (SVASVA03) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs tisdag 6 oktober 2026 på Burgårdens gymnasium. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['svenska som andraspråk', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'goteborg-grnsva2',
@@ -16778,20 +16502,18 @@ export const EXAMS: Exam[] = [
     priceNote: GBG_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Prövningen skrivs fredag 16 oktober 2026 kl. 13.00–17.00. Anmälan stänger 18 september.',
-      applicationEnd: '2026-09-18',
-      examWindowStart: '2026-10-16',
-      examWindowEnd: '2026-10-16',
-      confirmed: true,
+        'Höstens prövning skrevs fredag 16 oktober 2026 och anmälan är stängd. Vårens prövningar ' +
+        'publiceras den 1 december och första ansökningsdag är 15 december.',
+      confirmed: false,
     },
     components: COMPONENTS_SVENSKA,
     studyTips: TIPS_SVA,
     registrationUrl: 'https://provningsenheten.alvis.se/hittakurser/kurs/12655',
     infoUrl: 'https://goteborg.se/wps/portal/enheter/provningsenheten',
     description:
-      'Betygsprövning i Svenska som andraspråk grundläggande nivå (GRNSVA2) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Provet skrivs fredag 16 oktober 2026 kl. 13.00–17.00 på Studium Styrmansgatan 21B.',
+      'Betygsprövning i Svenska som andraspråk grundläggande nivå (GRNSVA2) hos Göteborgs Stads prövningsenhet, som samordnar prövningar för hela kommunen. Höstens prov skrevs fredag 16 oktober 2026 på Studium Styrmansgatan 21B. Vårens prövningsdatum publiceras den 1 december och första ansökningsdag är 15 december.',
     tags: ['svenska som andraspråk', 'göteborg', 'västra götaland', 'gy11'],
-    verifiedAt: GOTEBORG_VERIFIED,
+    verifiedAt: GOTEBORG_SPRING_PENDING,
   },
   {
     id: 'orebro-biobio01',
@@ -19807,10 +19529,12 @@ export const EXAMS: Exam[] = [
     priceNote: OREBRO_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan är öppen 14–27 september 2026. Prövningarna görs under oktober/november — ' +
-        'kommunen skriver att datumen "återkommer inom kort" och har inte publicerat dem än.',
+        'Anmälan 14–27 september 2026 är stängd. Prövningen skrivs 2 november (del 1) och ' +
+        '6 november (del 2).',
       applicationStart: '2026-09-14',
       applicationEnd: '2026-09-27',
+      examWindowStart: '2026-11-02',
+      examWindowEnd: '2026-11-06',
       confirmed: true,
     },
     components: COMPONENTS_OREBRO_KOMVUX,
@@ -19824,7 +19548,7 @@ export const EXAMS: Exam[] = [
       'säger oktober/november och "återkommer med datum inom kort". Antagningsbesked skickas 1 ' +
       'oktober och du måste tacka ja senast 6 oktober.',
     tags: ['engelska', 'grundläggande', 'örebro'],
-    verifiedAt: SEP_10_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'orebro-grnmat2',
@@ -19842,11 +19566,11 @@ export const EXAMS: Exam[] = [
     price: 500,
     priceNote: OREBRO_PRICE_NOTE,
     nextPeriod: {
-      label:
-        'Anmälan är öppen 14–27 september 2026. Prövningarna görs under oktober/november — ' +
-        'kommunen skriver att datumen "återkommer inom kort" och har inte publicerat dem än.',
+      label: 'Anmälan 14–27 september 2026 är stängd. Prövningen skrivs 2 november.',
       applicationStart: '2026-09-14',
       applicationEnd: '2026-09-27',
+      examWindowStart: '2026-11-02',
+      examWindowEnd: '2026-11-02',
       confirmed: true,
     },
     components: COMPONENTS_OREBRO_KOMVUX,
@@ -19860,7 +19584,7 @@ export const EXAMS: Exam[] = [
       'säger oktober/november och "återkommer med datum inom kort". Antagningsbesked skickas 1 ' +
       'oktober och du måste tacka ja senast 6 oktober.',
     tags: ['matematik', 'grundläggande', 'örebro'],
-    verifiedAt: SEP_10_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'orebro-grnsve2',
@@ -19879,10 +19603,12 @@ export const EXAMS: Exam[] = [
     priceNote: OREBRO_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan är öppen 14–27 september 2026. Prövningarna görs under oktober/november — ' +
-        'kommunen skriver att datumen "återkommer inom kort" och har inte publicerat dem än.',
+        'Anmälan 14–27 september 2026 är stängd. Prövningen skrivs 2 november (del 1) och ' +
+        '6 november (del 2).',
       applicationStart: '2026-09-14',
       applicationEnd: '2026-09-27',
+      examWindowStart: '2026-11-02',
+      examWindowEnd: '2026-11-06',
       confirmed: true,
     },
     components: COMPONENTS_OREBRO_KOMVUX,
@@ -19896,7 +19622,7 @@ export const EXAMS: Exam[] = [
       'säger oktober/november och "återkommer med datum inom kort". Antagningsbesked skickas 1 ' +
       'oktober och du måste tacka ja senast 6 oktober.',
     tags: ['svenska', 'grundläggande', 'örebro'],
-    verifiedAt: SEP_10_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'orebro-grnsva2',
@@ -19915,10 +19641,12 @@ export const EXAMS: Exam[] = [
     priceNote: OREBRO_PRICE_NOTE,
     nextPeriod: {
       label:
-        'Anmälan är öppen 14–27 september 2026. Prövningarna görs under oktober/november — ' +
-        'kommunen skriver att datumen "återkommer inom kort" och har inte publicerat dem än.',
+        'Anmälan 14–27 september 2026 är stängd. Prövningen skrivs 2 november (del 1) och ' +
+        '6 november (del 2).',
       applicationStart: '2026-09-14',
       applicationEnd: '2026-09-27',
+      examWindowStart: '2026-11-02',
+      examWindowEnd: '2026-11-06',
       confirmed: true,
     },
     components: COMPONENTS_OREBRO_KOMVUX,
@@ -19932,7 +19660,7 @@ export const EXAMS: Exam[] = [
       'kommunens tabell säger oktober/november och "återkommer med datum inom kort". ' +
       'Antagningsbesked skickas 1 oktober och du måste tacka ja senast 6 oktober.',
     tags: ['svenska som andraspråk', 'grundläggande', 'örebro'],
-    verifiedAt: SEP_10_VERIFIED,
+    verifiedAt: OCT_29_VERIFIED,
   },
   {
     id: 'orebro-sfikub92',

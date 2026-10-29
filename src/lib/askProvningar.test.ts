@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { EXAMS } from '../data/exams';
+import { Exam } from '../types';
 import { answerAsk, describeAsk, hasConstraints, readAsk } from './askProvningar';
 
 /**
@@ -13,6 +14,22 @@ import { answerAsk, describeAsk, hasConstraints, readAsk } from './askProvningar
 
 /** Fixed so a test never depends on what month it is run in. */
 const TODAY = new Date('2026-08-30T12:00:00Z');
+
+/**
+ * A real row with only its period rewritten.
+ *
+ * The vocabulary has to come out of `EXAMS` — the reader knows no city or kurs
+ * the dataset doesn't contain — but the periods must not. Which rounds are open
+ * on a given day is exactly what the dataset changes every term, so a test that
+ * reads a real round's dates proves the logic right only until that provider's
+ * round runs out. Both assertions below used to do that, and both went red the
+ * day Prövningsenheten Göteborgs höstomgångar were written.
+ */
+function rowWithPeriod(id: string, nextPeriod: Exam['nextPeriod']): Exam {
+  const row = EXAMS.find((e) => e.id === id);
+  if (!row) throw new Error(`Fixturen utgår från ${id}, som inte finns i EXAMS.`);
+  return { ...row, nextPeriod };
+}
 
 describe('readAsk', () => {
   it('reads the sentence the tab is built for', () => {
@@ -79,11 +96,29 @@ describe('answerAsk', () => {
   });
 
   it('keeps a deadline out of the results it promises are before it', () => {
-    const { matches } = answerAsk('Matematik 1b innan oktober', EXAMS, TODAY);
-    for (const m of matches) {
-      const when = m.nextPeriod.examWindowStart || m.nextPeriod.applicationEnd;
-      expect(when && when < '2026-10-01').toBe(true);
-    }
+    const exams = [
+      rowWithPeriod('goteborg-matmat01b', {
+        label: 'Öppen, och skrivs i september.',
+        applicationEnd: '2026-09-15',
+        examWindowStart: '2026-09-29',
+        examWindowEnd: '2026-09-29',
+        confirmed: true,
+      }),
+      rowWithPeriod('malmo-komvux-matematik-1b', {
+        label: 'Öppen, men skrivs i november.',
+        applicationEnd: '2026-09-18',
+        examWindowStart: '2026-11-02',
+        examWindowEnd: '2026-11-02',
+        confirmed: true,
+      }),
+      rowWithPeriod('orebro-matmat01b', {
+        label: 'Anordnaren har inte publicerat några datum.',
+        confirmed: false,
+      }),
+    ];
+    const { matches, widened } = answerAsk('Matematik 1b innan oktober', exams, TODAY);
+    expect(widened).toBe(false);
+    expect(matches.map((m) => m.id)).toEqual(['goteborg-matmat01b']);
   });
 
   /**
@@ -91,9 +126,37 @@ describe('answerAsk', () => {
    * prints, and without it a list of closed rounds reads as a list of open ones.
    */
   it('flags the answer when it had to drop the constraints to find anything', () => {
-    const { matches, widened } = answerAsk('Historia 1b i Göteborg', EXAMS, TODAY);
-    expect(matches.length).toBeGreaterThan(0);
+    const exams = [
+      rowWithPeriod('goteborg-hishis01b', {
+        label: 'Anmälan stängde 27 augusti.',
+        applicationEnd: '2026-08-27',
+        examWindowStart: '2026-09-24',
+        examWindowEnd: '2026-09-24',
+        confirmed: true,
+      }),
+    ];
+    const { matches, widened } = answerAsk('Historia 1b i Göteborg', exams, TODAY);
+    expect(matches.map((m) => m.id)).toEqual(['goteborg-hishis01b']);
     expect(widened).toBe(true);
+  });
+
+  /**
+   * A listing without published dates is not a closed one. The provider has
+   * said nothing about when, so the card shows no period and links out — and
+   * dropping it from the answer would turn "vi vet inte när" into "det finns
+   * inget", which is the one thing the dataset is built never to say. The whole
+   * of Prövningsenheten Göteborg sits in that state between two terms.
+   */
+  it('counts a listing without published dates as still worth acting on', () => {
+    const exams = [
+      rowWithPeriod('goteborg-hishis01b', {
+        label: 'Vårens prövningar publiceras den 1 december.',
+        confirmed: false,
+      }),
+    ];
+    const { matches, widened } = answerAsk('Historia 1b i Göteborg', exams, TODAY);
+    expect(matches.map((m) => m.id)).toEqual(['goteborg-hishis01b']);
+    expect(widened).toBe(false);
   });
 
   it('finds nothing, and says nothing, for a course nobody offers there', () => {

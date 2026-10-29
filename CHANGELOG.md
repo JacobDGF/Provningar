@@ -4,6 +4,52 @@ En rad per utvecklingsomgång: vad datan växte med, och vilken enda
 produktförbättring omgången bar. Äldre historik än den första posten här ligger
 i `git log` och i [README](README.md), som är där appens egna regler bor.
 
+## 2026-10-29 (datumsvep)
+
+**Datan: ingen listning visar längre en omgång som är helt förbi.**
+`check:dates` pekade ut 204 sådana, och alla är lästa mot anordnarens egen
+sida. 190 anordnare hade hunnit publicera nästa omgång, resten står nu utan
+datum med anordnarens egna ord om varför.
+
+- **Prövningsenheten Göteborg, 157 listningar.** Höstens omgångar är skrivna
+  och katalogen i Alvis har inga vårdatum än. Alvis startsida säger "Vårens
+  prövningar publiceras den 1 december och första ansökningsdag är 15
+  december", så det är vad listningarna säger — i stället för ett provdatum
+  som varit. De 58 Göteborgslistningar vars prov ligger kvar framför oss är
+  orörda.
+- **43 anordnare hade publicerat nästa omgång**, och nio av dem stänger inom
+  tre veckor: ABF Stockholm (30 oktober), Iris Upplands Väsby (5 november),
+  Jutus Vux (8 november), Medlearn Täby, Iris Flemingsberg och
+  Folkuniversitetet Södertälje (12 november). Resten ligger i januari–april 2027.
+- **Tre kort lyste grönt "öppen för anmälan" för en omgång som tog slut i
+  augusti.** Komvux Södermalm (2), Hermods Liljeholmen och Campus Laholm
+  kodade perioden halvöppen — en startdag, ingen slutdag, eftersom anmälan
+  stänger när platserna är slut. Det är precis vad en halvöppen period gör
+  elva veckor senare. Södermalm har publicerat nästa anmälningsdag
+  (15 januari 2027), de andra två står utan datum.
+- **22 Linvux-listningar byggde sin period i kod** och är därför osynliga för
+  `check:dates`. Deras omgång slutade 11 oktober. De 19 som inte är matematik
+  ligger nu i prövningsperiod 1 2027 (ansökan 11 januari – 5 februari) och de
+  fyra matematikkurserna i period 4, som är den enda period Linvux erbjuder
+  matematik i — en matematikkurs i period 1 hade lovat en anmälan Linvux inte
+  tar emot.
+- **Örebros fyra grundskolekurser hade fått sina provdatum.** Kommunen skrev
+  "återkommer inom kort" i september; nu står 2 november (del 1) och
+  6 november (del 2) i tabellen.
+- **Tre länkar är döda och rättningen väntar på besked**: Motalas e-tjänst och
+  Västerås prövningskatalog i Alvis svarar 404 mellan perioderna, och
+  viadidakt.se svarar inte på DNS alls — Katrineholms prövningssida ligger nu
+  under katrineholm.se.
+
+Två tester i [`src/lib/askProvningar.test.ts`](src/lib/askProvningar.test.ts)
+läste riktiga omgångars datum ur `EXAMS` och gick röda samma dag Göteborgs
+höstomgångar blev skrivna. Vokabulären måste komma ur datasetet — läsaren kan
+ingen stad eller kurs som inte står där — men perioderna får inte, för det är
+just dem datasetet byter varje termin. De bygger nu sina perioder själva ur
+riktiga rader. Ett tredje test håller det nya som bär dem: en listning utan
+publicerade datum är inte en stängd listning, och att släppa den ur svaret
+hade gjort "vi vet inte när" till "det finns inget".
+
 ## 2026-09-11 (räknaren i drift)
 
 Räknaren står nu hos Cloudflare och appen är byggd mot den. Kedjan är
