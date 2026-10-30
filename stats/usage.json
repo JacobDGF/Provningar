@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-10-29T08:37:06.200Z",
+  "uppdaterad": "2026-10-30T08:44:20.704Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -1130,15 +1130,56 @@
       }
     },
     "2026-10-29": {
+      "besök": 4,
+      "sidvisningar": {
+        "/community": 1,
+        "/discover": 6,
+        "/exams": 2,
+        "/history": 1
+      },
+      "händelser": {
+        "Prövning öppnad": 7,
+        "Till anmälan": 5
+      },
+      "kommuner": {
+        "Södertälje": 4,
+        "Sollentuna": 2,
+        "Stockholm": 4,
+        "Laholm": 2
+      },
+      "ämnen": {
+        "Engelska": 3,
+        "Flera ämnen": 2,
+        "Fysik": 1,
+        "Matematik": 1
+      },
+      "kurser": {
+        "Varierar": 8,
+        "FYSFYS02": 2,
+        "MATMAT02b": 2
+      }
+    },
+    "2026-10-30": {
       "besök": 1,
       "sidvisningar": {
-        "/discover": 2,
-        "/exams": 1
+        "/discover": 1
       },
-      "händelser": {},
-      "kommuner": {},
-      "ämnen": {},
-      "kurser": {}
+      "händelser": {
+        "Prövning öppnad": 2,
+        "Till anmälan": 1
+      },
+      "kommuner": {
+        "Sollentuna": 1,
+        "Stockholm": 2
+      },
+      "ämnen": {
+        "Flera ämnen": 1,
+        "Matematik": 1
+      },
+      "kurser": {
+        "Varierar": 1,
+        "MATMAT02b": 2
+      }
     }
   }
 }
