@@ -8,17 +8,18 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 **Filen är genererad.** Ändringar här skrivs över vid nästa körning; räkningen ändras i
 `collector/worker.js` och i `src/lib/analytics.ts`.
 
-## Senaste 30 dygnen (t.o.m. 2026-10-31)
+## Senaste 30 dygnen (t.o.m. 2026-11-01)
 
 | Besök | Sidvisningar | Till anmälan |
 | ----- | ------------ | ------------ |
-| 639 | 795 | 68 |
+| 636 | 784 | 65 |
 
 ### Per dygn
 
 | Dygn | Besök | Sidvisningar | Till anmälan |
 | ---- | ----- | ------------ | ------------ |
-| 2026-10-31 | 2 | 8 | 0 |
+| 2026-11-01 | 1 | 1 | 2 |
+| 2026-10-31 | 3 | 13 | 0 |
 | 2026-10-30 | 553 | 553 | 1 |
 | 2026-10-29 | 4 | 10 | 5 |
 | 2026-10-28 | 7 | 34 | 5 |
@@ -46,26 +47,25 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | 2026-10-05 | 2 | 9 | 7 |
 | 2026-10-04 | 1 | 7 | 0 |
 | 2026-10-03 | 2 | 2 | 2 |
-| 2026-10-02 | 5 | 17 | 5 |
 
 ### Flikar
 
 | Namn | Antal |
 | ---- | ----- |
-| Upptäck | 691 |
-| Community | 33 |
-| Mina prövningar | 30 |
-| Historik | 25 |
+| Upptäck | 686 |
+| Community | 31 |
+| Mina prövningar | 28 |
+| Historik | 24 |
 | AI-prövning | 13 |
-| Profil | 3 |
+| Profil | 2 |
 
 ### Händelser
 
 | Namn | Antal |
 | ---- | ----- |
-| Prövning öppnad | 148 |
-| Till anmälan | 68 |
-| AI-fråga ställd | 8 |
+| Prövning öppnad | 143 |
+| Till anmälan | 65 |
+| AI-fråga ställd | 6 |
 | Bevakning skapad | 3 |
 | Kalenderfil hämtad | 1 |
 
@@ -73,28 +73,28 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Stockholm | 54 |
-| Göteborg | 41 |
+| Stockholm | 52 |
+| Göteborg | 39 |
 | Södertälje | 21 |
 | Sollentuna | 14 |
+| Eskilstuna | 12 |
 | Laholm | 11 |
-| Linköping | 11 |
-| Eskilstuna | 10 |
 | Kristianstad | 7 |
+| Linköping | 7 |
 | Solna | 6 |
-| Varberg | 5 |
+| Lund | 4 |
 
 ### Ämnen
 
 | Namn | Antal |
 | ---- | ----- |
 | Flera ämnen | 50 |
-| Matematik | 42 |
-| Fysik | 21 |
-| Engelska | 18 |
-| Kemi | 9 |
+| Matematik | 39 |
+| Fysik | 22 |
+| Engelska | 19 |
+| Kemi | 6 |
 | Naturkunskap | 4 |
-| Svenska | 3 |
+| Svenska | 2 |
 | Vård och omsorg | 2 |
 | Historia | 1 |
 
@@ -106,4 +106,4 @@ besök går inte att skilja åt ens i råtabellen, och "besök" räknas en gång
 webbläsarsession utan något som följer med till nästa. Statistiken finns bara för dem som
 sagt ja i appens samtyckesruta.
 
-<sub>Uppdaterad 2026-10-31T08:29:50.285Z.</sub>
+<sub>Uppdaterad 2026-11-01T09:22:19.186Z.</sub>

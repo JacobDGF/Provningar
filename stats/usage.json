@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-10-31T08:29:50.285Z",
+  "uppdaterad": "2026-11-01T09:22:19.186Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -1182,26 +1182,52 @@
       }
     },
     "2026-10-31": {
-      "besök": 2,
+      "besök": 3,
       "sidvisningar": {
-        "/ai": 1,
-        "/community": 2,
-        "/discover": 3,
+        "/ai": 2,
+        "/community": 3,
+        "/discover": 5,
+        "/exams": 1,
         "/history": 1,
         "/profile": 1
       },
       "händelser": {
         "Bevakning skapad": 1,
-        "Prövning öppnad": 1
+        "Prövning öppnad": 2
       },
       "kommuner": {
-        "Malmö": 2
+        "Malmö": 2,
+        "Stockholm": 1
       },
       "ämnen": {
-        "Naturkunskap": 1
+        "Naturkunskap": 1,
+        "Engelska": 1
       },
       "kurser": {
-        "NAKNAK01b": 1
+        "NAKNAK01b": 1,
+        "AFFAFÄ00S": 1
+      }
+    },
+    "2026-11-01": {
+      "besök": 1,
+      "sidvisningar": {
+        "/discover": 1
+      },
+      "händelser": {
+        "Prövning öppnad": 2,
+        "Till anmälan": 2
+      },
+      "kommuner": {
+        "Stockholm": 2,
+        "Eskilstuna": 2
+      },
+      "ämnen": {
+        "Fysik": 1,
+        "Flera ämnen": 1
+      },
+      "kurser": {
+        "FYSFYS02": 2,
+        "Varierar": 2
       }
     }
   }
