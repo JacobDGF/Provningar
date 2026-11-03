@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-11-02T09:36:46.294Z",
+  "uppdaterad": "2026-11-03T09:40:31.335Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -1234,30 +1234,33 @@
       }
     },
     "2026-11-02": {
-      "besök": 1,
+      "besök": 2,
       "sidvisningar": {
         "/ai": 18,
         "/community": 25,
-        "/discover": 13,
-        "/exams": 20,
+        "/discover": 15,
+        "/exams": 21,
         "/history": 17,
         "/profile": 4
       },
       "händelser": {
-        "Prövning öppnad": 6,
+        "Prövning öppnad": 10,
         "Till anmälan": 1
       },
       "kommuner": {
-        "Stockholm": 4,
-        "Sollentuna": 3
+        "Stockholm": 7,
+        "Sollentuna": 3,
+        "Örebro": 1
       },
       "ämnen": {
-        "Matematik": 3,
+        "Matematik": 7,
         "Flera ämnen": 3
       },
       "kurser": {
-        "MATMAT02b": 4,
-        "Varierar": 3
+        "MATMAT02b": 6,
+        "Varierar": 3,
+        "MATE2A00X": 1,
+        "MATMAT02a": 1
       }
     }
   }
