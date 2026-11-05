@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-11-04T09:25:56.235Z",
+  "uppdaterad": "2026-11-05T09:35:51.039Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -1272,6 +1272,56 @@
       "kommuner": {},
       "ämnen": {},
       "kurser": {}
+    },
+    "2026-11-04": {
+      "besök": 3,
+      "sidvisningar": {
+        "/discover": 3
+      },
+      "händelser": {
+        "Prövning öppnad": 3,
+        "Till anmälan": 2
+      },
+      "kommuner": {
+        "Eskilstuna": 2,
+        "Tyresö": 1,
+        "Sollentuna": 2
+      },
+      "ämnen": {
+        "Flera ämnen": 3
+      },
+      "kurser": {
+        "Varierar": 5
+      }
+    },
+    "2026-11-05": {
+      "besök": 2,
+      "sidvisningar": {
+        "/community": 1,
+        "/discover": 6,
+        "/exams": 2,
+        "/history": 1
+      },
+      "händelser": {
+        "Prövning öppnad": 4,
+        "Till anmälan": 2
+      },
+      "kommuner": {
+        "Stockholm": 1,
+        "Upplands Väsby": 1,
+        "Laholm": 2,
+        "Sollentuna": 2
+      },
+      "ämnen": {
+        "Matematik": 1,
+        "Fysik": 1,
+        "Flera ämnen": 2
+      },
+      "kurser": {
+        "MATMAT02b": 1,
+        "FYSFYS01a": 1,
+        "Varierar": 4
+      }
     }
   }
 }
