@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-11-05T09:35:51.039Z",
+  "uppdaterad": "2026-11-06T09:29:11.861Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -1295,32 +1295,39 @@
       }
     },
     "2026-11-05": {
-      "besök": 2,
+      "besök": 8,
       "sidvisningar": {
+        "/ai": 1,
         "/community": 1,
-        "/discover": 6,
-        "/exams": 2,
+        "/discover": 14,
+        "/exams": 3,
         "/history": 1
       },
       "händelser": {
-        "Prövning öppnad": 4,
-        "Till anmälan": 2
+        "AI-fråga ställd": 1,
+        "Prövning öppnad": 9,
+        "Till anmälan": 4
       },
       "kommuner": {
-        "Stockholm": 1,
+        "Stockholm": 5,
         "Upplands Väsby": 1,
         "Laholm": 2,
-        "Sollentuna": 2
+        "Sollentuna": 2,
+        "Helsingborg": 1,
+        "Södertälje": 2
       },
       "ämnen": {
-        "Matematik": 1,
+        "Matematik": 3,
         "Fysik": 1,
-        "Flera ämnen": 2
+        "Flera ämnen": 2,
+        "Kemi": 2,
+        "Engelska": 1
       },
       "kurser": {
-        "MATMAT02b": 1,
+        "MATMAT02b": 4,
         "FYSFYS01a": 1,
-        "Varierar": 4
+        "Varierar": 6,
+        "KEMKEM01": 2
       }
     }
   }

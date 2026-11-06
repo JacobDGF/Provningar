@@ -8,17 +8,17 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 **Filen är genererad.** Ändringar här skrivs över vid nästa körning; räkningen ändras i
 `collector/worker.js` och i `src/lib/analytics.ts`.
 
-## Senaste 30 dygnen (t.o.m. 2026-11-05)
+## Senaste 30 dygnen (t.o.m. 2026-11-06)
 
 | Besök | Sidvisningar | Till anmälan |
 | ----- | ------------ | ------------ |
-| 638 | 875 | 61 |
+| 641 | 881 | 62 |
 
 ### Per dygn
 
 | Dygn | Besök | Sidvisningar | Till anmälan |
 | ---- | ----- | ------------ | ------------ |
-| 2026-11-05 | 2 | 10 | 2 |
+| 2026-11-05 | 8 | 20 | 4 |
 | 2026-11-04 | 3 | 3 | 2 |
 | 2026-11-03 | 1 | 1 | 0 |
 | 2026-11-02 | 2 | 100 | 1 |
@@ -46,37 +46,35 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | 2026-10-10 | 1 | 5 | 1 |
 | 2026-10-09 | 3 | 11 | 0 |
 | 2026-10-08 | 5 | 8 | 3 |
-| 2026-10-07 | 3 | 4 | 1 |
 
 ### Flikar
 
 | Namn | Antal |
 | ---- | ----- |
-| Upptäck | 701 |
-| Community | 53 |
-| Mina prövningar | 47 |
+| Upptäck | 706 |
+| Community | 52 |
+| Mina prövningar | 48 |
 | Historik | 41 |
-| AI-prövning | 27 |
+| AI-prövning | 28 |
 | Profil | 6 |
 
 ### Händelser
 
 | Namn | Antal |
 | ---- | ----- |
-| Prövning öppnad | 149 |
-| Till anmälan | 61 |
-| AI-fråga ställd | 5 |
+| Prövning öppnad | 153 |
+| Till anmälan | 62 |
+| AI-fråga ställd | 6 |
 | Bevakning skapad | 3 |
-| Kalenderfil hämtad | 1 |
 
 ### Kommuner i öppnade prövningar
 
 | Namn | Antal |
 | ---- | ----- |
-| Stockholm | 59 |
-| Göteborg | 37 |
+| Stockholm | 63 |
+| Göteborg | 34 |
 | Sollentuna | 21 |
-| Södertälje | 16 |
+| Södertälje | 18 |
 | Eskilstuna | 14 |
 | Laholm | 13 |
 | Linköping | 7 |
@@ -89,10 +87,10 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | Namn | Antal |
 | ---- | ----- |
 | Flera ämnen | 52 |
-| Matematik | 45 |
+| Matematik | 47 |
 | Fysik | 24 |
 | Engelska | 16 |
-| Kemi | 6 |
+| Kemi | 8 |
 | Naturkunskap | 4 |
 | Svenska | 2 |
 | Vård och omsorg | 2 |
@@ -105,4 +103,4 @@ besök går inte att skilja åt ens i råtabellen, och "besök" räknas en gång
 webbläsarsession utan något som följer med till nästa. Statistiken finns bara för dem som
 sagt ja i appens samtyckesruta.
 
-<sub>Uppdaterad 2026-11-05T09:35:51.039Z.</sub>
+<sub>Uppdaterad 2026-11-06T09:29:11.861Z.</sub>
