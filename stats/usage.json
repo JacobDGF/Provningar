@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-11-06T09:29:11.861Z",
+  "uppdaterad": "2026-11-07T08:53:44.672Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -1328,6 +1328,30 @@
         "FYSFYS01a": 1,
         "Varierar": 6,
         "KEMKEM01": 2
+      }
+    },
+    "2026-11-06": {
+      "besök": 2,
+      "sidvisningar": {
+        "/community": 1,
+        "/discover": 2,
+        "/exams": 1
+      },
+      "händelser": {
+        "Prövning öppnad": 2,
+        "Till anmälan": 2
+      },
+      "kommuner": {
+        "Laholm": 2,
+        "Stockholm": 2
+      },
+      "ämnen": {
+        "Flera ämnen": 1,
+        "Matematik": 1
+      },
+      "kurser": {
+        "Varierar": 2,
+        "MATMAT02b": 2
       }
     }
   }
