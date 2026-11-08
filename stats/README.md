@@ -8,16 +8,17 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 **Filen är genererad.** Ändringar här skrivs över vid nästa körning; räkningen ändras i
 `collector/worker.js` och i `src/lib/analytics.ts`.
 
-## Senaste 30 dygnen (t.o.m. 2026-11-07)
+## Senaste 30 dygnen (t.o.m. 2026-11-08)
 
 | Besök | Sidvisningar | Till anmälan |
 | ----- | ------------ | ------------ |
-| 638 | 877 | 61 |
+| 636 | 867 | 61 |
 
 ### Per dygn
 
 | Dygn | Besök | Sidvisningar | Till anmälan |
 | ---- | ----- | ------------ | ------------ |
+| 2026-11-07 | 1 | 1 | 0 |
 | 2026-11-06 | 2 | 4 | 2 |
 | 2026-11-05 | 8 | 20 | 4 |
 | 2026-11-04 | 3 | 3 | 2 |
@@ -45,13 +46,12 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | 2026-10-12 | 6 | 16 | 1 |
 | 2026-10-11 | 3 | 6 | 0 |
 | 2026-10-10 | 1 | 5 | 1 |
-| 2026-10-09 | 3 | 11 | 0 |
 
 ### Flikar
 
 | Namn | Antal |
 | ---- | ----- |
-| Upptäck | 702 |
+| Upptäck | 692 |
 | Community | 52 |
 | Mina prövningar | 48 |
 | Historik | 41 |
@@ -62,7 +62,7 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Prövning öppnad | 142 |
+| Prövning öppnad | 140 |
 | Till anmälan | 61 |
 | AI-fråga ställd | 6 |
 | Bevakning skapad | 3 |
@@ -86,7 +86,7 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Flera ämnen | 53 |
+| Flera ämnen | 51 |
 | Matematik | 44 |
 | Engelska | 16 |
 | Fysik | 15 |
@@ -103,4 +103,4 @@ besök går inte att skilja åt ens i råtabellen, och "besök" räknas en gång
 webbläsarsession utan något som följer med till nästa. Statistiken finns bara för dem som
 sagt ja i appens samtyckesruta.
 
-<sub>Uppdaterad 2026-11-07T08:53:44.672Z.</sub>
+<sub>Uppdaterad 2026-11-08T09:06:59.366Z.</sub>

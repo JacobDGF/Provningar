@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-11-07T08:53:44.672Z",
+  "uppdaterad": "2026-11-08T09:06:59.366Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -1353,6 +1353,16 @@
         "Varierar": 2,
         "MATMAT02b": 2
       }
+    },
+    "2026-11-07": {
+      "besök": 1,
+      "sidvisningar": {
+        "/discover": 1
+      },
+      "händelser": {},
+      "kommuner": {},
+      "ämnen": {},
+      "kurser": {}
     }
   }
 }
