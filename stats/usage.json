@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-11-08T09:06:59.366Z",
+  "uppdaterad": "2026-11-09T09:54:37.617Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -1355,6 +1355,16 @@
       }
     },
     "2026-11-07": {
+      "besök": 1,
+      "sidvisningar": {
+        "/discover": 1
+      },
+      "händelser": {},
+      "kommuner": {},
+      "ämnen": {},
+      "kurser": {}
+    },
+    "2026-11-08": {
       "besök": 1,
       "sidvisningar": {
         "/discover": 1
