@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-11-09T09:54:37.617Z",
+  "uppdaterad": "2026-11-10T09:58:14.925Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -1373,6 +1373,66 @@
       "kommuner": {},
       "ämnen": {},
       "kurser": {}
+    },
+    "2026-11-09": {
+      "besök": 2,
+      "sidvisningar": {
+        "/ai": 2,
+        "/community": 1,
+        "/discover": 4,
+        "/exams": 2,
+        "/history": 1
+      },
+      "händelser": {
+        "AI-fråga ställd": 1,
+        "Prövning öppnad": 12,
+        "Till anmälan": 2
+      },
+      "kommuner": {
+        "Hudiksvall": 2,
+        "Upplands Väsby": 1,
+        "Södertälje": 1,
+        "Stockholm": 4,
+        "Sollentuna": 3,
+        "Järfälla": 1,
+        "Västerås": 1,
+        "Örebro": 1
+      },
+      "ämnen": {
+        "Flera ämnen": 5,
+        "Fysik": 2,
+        "Engelska": 1,
+        "Matematik": 1,
+        "Kemi": 1,
+        "Vård och omsorg": 1,
+        "Biologi": 1
+      },
+      "kurser": {
+        "Varierar": 8,
+        "FYSFYS01a": 2,
+        "MATMAT02b": 1,
+        "KEMKEM01": 1,
+        "FUTFUN01": 1,
+        "BIOBIO01": 1
+      }
+    },
+    "2026-11-10": {
+      "besök": 1,
+      "sidvisningar": {
+        "/discover": 1
+      },
+      "händelser": {
+        "Prövning öppnad": 1
+      },
+      "kommuner": {
+        "Skövde": 1
+      },
+      "ämnen": {
+        "Matematik": 1
+      },
+      "kurser": {
+        "MATMAT03b": 1
+      }
     }
   }
 }
