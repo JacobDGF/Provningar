@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-11-10T09:58:14.925Z",
+  "uppdaterad": "2026-11-11T09:32:22.238Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -1417,21 +1417,30 @@
       }
     },
     "2026-11-10": {
-      "besök": 1,
+      "besök": 6,
       "sidvisningar": {
-        "/discover": 1
+        "/community": 2,
+        "/discover": 10,
+        "/exams": 2,
+        "/history": 1
       },
       "händelser": {
-        "Prövning öppnad": 1
+        "Prövning öppnad": 5,
+        "Till anmälan": 1
       },
       "kommuner": {
-        "Skövde": 1
+        "Skövde": 1,
+        "Örebro": 2,
+        "Stockholm": 3
       },
       "ämnen": {
-        "Matematik": 1
+        "Matematik": 3,
+        "Naturkunskap": 2
       },
       "kurser": {
-        "MATMAT03b": 1
+        "MATMAT03b": 1,
+        "NATU2000X": 2,
+        "MATMAT02b": 3
       }
     }
   }
