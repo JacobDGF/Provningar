@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-11-11T09:32:22.238Z",
+  "uppdaterad": "2026-11-12T09:55:38.161Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -1441,6 +1441,65 @@
         "MATMAT03b": 1,
         "NATU2000X": 2,
         "MATMAT02b": 3
+      }
+    },
+    "2026-11-11": {
+      "besök": 3,
+      "sidvisningar": {
+        "/ai": 2,
+        "/community": 1,
+        "/discover": 6,
+        "/exams": 4,
+        "/history": 1
+      },
+      "händelser": {
+        "Prövning öppnad": 20
+      },
+      "kommuner": {
+        "Örebro": 3,
+        "Göteborg": 4,
+        "Stockholm": 4,
+        "Malmö": 3,
+        "Linköping": 2,
+        "Norrköping": 1,
+        "Luleå": 1,
+        "Laholm": 1,
+        "Sollentuna": 1
+      },
+      "ämnen": {
+        "Matematik": 4,
+        "Kemi": 7,
+        "Fysik": 7,
+        "Flera ämnen": 2
+      },
+      "kurser": {
+        "MATO2000X": 2,
+        "MATMAT04": 2,
+        "KEMI1000X": 2,
+        "KEMKEM01": 5,
+        "FYSK2000X": 3,
+        "FYSFYS02": 4,
+        "Varierar": 2
+      }
+    },
+    "2026-11-12": {
+      "besök": 2,
+      "sidvisningar": {
+        "/community": 1,
+        "/discover": 2,
+        "/history": 1
+      },
+      "händelser": {
+        "Prövning öppnad": 1
+      },
+      "kommuner": {
+        "Laholm": 1
+      },
+      "ämnen": {
+        "Flera ämnen": 1
+      },
+      "kurser": {
+        "Varierar": 1
       }
     }
   }
