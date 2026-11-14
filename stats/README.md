@@ -8,16 +8,18 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 **Filen är genererad.** Ändringar här skrivs över vid nästa körning; räkningen ändras i
 `collector/worker.js` och i `src/lib/analytics.ts`.
 
-## Senaste 30 dygnen (t.o.m. 2026-11-13)
+## Senaste 30 dygnen (t.o.m. 2026-11-14)
 
 | Besök | Sidvisningar | Till anmälan |
 | ----- | ------------ | ------------ |
-| 638 | 890 | 60 |
+| 642 | 897 | 60 |
 
 ### Per dygn
 
 | Dygn | Besök | Sidvisningar | Till anmälan |
 | ---- | ----- | ------------ | ------------ |
+| 2026-11-14 | 0 | 1 | 0 |
+| 2026-11-13 | 4 | 6 | 0 |
 | 2026-11-12 | 5 | 32 | 0 |
 | 2026-11-11 | 3 | 14 | 0 |
 | 2026-11-10 | 6 | 15 | 1 |
@@ -51,20 +53,20 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 
 | Namn | Antal |
 | ---- | ----- |
-| Upptäck | 719 |
+| Upptäck | 725 |
 | Community | 49 |
 | Mina prövningar | 47 |
 | Historik | 39 |
-| AI-prövning | 30 |
+| AI-prövning | 31 |
 | Profil | 6 |
 
 ### Händelser
 
 | Namn | Antal |
 | ---- | ----- |
-| Prövning öppnad | 147 |
+| Prövning öppnad | 148 |
 | Till anmälan | 60 |
-| AI-fråga ställd | 6 |
+| AI-fråga ställd | 7 |
 | Bevakning skapad | 2 |
 
 ### Kommuner i öppnade prövningar
@@ -77,7 +79,7 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | Södertälje | 19 |
 | Laholm | 14 |
 | Eskilstuna | 13 |
-| Örebro | 10 |
+| Örebro | 11 |
 | Linköping | 6 |
 | Malmö | 5 |
 | Solna | 4 |
@@ -88,7 +90,7 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | ---- | ----- |
 | Matematik | 50 |
 | Flera ämnen | 41 |
-| Engelska | 17 |
+| Engelska | 18 |
 | Fysik | 16 |
 | Kemi | 15 |
 | Naturkunskap | 3 |
@@ -105,4 +107,4 @@ besök går inte att skilja åt ens i råtabellen, och "besök" räknas en gång
 webbläsarsession utan något som följer med till nästa. Statistiken finns bara för dem som
 sagt ja i appens samtyckesruta.
 
-<sub>Uppdaterad 2026-11-13T09:40:28.567Z.</sub>
+<sub>Uppdaterad 2026-11-14T09:03:24.871Z.</sub>
