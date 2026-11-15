@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-11-14T09:03:24.871Z",
+  "uppdaterad": "2026-11-15T09:34:51.820Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -1526,14 +1526,27 @@
       }
     },
     "2026-11-14": {
-      "besök": 0,
+      "besök": 2,
       "sidvisningar": {
-        "/discover": 1
+        "/community": 1,
+        "/discover": 5,
+        "/exams": 1
       },
-      "händelser": {},
-      "kommuner": {},
-      "ämnen": {},
-      "kurser": {}
+      "händelser": {
+        "Prövning öppnad": 2,
+        "Till anmälan": 1
+      },
+      "kommuner": {
+        "Eskilstuna": 1,
+        "Södertälje": 2
+      },
+      "ämnen": {
+        "Flera ämnen": 1,
+        "Engelska": 1
+      },
+      "kurser": {
+        "Varierar": 3
+      }
     }
   }
 }
