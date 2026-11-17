@@ -8,16 +8,17 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 **Filen är genererad.** Ändringar här skrivs över vid nästa körning; räkningen ändras i
 `collector/worker.js` och i `src/lib/analytics.ts`.
 
-## Senaste 30 dygnen (t.o.m. 2026-11-16)
+## Senaste 30 dygnen (t.o.m. 2026-11-17)
 
 | Besök | Sidvisningar | Till anmälan |
 | ----- | ------------ | ------------ |
-| 646 | 906 | 54 |
+| 646 | 906 | 55 |
 
 ### Per dygn
 
 | Dygn | Besök | Sidvisningar | Till anmälan |
 | ---- | ----- | ------------ | ------------ |
+| 2026-11-16 | 1 | 1 | 1 |
 | 2026-11-15 | 3 | 5 | 4 |
 | 2026-11-14 | 2 | 7 | 1 |
 | 2026-11-13 | 4 | 6 | 0 |
@@ -46,7 +47,6 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | 2026-10-21 | 9 | 18 | 8 |
 | 2026-10-20 | 5 | 8 | 4 |
 | 2026-10-19 | 3 | 8 | 5 |
-| 2026-10-18 | 1 | 1 | 0 |
 
 ### Flikar
 
@@ -64,7 +64,7 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | Namn | Antal |
 | ---- | ----- |
 | Prövning öppnad | 144 |
-| Till anmälan | 54 |
+| Till anmälan | 55 |
 | AI-fråga ställd | 7 |
 | Bevakning skapad | 2 |
 
@@ -73,9 +73,9 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | Namn | Antal |
 | ---- | ----- |
 | Stockholm | 63 |
-| Göteborg | 26 |
-| Sollentuna | 22 |
-| Södertälje | 21 |
+| Göteborg | 25 |
+| Sollentuna | 23 |
+| Södertälje | 22 |
 | Laholm | 16 |
 | Eskilstuna | 12 |
 | Örebro | 11 |
@@ -88,8 +88,8 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | Namn | Antal |
 | ---- | ----- |
 | Matematik | 50 |
-| Flera ämnen | 38 |
-| Engelska | 18 |
+| Flera ämnen | 39 |
+| Engelska | 17 |
 | Fysik | 16 |
 | Kemi | 14 |
 | Naturkunskap | 3 |
@@ -106,4 +106,4 @@ besök går inte att skilja åt ens i råtabellen, och "besök" räknas en gång
 webbläsarsession utan något som följer med till nästa. Statistiken finns bara för dem som
 sagt ja i appens samtyckesruta.
 
-<sub>Uppdaterad 2026-11-16T09:52:28.428Z.</sub>
+<sub>Uppdaterad 2026-11-17T10:49:27.340Z.</sub>
