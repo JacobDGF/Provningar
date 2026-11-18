@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-11-17T10:49:27.340Z",
+  "uppdaterad": "2026-11-18T10:17:52.694Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -1596,6 +1596,25 @@
       },
       "kurser": {
         "Varierar": 3
+      }
+    },
+    "2026-11-17": {
+      "besök": 4,
+      "sidvisningar": {
+        "/discover": 9
+      },
+      "händelser": {
+        "Prövning öppnad": 1,
+        "Till anmälan": 1
+      },
+      "kommuner": {
+        "Södertälje": 2
+      },
+      "ämnen": {
+        "Engelska": 1
+      },
+      "kurser": {
+        "Varierar": 2
       }
     }
   }
