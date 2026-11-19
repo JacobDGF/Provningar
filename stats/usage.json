@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-11-18T10:17:52.694Z",
+  "uppdaterad": "2026-11-19T10:28:12.615Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -1615,6 +1615,33 @@
       },
       "kurser": {
         "Varierar": 2
+      }
+    },
+    "2026-11-18": {
+      "besök": 5,
+      "sidvisningar": {
+        "/ai": 1,
+        "/community": 1,
+        "/discover": 10,
+        "/exams": 1
+      },
+      "händelser": {
+        "Prövning öppnad": 6,
+        "Till anmälan": 3
+      },
+      "kommuner": {
+        "Sollentuna": 6,
+        "Södertälje": 2,
+        "Stockholm": 1
+      },
+      "ämnen": {
+        "Flera ämnen": 4,
+        "Engelska": 1,
+        "Moderna språk": 1
+      },
+      "kurser": {
+        "Varierar": 8,
+        "MODSPA04": 1
       }
     }
   }
