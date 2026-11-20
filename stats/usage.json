@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-11-19T10:28:12.615Z",
+  "uppdaterad": "2026-11-20T10:07:56.905Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -1643,6 +1643,36 @@
         "Varierar": 8,
         "MODSPA04": 1
       }
+    },
+    "2026-11-19": {
+      "besök": 3,
+      "sidvisningar": {
+        "/ai": 1,
+        "/discover": 4
+      },
+      "händelser": {
+        "Prövning öppnad": 1,
+        "Till anmälan": 1
+      },
+      "kommuner": {
+        "Södertälje": 2
+      },
+      "ämnen": {
+        "Engelska": 1
+      },
+      "kurser": {
+        "Varierar": 2
+      }
+    },
+    "2026-11-20": {
+      "besök": 1,
+      "sidvisningar": {
+        "/discover": 1
+      },
+      "händelser": {},
+      "kommuner": {},
+      "ämnen": {},
+      "kurser": {}
     }
   }
 }
