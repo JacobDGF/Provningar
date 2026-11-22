@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-11-21T09:55:55.640Z",
+  "uppdaterad": "2026-11-22T09:53:07.648Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -1684,9 +1684,9 @@
       }
     },
     "2026-11-21": {
-      "besök": 1,
+      "besök": 3,
       "sidvisningar": {
-        "/discover": 2
+        "/discover": 5
       },
       "händelser": {},
       "kommuner": {},

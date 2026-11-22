@@ -8,17 +8,17 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 **Filen är genererad.** Ändringar här skrivs över vid nästa körning; räkningen ändras i
 `collector/worker.js` och i `src/lib/analytics.ts`.
 
-## Senaste 30 dygnen (t.o.m. 2026-11-21)
+## Senaste 30 dygnen (t.o.m. 2026-11-22)
 
 | Besök | Sidvisningar | Till anmälan |
 | ----- | ------------ | ------------ |
-| 640 | 893 | 41 |
+| 641 | 893 | 41 |
 
 ### Per dygn
 
 | Dygn | Besök | Sidvisningar | Till anmälan |
 | ---- | ----- | ------------ | ------------ |
-| 2026-11-21 | 1 | 2 | 0 |
+| 2026-11-21 | 3 | 5 | 0 |
 | 2026-11-20 | 3 | 3 | 0 |
 | 2026-11-19 | 3 | 5 | 1 |
 | 2026-11-18 | 5 | 13 | 3 |
@@ -47,14 +47,13 @@ finns ingen instrumentpanel någon annanstans, och ingen tredje part som ser bes
 | 2026-10-26 | 4 | 15 | 0 |
 | 2026-10-25 | 1 | 2 | 1 |
 | 2026-10-24 | 1 | 1 | 0 |
-| 2026-10-23 | 1 | 3 | 0 |
 
 ### Flikar
 
 | Namn | Antal |
 | ---- | ----- |
-| Upptäck | 729 |
-| Community | 49 |
+| Upptäck | 730 |
+| Community | 48 |
 | Mina prövningar | 42 |
 | Historik | 36 |
 | AI-prövning | 31 |
@@ -108,4 +107,4 @@ besök går inte att skilja åt ens i råtabellen, och "besök" räknas en gång
 webbläsarsession utan något som följer med till nästa. Statistiken finns bara för dem som
 sagt ja i appens samtyckesruta.
 
-<sub>Uppdaterad 2026-11-21T09:55:55.640Z.</sub>
+<sub>Uppdaterad 2026-11-22T09:53:07.648Z.</sub>
