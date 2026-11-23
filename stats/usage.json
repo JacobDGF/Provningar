@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-11-22T09:53:07.648Z",
+  "uppdaterad": "2026-11-23T10:53:17.289Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -1692,6 +1692,34 @@
       "kommuner": {},
       "ämnen": {},
       "kurser": {}
+    },
+    "2026-11-23": {
+      "besök": 2,
+      "sidvisningar": {
+        "/discover": 2
+      },
+      "händelser": {
+        "Prövning öppnad": 7,
+        "Till anmälan": 6
+      },
+      "kommuner": {
+        "Uppsala": 2,
+        "Stockholm": 5,
+        "Sollentuna": 2,
+        "Södertälje": 2,
+        "Laholm": 2
+      },
+      "ämnen": {
+        "Flera ämnen": 3,
+        "Matematik": 2,
+        "Kemi": 1,
+        "Engelska": 1
+      },
+      "kurser": {
+        "Varierar": 8,
+        "MATMAT02b": 3,
+        "KEMKEM01": 2
+      }
     }
   }
 }
