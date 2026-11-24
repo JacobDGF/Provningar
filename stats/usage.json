@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-11-23T10:53:17.289Z",
+  "uppdaterad": "2026-11-24T12:36:29.843Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -1694,15 +1694,23 @@
       "kurser": {}
     },
     "2026-11-23": {
-      "besök": 2,
+      "besök": 4,
       "sidvisningar": {
-        "/discover": 2
+        "/community": 2,
+        "/discover": 8,
+        "/exams": 1,
+        "/history": 1,
+        "/profile": 2
       },
       "händelser": {
-        "Prövning öppnad": 7,
+        "Bevakning skapad": 1,
+        "Prövning sparad": 1,
+        "Prövning öppnad": 10,
         "Till anmälan": 6
       },
       "kommuner": {
+        "hela landet": 1,
+        "Göteborg": 4,
         "Uppsala": 2,
         "Stockholm": 5,
         "Sollentuna": 2,
@@ -1710,16 +1718,27 @@
         "Laholm": 2
       },
       "ämnen": {
+        "Matematik": 3,
+        "Engelska": 5,
         "Flera ämnen": 3,
-        "Matematik": 2,
-        "Kemi": 1,
-        "Engelska": 1
+        "Kemi": 1
       },
       "kurser": {
         "Varierar": 8,
         "MATMAT02b": 3,
-        "KEMKEM01": 2
+        "KEMKEM01": 2,
+        "ENGE2000X": 3
       }
+    },
+    "2026-11-24": {
+      "besök": 1,
+      "sidvisningar": {
+        "/discover": 1
+      },
+      "händelser": {},
+      "kommuner": {},
+      "ämnen": {},
+      "kurser": {}
     }
   }
 }
