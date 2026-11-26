@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-11-25T11:26:25.183Z",
+  "uppdaterad": "2026-11-26T11:01:18.152Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -1768,6 +1768,32 @@
       },
       "kurser": {
         "SAMSAM01b": 1
+      }
+    },
+    "2026-11-26": {
+      "besök": 3,
+      "sidvisningar": {
+        "/ai": 1,
+        "/discover": 12,
+        "/exams": 3
+      },
+      "händelser": {
+        "Kalenderfil hämtad": 1,
+        "Prövning öppnad": 4,
+        "Till anmälan": 2
+      },
+      "kommuner": {
+        "Sollentuna": 2,
+        "Stockholm": 5
+      },
+      "ämnen": {
+        "Flera ämnen": 1,
+        "Matematik": 3
+      },
+      "kurser": {
+        "Varierar": 2,
+        "MATMAT02b": 3,
+        "MATMAT02a": 2
       }
     }
   }
