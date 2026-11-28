@@ -1,5 +1,5 @@
 {
-  "uppdaterad": "2026-11-27T10:58:33.308Z",
+  "uppdaterad": "2026-11-28T10:35:31.135Z",
   "dagar": {
     "2026-09-11": {
       "besök": 4,
@@ -1822,6 +1822,28 @@
       },
       "kurser": {
         "SFIKUD92": 2
+      }
+    },
+    "2026-11-28": {
+      "besök": 1,
+      "sidvisningar": {
+        "/discover": 3,
+        "/exams": 1
+      },
+      "händelser": {
+        "Prövning öppnad": 3
+      },
+      "kommuner": {
+        "Stockholm": 2,
+        "Eskilstuna": 1
+      },
+      "ämnen": {
+        "Svenska": 2,
+        "Flera ämnen": 1
+      },
+      "kurser": {
+        "SVESVE01": 2,
+        "Varierar": 1
       }
     }
   }
